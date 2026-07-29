@@ -36,6 +36,17 @@ export const ContactSchema = z.object({
   website: z.string().max(0).optional(),
 });
 
+export const LeadSchema = z.object({
+  email: z.string().email().max(200),
+  taskDescription: z.string().trim().min(3).max(1_000),
+  recommendedToolSlug: z.string().max(200).optional(),
+  recommendedToolTitle: z.string().max(300).optional(),
+  source: z.enum(["popup", "exit-intent", "cta", "manual"]).default("popup"),
+  path: z.string().max(500).optional(),
+  consent: z.literal(true, { errorMap: () => ({ message: "consent required" }) }),
+  website: z.string().max(0).optional(),
+});
+
 export const FeedbackSchema = z.object({
   category: z.enum(["bug", "feature", "general", "usability"]),
   message: z.string().trim().min(5).max(4_000),

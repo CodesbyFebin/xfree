@@ -6,7 +6,7 @@ export interface DeliveryPayload {
   meta?: Record<string, unknown>;
 }
 
-export async function deliverMessage(kind: "contact" | "feedback", payload: DeliveryPayload): Promise<{ ok: boolean; provider: string }> {
+export async function deliverMessage(kind: "contact" | "feedback" | "lead", payload: DeliveryPayload): Promise<{ ok: boolean; provider: string }> {
   if (config.RESEND_API_KEY) {
     try {
       const res = await fetch("https://api.resend.com/emails", {

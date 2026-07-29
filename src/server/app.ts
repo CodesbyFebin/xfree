@@ -15,6 +15,7 @@ import {
   AiThinkingSchema,
   ContactSchema,
   FeedbackSchema,
+  LeadSchema,
 } from "./schemas";
 import { deliverMessage } from "./delivery";
 import { securityHeadersMiddleware } from "../middleware/security-headers";
@@ -88,6 +89,7 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
   const thinkingPerDay = rateLimit({ scope: "ai-thinking-day", limit: config.AI_THINKING_LIMIT_PER_DAY, windowMs: 86_400_000 });
   const contactRateLimit = rateLimit({ scope: "contact", limit: 5, windowMs: 3_600_000 });
   const feedbackRateLimit = rateLimit({ scope: "feedback", limit: 10, windowMs: 3_600_000 });
+  const leadRateLimit = rateLimit({ scope: "lead", limit: 3, windowMs: 3_600_000 });
   const globalCap = globalDailyGuard(config.AI_GLOBAL_DAILY_LIMIT);
 
   app.post("/api/ai", aiPerMinute, aiPerDay, globalCap, async (req, res, next) => {
@@ -228,6 +230,21 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
           path: parsed.data.path || null,
           requestId: (req as any).requestId,
         },
+      });
+      if (!result.ok) return res.status(502).json({ error: "delivery_failed" });
+      return res.status(200).json({ success: true, provider: result.provider });
+    } catch (err) { next(err); }
+  });
+
+  app.post("/api/lead", leadRateLimit, async (req, res, next) => {
+    try {
+      const parsed = LeadSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+      if (parsed.data.website) return res.status(200).json({ success: true });
+      const result = await deliverMessage("lead", {
+        subject: `New lead — ${parsed.data.email}`,
+        text: `Email: ${parsed.data.email}\nTask: ${parsed.data.taskDescription}\nRecommended: ${parsed.data.recommendedToolTitle || "n/a"} (${parsed.data.recommendedToolSlug || "n/a"})\nSource: ${parsed.data.source}\nPath: ${parsed.data.path || "n/a"}`,
+        meta: { requestId: (req as any).requestId, ip: req.ip },
       });
       if (!result.ok) return res.status(502).json({ error: "delivery_failed" });
       return res.status(200).json({ success: true, provider: result.provider });

@@ -30,6 +30,7 @@ import { PrivacyPage } from "./components/pages/PrivacyPage";
 import { TermsPage } from "./components/pages/TermsPage";
 import { SecurityPage } from "./components/pages/SecurityPage";
 import { NotFoundPage } from "./components/pages/NotFoundPage";
+import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 
 // Import Micro-Tools
 import { BulkUrlExtractorSitemap } from "./components/tools/BulkUrlExtractorSitemap";
@@ -454,6 +455,12 @@ export default function App() {
         isOpen={chatDrawerOpen}
         onClose={() => setChatDrawerOpen(false)}
         initialContext={activeTool ? activeTool.title : undefined}
+      />
+
+      {/* Lead-funnel popup: fires after dwell / exit-intent on non-tool pages */}
+      <LeadFunnelPopup
+        currentPath={currentPath}
+        onOpenTool={(slug) => navigateTo(`/tools/${slug}`)}
       />
     </div>
   );
