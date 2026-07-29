@@ -76,12 +76,24 @@ function writeRoute(route: string, html: string) {
   fs.writeFileSync(path.join(dir, "index.html"), html, "utf-8");
 }
 
+function organizationJsonLd() {
+  return {
+    "@type": "Organization",
+    name: "XFree.in",
+    url: `${BASE}/`,
+    logo: `${BASE}/favicon.ico`,
+    description: "Free browser-based developer, SEO, and single-purpose AI micro-tool platform.",
+    sameAs: [] as string[], // add social profiles once you have them
+  };
+}
+
 function siteJsonLd() {
   return {
     "@type": "WebSite",
     name: "XFree.in",
     url: `${BASE}/`,
     description: "Free browser-based developer, SEO, and single-purpose AI micro-tools.",
+    publisher: { "@type": "Organization", name: "XFree.in", url: `${BASE}/` },
     potentialAction: {
       "@type": "SearchAction",
       target: `${BASE}/?q={search_term_string}`,
@@ -130,7 +142,7 @@ function main() {
   for (const route of STATIC_ROUTES) {
     const m = STATIC_META[route];
     if (!m) continue;
-    const jsonLd: any[] = [siteJsonLd()];
+    const jsonLd: any[] = [organizationJsonLd(), siteJsonLd()];
     if (route !== "/") {
       jsonLd.push(breadcrumbs([{ name: "Home", url: `${BASE}/` }, { name: m.h1, url: `${BASE}${route}` }]));
     }
@@ -149,7 +161,7 @@ function main() {
       h1: cat.label,
       intro: description,
       jsonLd: [
-        siteJsonLd(),
+        organizationJsonLd(), siteJsonLd(),
         breadcrumbs([{ name: "Home", url: `${BASE}/` }, { name: cat.label, url: `${BASE}${route}` }]),
         {
           "@type": "CollectionPage",
@@ -167,7 +179,7 @@ function main() {
     const title = `${tool.title} — XFree.in`;
     const description = tool.shortDescription;
     const jsonLd: any[] = [
-      siteJsonLd(),
+      organizationJsonLd(), siteJsonLd(),
       breadcrumbs([
         { name: "Home", url: `${BASE}/` },
         { name: tool.categoryLabel || tool.category, url: `${BASE}/category/${tool.category}` },
@@ -212,7 +224,7 @@ function main() {
     description: "The page you're looking for isn't published on XFree.in.",
     h1: "404 — Page not found",
     intro: "This URL doesn't map to an indexable tool or page. Try the homepage.",
-    jsonLd: [siteJsonLd()],
+    jsonLd: [organizationJsonLd(), siteJsonLd()],
   });
   fs.writeFileSync(path.join(DIST, "404.html"), notFound, "utf-8");
 

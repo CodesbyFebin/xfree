@@ -229,37 +229,83 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
 export function generateRobotsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = baseUrl.replace(/\/$/, "");
 
-  return `User-agent: *
+  // Split-brain policy:
+  //   Allow — live-fetch / citation bots that answer user queries and cite us.
+  //   Allow — traditional search bots.
+  //   Disallow — bulk training / data-scraping crawlers.
+  // Edit if your policy differs. `Disallow: /api/` applies to everyone; the
+  // per-agent sections override for AI/training decisions.
+  return `# Global rules
+User-agent: *
 Allow: /
+Disallow: /api/
 
-# AI & LLM Search Engine Crawlers (Whitehat Open Indexing)
-User-agent: GPTBot
+# --- Traditional search engines ---
+User-agent: Googlebot
 Allow: /
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /api/
+
+User-agent: BraveBot
+Allow: /
+Disallow: /api/
+
+# --- AI citation / live-fetch bots (allowed — they cite you back) ---
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
 
 User-agent: ChatGPT-User
 Allow: /
-
-User-agent: ClaudeBot
-Allow: /
+Disallow: /api/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /api/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /api/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /api/
+
+User-agent: Applebot
+Allow: /
+Disallow: /api/
+
+# --- Bulk training crawlers (disallowed by default; flip if you consent) ---
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
 
 User-agent: Google-Extended
-Allow: /
+Disallow: /
 
-User-agent: ByteDance
-Allow: /
+User-agent: Applebot-Extended
+Disallow: /
 
 User-agent: CCBot
-Allow: /
+Disallow: /
 
-# Sitemap & RSS Feed Directives
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+# Discovery files
 Sitemap: ${cleanBase}/sitemap.xml
 Sitemap: ${cleanBase}/rss.xml
-
-# LLM Directives (AEO & GEO Optimization)
-# LLMs-Txt: ${cleanBase}/llms.txt
-# LLMs-Full-Txt: ${cleanBase}/llms-full.txt
 `;
 }
