@@ -5,15 +5,15 @@
     <link>https://xfree.in</link>
     <description>100% Free client-side developer, SEO, AI, and converter micro-tools. Instant browser execution, zero signup, zero tracking.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 29 Jul 2026 02:14:40 GMT</lastBuildDate>
-    <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+    <lastBuildDate>Wed, 29 Jul 2026 16:56:45 GMT</lastBuildDate>
+    <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
     <ttl>60</ttl>
     <atom:link href="https://xfree.in/rss.xml" rel="self" type="application/rss+xml"/>
     <item>
       <title>XML Sitemap Generator &amp; Validator</title>
       <link>https://xfree.in/tools/xml-sitemap-generator</link>
       <guid isPermaLink="true">https://xfree.in/tools/xml-sitemap-generator</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>SEO &amp; URL Tools</category>
       <description>Generate valid Google &amp; Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets. Pillar Keyword: XML Sitemap Generator. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>XML Sitemap Generator &amp; Validator</h3><p><strong>Pillar Keyword:</strong> XML Sitemap Generator</p><p>Converts lists of web URLs into schema-compliant XML sitemaps with proper XML escaping and sitemap index generation.</p><h4>How to Use:</h4><ul><li>Enter list of URLs line by line.</li><li>Adjust priority and change frequency settings.</li><li>Click generate and download sitemap.xml.</li></ul>]]></content:encoded>
@@ -22,7 +22,7 @@
       <title>Robots.txt Generator &amp; User-Agent Rule Tester</title>
       <link>https://xfree.in/tools/robots-txt-generator</link>
       <guid isPermaLink="true">https://xfree.in/tools/robots-txt-generator</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>SEO &amp; URL Tools</category>
       <description>Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps. Pillar Keyword: Robots.txt Generator. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>Robots.txt Generator &amp; User-Agent Rule Tester</h3><p><strong>Pillar Keyword:</strong> Robots.txt Generator</p><p>Builds RFC 9309 compliant robots.txt files with Allow/Disallow rule groups, crawl-delay directives, and sitemap references.</p><h4>How to Use:</h4><ul><li>Add user-agent rules (e.g. Googlebot, Bingbot, *).</li><li>Specify allowed and disallowed path rules.</li><li>Test URL path against current rules to verify crawler permissions.</li></ul>]]></content:encoded>
@@ -31,7 +31,7 @@
       <title>Schema Markup Generator (JSON-LD Structured Data)</title>
       <link>https://xfree.in/tools/schema-markup-generator</link>
       <guid isPermaLink="true">https://xfree.in/tools/schema-markup-generator</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>SEO &amp; URL Tools</category>
       <description>Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs. Pillar Keyword: Schema Markup Generator. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>Schema Markup Generator (JSON-LD Structured Data)</h3><p><strong>Pillar Keyword:</strong> Schema Markup Generator</p><p>Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.</p><h4>How to Use:</h4><ul><li>Select Schema type (e.g. WebSite, Organization, FAQPage, Article).</li><li>Fill in required metadata fields.</li><li>Copy formatted JSON-LD script tag.</li></ul>]]></content:encoded>
@@ -40,7 +40,7 @@
       <title>Bulk URL Extractor &amp; Sitemap Generator</title>
       <link>https://xfree.in/tools/bulk-url-extractor-sitemap-generator</link>
       <guid isPermaLink="true">https://xfree.in/tools/bulk-url-extractor-sitemap-generator</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>SEO &amp; URL Tools</category>
       <description>Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting. Pillar Keyword: Free Bulk URL Extractor &amp; Sitemap Generator Online. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>Bulk URL Extractor &amp; Sitemap Generator</h3><p><strong>Pillar Keyword:</strong> Free Bulk URL Extractor &amp; Sitemap Generator Online</p><p>Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.</p><h4>How to Use:</h4><ul><li>Paste any raw text or HTML snippet into the input area.</li><li>Select domain filter, query parameter removal, and deduplication options.</li><li>View real-time extracted URL stats.</li><li>Download generated XML Sitemap file.</li></ul>]]></content:encoded>
@@ -49,7 +49,7 @@
       <title>JSON / XML Formatter, Validator &amp; Tree Viewer</title>
       <link>https://xfree.in/tools/json-formatter-validator-diff</link>
       <guid isPermaLink="true">https://xfree.in/tools/json-formatter-validator-diff</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>Developer Tools</category>
       <description>Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics. Pillar Keyword: JSON Formatter and Validator. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>JSON / XML Formatter, Validator &amp; Tree Viewer</h3><p><strong>Pillar Keyword:</strong> JSON Formatter and Validator</p><p>Parses JSON and XML payloads, identifies syntax errors with line/column markers, provides formatting, minification, and visual tree hierarchy.</p><h4>How to Use:</h4><ul><li>Paste JSON or XML payload into the input editor.</li><li>Toggle between Format, Minify, and Interactive Tree modes.</li><li>Review validation diagnostics or click Auto-Fix for minor syntax repairs.</li></ul>]]></content:encoded>
@@ -58,7 +58,7 @@
       <title>Regex Tester &amp; Interactive Match Explainer</title>
       <link>https://xfree.in/tools/regex-tester-explainer</link>
       <guid isPermaLink="true">https://xfree.in/tools/regex-tester-explainer</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>Developer Tools</category>
       <description>Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m). Pillar Keyword: Regex Tester. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>Regex Tester &amp; Interactive Match Explainer</h3><p><strong>Pillar Keyword:</strong> Regex Tester</p><p>Evaluates regex patterns against sample text in real-time, showing match groups, indices, and string replacement outputs.</p><h4>How to Use:</h4><ul><li>Type regular expression pattern and flags.</li><li>Enter test string into input box.</li><li>View highlighted matches and captured group tables.</li></ul>]]></content:encoded>
@@ -67,7 +67,7 @@
       <title>Cron Expression Generator &amp; Human Translator</title>
       <link>https://xfree.in/tools/cron-expression-generator</link>
       <guid isPermaLink="true">https://xfree.in/tools/cron-expression-generator</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>Generators</category>
       <description>Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times. Pillar Keyword: Cron Expression Generator. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>Cron Expression Generator &amp; Human Translator</h3><p><strong>Pillar Keyword:</strong> Cron Expression Generator</p><p>Translates cron syntax into human-readable sentences and calculates exact future execution timestamps.</p><h4>How to Use:</h4><ul><li>Configure minute, hour, day of month, month, and day of week options.</li><li>Review generated 5-part cron expression string.</li><li>Inspect upcoming execution times list.</li></ul>]]></content:encoded>
@@ -76,7 +76,7 @@
       <title>Meta Tag &amp; Open Graph Social Card Preview</title>
       <link>https://xfree.in/tools/meta-tag-open-graph-preview</link>
       <guid isPermaLink="true">https://xfree.in/tools/meta-tag-open-graph-preview</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>SEO &amp; URL Tools</category>
       <description>Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews. Pillar Keyword: Meta Tag Generator. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>Meta Tag &amp; Open Graph Social Card Preview</h3><p><strong>Pillar Keyword:</strong> Meta Tag Generator</p><p>Constructs HTML meta tags for title, description, canonical URL, og:title, og:image, and twitter:card with length character count validation.</p><h4>How to Use:</h4><ul><li>Fill in page title, description, canonical URL, and OG image link.</li><li>Inspect live Google search result snippet and Twitter/Facebook preview card.</li><li>Copy generated HTML code snippet.</li></ul>]]></content:encoded>
@@ -85,7 +85,7 @@
       <title>Base64 Encoder/Decoder &amp; JWT Token Inspector</title>
       <link>https://xfree.in/tools/base64-url-encoder-jwt-decoder</link>
       <guid isPermaLink="true">https://xfree.in/tools/base64-url-encoder-jwt-decoder</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>Converters &amp; Encoders</category>
       <description>Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims. Pillar Keyword: Base64 &amp; JWT Decoder. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>Base64 Encoder/Decoder &amp; JWT Token Inspector</h3><p><strong>Pillar Keyword:</strong> Base64 &amp; JWT Decoder</p><p>Decodes JWT headers and payload claims without transmitting tokens to external servers. Supports UTF-8 safe Base64 and Base64URL encoding/decoding.</p><h4>How to Use:</h4><ul><li>Select JWT, Base64, or URL mode.</li><li>Paste token or text input.</li><li>View decoded header, payload claims, and expiration date.</li></ul>]]></content:encoded>
@@ -94,7 +94,7 @@
       <title>URL Slug Generator &amp; Campaign UTM Parameter Builder</title>
       <link>https://xfree.in/tools/url-slug-utm-builder</link>
       <guid isPermaLink="true">https://xfree.in/tools/url-slug-utm-builder</guid>
-      <pubDate>Wed, 29 Jul 2026 02:14:40 GMT</pubDate>
+      <pubDate>Wed, 29 Jul 2026 16:56:45 GMT</pubDate>
       <category>Generators</category>
       <description>Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content). Pillar Keyword: URL Slug Generator. 100% Free browser utility with instant execution.</description>
       <content:encoded><![CDATA[<h3>URL Slug Generator &amp; Campaign UTM Parameter Builder</h3><p><strong>Pillar Keyword:</strong> URL Slug Generator</p><p>Converts strings into lowercase, hyphen-separated clean URL slugs while stripping special characters. Appends validated Google Analytics UTM parameters to base URLs.</p><h4>How to Use:</h4><ul><li>Type title string to generate clean URL slug.</li><li>Enter destination URL and campaign UTM details.</li><li>Copy final clean tracking URL.</li></ul>]]></content:encoded>

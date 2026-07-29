@@ -2,6 +2,8 @@ import React, { useState, useMemo } from "react";
 import { ToolDefinition, WorkspacePreset } from "../types";
 import { FeedbackWidget } from "./FeedbackWidget";
 import { FaqJsonLdSchema } from "./FaqJsonLdSchema";
+import { ToolGuide } from "./ToolGuide";
+import { guideForSlug } from "../data/toolGuides";
 import { downloadAsJson, downloadAsCsv, downloadAsTxt } from "../utils/exportUtils";
 import {
   Star,
@@ -325,6 +327,12 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
       <section className="min-h-[400px]" aria-label="Interactive Tool Utility">
         {children}
       </section>
+
+      {/* Long-form guide: worked examples, when-to / when-not-to, troubleshooting */}
+      {(() => {
+        const guide = guideForSlug(tool.slug);
+        return guide ? <ToolGuide guide={guide} toolTitle={tool.title} onSelectTool={onSelectTool} /> : null;
+      })()}
 
       {/* Suggested Next Steps Section (Dynamically suggested 2-3 tools based on current tool category) */}
       {suggestedNextSteps.length > 0 && (

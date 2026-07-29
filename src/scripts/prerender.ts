@@ -11,6 +11,7 @@ import fs from "fs";
 import path from "path";
 import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
 import { STATIC_ROUTES } from "../data/routes";
+import { guideForSlug } from "../data/toolGuides";
 
 const DIST = path.join(process.cwd(), "dist");
 const BASE = (process.env.PUBLIC_SITE_URL || "https://xfree.in").replace(/\/$/, "");
@@ -32,6 +33,17 @@ interface PageMeta {
   h1: string;
   intro: string;
   jsonLd: any[];
+  guide?: import("../data/toolGuides").GuideContent;
+}
+
+function renderGuideHtml(guide: import("../data/toolGuides").GuideContent, toolTitle: string): string {
+  const examples = guide.workedExamples
+    .map((ex) => `<article><h4>${escapeHtml(ex.title)}</h4><p><strong>Input:</strong></p><pre>${escapeHtml(ex.input)}</pre><p><strong>Output:</strong></p><pre>${escapeHtml(ex.output)}</pre><p>${escapeHtml(ex.explanation)}</p></article>`)
+    .join("");
+  const whenTo = guide.whenToUse.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
+  const whenNot = guide.whenNotToUse.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
+  const trouble = guide.troubleshooting.map((t) => `<dt>${escapeHtml(t.symptom)}</dt><dd>${escapeHtml(t.fix)}</dd>`).join("");
+  return `<section><h2>The ${escapeHtml(toolTitle)} guide</h2><p>${escapeHtml(guide.overview)}</p><h3>Worked examples</h3>${examples}<h3>When to use</h3><ul>${whenTo}</ul><h3>When not to use</h3><ul>${whenNot}</ul><h3>Troubleshooting</h3><dl>${trouble}</dl><p><em>Authored by the XFree.in team. Last reviewed ${escapeHtml(guide.lastReviewed)}.</em></p></section>`;
 }
 
 function injectMeta(template: string, meta: PageMeta): string {
@@ -51,14 +63,17 @@ function injectMeta(template: string, meta: PageMeta): string {
     `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": meta.jsonLd })}</script>`,
   ].join("\n    ");
 
+  const guideHtml = meta.guide ? renderGuideHtml(meta.guide, meta.h1) : "";
   const shell = `
     <noscript>
       <h1>${escapeHtml(meta.h1)}</h1>
       <p>${escapeHtml(meta.intro)}</p>
+      ${guideHtml}
     </noscript>
     <div id="prerender-shell" hidden aria-hidden="true">
       <h1>${escapeHtml(meta.h1)}</h1>
       <p>${escapeHtml(meta.intro)}</p>
+      ${guideHtml}
     </div>
   `;
 
@@ -213,7 +228,24 @@ function main() {
         })),
       });
     }
-    writeRoute(route, injectMeta(template, { route, title, description, h1: tool.title, intro: tool.explanation || description, jsonLd }));
+
+    const guide = guideForSlug(tool.slug);
+    let intro = tool.explanation || description;
+    if (guide) {
+      intro = guide.overview;
+      jsonLd.push({
+        "@type": "TechArticle",
+        headline: `${tool.title}: guide with worked examples`,
+        description: guide.overview,
+        author: { "@type": "Organization", name: "XFree.in team", url: `${BASE}/about` },
+        publisher: { "@type": "Organization", name: "XFree.in", url: `${BASE}/` },
+        datePublished: guide.lastReviewed,
+        dateModified: guide.lastReviewed,
+        mainEntityOfPage: `${BASE}${route}`,
+      });
+    }
+
+    writeRoute(route, injectMeta(template, { route, title, description, h1: tool.title, intro, jsonLd, guide }));
     count++;
   }
 
