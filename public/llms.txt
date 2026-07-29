@@ -1,0 +1,39 @@
+# XFree.in — Free Online Developer, SEO, AI & Converter Micro-Tools Suite
+
+> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with 100% client-side execution and zero data logging.
+
+## Primary Sections & Hubs
+
+- [Home Page](https://xfree.in/): Complete registry search and grid view of indexable micro-tools.
+- [100 Keyword Clusters Hub](https://xfree.in/clusters): Programmatic SEO directory mapping 100 search intent clusters and supporting keywords.
+- [Gemini Deep Thinking Mode](https://xfree.in/api/ai/thinking): Server-side high-reasoning Gemini 3.1 Pro endpoint for complex SQL, Regex, and SEO architectural analysis.
+
+## Categories
+
+- [SEO & URL Tools](https://xfree.in/category/seo-tools): Bulk extraction, XML sitemaps, Meta OpenGraph previews, Robots.txt, and Schema markup
+- [Developer Tools](https://xfree.in/category/developer-tools): Format, validate, diff, and convert JSON, XML, YAML, Regex, Cron, JWT, and SQL
+- [Single-Purpose AI Tools](https://xfree.in/category/ai-tools): Narrow, deterministic AI assistants for Regex, SQL, JSON Repair, SEO Meta, and Commit Messages
+- [Text & Diff Tools](https://xfree.in/category/text-tools): Text diffing, line sorting, word count, slugifier, and regex replacements
+- [Converters & Encoders](https://xfree.in/category/converters): Base64, URL encoding, Unix Timestamps, Color space conversion, and CSS units
+- [Generators](https://xfree.in/category/generators): UUID v4, Cron schedules, Hash generation (SHA-256/MD5), and UTM campaign links
+- [Validators](https://xfree.in/category/validators): JSON, XML, Sitemap, Schema.org, and Robots.txt rule validators
+
+## Core API Endpoints for Developers & AI Agents
+
+- `POST /api/ai`: Single-purpose AI proxy (ai-regex, ai-json-repair, ai-meta-optimizer, ai-sql-generator, ai-search-intent, ai-code-explainer, ai-commit-generator, ai-schema-generator).
+- `POST /api/ai/batch`: Batch processing endpoint for bulk CSV/TXT items.
+- `POST /api/ai/thinking`: Deep reasoning endpoint powered by Google Gemini reasoning model (configurable via GEMINI_THINKING_MODEL) with high thinking budget.
+- `POST /api/ai/chat`: Multi-turn conversational developer AI assistant.
+
+## Complete Index of Indexable Micro-Tools
+
+- [XML Sitemap Generator & Validator](https://xfree.in/tools/xml-sitemap-generator): Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets. (Pillar: XML Sitemap Generator)
+- [Robots.txt Generator & User-Agent Rule Tester](https://xfree.in/tools/robots-txt-generator): Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps. (Pillar: Robots.txt Generator)
+- [Schema Markup Generator (JSON-LD Structured Data)](https://xfree.in/tools/schema-markup-generator): Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs. (Pillar: Schema Markup Generator)
+- [Bulk URL Extractor & Sitemap Generator](https://xfree.in/tools/bulk-url-extractor-sitemap-generator): Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting. (Pillar: Free Bulk URL Extractor & Sitemap Generator Online)
+- [JSON / XML Formatter, Validator & Tree Viewer](https://xfree.in/tools/json-formatter-validator-diff): Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics. (Pillar: JSON Formatter and Validator)
+- [Regex Tester & Interactive Match Explainer](https://xfree.in/tools/regex-tester-explainer): Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m). (Pillar: Regex Tester)
+- [Cron Expression Generator & Human Translator](https://xfree.in/tools/cron-expression-generator): Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times. (Pillar: Cron Expression Generator)
+- [Meta Tag & Open Graph Social Card Preview](https://xfree.in/tools/meta-tag-open-graph-preview): Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews. (Pillar: Meta Tag Generator)
+- [Base64 Encoder/Decoder & JWT Token Inspector](https://xfree.in/tools/base64-url-encoder-jwt-decoder): Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims. (Pillar: Base64 & JWT Decoder)
+- [URL Slug Generator & Campaign UTM Parameter Builder](https://xfree.in/tools/url-slug-utm-builder): Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content). (Pillar: URL Slug Generator)

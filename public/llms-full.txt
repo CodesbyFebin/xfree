@@ -1,0 +1,205 @@
+# XFree.in Full System Specification & Indexable Micro-Tools Knowledge Base
+
+This document provides full technical details, Pillar Keywords, explanations, FAQs, and usage rules for indexable production micro-tools on XFree.in.
+
+--- 
+
+### XML Sitemap Generator & Validator
+- **URL**: https://xfree.in/tools/xml-sitemap-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: XML Sitemap Generator
+- **Description**: Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets.
+- **Explanation**: Converts lists of web URLs into schema-compliant XML sitemaps with proper XML escaping and sitemap index generation.
+- **How to Use**:
+  1. Enter list of URLs line by line.
+  1. Adjust priority and change frequency settings.
+  1. Click generate and download sitemap.xml.
+- **Top FAQs**:
+  - **Q: What is the XML Sitemap Generator?**
+    A: The XML Sitemap Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute xml sitemap generator tasks instantly without installing software or signing up.
+  - **Q: How does this free xml sitemap generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using XML Sitemap Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Robots.txt Generator & User-Agent Rule Tester
+- **URL**: https://xfree.in/tools/robots-txt-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Robots.txt Generator
+- **Description**: Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps.
+- **Explanation**: Builds RFC 9309 compliant robots.txt files with Allow/Disallow rule groups, crawl-delay directives, and sitemap references.
+- **How to Use**:
+  1. Add user-agent rules (e.g. Googlebot, Bingbot, *).
+  1. Specify allowed and disallowed path rules.
+  1. Test URL path against current rules to verify crawler permissions.
+- **Top FAQs**:
+  - **Q: What is the Robots.txt Generator?**
+    A: The Robots.txt Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute robots txt generator tasks instantly without installing software or signing up.
+  - **Q: How does this free robots txt generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Robots.txt Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Schema Markup Generator (JSON-LD Structured Data)
+- **URL**: https://xfree.in/tools/schema-markup-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Schema Markup Generator
+- **Description**: Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.
+- **Explanation**: Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.
+- **How to Use**:
+  1. Select Schema type (e.g. WebSite, Organization, FAQPage, Article).
+  1. Fill in required metadata fields.
+  1. Copy formatted JSON-LD script tag.
+- **Top FAQs**:
+  - **Q: What is the Schema Markup Generator?**
+    A: The Schema Markup Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute schema markup generator tasks instantly without installing software or signing up.
+  - **Q: How does this free schema markup generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Schema Markup Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Bulk URL Extractor & Sitemap Generator
+- **URL**: https://xfree.in/tools/bulk-url-extractor-sitemap-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Free Bulk URL Extractor & Sitemap Generator Online
+- **Description**: Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.
+- **Explanation**: Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.
+- **How to Use**:
+  1. Paste any raw text or HTML snippet into the input area.
+  1. Select domain filter, query parameter removal, and deduplication options.
+  1. View real-time extracted URL stats.
+  1. Download generated XML Sitemap file.
+- **Top FAQs**:
+  - **Q: What is the Bulk URL Extractor & Sitemap Generator?**
+    A: The Bulk URL Extractor & Sitemap Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute bulk url extractor sitemap generator tasks instantly without installing software or signing up.
+  - **Q: How does this free bulk url extractor sitemap generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Bulk URL Extractor & Sitemap Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### JSON / XML Formatter, Validator & Tree Viewer
+- **URL**: https://xfree.in/tools/json-formatter-validator-diff
+- **Category**: Developer Tools
+- **Pillar Keyword**: JSON Formatter and Validator
+- **Description**: Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.
+- **Explanation**: Parses JSON and XML payloads, identifies syntax errors with line/column markers, provides formatting, minification, and visual tree hierarchy.
+- **How to Use**:
+  1. Paste JSON or XML payload into the input editor.
+  1. Toggle between Format, Minify, and Interactive Tree modes.
+  1. Review validation diagnostics or click Auto-Fix for minor syntax repairs.
+- **Top FAQs**:
+  - **Q: What is the JSON Formatter and Validator?**
+    A: The JSON Formatter and Validator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute json formatter validator tasks instantly without installing software or signing up.
+  - **Q: How does this free json formatter validator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using JSON Formatter and Validator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Regex Tester & Interactive Match Explainer
+- **URL**: https://xfree.in/tools/regex-tester-explainer
+- **Category**: Developer Tools
+- **Pillar Keyword**: Regex Tester
+- **Description**: Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).
+- **Explanation**: Evaluates regex patterns against sample text in real-time, showing match groups, indices, and string replacement outputs.
+- **How to Use**:
+  1. Type regular expression pattern and flags.
+  1. Enter test string into input box.
+  1. View highlighted matches and captured group tables.
+- **Top FAQs**:
+  - **Q: What is the Regex Tester?**
+    A: The Regex Tester is a free, browser-based web utility designed to help marketers, webmasters, and developers execute regex tester tasks instantly without installing software or signing up.
+  - **Q: How does this free regex tester tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Regex Tester?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Cron Expression Generator & Human Translator
+- **URL**: https://xfree.in/tools/cron-expression-generator
+- **Category**: Generators
+- **Pillar Keyword**: Cron Expression Generator
+- **Description**: Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.
+- **Explanation**: Translates cron syntax into human-readable sentences and calculates exact future execution timestamps.
+- **How to Use**:
+  1. Configure minute, hour, day of month, month, and day of week options.
+  1. Review generated 5-part cron expression string.
+  1. Inspect upcoming execution times list.
+- **Top FAQs**:
+  - **Q: What is the Cron Expression Generator?**
+    A: The Cron Expression Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute cron expression generator tasks instantly without installing software or signing up.
+  - **Q: How does this free cron expression generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Cron Expression Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Meta Tag & Open Graph Social Card Preview
+- **URL**: https://xfree.in/tools/meta-tag-open-graph-preview
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Meta Tag Generator
+- **Description**: Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.
+- **Explanation**: Constructs HTML meta tags for title, description, canonical URL, og:title, og:image, and twitter:card with length character count validation.
+- **How to Use**:
+  1. Fill in page title, description, canonical URL, and OG image link.
+  1. Inspect live Google search result snippet and Twitter/Facebook preview card.
+  1. Copy generated HTML code snippet.
+- **Top FAQs**:
+  - **Q: What is the Meta Tag Generator?**
+    A: The Meta Tag Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute meta tag generator tasks instantly without installing software or signing up.
+  - **Q: How does this free meta tag generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Meta Tag Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Base64 Encoder/Decoder & JWT Token Inspector
+- **URL**: https://xfree.in/tools/base64-url-encoder-jwt-decoder
+- **Category**: Converters & Encoders
+- **Pillar Keyword**: Base64 & JWT Decoder
+- **Description**: Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.
+- **Explanation**: Decodes JWT headers and payload claims without transmitting tokens to external servers. Supports UTF-8 safe Base64 and Base64URL encoding/decoding.
+- **How to Use**:
+  1. Select JWT, Base64, or URL mode.
+  1. Paste token or text input.
+  1. View decoded header, payload claims, and expiration date.
+- **Top FAQs**:
+  - **Q: What is the Base64 & JWT Decoder?**
+    A: The Base64 & JWT Decoder is a free, browser-based web utility designed to help marketers, webmasters, and developers execute base64 jwt decoder tasks instantly without installing software or signing up.
+  - **Q: How does this free base64 jwt decoder tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Base64 & JWT Decoder?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### URL Slug Generator & Campaign UTM Parameter Builder
+- **URL**: https://xfree.in/tools/url-slug-utm-builder
+- **Category**: Generators
+- **Pillar Keyword**: URL Slug Generator
+- **Description**: Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).
+- **Explanation**: Converts strings into lowercase, hyphen-separated clean URL slugs while stripping special characters. Appends validated Google Analytics UTM parameters to base URLs.
+- **How to Use**:
+  1. Type title string to generate clean URL slug.
+  1. Enter destination URL and campaign UTM details.
+  1. Copy final clean tracking URL.
+- **Top FAQs**:
+  - **Q: What is the URL Slug Generator?**
+    A: The URL Slug Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute url slug generator tasks instantly without installing software or signing up.
+  - **Q: How does this free url slug generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using URL Slug Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+

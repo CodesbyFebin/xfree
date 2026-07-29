@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+
+# AI & LLM Search Engine Crawlers (Whitehat Open Indexing)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ByteDance
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# Sitemap & RSS Feed Directives
+Sitemap: https://xfree.in/sitemap.xml
+Sitemap: https://xfree.in/rss.xml
+
+# LLM Directives (AEO & GEO Optimization)
+# LLMs-Txt: https://xfree.in/llms.txt
+# LLMs-Full-Txt: https://xfree.in/llms-full.txt

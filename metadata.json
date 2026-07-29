@@ -1,0 +1,6 @@
+{
+  "name": "XFree.in — Free AI + Developer Micro-Tools Platform",
+  "description": "Fast, privacy-first browser micro-tools for developers, SEO professionals, creators, and AI builders. One tool solves one problem extremely well.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
