@@ -12,6 +12,7 @@
     "prerender": "tsx src/scripts/prerender.ts",
     "generate:sitemap": "tsx src/scripts/generateSitemap.ts",
     "build": "npm run generate:sitemap && vite build && npm run prerender && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "build:vercel": "npm run generate:sitemap && vite build && npm run prerender",
     "start": "NODE_ENV=production node dist/server.cjs",
     "verify": "npm run typecheck && npm run test && npm run audit:tools && npm run build",
     "clean": "rm -rf dist"
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
+    "@vercel/node": "^5.1.0",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.14",
