@@ -96,7 +96,7 @@ function organizationJsonLd() {
     "@type": "Organization",
     name: "XFree.in",
     url: `${BASE}/`,
-    logo: `${BASE}/favicon.ico`,
+    logo: `${BASE}/favicon-512x512.png`,
     description: "Free browser-based developer, SEO, and single-purpose AI micro-tool platform.",
     sameAs: [] as string[], // add social profiles once you have them
   };
