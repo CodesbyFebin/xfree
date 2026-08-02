@@ -44,6 +44,26 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 
 --- 
 
+### Meta Tag & Open Graph Social Card Preview
+- **URL**: https://www.xfree.in/tools/meta-tag-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Meta Tag Generator
+- **Description**: Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.
+- **Explanation**: Constructs HTML meta tags for title, description, canonical URL, og:title, og:image, and twitter:card with length character count validation.
+- **How to Use**:
+  1. Fill in page title, description, canonical URL, and OG image link.
+  1. Inspect live Google search result snippet and Twitter/Facebook preview card.
+  1. Copy generated HTML code snippet.
+- **Top FAQs**:
+  - **Q: What is the Meta Tag Generator?**
+    A: The Meta Tag Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute meta tag generator tasks instantly without installing software or signing up.
+  - **Q: How does this free meta tag generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Meta Tag Generator?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
 ### Schema Markup Generator (JSON-LD Structured Data)
 - **URL**: https://www.xfree.in/tools/schema-markup-generator
 - **Category**: SEO & URL Tools
@@ -64,29 +84,8 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 
 --- 
 
-### Bulk URL Extractor & Sitemap Generator
-- **URL**: https://www.xfree.in/tools/bulk-url-extractor-sitemap-generator
-- **Category**: SEO & URL Tools
-- **Pillar Keyword**: Free Bulk URL Extractor & Sitemap Generator Online
-- **Description**: Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.
-- **Explanation**: Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.
-- **How to Use**:
-  1. Paste any raw text or HTML snippet into the input area.
-  1. Select domain filter, query parameter removal, and deduplication options.
-  1. View real-time extracted URL stats.
-  1. Download generated XML Sitemap file.
-- **Top FAQs**:
-  - **Q: What is the Bulk URL Extractor & Sitemap Generator?**
-    A: The Bulk URL Extractor & Sitemap Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute bulk url extractor sitemap generator tasks instantly without installing software or signing up.
-  - **Q: How does this free bulk url extractor sitemap generator tool work?**
-    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
-  - **Q: Is my input data safe and private when using Bulk URL Extractor & Sitemap Generator?**
-    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
-
---- 
-
 ### JSON / XML Formatter, Validator & Tree Viewer
-- **URL**: https://www.xfree.in/tools/json-formatter-validator-diff
+- **URL**: https://www.xfree.in/tools/json-formatter
 - **Category**: Developer Tools
 - **Pillar Keyword**: JSON Formatter and Validator
 - **Description**: Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.
@@ -106,7 +105,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Regex Tester & Interactive Match Explainer
-- **URL**: https://www.xfree.in/tools/regex-tester-explainer
+- **URL**: https://www.xfree.in/tools/regex-tester
 - **Category**: Developer Tools
 - **Pillar Keyword**: Regex Tester
 - **Description**: Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).
@@ -121,6 +120,27 @@ This document provides full technical details, Pillar Keywords, explanations, FA
   - **Q: How does this free regex tester tool work?**
     A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
   - **Q: Is my input data safe and private when using Regex Tester?**
+    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+
+--- 
+
+### Bulk URL Extractor & Sitemap Generator
+- **URL**: https://www.xfree.in/tools/bulk-url-extractor
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Free Bulk URL Extractor & Sitemap Generator Online
+- **Description**: Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.
+- **Explanation**: Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.
+- **How to Use**:
+  1. Paste any raw text or HTML snippet into the input area.
+  1. Select domain filter, query parameter removal, and deduplication options.
+  1. View real-time extracted URL stats.
+  1. Download generated XML Sitemap file.
+- **Top FAQs**:
+  - **Q: What is the Bulk URL Extractor & Sitemap Generator?**
+    A: The Bulk URL Extractor & Sitemap Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute bulk url extractor sitemap generator tasks instantly without installing software or signing up.
+  - **Q: How does this free bulk url extractor sitemap generator tool work?**
+    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
+  - **Q: Is my input data safe and private when using Bulk URL Extractor & Sitemap Generator?**
     A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
 
 --- 
@@ -145,28 +165,8 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 
 --- 
 
-### Meta Tag & Open Graph Social Card Preview
-- **URL**: https://www.xfree.in/tools/meta-tag-open-graph-preview
-- **Category**: SEO & URL Tools
-- **Pillar Keyword**: Meta Tag Generator
-- **Description**: Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.
-- **Explanation**: Constructs HTML meta tags for title, description, canonical URL, og:title, og:image, and twitter:card with length character count validation.
-- **How to Use**:
-  1. Fill in page title, description, canonical URL, and OG image link.
-  1. Inspect live Google search result snippet and Twitter/Facebook preview card.
-  1. Copy generated HTML code snippet.
-- **Top FAQs**:
-  - **Q: What is the Meta Tag Generator?**
-    A: The Meta Tag Generator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute meta tag generator tasks instantly without installing software or signing up.
-  - **Q: How does this free meta tag generator tool work?**
-    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
-  - **Q: Is my input data safe and private when using Meta Tag Generator?**
-    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
-
---- 
-
 ### Base64 Encoder/Decoder & JWT Token Inspector
-- **URL**: https://www.xfree.in/tools/base64-url-encoder-jwt-decoder
+- **URL**: https://www.xfree.in/tools/base64-encoder-decoder
 - **Category**: Converters & Encoders
 - **Pillar Keyword**: Base64 & JWT Decoder
 - **Description**: Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.

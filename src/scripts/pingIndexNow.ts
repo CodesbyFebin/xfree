@@ -3,7 +3,7 @@
  *
  * Usage:
  *   npm run indexnow                  # ping every indexable URL in the sitemap
- *   npm run indexnow -- --url=https://www.xfree.in/tools/regex-tester-explainer
+ *   npm run indexnow -- --url=https://www.xfree.in/tools/regex-tester
  *   npm run indexnow -- --url=... --url=...  # multiple
  *
  * Requires PUBLIC_SITE_URL to be set (production domain). The IndexNow key is

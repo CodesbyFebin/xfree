@@ -8,7 +8,7 @@ interface QuickLinksSectionProps {
 export const QUICK_LINK_ITEMS = [
   {
     title: "JSON Formatter & Validator",
-    slug: "json-formatter-validator-diff",
+    slug: "json-formatter",
     category: "Developer",
     badge: "Top Used",
     desc: "Format, validate, repair, and minify JSON data with instant tree inspect.",
@@ -17,7 +17,7 @@ export const QUICK_LINK_ITEMS = [
   },
   {
     title: "Regex Tester & Explainer",
-    slug: "regex-tester-explainer",
+    slug: "regex-tester",
     category: "Developer",
     badge: "Popular",
     desc: "Test JS regex patterns live with match group tables and string replacements.",
@@ -26,7 +26,7 @@ export const QUICK_LINK_ITEMS = [
   },
   {
     title: "Sitemap Generator & URL Extractor",
-    slug: "bulk-url-extractor-sitemap-generator",
+    slug: "bulk-url-extractor",
     category: "SEO & URL",
     badge: "Flagship",
     desc: "Extract links from raw HTML/logs and generate Google XML sitemaps.",
@@ -35,7 +35,7 @@ export const QUICK_LINK_ITEMS = [
   },
   {
     title: "Meta Tag & Open Graph Generator",
-    slug: "meta-tag-open-graph-preview",
+    slug: "meta-tag-generator",
     category: "SEO & URL",
     badge: "Essential",
     desc: "Generate meta titles, descriptions, and preview social cards for Google & X.",
@@ -53,7 +53,7 @@ export const QUICK_LINK_ITEMS = [
   },
   {
     title: "Base64 & JWT Decoder",
-    slug: "base64-url-encoder-jwt-decoder",
+    slug: "base64-encoder-decoder",
     category: "Converters",
     badge: "Fast & Local",
     desc: "Decode OAuth JWT tokens and convert Base64 strings safely in browser.",

@@ -28,6 +28,7 @@ import {
 } from "../utils/generateSitemap";
 import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
+import { GUIDES } from "../data/guides";
 
 export interface AppOptions {
   attachStatic?: (app: Express) => void | Promise<void>;
@@ -257,12 +258,15 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
 
   const staticRouteSet = new Set<string>(STATIC_ROUTES);
   const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/category/${s}`));
+  const guideSlugSet = new Set<string>(GUIDES.map((g) => g.slug));
 
   (app as any)._classifyPath = function classifyPath(pathname: string): "known" | "unknown" {
     if (staticRouteSet.has(pathname)) return "known";
     if (categoryRouteSet.has(pathname)) return "known";
     const toolMatch = pathname.match(/^\/tools\/([^/]+)\/?$/);
     if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) return "known";
+    const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
+    if (guideMatch && guideSlugSet.has(guideMatch[1])) return "known";
     return "unknown";
   };
 

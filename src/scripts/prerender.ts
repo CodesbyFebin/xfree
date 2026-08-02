@@ -12,6 +12,7 @@ import path from "path";
 import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
 import { STATIC_ROUTES } from "../data/routes";
 import { guideForSlug } from "../data/toolGuides";
+import { GUIDES } from "../data/guides";
 
 const DIST = path.join(process.cwd(), "dist");
 const BASE = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
@@ -46,7 +47,17 @@ function renderGuideHtml(guide: import("../data/toolGuides").GuideContent, toolT
   return `<section><h2>The ${escapeHtml(toolTitle)} guide</h2><p>${escapeHtml(guide.overview)}</p><h3>Worked examples</h3>${examples}<h3>When to use</h3><ul>${whenTo}</ul><h3>When not to use</h3><ul>${whenNot}</ul><h3>Troubleshooting</h3><dl>${trouble}</dl><p><em>Authored by the XFree.in team. Last reviewed ${escapeHtml(guide.lastReviewed)}.</em></p></section>`;
 }
 
-function injectMeta(template: string, meta: PageMeta): string {
+function renderGuideBodyHtml(g: import("../data/guides").Guide): string {
+  const sections = g.sections.map((s) => {
+    const paras = (s.paragraphs || []).map((p) => `<p>${escapeHtml(p)}</p>`).join("");
+    const bullets = s.bullets ? `<ul>${s.bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>` : "";
+    const code = s.code ? `<pre>${escapeHtml(s.code.body)}</pre>` : "";
+    return `<section><h2>${escapeHtml(s.heading)}</h2>${paras}${bullets}${code}</section>`;
+  }).join("");
+  return `${sections}<p><em>Authored by the XFree.in team. Last reviewed ${escapeHtml(g.lastReviewed)}.</em></p>`;
+}
+
+function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string): string {
   const canonical = `${BASE}${meta.route === "/" ? "/" : meta.route}`;
   const headExtras = [
     `<title>${escapeHtml(meta.title)}</title>`,
@@ -64,16 +75,19 @@ function injectMeta(template: string, meta: PageMeta): string {
   ].join("\n    ");
 
   const guideHtml = meta.guide ? renderGuideHtml(meta.guide, meta.h1) : "";
+  const extra = extraBodyHtml || "";
   const shell = `
     <noscript>
       <h1>${escapeHtml(meta.h1)}</h1>
       <p>${escapeHtml(meta.intro)}</p>
       ${guideHtml}
+      ${extra}
     </noscript>
     <div id="prerender-shell" hidden aria-hidden="true">
       <h1>${escapeHtml(meta.h1)}</h1>
       <p>${escapeHtml(meta.intro)}</p>
       ${guideHtml}
+      ${extra}
     </div>
   `;
 
@@ -263,6 +277,67 @@ function main() {
     }
 
     writeRoute(route, injectMeta(template, { route, title, description, h1: tool.title, intro, jsonLd, guide }));
+    count++;
+  }
+
+  // Guides index
+  writeRoute("/guides", injectMeta(template, {
+    route: "/guides",
+    title: "Guides — XFree.in",
+    description: "Practical guides for developers and SEOs on regex, cron, JSON errors, canonical vs redirect, and more.",
+    h1: "Guides",
+    intro: "Short, practical guides for developers and SEOs. Each is a standalone reference with runnable examples.",
+    jsonLd: [
+      organizationJsonLd(),
+      siteJsonLd(),
+      breadcrumbs([{ name: "Home", url: `${BASE}/` }, { name: "Guides", url: `${BASE}/guides` }]),
+      {
+        "@type": "CollectionPage",
+        name: "XFree Guides",
+        url: `${BASE}/guides`,
+        hasPart: GUIDES.map((g) => ({
+          "@type": "TechArticle",
+          headline: g.title,
+          url: `${BASE}/guides/${g.slug}`,
+          datePublished: g.lastReviewed,
+        })),
+      },
+    ],
+  }));
+  count++;
+
+  // Each guide
+  for (const g of GUIDES) {
+    const route = `/guides/${g.slug}`;
+    const bodyHtml = renderGuideBodyHtml(g);
+    const html = injectMeta(template, {
+      route,
+      title: `${g.title} — XFree.in`,
+      description: g.description,
+      h1: g.title,
+      intro: g.intro,
+      jsonLd: [
+        organizationJsonLd(),
+        siteJsonLd(),
+        breadcrumbs([
+          { name: "Home", url: `${BASE}/` },
+          { name: "Guides", url: `${BASE}/guides` },
+          { name: g.title, url: `${BASE}${route}` },
+        ]),
+        {
+          "@type": "TechArticle",
+          headline: g.title,
+          description: g.description,
+          author: { "@type": "Organization", name: "XFree.in team", url: `${BASE}/about` },
+          publisher: { "@id": `${BASE}/#organization` },
+          datePublished: g.lastReviewed,
+          dateModified: g.lastReviewed,
+          mainEntityOfPage: `${BASE}${route}`,
+          inLanguage: "en",
+        },
+      ],
+    }, bodyHtml);
+    writeRoute(route, html);
     count++;
   }
 

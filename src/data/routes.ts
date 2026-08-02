@@ -13,6 +13,7 @@ export const STATIC_ROUTES = [
   "/clusters",
   "/thinking",
   "/xfree-app",
+  "/guides",
 ] as const;
 
 export const CATEGORY_SLUGS = [
@@ -39,5 +40,10 @@ export function categorySlugFromPath(pathname: string): string | null {
 
 export function toolSlugFromPath(pathname: string): string | null {
   const m = pathname.match(/^\/tools\/([^/]+)\/?$/);
+  return m ? m[1] : null;
+}
+
+export function guideSlugFromPath(pathname: string): string | null {
+  const m = pathname.match(/^\/guides\/([^/]+)\/?$/);
   return m ? m[1] : null;
 }

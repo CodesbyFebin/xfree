@@ -14,9 +14,9 @@ export const UseCasesPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory, 
       audience: "SEO Specialists & Agency Marketers",
       description: "Extract thousands of URLs from raw page crawls, filter out query parameters, deduplicate paths, and output clean schema-compliant XML Sitemaps.",
       tools: [
-        { name: "Bulk URL Extractor", slug: "bulk-url-extractor-sitemap-generator" },
+        { name: "Bulk URL Extractor", slug: "bulk-url-extractor" },
         { name: "Robots.txt Generator", slug: "robots-txt-generator" },
-        { name: "Meta Tag Preview", slug: "meta-tag-open-graph-preview" }
+        { name: "Meta Tag Preview", slug: "meta-tag-generator" }
       ],
       icon: Globe,
       color: "text-cyan-400"
@@ -26,9 +26,9 @@ export const UseCasesPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory, 
       audience: "Backend Developers & QA Engineers",
       description: "Paste malformed JSON or XML API responses, repair syntax errors with line-column diagnostics, format nested structures, and decode OAuth JWT tokens safely.",
       tools: [
-        { name: "JSON Formatter & Tree", slug: "json-formatter-validator-diff" },
-        { name: "Base64 & JWT Decoder", slug: "base64-url-encoder-jwt-decoder" },
-        { name: "Regex Tester", slug: "regex-tester-explainer" }
+        { name: "JSON Formatter & Tree", slug: "json-formatter" },
+        { name: "Base64 & JWT Decoder", slug: "base64-encoder-decoder" },
+        { name: "Regex Tester", slug: "regex-tester" }
       ],
       icon: Code2,
       color: "text-indigo-400"
@@ -39,7 +39,7 @@ export const UseCasesPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory, 
       description: "Build clean 5-part cron syntax for backup jobs, view upcoming execution schedules, and test regular expressions for log filtering.",
       tools: [
         { name: "Cron Expression Generator", slug: "cron-expression-generator" },
-        { name: "Regex Tester", slug: "regex-tester-explainer" }
+        { name: "Regex Tester", slug: "regex-tester" }
       ],
       icon: Layers,
       color: "text-emerald-400"

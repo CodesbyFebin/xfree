@@ -88,6 +88,12 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://www.xfree.in/guides</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.xfree.in/category/seo-tools</loc>
     <lastmod>2026-08-02</lastmod>
     <changefreq>daily</changefreq>
@@ -142,28 +148,34 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.xfree.in/tools/meta-tag-generator</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.xfree.in/tools/schema-markup-generator</loc>
     <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.xfree.in/tools/bulk-url-extractor-sitemap-generator</loc>
+    <loc>https://www.xfree.in/tools/json-formatter</loc>
     <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.xfree.in/tools/json-formatter-validator-diff</loc>
-    <lastmod>2026-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.xfree.in/tools/regex-tester-explainer</loc>
+    <loc>https://www.xfree.in/tools/regex-tester</loc>
     <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/tools/bulk-url-extractor</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.xfree.in/tools/cron-expression-generator</loc>
@@ -172,13 +184,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.xfree.in/tools/meta-tag-open-graph-preview</loc>
-    <lastmod>2026-03-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.xfree.in/tools/base64-url-encoder-jwt-decoder</loc>
+    <loc>https://www.xfree.in/tools/base64-encoder-decoder</loc>
     <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -188,5 +194,29 @@
     <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/regex-cheat-sheet</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/cron-expression-examples</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/common-json-formatting-errors</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/canonical-tag-vs-301-redirect</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

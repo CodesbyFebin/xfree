@@ -146,7 +146,7 @@ export const Footer: React.FC<FooterProps> = ({
             <ul className="space-y-2 text-xs">
               <li>
                 <button
-                  onClick={() => onSelectTool("bulk-url-extractor-sitemap-generator")}
+                  onClick={() => onSelectTool("bulk-url-extractor")}
                   className="hover:text-cyan-400 transition-colors cursor-pointer"
                 >
                   Bulk URL Extractor
@@ -154,7 +154,7 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <button
-                  onClick={() => onSelectTool("json-formatter-validator-diff")}
+                  onClick={() => onSelectTool("json-formatter")}
                   className="hover:text-cyan-400 transition-colors cursor-pointer"
                 >
                   JSON Formatter & Tree
@@ -162,7 +162,7 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <button
-                  onClick={() => onSelectTool("regex-tester-explainer")}
+                  onClick={() => onSelectTool("regex-tester")}
                   className="hover:text-cyan-400 transition-colors cursor-pointer"
                 >
                   Regex Tester
@@ -186,7 +186,7 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <button
-                  onClick={() => onSelectTool("meta-tag-open-graph-preview")}
+                  onClick={() => onSelectTool("meta-tag-generator")}
                   className="hover:text-cyan-400 transition-colors cursor-pointer"
                 >
                   Meta Tag SERP Preview

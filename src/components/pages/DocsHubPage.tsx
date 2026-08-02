@@ -12,19 +12,19 @@ export const DocsHubPage: React.FC<PageProps> = ({ onGoHome, onSelectTool }) => 
       title: "Generating Technical XML Sitemaps for Large Sites",
       category: "SEO Guide",
       description: "Learn how to parse raw web crawls, clean query strings, filter domains, and split sitemaps into index compliant chunks.",
-      toolSlug: "bulk-url-extractor-sitemap-generator"
+      toolSlug: "bulk-url-extractor"
     },
     {
       title: "JSON Formatting, Validation, and Tree View Navigation",
       category: "Developer Guide",
       description: "Step-by-step tutorial on diagnosing syntax errors in JSON/XML payloads and converting raw text into interactive tree views.",
-      toolSlug: "json-formatter-validator-diff"
+      toolSlug: "json-formatter"
     },
     {
       title: "Testing and Debugging Regular Expressions",
       category: "Regex Guide",
       description: "Master regular expression flags, capture group extractions, and instant replacement strings with real-time highlights.",
-      toolSlug: "regex-tester-explainer"
+      toolSlug: "regex-tester"
     },
     {
       title: "Understanding Cron Schedules and Syntax Execution",
@@ -42,7 +42,7 @@ export const DocsHubPage: React.FC<PageProps> = ({ onGoHome, onSelectTool }) => 
       title: "Decoding Base64 and OAuth JWT Claims Safely",
       category: "Security Guide",
       description: "Inspect JWT header algorithms, expiration claims, and payload data without transmitting secrets over public networks.",
-      toolSlug: "base64-url-encoder-jwt-decoder"
+      toolSlug: "base64-encoder-decoder"
     }
   ];
 

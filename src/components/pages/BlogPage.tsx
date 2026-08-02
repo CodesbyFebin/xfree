@@ -18,7 +18,7 @@ export const BlogPage: React.FC<PageProps> = ({ onGoHome, onSelectTool }) => {
       readTime: "6 min read",
       author: "XFree Engineering",
       summary: "How modern web crawlers handle massive URL lists, parameter stripping, domain filtering, and Google-compliant XML sitemaps.",
-      toolSlug: "bulk-url-extractor-sitemap-generator",
+      toolSlug: "bulk-url-extractor",
       content: `
 # Mastering Bulk URL Extraction & Sitemap Generation in 2026
 
@@ -45,7 +45,7 @@ XFree.in solves this by processing 100% of the extraction logic locally inside y
       readTime: "5 min read",
       author: "DevRel Team",
       summary: "A practical guide to diagnosing line-column syntax errors, formatting nested JSON trees, and auto-repairing broken quotes.",
-      toolSlug: "json-formatter-validator-diff",
+      toolSlug: "json-formatter",
       content: `
 # Debugging Malformed JSON & XML API Responses Instantly
 
@@ -68,7 +68,7 @@ XFree.in provides an interactive JSON tree viewer and instant syntax validator w
       readTime: "7 min read",
       author: "Alex Dev",
       summary: "Understand lookaheads, lookbehinds, group captures, and global replacement flags with real-time browser highlighting.",
-      toolSlug: "regex-tester-explainer",
+      toolSlug: "regex-tester",
       content: `
 # Building & Testing Complex Regular Expressions (Regex Guide)
 
@@ -125,7 +125,7 @@ A clean \`robots.txt\` file acts as the front door for web crawlers visiting you
       readTime: "6 min read",
       author: "SecOps Lead",
       summary: "Why you should never paste production JWT tokens into online decoders that log your request headers.",
-      toolSlug: "base64-url-encoder-jwt-decoder",
+      toolSlug: "base64-encoder-decoder",
       content: `
 # Decoding OAuth JWT Tokens and Base64 Strings Safely
 
@@ -169,7 +169,7 @@ Adding valid JSON-LD structured data helps search engines understand page contex
       readTime: "4 min read",
       author: "Content Lead",
       summary: "Design compelling Google search result previews and Open Graph cards that drive organic clicks.",
-      toolSlug: "meta-tag-open-graph-preview",
+      toolSlug: "meta-tag-generator",
       id: 9,
       content: `
 # Creating High-CTR Meta Descriptions & SERP Cards
@@ -185,7 +185,7 @@ A great title tag and meta description directly impact your click-through rate f
       readTime: "5 min read",
       author: "XFree Platform",
       summary: "Why lightweight zero-install browser utilities are replacing heavy desktop applications.",
-      toolSlug: "bulk-url-extractor-sitemap-generator",
+      toolSlug: "bulk-url-extractor",
       content: `
 # The Case for Browser-Based Micro-Tools Over Desktop Suites
 

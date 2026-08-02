@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { TOOLS_REGISTRY, findToolBySlug } from "./data/toolsRegistry";
 import { KEYWORD_CLUSTERS } from "./data/clustersData";
-import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath } from "./data/routes";
+import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath } from "./data/routes";
+import { findGuide } from "./data/guides";
 import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
 import { Header } from "./components/Header";
 import { HeroBanner } from "./components/HeroBanner";
@@ -31,6 +32,8 @@ import { TermsPage } from "./components/pages/TermsPage";
 import { SecurityPage } from "./components/pages/SecurityPage";
 import { NotFoundPage } from "./components/pages/NotFoundPage";
 import { XFreeAppPage } from "./components/pages/XFreeAppPage";
+import { GuideIndexPage } from "./components/pages/GuideIndexPage";
+import { GuidePage } from "./components/pages/GuidePage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 
 // Import Micro-Tools
@@ -159,13 +162,17 @@ export default function App() {
     return findToolBySlug(activeToolSlug) ?? null;
   }, [activeToolSlug]);
 
+  const activeGuideSlug = guideSlugFromPath(currentPath);
+  const activeGuide = useMemo(() => (activeGuideSlug ? findGuide(activeGuideSlug) ?? null : null), [activeGuideSlug]);
+
   const isKnownRoute = useMemo(() => {
     if (currentPath === "/") return true;
     if (isKnownStaticRoute(currentPath)) return true;
     if (categorySlugFromPath(currentPath)) return true;
     if (activeToolSlug) return Boolean(activeTool);
+    if (activeGuideSlug) return Boolean(activeGuide);
     return false;
-  }, [currentPath, activeTool, activeToolSlug]);
+  }, [currentPath, activeTool, activeToolSlug, activeGuide, activeGuideSlug]);
 
   // Hook for dynamic head meta tag management (SEO pSEO pillar keywords & JSON-LD schemas)
   useMetaTags({
@@ -209,19 +216,19 @@ export default function App() {
         return <BulkUrlExtractorSitemap tool={tool} onSaveHistory={saveHist} />;
       case "robots-txt-generator":
         return <RobotsTxtGenerator tool={tool} onSaveHistory={saveHist} />;
-      case "meta-tag-open-graph-preview":
+      case "meta-tag-generator":
         return <MetaTagOpenGraphPreview tool={tool} onSaveHistory={saveHist} />;
       case "schema-markup-generator":
         return <SchemaMarkupGenerator tool={tool} onSaveHistory={saveHist} />;
       case "url-slug-utm-builder":
         return <UrlSlugUtmBuilder tool={tool} onSaveHistory={saveHist} />;
-      case "json-formatter-validator-diff":
+      case "json-formatter":
         return <JsonFormatterValidatorDiff tool={tool} onSaveHistory={saveHist} />;
-      case "regex-tester-explainer":
+      case "regex-tester":
         return <RegexTesterExplainer tool={tool} onSaveHistory={saveHist} />;
       case "cron-expression-generator":
         return <CronExpressionGenerator tool={tool} onSaveHistory={saveHist} />;
-      case "base64-url-encoder-jwt-decoder":
+      case "base64-encoder-decoder":
         return <Base64JwtDecoder tool={tool} onSaveHistory={saveHist} />;
       case "timestamp-color-converter":
         return <TimestampColorConverter tool={tool} onSaveHistory={saveHist} />;
@@ -257,12 +264,24 @@ export default function App() {
         return <SecurityPage />;
       case "/xfree-app":
         return <XFreeAppPage onGoHome={() => navigateTo("/")} onOpenTools={() => navigateTo("/")} />;
+      case "/guides":
+        return <GuideIndexPage onSelectGuide={(slug) => navigateTo(`/guides/${slug}`)} />;
       default:
+        if (activeGuide) {
+          return (
+            <GuidePage
+              guide={activeGuide}
+              onGoIndex={() => navigateTo("/guides")}
+              onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
+              onSelectGuide={(slug) => navigateTo(`/guides/${slug}`)}
+            />
+          );
+        }
         return null;
     }
   };
 
-  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app"].includes(currentPath);
+  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/guides"].includes(currentPath) || activeGuideSlug !== null;
 
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">

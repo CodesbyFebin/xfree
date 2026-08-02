@@ -32,7 +32,7 @@ export interface GuideContent {
 }
 
 export const TOOL_GUIDES: Record<string, GuideContent> = {
-  "regex-tester-explainer": {
+  "regex-tester": {
     overview:
       "A regex tester is where you validate a pattern before shipping it into production code. This one runs your pattern in the browser, shows every match highlighted in the sample text, lists captured groups, and lets you preview replacements — all without sending anything to a server.",
     workedExamples: [
@@ -74,11 +74,11 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: "Browser hangs on submit", fix: "Catastrophic backtracking. Look for nested quantifiers like `(a+)+` or `(.*)*` and rewrite with atomic groups or possessive quantifiers where the engine supports them." },
       { symptom: "Works here but fails in Python/Go", fix: "JavaScript regex is closest to PCRE but not identical. Lookbehind support, named-group syntax, and Unicode property escapes differ. Test in the target runtime before shipping." },
     ],
-    relatedSlugs: ["json-formatter-validator-diff", "url-slug-utm-builder", "base64-url-encoder-jwt-decoder"],
+    relatedSlugs: ["json-formatter", "url-slug-utm-builder", "base64-encoder-decoder"],
     lastReviewed: "2026-07-29",
   },
 
-  "json-formatter-validator-diff": {
+  "json-formatter": {
     overview:
       "A JSON tool that formats, validates, and highlights structural errors in JSON payloads. Useful when you're staring at a 40-line curl response and can't tell whether the API returned what you expected. Runs in your browser — the payload never leaves your machine.",
     workedExamples: [
@@ -116,11 +116,11 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: "Numbers lose precision", fix: "JSON numbers are IEEE 754 doubles. Very large IDs (like Twitter's 64-bit snowflake IDs) round. Send them as strings from the API." },
       { symptom: "Special characters render wrong", fix: "Check the source encoding. The tool assumes UTF-8. If your payload is in Latin-1 or Windows-1252, re-encode before pasting." },
     ],
-    relatedSlugs: ["regex-tester-explainer", "base64-url-encoder-jwt-decoder", "schema-markup-generator"],
+    relatedSlugs: ["regex-tester", "base64-encoder-decoder", "schema-markup-generator"],
     lastReviewed: "2026-07-29",
   },
 
-  "base64-url-encoder-jwt-decoder": {
+  "base64-encoder-decoder": {
     overview:
       "Decodes JWT tokens and encodes/decodes Base64 and Base64URL strings. When you get a `401 Unauthorized` and need to check whether the token you're sending is actually the token you think you're sending — this is where you look. Everything happens in your browser; tokens never leave the page.",
     workedExamples: [
@@ -158,7 +158,7 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: "JWT decoded but shows garbled JSON", fix: "The middle segment isn't valid JSON — likely you pasted a Base64-encoded blob that isn't a JWT, or the token was truncated." },
       { symptom: "Signature displayed but marked \"unverified\"", fix: "That's expected. Signature verification needs the HMAC secret (HS256) or the public key (RS256/ES256) — neither should ever be in a browser tool." },
     ],
-    relatedSlugs: ["json-formatter-validator-diff", "url-slug-utm-builder", "regex-tester-explainer"],
+    relatedSlugs: ["json-formatter", "url-slug-utm-builder", "regex-tester"],
     lastReviewed: "2026-07-29",
   },
 
@@ -200,11 +200,11 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: 'AWS EventBridge or Quartz cron rejects my expression', fix: "Those use 6-field or 7-field cron (with seconds and/or year). Standard Unix cron is 5-field. Check your platform's docs." },
       { symptom: "Job didn't fire when the server was rebooting", fix: "Standard cron doesn't retry missed runs. If you need catch-up, use `anacron` or a job runner with persistence." },
     ],
-    relatedSlugs: ["timestamp-color-converter", "url-slug-utm-builder", "json-formatter-validator-diff"],
+    relatedSlugs: ["timestamp-color-converter", "url-slug-utm-builder", "json-formatter"],
     lastReviewed: "2026-07-29",
   },
 
-  "bulk-url-extractor-sitemap-generator": {
+  "bulk-url-extractor": {
     overview:
       "Paste any mess of HTML, log lines, or copied text, and this tool pulls out every valid URL, deduplicates, filters by domain, and can wrap the result in a Google-compliant XML sitemap. Useful when you're migrating a site, auditing outbound links, or building a sitemap from a crawl log.",
     workedExamples: [
@@ -234,7 +234,7 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: "Missed some URLs I can see in the source", fix: "URLs inside JS strings or dynamically constructed at runtime won't appear in the raw HTML. Render the page in a headless browser first, then extract." },
       { symptom: "Extracted URLs include query strings I don't want in the sitemap", fix: "Enable 'strip query params' before generating the sitemap. Or post-process with a text editor before submitting to Search Console." },
     ],
-    relatedSlugs: ["xml-sitemap-generator", "robots-txt-generator", "meta-tag-open-graph-preview"],
+    relatedSlugs: ["xml-sitemap-generator", "robots-txt-generator", "meta-tag-generator"],
     lastReviewed: "2026-07-29",
   },
 
@@ -261,7 +261,7 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: 'Google Search Console reports "Sitemap could not be read"', fix: "Common causes: BOM at the start of the file, non-UTF-8 encoding, or an XML declaration on a line other than the first. Save as UTF-8 without BOM." },
       { symptom: "URLs in sitemap don't get indexed", fix: "The sitemap is a hint, not a demand. Google indexes what it thinks is worthwhile. Check the URL Inspection Tool for the actual reason — usually 'Discovered - currently not indexed' means Google saw it but didn't prioritize it." },
     ],
-    relatedSlugs: ["bulk-url-extractor-sitemap-generator", "robots-txt-generator", "schema-markup-generator"],
+    relatedSlugs: ["bulk-url-extractor", "robots-txt-generator", "schema-markup-generator"],
     lastReviewed: "2026-07-29",
   },
 
@@ -294,11 +294,11 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: "Google still crawls a page I disallowed", fix: "Check for `Allow` rules that override, and remember `robots.txt` changes can take up to 24 hours to propagate. Also: Google may still index a URL it can't crawl if it has strong inbound links — the SERP snippet just won't have content." },
       { symptom: "Multiple user-agent blocks with conflicting rules", fix: "The most specific user-agent match wins. `User-agent: Googlebot-Image` beats `User-agent: Googlebot` beats `User-agent: *`." },
     ],
-    relatedSlugs: ["xml-sitemap-generator", "bulk-url-extractor-sitemap-generator", "meta-tag-open-graph-preview"],
+    relatedSlugs: ["xml-sitemap-generator", "bulk-url-extractor", "meta-tag-generator"],
     lastReviewed: "2026-07-29",
   },
 
-  "meta-tag-open-graph-preview": {
+  "meta-tag-generator": {
     overview:
       "Generate `<title>`, meta description, and Open Graph / Twitter Card tags, and see a live preview of how the page will look in Google search results and when shared to social. Includes character counters so you don't get truncated.",
     workedExamples: [
@@ -348,7 +348,7 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: 'Rich Results Test says "Missing field"', fix: "Some fields are required for eligibility (e.g., `Product` needs `offers` for the price snippet). The generator flags required fields; don't leave them blank if you want the rich result." },
       { symptom: "Rich result was eligible but never shows in SERP", fix: "Eligibility ≠ display. Google decides per-query which snippets to show. Don't over-optimize; ship correct schema and move on." },
     ],
-    relatedSlugs: ["meta-tag-open-graph-preview", "xml-sitemap-generator", "json-formatter-validator-diff"],
+    relatedSlugs: ["meta-tag-generator", "xml-sitemap-generator", "json-formatter"],
     lastReviewed: "2026-07-29",
   },
 
@@ -364,8 +364,8 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       },
       {
         title: "Build a UTM URL",
-        input: "https://www.xfree.in/tools/regex-tester-explainer, source=newsletter, medium=email, campaign=july-launch",
-        output: "https://www.xfree.in/tools/regex-tester-explainer?utm_source=newsletter&utm_medium=email&utm_campaign=july-launch",
+        input: "https://www.xfree.in/tools/regex-tester, source=newsletter, medium=email, campaign=july-launch",
+        output: "https://www.xfree.in/tools/regex-tester?utm_source=newsletter&utm_medium=email&utm_campaign=july-launch",
         explanation: "UTM parameters are read by GA4 and most analytics tools out of the box. Keep `source` a specific channel name (not 'web'), and `medium` from Google's standard list (email, cpc, social, referral, etc.) for consistent reports.",
       },
     ],
@@ -381,7 +381,7 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       { symptom: "Slug contains characters that break the URL", fix: "The tool strips non-ASCII by default. If you want transliteration (é → e, 中 → zhong), enable it — but check the result before publishing." },
       { symptom: "UTM shows in URL bar but not in analytics report", fix: "Check that your analytics is actually configured to capture UTM (default for GA4, requires plugin for Plausible). Also check that the destination page isn't redirecting and stripping the query string." },
     ],
-    relatedSlugs: ["meta-tag-open-graph-preview", "bulk-url-extractor-sitemap-generator", "cron-expression-generator"],
+    relatedSlugs: ["meta-tag-generator", "bulk-url-extractor", "cron-expression-generator"],
     lastReviewed: "2026-07-29",
   },
 };

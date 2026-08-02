@@ -190,7 +190,7 @@ const PROCESSED_SEED_TOOLS: ToolDefinition[] = (seedToolsData as any[]).map((see
       ? "AI-powered tool. Input is sent to XFree.in and processed by Google Gemini. Do not submit confidential data."
       : "This tool runs entirely in your browser. Input is not sent to XFree.in servers.",
     faqs: generate20Faqs(seed.title, seed.pillarKeyword, seed.supportingKeywords),
-    relatedToolIds: ["bulk-url-sitemap", "json-formatter-validator-diff", "regex-tester-explainer"]
+    relatedToolIds: ["bulk-url-sitemap", "json-formatter", "regex-tester"]
   };
 });
 
@@ -198,7 +198,7 @@ const PROCESSED_SEED_TOOLS: ToolDefinition[] = (seedToolsData as any[]).map((see
 const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
   {
     id: "bulk-url-sitemap",
-    slug: "bulk-url-extractor-sitemap-generator",
+    slug: "bulk-url-extractor",
     title: "Bulk URL Extractor & Sitemap Generator",
     pillarKeyword: "Free Bulk URL Extractor & Sitemap Generator Online",
     shortDescription: "Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.",
@@ -220,7 +220,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: Processing happens entirely inside browser memory.",
     faqs: generate20Faqs("Bulk URL Extractor & Sitemap Generator", "bulk url extractor sitemap generator"),
-    relatedToolIds: ["robots-txt-generator", "meta-tag-open-graph-preview", "schema-markup-generator"]
+    relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator"]
   },
   {
     id: "xml-sitemap-generator",
@@ -247,8 +247,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     relatedToolIds: ["bulk-url-sitemap", "robots-txt-generator"]
   },
   {
-    id: "json-formatter-validator-diff",
-    slug: "json-formatter-validator-diff",
+    id: "json-formatter",
+    slug: "json-formatter",
     title: "JSON / XML Formatter, Validator & Tree Viewer",
     pillarKeyword: "JSON Formatter and Validator",
     shortDescription: "Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.",
@@ -269,11 +269,11 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: Processing occurs locally in browser memory.",
     faqs: generate20Faqs("JSON Formatter and Validator", "json formatter validator"),
-    relatedToolIds: ["regex-tester-explainer", "base64-url-encoder-jwt-decoder"]
+    relatedToolIds: ["regex-tester", "base64-encoder-decoder"]
   },
   {
-    id: "regex-tester-explainer",
-    slug: "regex-tester-explainer",
+    id: "regex-tester",
+    slug: "regex-tester",
     title: "Regex Tester & Interactive Match Explainer",
     pillarKeyword: "Regex Tester",
     shortDescription: "Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).",
@@ -293,7 +293,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: Regex execution runs locally.",
     faqs: generate20Faqs("Regex Tester", "regex tester"),
-    relatedToolIds: ["json-formatter-validator-diff", "cron-expression-generator"]
+    relatedToolIds: ["json-formatter", "cron-expression-generator"]
   },
   {
     id: "cron-expression-generator",
@@ -317,11 +317,11 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: Cron calculations run locally.",
     faqs: generate20Faqs("Cron Expression Generator", "cron expression generator"),
-    relatedToolIds: ["regex-tester-explainer", "url-slug-utm-builder"]
+    relatedToolIds: ["regex-tester", "url-slug-utm-builder"]
   },
   {
-    id: "meta-tag-open-graph-preview",
-    slug: "meta-tag-open-graph-preview",
+    id: "meta-tag-generator",
+    slug: "meta-tag-generator",
     title: "Meta Tag & Open Graph Social Card Preview",
     pillarKeyword: "Meta Tag Generator",
     shortDescription: "Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.",
@@ -365,7 +365,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: Robots.txt rules execute locally.",
     faqs: generate20Faqs("Robots.txt Generator", "robots txt generator"),
-    relatedToolIds: ["bulk-url-sitemap", "meta-tag-open-graph-preview"]
+    relatedToolIds: ["bulk-url-sitemap", "meta-tag-generator"]
   },
   {
     id: "schema-markup-generator",
@@ -389,11 +389,11 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: Schema JSON-LD is generated locally.",
     faqs: generate20Faqs("Schema Markup Generator", "schema markup generator"),
-    relatedToolIds: ["meta-tag-open-graph-preview", "bulk-url-sitemap"]
+    relatedToolIds: ["meta-tag-generator", "bulk-url-sitemap"]
   },
   {
-    id: "base64-url-encoder-jwt-decoder",
-    slug: "base64-url-encoder-jwt-decoder",
+    id: "base64-encoder-decoder",
+    slug: "base64-encoder-decoder",
     title: "Base64 Encoder/Decoder & JWT Token Inspector",
     pillarKeyword: "Base64 & JWT Decoder",
     shortDescription: "Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.",
@@ -413,7 +413,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: Tokens and strings are decoded locally in browser memory.",
     faqs: generate20Faqs("Base64 & JWT Decoder", "base64 jwt decoder"),
-    relatedToolIds: ["json-formatter-validator-diff", "url-slug-utm-builder"]
+    relatedToolIds: ["json-formatter", "url-slug-utm-builder"]
   },
   {
     id: "url-slug-utm-builder",
@@ -437,7 +437,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     ],
     privacyNotice: "100% Client-Side Privacy: All string operations run locally.",
     faqs: generate20Faqs("URL Slug Generator", "url slug generator"),
-    relatedToolIds: ["bulk-url-sitemap", "base64-url-encoder-jwt-decoder"]
+    relatedToolIds: ["bulk-url-sitemap", "base64-encoder-decoder"]
   }
 ];
 

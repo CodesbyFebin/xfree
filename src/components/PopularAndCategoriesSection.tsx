@@ -34,21 +34,21 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
 }) => {
   const popularTools = [
     {
-      slug: "bulk-url-extractor-sitemap-generator",
+      slug: "bulk-url-extractor",
       title: "Bulk URL Extractor",
       description: "Extract all URLs from text content instantly.",
       icon: Globe,
       color: "text-cyan-400",
     },
     {
-      slug: "json-formatter-validator-diff",
+      slug: "json-formatter",
       title: "JSON Formatter",
       description: "Format, validate, and beautify JSON data.",
       icon: Code2,
       color: "text-indigo-400",
     },
     {
-      slug: "regex-tester-explainer",
+      slug: "regex-tester",
       title: "Regex Tester",
       description: "Test and validate regular expressions in real-time.",
       icon: Code,
@@ -69,7 +69,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
       color: "text-emerald-400",
     },
     {
-      slug: "meta-tag-open-graph-preview",
+      slug: "meta-tag-generator",
       title: "Meta Tag Preview",
       description: "Preview how your page looks in search results.",
       icon: Layout,
@@ -83,7 +83,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
       color: "text-teal-400",
     },
     {
-      slug: "base64-url-encoder-jwt-decoder",
+      slug: "base64-encoder-decoder",
       title: "Hash Generator",
       description: "Generate MD5, SHA-1, SHA-256 and more.",
       icon: Hash,

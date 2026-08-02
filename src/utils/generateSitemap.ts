@@ -1,4 +1,5 @@
 import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
+import { GUIDES } from "../data/guides";
 
 const DEFAULT_BASE_URL = "https://www.xfree.in";
 
@@ -62,6 +63,7 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     { path: "/clusters", priority: "0.9", freq: "daily" },
     { path: "/thinking", priority: "0.8", freq: "weekly" },
     { path: "/xfree-app", priority: "0.9", freq: "monthly" },
+    { path: "/guides", priority: "0.7", freq: "weekly" },
   ];
 
   for (const page of staticPages) {
@@ -96,6 +98,16 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     xml += `    <lastmod>${lastmod}</lastmod>\n`;
     xml += `    <changefreq>weekly</changefreq>\n`;
     xml += `    <priority>${priority}</priority>\n`;
+    xml += `  </url>\n`;
+  }
+
+  // 5. Guides
+  for (const g of GUIDES) {
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(`${cleanBase}/guides/${g.slug}`)}</loc>\n`;
+    xml += `    <lastmod>${g.lastReviewed}</lastmod>\n`;
+    xml += `    <changefreq>monthly</changefreq>\n`;
+    xml += `    <priority>0.7</priority>\n`;
     xml += `  </url>\n`;
   }
 
