@@ -68,5 +68,5 @@ User-agent: Bytespider
 Disallow: /
 
 # Discovery files
-Sitemap: https://xfree.in/sitemap.xml
-Sitemap: https://xfree.in/rss.xml
+Sitemap: https://www.xfree.in/sitemap.xml
+Sitemap: https://www.xfree.in/rss.xml

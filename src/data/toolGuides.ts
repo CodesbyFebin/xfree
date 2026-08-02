@@ -364,8 +364,8 @@ export const TOOL_GUIDES: Record<string, GuideContent> = {
       },
       {
         title: "Build a UTM URL",
-        input: "https://xfree.in/tools/regex-tester-explainer, source=newsletter, medium=email, campaign=july-launch",
-        output: "https://xfree.in/tools/regex-tester-explainer?utm_source=newsletter&utm_medium=email&utm_campaign=july-launch",
+        input: "https://www.xfree.in/tools/regex-tester-explainer, source=newsletter, medium=email, campaign=july-launch",
+        output: "https://www.xfree.in/tools/regex-tester-explainer?utm_source=newsletter&utm_medium=email&utm_campaign=july-launch",
         explanation: "UTM parameters are read by GA4 and most analytics tools out of the box. Keep `source` a specific channel name (not 'web'), and `medium` from Google's standard list (email, cpc, social, referral, etc.) for consistent reports.",
       },
     ],

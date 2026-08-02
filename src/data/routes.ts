@@ -12,6 +12,7 @@ export const STATIC_ROUTES = [
   "/security",
   "/clusters",
   "/thinking",
+  "/xfree-app",
 ] as const;
 
 export const CATEGORY_SLUGS = [

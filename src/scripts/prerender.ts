@@ -14,7 +14,7 @@ import { STATIC_ROUTES } from "../data/routes";
 import { guideForSlug } from "../data/toolGuides";
 
 const DIST = path.join(process.cwd(), "dist");
-const BASE = (process.env.PUBLIC_SITE_URL || "https://xfree.in").replace(/\/$/, "");
+const BASE = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -56,7 +56,7 @@ function injectMeta(template: string, meta: PageMeta): string {
     `<meta property="og:description" content="${escapeHtml(meta.description)}" />`,
     `<meta property="og:url" content="${canonical}" />`,
     `<meta property="og:type" content="website" />`,
-    `<meta property="og:site_name" content="XFree.in" />`,
+    `<meta property="og:site_name" content="XFree" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`,
     `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`,
@@ -94,21 +94,32 @@ function writeRoute(route: string, html: string) {
 function organizationJsonLd() {
   return {
     "@type": "Organization",
-    name: "XFree.in",
+    "@id": `${BASE}/#organization`,
+    name: "XFree",
+    alternateName: ["XFree.in", "xfree.in"],
     url: `${BASE}/`,
-    logo: `${BASE}/favicon-512x512.png`,
-    description: "Free browser-based developer, SEO, and single-purpose AI micro-tool platform.",
-    sameAs: [] as string[], // add social profiles once you have them
+    logo: {
+      "@type": "ImageObject",
+      url: `${BASE}/favicon-512x512.png`,
+      width: 512,
+      height: 512,
+    },
+    description: "XFree develops free browser-based developer, SEO, and single-purpose AI micro-tools.",
+    // Only include real, verified profiles. Add to this list as you claim them.
+    sameAs: [] as string[],
   };
 }
 
 function siteJsonLd() {
   return {
     "@type": "WebSite",
-    name: "XFree.in",
+    "@id": `${BASE}/#website`,
+    name: "XFree",
+    alternateName: ["XFree.in", "xfree.in"],
     url: `${BASE}/`,
     description: "Free browser-based developer, SEO, and single-purpose AI micro-tools.",
-    publisher: { "@type": "Organization", name: "XFree.in", url: `${BASE}/` },
+    inLanguage: "en",
+    publisher: { "@id": `${BASE}/#organization` },
     potentialAction: {
       "@type": "SearchAction",
       target: `${BASE}/?q={search_term_string}`,
@@ -131,10 +142,16 @@ function breadcrumbs(items: Array<{ name: string; url: string }>) {
 
 const STATIC_META: Record<string, { title: string; description: string; h1: string; intro: string }> = {
   "/": {
-    title: "XFree.in — Free Developer, SEO & AI Micro-Tools",
-    description: "Free browser-based developer utilities, technical SEO helpers, and single-purpose AI assistants. No signup, no tracking.",
-    h1: "Free developer, SEO & AI micro-tools",
-    intro: "A curated set of production-grade utilities: JSON/regex/JWT/cron/sitemap/meta-tag/schema tools that run in your browser, plus AI helpers that securely proxy Google Gemini.",
+    title: "XFree — Free Developer, SEO & AI Tools | XFree.in",
+    description: "XFree is a free browser-based suite of developer utilities, technical SEO helpers, formatters, validators, converters, and single-purpose AI tools. No signup, no tracking.",
+    h1: "XFree — Free Developer, SEO & AI Tools",
+    intro: "XFree is a free browser-based platform for developer utilities, technical SEO tools, formatters, validators, converters, and focused AI micro-tools. Everything runs in your browser unless a tool explicitly proxies to Google Gemini — and that's disclosed on the tool itself.",
+  },
+  "/xfree-app": {
+    title: "XFree App — Install the Free Browser-Based Developer & SEO Toolkit",
+    description: "Install XFree as a Progressive Web App on desktop, Android, or iOS to use free developer, SEO, formatting, and AI tools without a browser tab.",
+    h1: "XFree App",
+    intro: "XFree is available as an installable Progressive Web App. Add it to your desktop dock or mobile home screen for one-tap access to every tool. Everything still runs in your browser — the PWA install is just a shortcut, not a separate binary.",
   },
   "/about": { title: "About XFree.in", description: "About the XFree.in micro-tools platform: mission, principles, and who it's built for.", h1: "About XFree.in", intro: "XFree.in is a small, focused micro-tool platform for developers, SEOs, and technical writers." },
   "/contact": { title: "Contact XFree.in", description: "Contact XFree.in for bug reports, tool requests, or partnership inquiries.", h1: "Contact us", intro: "Send us a note — we read every message." },

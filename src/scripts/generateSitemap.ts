@@ -8,7 +8,7 @@ function runGenerator() {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  const baseUrl = process.env.BASE_URL || "https://xfree.in";
+  const baseUrl = process.env.BASE_URL || "https://www.xfree.in";
 
   const sitemapContent = generateSitemapXml(baseUrl);
   const rssContent = generateRssXml(baseUrl);

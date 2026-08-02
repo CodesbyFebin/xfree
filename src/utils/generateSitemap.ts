@@ -1,6 +1,6 @@
 import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
 
-const DEFAULT_BASE_URL = "https://xfree.in";
+const DEFAULT_BASE_URL = "https://www.xfree.in";
 
 /**
  * Escapes special XML characters to prevent XML parsing errors.
@@ -61,6 +61,7 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     { path: "/security", priority: "0.5", freq: "monthly" },
     { path: "/clusters", priority: "0.9", freq: "daily" },
     { path: "/thinking", priority: "0.8", freq: "weekly" },
+    { path: "/xfree-app", priority: "0.9", freq: "monthly" },
   ];
 
   for (const page of staticPages) {

@@ -6,7 +6,7 @@ dotenv.config();
 const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.coerce.number().int().positive().default(3000),
-  PUBLIC_SITE_URL: z.string().url().default("https://xfree.in"),
+  PUBLIC_SITE_URL: z.string().url().default("https://www.xfree.in"),
 
   GEMINI_API_KEY: z.string().min(1).optional(),
   GEMINI_DEFAULT_MODEL: z.string().default("gemini-2.5-flash"),

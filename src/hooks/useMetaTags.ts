@@ -16,7 +16,7 @@ export function useMetaTags({
   isClusterPage = false,
   isThinkingPage = false,
   currentPath = typeof window !== "undefined" ? window.location.pathname : "/",
-  baseUrl = "https://xfree.in",
+  baseUrl = "https://www.xfree.in",
 }: UseMetaTagsOptions) {
   useEffect(() => {
     let title = "XFree.in — 400+ Free Online Developer & SEO Micro-Tools";

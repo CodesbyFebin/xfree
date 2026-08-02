@@ -30,6 +30,7 @@ import { PrivacyPage } from "./components/pages/PrivacyPage";
 import { TermsPage } from "./components/pages/TermsPage";
 import { SecurityPage } from "./components/pages/SecurityPage";
 import { NotFoundPage } from "./components/pages/NotFoundPage";
+import { XFreeAppPage } from "./components/pages/XFreeAppPage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 
 // Import Micro-Tools
@@ -104,7 +105,7 @@ export default function App() {
   const navigateTo = (path: string) => {
     window.history.pushState({}, "", path);
     setCurrentPath(path);
-    if (["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security"].includes(path)) {
+    if (["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app"].includes(path)) {
       setActiveView("page");
     } else if (path === "/") {
       setActiveView("tools");
@@ -254,12 +255,14 @@ export default function App() {
         return <TermsPage />;
       case "/security":
         return <SecurityPage />;
+      case "/xfree-app":
+        return <XFreeAppPage onGoHome={() => navigateTo("/")} onOpenTools={() => navigateTo("/")} />;
       default:
         return null;
     }
   };
 
-  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security"].includes(currentPath);
+  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app"].includes(currentPath);
 
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">

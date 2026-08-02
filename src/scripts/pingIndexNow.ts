@@ -3,7 +3,7 @@
  *
  * Usage:
  *   npm run indexnow                  # ping every indexable URL in the sitemap
- *   npm run indexnow -- --url=https://xfree.in/tools/regex-tester-explainer
+ *   npm run indexnow -- --url=https://www.xfree.in/tools/regex-tester-explainer
  *   npm run indexnow -- --url=... --url=...  # multiple
  *
  * Requires PUBLIC_SITE_URL to be set (production domain). The IndexNow key is
@@ -28,7 +28,7 @@ function resolveKey(): string {
 }
 
 function resolveHost(): string {
-  const raw = process.env.PUBLIC_SITE_URL || "https://xfree.in";
+  const raw = process.env.PUBLIC_SITE_URL || "https://www.xfree.in";
   return new URL(raw).host;
 }
 
@@ -74,7 +74,7 @@ async function ping(urls: string[]) {
 
 async function main() {
   const cliUrls = urlsFromCliArgs();
-  const base = (process.env.PUBLIC_SITE_URL || "https://xfree.in").replace(/\/$/, "");
+  const base = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
   const urls = cliUrls.length ? cliUrls : allSiteUrls(base);
   if (!urls.length) { console.log("[indexnow] no urls to ping"); return; }
   await ping(urls);

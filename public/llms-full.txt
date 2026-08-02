@@ -5,7 +5,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### XML Sitemap Generator & Validator
-- **URL**: https://xfree.in/tools/xml-sitemap-generator
+- **URL**: https://www.xfree.in/tools/xml-sitemap-generator
 - **Category**: SEO & URL Tools
 - **Pillar Keyword**: XML Sitemap Generator
 - **Description**: Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets.
@@ -25,7 +25,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Robots.txt Generator & User-Agent Rule Tester
-- **URL**: https://xfree.in/tools/robots-txt-generator
+- **URL**: https://www.xfree.in/tools/robots-txt-generator
 - **Category**: SEO & URL Tools
 - **Pillar Keyword**: Robots.txt Generator
 - **Description**: Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps.
@@ -45,7 +45,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Schema Markup Generator (JSON-LD Structured Data)
-- **URL**: https://xfree.in/tools/schema-markup-generator
+- **URL**: https://www.xfree.in/tools/schema-markup-generator
 - **Category**: SEO & URL Tools
 - **Pillar Keyword**: Schema Markup Generator
 - **Description**: Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.
@@ -65,7 +65,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Bulk URL Extractor & Sitemap Generator
-- **URL**: https://xfree.in/tools/bulk-url-extractor-sitemap-generator
+- **URL**: https://www.xfree.in/tools/bulk-url-extractor-sitemap-generator
 - **Category**: SEO & URL Tools
 - **Pillar Keyword**: Free Bulk URL Extractor & Sitemap Generator Online
 - **Description**: Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.
@@ -86,7 +86,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### JSON / XML Formatter, Validator & Tree Viewer
-- **URL**: https://xfree.in/tools/json-formatter-validator-diff
+- **URL**: https://www.xfree.in/tools/json-formatter-validator-diff
 - **Category**: Developer Tools
 - **Pillar Keyword**: JSON Formatter and Validator
 - **Description**: Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.
@@ -106,7 +106,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Regex Tester & Interactive Match Explainer
-- **URL**: https://xfree.in/tools/regex-tester-explainer
+- **URL**: https://www.xfree.in/tools/regex-tester-explainer
 - **Category**: Developer Tools
 - **Pillar Keyword**: Regex Tester
 - **Description**: Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).
@@ -126,7 +126,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Cron Expression Generator & Human Translator
-- **URL**: https://xfree.in/tools/cron-expression-generator
+- **URL**: https://www.xfree.in/tools/cron-expression-generator
 - **Category**: Generators
 - **Pillar Keyword**: Cron Expression Generator
 - **Description**: Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.
@@ -146,7 +146,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Meta Tag & Open Graph Social Card Preview
-- **URL**: https://xfree.in/tools/meta-tag-open-graph-preview
+- **URL**: https://www.xfree.in/tools/meta-tag-open-graph-preview
 - **Category**: SEO & URL Tools
 - **Pillar Keyword**: Meta Tag Generator
 - **Description**: Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.
@@ -166,7 +166,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### Base64 Encoder/Decoder & JWT Token Inspector
-- **URL**: https://xfree.in/tools/base64-url-encoder-jwt-decoder
+- **URL**: https://www.xfree.in/tools/base64-url-encoder-jwt-decoder
 - **Category**: Converters & Encoders
 - **Pillar Keyword**: Base64 & JWT Decoder
 - **Description**: Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.
@@ -186,7 +186,7 @@ This document provides full technical details, Pillar Keywords, explanations, FA
 --- 
 
 ### URL Slug Generator & Campaign UTM Parameter Builder
-- **URL**: https://xfree.in/tools/url-slug-utm-builder
+- **URL**: https://www.xfree.in/tools/url-slug-utm-builder
 - **Category**: Generators
 - **Pillar Keyword**: URL Slug Generator
 - **Description**: Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).
