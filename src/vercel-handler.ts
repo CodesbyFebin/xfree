@@ -7,7 +7,7 @@
 // in vercel.json also didn't work in our testing. Pre-bundling side-steps
 // both issues — the produced api/index.js has zero cross-directory imports.
 import type { IncomingMessage, ServerResponse } from "http";
-import { createApp, serveMinimalFallback } from "../src/server/app";
+import { createApp, serveMinimalFallback } from "./server/app";
 
 let handlerPromise: Promise<((req: IncomingMessage, res: ServerResponse) => void) | { bootError: string }> | null = null;
 

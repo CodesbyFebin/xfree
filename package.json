@@ -17,7 +17,7 @@
     "generate:sitemap": "tsx src/scripts/generateSitemap.ts",
     "build": "npm run generate:sitemap && vite build && npm run prerender && npm run lint:noindex && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "build:vercel": "npm run generate:sitemap && vite build && npm run prerender && npm run lint:noindex && npm run build:function",
-    "build:function": "esbuild api/_handler.ts --bundle --platform=node --format=esm --packages=external --outfile=api/index.js --banner:js='import { createRequire } from \"module\"; const require = createRequire(import.meta.url);'",
+    "build:function": "esbuild src/vercel-handler.ts --bundle --platform=node --format=esm --packages=external --outfile=api/index.js --banner:js='import { createRequire } from \"module\"; const require = createRequire(import.meta.url);'",
     "start": "NODE_ENV=production node dist/server.cjs",
     "verify": "npm run typecheck && npm run test && npm run audit:tools && npm run build",
     "clean": "rm -rf dist"

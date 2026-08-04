@@ -6962,7 +6962,7 @@ function serveMinimalFallback() {
   };
 }
 
-// api/_handler.ts
+// src/vercel-handler.ts
 var handlerPromise = null;
 async function getHandler() {
   if (!handlerPromise) {
