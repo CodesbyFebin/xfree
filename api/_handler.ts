@@ -1,5 +1,13 @@
-// Vercel serverless entry — wraps the Express app as a Vercel Node function.
+// Vercel serverless entry — source of truth. Bundled to api/index.js by
+// `npm run build:function` (esbuild inlines the whole src/ tree, node_modules
+// stay external). Vercel deploys api/index.js — this .ts file is the source.
+//
+// Why bundle: Vercel's Node runtime resolution for ESM projects doesn't
+// automatically ship imported .ts files from outside api/. `includeFiles`
+// in vercel.json also didn't work in our testing. Pre-bundling side-steps
+// both issues — the produced api/index.js has zero cross-directory imports.
 import type { IncomingMessage, ServerResponse } from "http";
+import { createApp, serveMinimalFallback } from "../src/server/app";
 
 let handlerPromise: Promise<((req: IncomingMessage, res: ServerResponse) => void) | { bootError: string }> | null = null;
 
@@ -7,12 +15,11 @@ async function getHandler() {
   if (!handlerPromise) {
     handlerPromise = (async () => {
       try {
-        const mod = await import("../src/server/app");
-        const app = await mod.createApp({ attachSpaFallback: mod.serveMinimalFallback() });
+        const app = await createApp({ attachSpaFallback: serveMinimalFallback() });
         return app as unknown as (req: IncomingMessage, res: ServerResponse) => void;
       } catch (err: any) {
         const detail = err?.stack || err?.message || String(err);
-        console.error("[api/index] boot error:", detail);
+        console.error("[api] boot error:", detail);
         return { bootError: detail };
       }
     })();

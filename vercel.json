@@ -6,10 +6,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
-    "api/index.ts": {
+    "api/index.js": {
       "maxDuration": 60,
-      "memory": 512,
-      "includeFiles": "src/**"
+      "memory": 512
     }
   },
   "rewrites": [
