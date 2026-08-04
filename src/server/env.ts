@@ -36,13 +36,19 @@ function loadConfig(): AppConfig {
   const parsed = EnvSchema.safeParse(process.env);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
-    console.error(`\n[env] Invalid environment configuration:\n${issues}\n`);
-    process.exit(1);
+    // Do NOT process.exit here. On Vercel serverless, exiting at import time
+    // kills the entire function (FUNCTION_INVOCATION_FAILED) for every route,
+    // including /api/health and static-file fallbacks that don't need env at
+    // all. Log loudly and fall through with defaults; per-endpoint code that
+    // actually needs the missing values will throw when called.
+    console.error(`[env] Invalid environment configuration (using defaults for missing values):\n${issues}`);
+    return EnvSchema.parse({}); // safe defaults; AI endpoints will 500 individually if GEMINI_API_KEY unset
   }
   const cfg = parsed.data;
   if (cfg.NODE_ENV === "production" && !cfg.GEMINI_API_KEY) {
-    console.error("[env] GEMINI_API_KEY is required in production.");
-    process.exit(1);
+    // Warn but don't kill the process — health/contact/feedback and static
+    // fallback don't need Gemini. AI endpoints check at request time.
+    console.warn("[env] GEMINI_API_KEY is not set. AI endpoints will return 503 until it is provisioned.");
   }
   return cfg;
 }

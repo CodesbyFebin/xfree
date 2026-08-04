@@ -3,9 +3,17 @@ import { config } from "./env";
 
 let cached: GoogleGenAI | null = null;
 
+export class GeminiNotConfiguredError extends Error {
+  readonly status = 503;
+  constructor() {
+    super("Gemini API is not configured on this deployment.");
+    this.name = "GeminiNotConfiguredError";
+  }
+}
+
 export function getGeminiClient(): GoogleGenAI {
   if (!config.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not configured.");
+    throw new GeminiNotConfiguredError();
   }
   if (!cached) {
     cached = new GoogleGenAI({ apiKey: config.GEMINI_API_KEY });

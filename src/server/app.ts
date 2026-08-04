@@ -5,7 +5,7 @@ import crypto from "crypto";
 import { ThinkingLevel } from "@google/genai";
 
 import { config, isProduction } from "./env";
-import { getGeminiClient, generateWithTimeout } from "./gemini";
+import { getGeminiClient, generateWithTimeout, GeminiNotConfiguredError } from "./gemini";
 import { AI_TASKS, CHAT_SYSTEM_INSTRUCTION, THINKING_SYSTEM_INSTRUCTION, isValidTaskId } from "./tasks";
 import { rateLimit, globalDailyGuard } from "./rate-limit";
 import {
@@ -277,6 +277,9 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
     const requestId = (req as any).requestId;
     console.error(`[${requestId}]`, err?.message || err);
     if (res.headersSent) return;
+    if (err instanceof GeminiNotConfiguredError) {
+      return res.status(503).json({ error: "ai_not_configured", requestId });
+    }
     res.status(500).json({ error: "internal_error", requestId });
   });
 
