@@ -73,7 +73,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search 400+ micro-tools (e.g. sitemap, json, regex, meta, cron)..."
+            placeholder="Search tools (e.g. sitemap, json, regex, meta, cron)..."
             className="w-full bg-transparent text-white text-sm font-semibold focus:outline-none placeholder:text-slate-500"
           />
           <button

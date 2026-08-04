@@ -13,7 +13,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
       <div className="text-center space-y-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400">
           <ShieldCheck className="w-4 h-4" />
-          <span>100% Client-Side Privacy Architecture</span>
+          <span>Local-Tool Privacy Architecture</span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
           How XFree.in Works

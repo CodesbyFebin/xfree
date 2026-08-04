@@ -179,7 +179,7 @@ const PROCESSED_SEED_TOOLS: ToolDefinition[] = (seedToolsData as any[]).map((see
     toolComponent: seed.toolComponent,
     tags: [seed.pillarKeyword, ...(seed.supportingKeywords || []), seed.cluster],
     exampleInput: seed.exampleInput || `Sample input data for ${seed.title}`,
-    explanation: `The ${seed.title} is a planned XFree.in utility for ${seed.pillarKeyword}.`,
+    explanation: `Draft entry for ${seed.title} (${seed.pillarKeyword}). This tool is not implemented and its route returns 404 until the component is built.`,
     howToUse: [
       `Enter or paste your raw text into the input editor.`,
       `Select your desired options or filters.`,
@@ -218,7 +218,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "View real-time extracted URL stats.",
       "Download generated XML Sitemap file."
     ],
-    privacyNotice: "100% Client-Side Privacy: Processing happens entirely inside browser memory.",
+    privacyNotice: "Local processing: Processing happens entirely inside browser memory.",
     faqs: generate20Faqs("Bulk URL Extractor & Sitemap Generator", "bulk url extractor sitemap generator"),
     relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator"]
   },
@@ -242,7 +242,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Adjust priority and change frequency settings.",
       "Click generate and download sitemap.xml."
     ],
-    privacyNotice: "100% Client-Side Privacy: All processing occurs locally.",
+    privacyNotice: "Local processing: All processing occurs locally.",
     faqs: generate20Faqs("XML Sitemap Generator", "xml sitemap generator"),
     relatedToolIds: ["bulk-url-sitemap", "robots-txt-generator"]
   },
@@ -267,8 +267,36 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Toggle between Format, Minify, and Interactive Tree modes.",
       "Review validation diagnostics or click Auto-Fix for minor syntax repairs."
     ],
-    privacyNotice: "100% Client-Side Privacy: Processing occurs locally in browser memory.",
-    faqs: generate20Faqs("JSON Formatter and Validator", "json formatter validator"),
+    privacyNotice: "Local processing: your JSON payload stays in the browser and is not sent to XFree.in servers.",
+    // Six page-specific FAQs. Each answer corresponds to something the tool
+    // actually does or a limit that actually applies. Deliberately not the
+    // templated generate20Faqs output, which was scaled-content shape.
+    faqs: [
+      {
+        question: "Does this validate strict JSON or JSON5?",
+        answer: "Strict JSON per RFC 8259. Trailing commas, unquoted keys, single-quoted strings, and comments are all rejected. If your source is JSON5 or JSONC, use a JSON5-aware parser instead — this tool will flag those as errors."
+      },
+      {
+        question: "What's the largest payload I can paste in?",
+        answer: "The tool is tested up to about 10 MB of formatted JSON. Above that, browsers slow down noticeably and Chrome tabs can be killed by the OS for memory pressure. For anything larger, use jq on the command line."
+      },
+      {
+        question: "Will large numeric IDs lose precision?",
+        answer: "Yes. JSON numbers are IEEE 754 doubles, so integers larger than 2^53 (9,007,199,254,740,992) silently round. If you're inspecting 64-bit database IDs or Twitter snowflake IDs, send them as strings from your API — the tool shows them exactly as received."
+      },
+      {
+        question: "Does it handle XML too?",
+        answer: "Yes. The XML mode uses the browser's DOMParser. It formats and validates well-formed XML, but does not resolve external DTDs or validate against a schema. Encoding is assumed to be UTF-8."
+      },
+      {
+        question: "Does my input leave the browser?",
+        answer: "No. The formatter, validator, and diff all run in your browser tab. The site itself uses Google AdSense which sets advertising cookies (see the Privacy page), but the JSON you paste is never sent to XFree.in or to any AI backend."
+      },
+      {
+        question: "Why does my JSON error say \"Unexpected token in JSON at position N\"?",
+        answer: "N is the byte offset from the start of the input. The three most common causes are trailing commas, smart quotes copy-pasted from a document, and unescaped newlines inside string values. Look at the exact byte and the character just before it."
+      }
+    ],
     relatedToolIds: ["regex-tester", "base64-encoder-decoder"]
   },
   {
@@ -291,7 +319,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Enter test string into input box.",
       "View highlighted matches and captured group tables."
     ],
-    privacyNotice: "100% Client-Side Privacy: Regex execution runs locally.",
+    privacyNotice: "Local processing: Regex execution runs locally.",
     faqs: generate20Faqs("Regex Tester", "regex tester"),
     relatedToolIds: ["json-formatter", "cron-expression-generator"]
   },
@@ -315,7 +343,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Review generated 5-part cron expression string.",
       "Inspect upcoming execution times list."
     ],
-    privacyNotice: "100% Client-Side Privacy: Cron calculations run locally.",
+    privacyNotice: "Local processing: Cron calculations run locally.",
     faqs: generate20Faqs("Cron Expression Generator", "cron expression generator"),
     relatedToolIds: ["regex-tester", "url-slug-utm-builder"]
   },
@@ -339,7 +367,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Inspect live Google search result snippet and Twitter/Facebook preview card.",
       "Copy generated HTML code snippet."
     ],
-    privacyNotice: "100% Client-Side Privacy: All previews render locally.",
+    privacyNotice: "Local processing: All previews render locally.",
     faqs: generate20Faqs("Meta Tag Generator", "meta tag generator"),
     relatedToolIds: ["schema-markup-generator", "robots-txt-generator"]
   },
@@ -363,7 +391,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Specify allowed and disallowed path rules.",
       "Test URL path against current rules to verify crawler permissions."
     ],
-    privacyNotice: "100% Client-Side Privacy: Robots.txt rules execute locally.",
+    privacyNotice: "Local processing: Robots.txt rules execute locally.",
     faqs: generate20Faqs("Robots.txt Generator", "robots txt generator"),
     relatedToolIds: ["bulk-url-sitemap", "meta-tag-generator"]
   },
@@ -387,7 +415,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Fill in required metadata fields.",
       "Copy formatted JSON-LD script tag."
     ],
-    privacyNotice: "100% Client-Side Privacy: Schema JSON-LD is generated locally.",
+    privacyNotice: "Local processing: Schema JSON-LD is generated locally.",
     faqs: generate20Faqs("Schema Markup Generator", "schema markup generator"),
     relatedToolIds: ["meta-tag-generator", "bulk-url-sitemap"]
   },
@@ -411,7 +439,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Paste token or text input.",
       "View decoded header, payload claims, and expiration date."
     ],
-    privacyNotice: "100% Client-Side Privacy: Tokens and strings are decoded locally in browser memory.",
+    privacyNotice: "Local processing: Tokens and strings are decoded locally in browser memory.",
     faqs: generate20Faqs("Base64 & JWT Decoder", "base64 jwt decoder"),
     relatedToolIds: ["json-formatter", "url-slug-utm-builder"]
   },
@@ -435,7 +463,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       "Enter destination URL and campaign UTM details.",
       "Copy final clean tracking URL."
     ],
-    privacyNotice: "100% Client-Side Privacy: All string operations run locally.",
+    privacyNotice: "Local processing: All string operations run locally.",
     faqs: generate20Faqs("URL Slug Generator", "url slug generator"),
     relatedToolIds: ["bulk-url-sitemap", "base64-encoder-decoder"]
   }

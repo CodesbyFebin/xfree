@@ -31,12 +31,24 @@ export const ToolCard: React.FC<ToolCardProps> = ({
     return "bg-slate-700/50 text-slate-300 border-slate-600/50";
   };
 
+  const href = `/tools/${tool.slug}`;
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Real <a href> gives Googlebot a crawlable link. In the browser we
+    // hijack for SPA navigation, but middle-click and cmd-click still open
+    // the URL naturally.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+    e.preventDefault();
+    onSelectTool(tool.id);
+  };
+
   return (
-    <div
-      onClick={() => onSelectTool(tool.id)}
-      className="glass-panel-interactive rounded-2xl p-5 flex flex-col justify-between cursor-pointer group select-none relative overflow-hidden"
+    <a
+      href={href}
+      onClick={handleClick}
+      className="glass-panel-interactive rounded-2xl p-5 flex flex-col justify-between cursor-pointer group select-none relative overflow-hidden no-underline text-inherit"
+      aria-label={`${tool.title} — ${tool.shortDescription}`}
     >
-      {/* Top Tag & Favorite Star */}
       <div>
         <div className="flex justify-between items-center mb-3">
           <span className={`px-2.5 py-0.5 text-[10px] font-semibold tracking-wide rounded-full border ${getBadgeStyle()} flex items-center gap-1`}>
@@ -46,30 +58,29 @@ export const ToolCard: React.FC<ToolCardProps> = ({
           </span>
 
           <button
+            type="button"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               onToggleFavorite(tool.id);
             }}
             className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-            title={isFavorite ? "Remove favorite" : "Save favorite"}
+            aria-label={isFavorite ? `Remove ${tool.title} from favorites` : `Save ${tool.title} to favorites`}
           >
             <Star className={`w-4 h-4 ${isFavorite ? "text-amber-400 fill-amber-400" : "text-slate-500 hover:text-slate-300"}`} />
           </button>
         </div>
 
-        {/* Tool Title */}
         <h4 className="font-bold text-base text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between gap-1 leading-snug">
           <span>{tool.title}</span>
           <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
         </h4>
 
-        {/* Short Description */}
         <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
           {tool.shortDescription}
         </p>
       </div>
 
-      {/* Footer Tags & Action */}
       <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between">
         <div className="flex items-center gap-1.5 overflow-hidden">
           {tool.tags.slice(0, 2).map((tag) => (
@@ -81,9 +92,9 @@ export const ToolCard: React.FC<ToolCardProps> = ({
 
         <span className="text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
           <span>Launch</span>
-          <span>→</span>
+          <span aria-hidden="true">→</span>
         </span>
       </div>
-    </div>
+    </a>
   );
 };

@@ -1,6 +1,6 @@
 # XFree.in — Free Online Developer, SEO, AI & Converter Micro-Tools Suite
 
-> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with 100% client-side execution and zero data logging.
+> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with browser-based execution for local tools.
 
 ## Primary Sections & Hubs
 

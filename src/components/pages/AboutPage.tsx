@@ -13,7 +13,7 @@ export const AboutPage: React.FC<PageProps> = ({ onGoHome }) => {
           About XFree.in
         </h1>
         <p className="text-slate-300 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-          Building the world's fastest, privacy-first, zero-install web micro-tool platform for developers and SEO professionals.
+          A small, focused platform of free browser-based developer, SEO, and AI micro-tools.
         </p>
       </div>
 
@@ -23,7 +23,7 @@ export const AboutPage: React.FC<PageProps> = ({ onGoHome }) => {
           We created XFree.in because existing online converter and formatting sites are slow, cluttered with invasive ads, and upload sensitive user code to unknown backend servers.
         </p>
         <p>
-          XFree.in delivers 1,000+ single-purpose micro-tools that execute 100% locally in browser memory. No registration required, no hidden paywalls, and zero latency.
+          XFree.in delivers a small, curated set of single-purpose micro-tools that execute 100% locally in browser memory. No registration required, no hidden paywalls, and zero latency.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800">

@@ -169,7 +169,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80">
         <div className="flex items-center justify-center space-x-3 text-slate-300 text-xs sm:text-sm font-semibold">
           <Cpu className="w-4 h-4 text-emerald-400" />
-          <span>1,000+ Tools</span>
+          <span>Free Tools</span>
         </div>
         <div className="flex items-center justify-center space-x-3 text-slate-300 text-xs sm:text-sm font-semibold">
           <Globe className="w-4 h-4 text-emerald-400" />

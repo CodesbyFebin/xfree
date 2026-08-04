@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { TOOLS_REGISTRY, findToolBySlug } from "./data/toolsRegistry";
+import { TOOLS_REGISTRY, INDEXABLE_TOOLS, findIndexableTool } from "./data/toolsRegistry";
 import { KEYWORD_CLUSTERS } from "./data/clustersData";
 import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath } from "./data/routes";
 import { findGuide } from "./data/guides";
@@ -159,7 +159,10 @@ export default function App() {
   const activeToolSlug = currentPath.startsWith("/tools/") ? currentPath.replace("/tools/", "").replace(/\/$/, "") : null;
   const activeTool = useMemo(() => {
     if (!activeToolSlug) return null;
-    return findToolBySlug(activeToolSlug) ?? null;
+    // IMPORTANT: only INDEXABLE tools render. Draft/planned slugs fall through
+    // to the 404 view so the client agrees with the server's HTTP 404 rather
+    // than hydrating a fake "planned utility" page over a 404 shell.
+    return findIndexableTool(activeToolSlug) ?? null;
   }, [activeToolSlug]);
 
   const activeGuideSlug = guideSlugFromPath(currentPath);
@@ -249,7 +252,7 @@ export default function App() {
       case "/docs":
         return <DocsHubPage onGoHome={() => navigateTo("/")} onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />;
       case "/blog":
-        return <BlogPage onGoHome={() => navigateTo("/")} onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />;
+        return <BlogPage onGoHome={() => navigateTo("/")} onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} onNavigatePage={navigateTo} />;
       case "/faq":
         return <FaqPage onGoHome={() => navigateTo("/")} />;
       case "/about":
@@ -376,7 +379,7 @@ export default function App() {
               onSearchChange={setSearchQuery}
               activeCategory={activeCategory}
               onCategoryChange={setActiveCategory}
-              totalTools={TOOLS_REGISTRY.length}
+              totalTools={INDEXABLE_TOOLS.length}
               onExploreFreeTools={() => setActiveCategory("all")}
               onBrowseAiTools={() => setActiveCategory("ai-tools")}
             />

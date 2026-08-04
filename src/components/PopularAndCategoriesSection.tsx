@@ -159,7 +159,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
             Popular Tools
           </h2>
           <p className="text-slate-400 text-sm sm:text-base">
-            Our most loved tools used by thousands every day.
+            Popular tools in the directory.
           </p>
         </div>
 
@@ -295,7 +295,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
                 <div>
                   <h4 className="font-bold text-white text-sm sm:text-base">Zero Registration</h4>
                   <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                    No signup. No tracking. Just open and start using.
+                    No signup required.
                   </p>
                 </div>
               </div>

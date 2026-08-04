@@ -95,12 +95,12 @@ This document provides full technical details, Pillar Keywords, explanations, FA
   1. Toggle between Format, Minify, and Interactive Tree modes.
   1. Review validation diagnostics or click Auto-Fix for minor syntax repairs.
 - **Top FAQs**:
-  - **Q: What is the JSON Formatter and Validator?**
-    A: The JSON Formatter and Validator is a free, browser-based web utility designed to help marketers, webmasters, and developers execute json formatter validator tasks instantly without installing software or signing up.
-  - **Q: How does this free json formatter validator tool work?**
-    A: Our tool processes your input data directly in your browser using modern client-side JavaScript. Simply enter or paste your content, select your desired options, and receive real-time formatted results instantly.
-  - **Q: Is my input data safe and private when using JSON Formatter and Validator?**
-    A: Yes, 100% safe. All parsing, processing, and formatting happen locally inside your web browser. Your data is never uploaded to external servers or logged in database systems.
+  - **Q: Does this validate strict JSON or JSON5?**
+    A: Strict JSON per RFC 8259. Trailing commas, unquoted keys, single-quoted strings, and comments are all rejected. If your source is JSON5 or JSONC, use a JSON5-aware parser instead — this tool will flag those as errors.
+  - **Q: What's the largest payload I can paste in?**
+    A: The tool is tested up to about 10 MB of formatted JSON. Above that, browsers slow down noticeably and Chrome tabs can be killed by the OS for memory pressure. For anything larger, use jq on the command line.
+  - **Q: Will large numeric IDs lose precision?**
+    A: Yes. JSON numbers are IEEE 754 doubles, so integers larger than 2^53 (9,007,199,254,740,992) silently round. If you're inspecting 64-bit database IDs or Twitter snowflake IDs, send them as strings from your API — the tool shows them exactly as received.
 
 --- 
 

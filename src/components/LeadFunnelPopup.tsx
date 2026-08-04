@@ -10,6 +10,11 @@ interface Props {
 type Step = "task" | "email" | "success";
 type Status = "idle" | "submitting" | "error";
 
+// Suppressed site-wide until AdSense review is complete. Google AdSense
+// program policy prohibits pop-ups that interfere with site use during
+// the review phase. Flip to `true` after approval + reviewer sign-off.
+const LEAD_POPUP_ENABLED = false;
+
 const DISMISS_KEY = "xfree_lead_dismissed_at";
 const SUBMIT_KEY = "xfree_lead_submitted";
 const SUPPRESS_DAYS = 7;
@@ -41,10 +46,17 @@ function isInterruptiblePath(pathname: string): boolean {
   if (pathname.startsWith("/tools/")) return false;
   // Never on legal/contact pages — those visits usually have a specific intent.
   if (["/privacy", "/terms", "/security", "/contact"].includes(pathname)) return false;
+  // Never on guide pages — reading a guide is not the moment to interrupt.
+  if (pathname.startsWith("/guides/") || pathname === "/guides") return false;
   return true;
 }
 
 export const LeadFunnelPopup: React.FC<Props> = ({ currentPath, onOpenTool }) => {
+  if (!LEAD_POPUP_ENABLED) return null;
+  return <LeadFunnelPopupInner currentPath={currentPath} onOpenTool={onOpenTool} />;
+};
+
+const LeadFunnelPopupInner: React.FC<Props> = ({ currentPath, onOpenTool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<Step>("task");
   const [task, setTask] = useState("");

@@ -157,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <div className="flex items-center gap-2">
             <Search className="w-3.5 h-3.5 text-slate-400" />
-            <span>Search 400+ tools...</span>
+            <span>Search tools...</span>
           </div>
           <span className="mono text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700">
             ⌘K

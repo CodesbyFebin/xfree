@@ -127,7 +127,7 @@ export function generateRssXml(baseUrl: string = DEFAULT_BASE_URL): string {
   rss += `  <channel>\n`;
   rss += `    <title>XFree.in — Free Online Developer, SEO, AI &amp; Converter Micro-Tools</title>\n`;
   rss += `    <link>${escapeXml(cleanBase)}</link>\n`;
-  rss += `    <description>100% Free client-side developer, SEO, AI, and converter micro-tools. Instant browser execution, zero signup, zero tracking.</description>\n`;
+  rss += `    <description>100% Free client-side developer, SEO, AI, and converter micro-tools. Instant browser execution, no signup.</description>\n`;
   rss += `    <language>en-us</language>\n`;
   rss += `    <lastBuildDate>${buildDate}</lastBuildDate>\n`;
   rss += `    <pubDate>${buildDate}</pubDate>\n`;
@@ -173,7 +173,7 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = baseUrl.replace(/\/$/, "");
 
   let text = `# XFree.in — Free Online Developer, SEO, AI & Converter Micro-Tools Suite\n\n`;
-  text += `> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with 100% client-side execution and zero data logging.\n\n`;
+  text += `> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with browser-based execution for local tools.\n\n`;
 
   text += `## Primary Sections & Hubs\n\n`;
   text += `- [Home Page](${cleanBase}/): Complete registry search and grid view of indexable micro-tools.\n`;

@@ -49,7 +49,7 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
               100 Pillar Keyword Clusters
             </h1>
             <p className="text-xs sm:text-sm text-black font-bold max-w-3xl">
-              1,500+ targeted keywords grouped into 100 high-intent clusters. Every cluster tool features 2,000+ words equivalent rich pillar documentation, 20 FAQs, and 100% client-side interactive utility engines.
+              Search-intent keyword clusters mapped to XFree tools. Clusters map search intent to XFree's live tool inventory.
             </p>
           </div>
 

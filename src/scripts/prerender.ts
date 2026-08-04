@@ -71,6 +71,8 @@ function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string): s
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`,
     `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`,
+    // AdSense meta + script are in index.html (template) so prerender does NOT
+    // re-inject them here — that would produce duplicate meta tags per route.
     `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": meta.jsonLd })}</script>`,
   ].join("\n    ");
 
@@ -91,10 +93,13 @@ function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string): s
     </div>
   `;
 
-  let out = template.replace(/<title>[^<]*<\/title>/i, "");
-  out = out.replace(/<link rel="canonical"[^>]*>\n?/i, "");
-  out = out.replace("</head>", `    ${headExtras}\n  </head>`);
-  out = out.replace('<div id="root"></div>', `<div id="root"></div>${shell}`);
+  // Function-form replacements avoid JS's $&/$`/$'/$n interpretation in the
+  // replacement string, which would otherwise embed the entire template
+  // prefix/suffix into the shell whenever guide/example text contains `$`.
+  let out = template.replace(/<title>[^<]*<\/title>/i, () => "");
+  out = out.replace(/<link rel="canonical"[^>]*>\n?/i, () => "");
+  out = out.replace("</head>", () => `    ${headExtras}\n  </head>`);
+  out = out.replace('<div id="root"></div>', () => `<div id="root"></div>${shell}`);
   return out;
 }
 
@@ -157,7 +162,7 @@ function breadcrumbs(items: Array<{ name: string; url: string }>) {
 const STATIC_META: Record<string, { title: string; description: string; h1: string; intro: string }> = {
   "/": {
     title: "XFree — Free Developer, SEO & AI Tools | XFree.in",
-    description: "XFree is a free browser-based suite of developer utilities, technical SEO helpers, formatters, validators, converters, and single-purpose AI tools. No signup, no tracking.",
+    description: "XFree is a free browser-based suite of developer utilities, technical SEO helpers, formatters, validators, converters, and single-purpose AI tools. No signup required.",
     h1: "XFree — Free Developer, SEO & AI Tools",
     intro: "XFree is a free browser-based platform for developer utilities, technical SEO tools, formatters, validators, converters, and focused AI micro-tools. Everything runs in your browser unless a tool explicitly proxies to Google Gemini — and that's disclosed on the tool itself.",
   },
@@ -249,10 +254,14 @@ function main() {
         step: tool.howToUse.map((text, i) => ({ "@type": "HowToStep", position: i + 1, name: `Step ${i + 1}`, text })),
       });
     }
+    // Cap FAQPage schema at 6. Google's structured-data policy requires the
+    // schema questions to match visible answers; publishing 20 near-identical
+    // generic Q&A is scaled-content shape. Better to emit only the top 6 that
+    // are page-specific.
     if (tool.faqs?.length) {
       jsonLd.push({
         "@type": "FAQPage",
-        mainEntity: tool.faqs.slice(0, 8).map((f) => ({
+        mainEntity: tool.faqs.slice(0, 6).map((f) => ({
           "@type": "Question",
           name: f.question,
           acceptedAnswer: { "@type": "Answer", text: f.answer },

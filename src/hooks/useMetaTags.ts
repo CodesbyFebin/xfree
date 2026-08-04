@@ -19,9 +19,9 @@ export function useMetaTags({
   baseUrl = "https://www.xfree.in",
 }: UseMetaTagsOptions) {
   useEffect(() => {
-    let title = "XFree.in — 400+ Free Online Developer & SEO Micro-Tools";
+    let title = "XFree.in — Free Online Developer & SEO Micro-Tools";
     let description =
-      "Access 400+ free online developer utilities, SEO analyzers, AI single-purpose assistants, data formatters, and converters with 100% client-side privacy.";
+      "Free browser-based developer utilities, SEO analyzers, AI single-purpose assistants, data formatters, and converters with local-tool privacy.";
     let canonicalUrl = `${baseUrl}/`;
 
     // 1. Determine Title & Description based on route / tool
@@ -29,7 +29,7 @@ export function useMetaTags({
       const pillar = tool.pillarKeyword ? ` | ${tool.pillarKeyword}` : "";
       title = `${tool.title}${pillar} — Free Browser Utility | XFree.in`;
       description = tool.shortDescription
-        ? `${tool.shortDescription} 100% free client-side execution, zero data logging, instant output.`
+        ? `${tool.shortDescription} Free browser-based execution.`
         : `Use ${tool.title} for free online in your browser with zero registration and 100% privacy.`;
       canonicalUrl = `${baseUrl}/tools/${tool.slug}`;
     } else if (categoryName) {
@@ -38,7 +38,7 @@ export function useMetaTags({
       canonicalUrl = `${baseUrl}/category/${categoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
     } else if (isClusterPage) {
       title = "100 SEO Keyword Clusters & Micro-Tool Directory | XFree.in";
-      description = "Programmatic SEO directory mapping 100 search intent keyword clusters to 400+ high-performance browser micro-tools.";
+      description = "Programmatic SEO directory mapping 100 search intent keyword clusters to XFree browser tools.";
       canonicalUrl = `${baseUrl}/clusters`;
     } else if (isThinkingPage) {
       title = "Gemini 3.1 Pro Deep Thinking Mode — Complex Analytical Reasoning | XFree.in";
@@ -46,7 +46,7 @@ export function useMetaTags({
       canonicalUrl = `${baseUrl}/thinking`;
     } else if (currentPath === "/how-it-works") {
       title = "How It Works — XFree.in Browser Micro-Tools Architecture";
-      description = "Learn how XFree.in executes 100% client-side web utilities inside your browser with zero server latency and total privacy.";
+      description = "Learn how XFree.in executes browser-based web utilities that keep local-tool input off our servers.";
       canonicalUrl = `${baseUrl}/how-it-works`;
     } else if (currentPath === "/use-cases") {
       title = "Use Cases & Workflows — Developer & SEO Micro-Tools | XFree.in";
@@ -74,7 +74,7 @@ export function useMetaTags({
       canonicalUrl = `${baseUrl}/contact`;
     } else if (currentPath === "/privacy") {
       title = "Privacy Policy — XFree.in Zero Server Upload Standard";
-      description = "XFree.in privacy policy explaining 100% client-side browser execution and zero data logging.";
+      description = "How XFree.in handles data, including advertising cookies from Google AdSense and input to local vs AI tools.";
       canonicalUrl = `${baseUrl}/privacy`;
     } else if (currentPath === "/terms") {
       title = "Terms of Service — XFree.in Web Utilities";
@@ -251,7 +251,7 @@ export function useMetaTags({
         name: "How XFree.in Browser Micro-Tools Work",
         description: "Learn how client-side browser micro-tools process data locally with zero server latency.",
         step: [
-          { "@type": "HowToStep", position: 1, name: "Select Tool", text: "Browse or search 400+ micro-tools." },
+          { "@type": "HowToStep", position: 1, name: "Select Tool", text: "Browse or search the tool directory." },
           { "@type": "HowToStep", position: 2, name: "Input Data", text: "Paste your text, JSON, URLs, or regex patterns into the editor." },
           { "@type": "HowToStep", position: 3, name: "Execute Locally", text: "Data is transformed instantly in your browser JavaScript memory." },
           { "@type": "HowToStep", position: 4, name: "Export Output", text: "Copy or download clean formatted outputs in 1 click." },

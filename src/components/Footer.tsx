@@ -1,5 +1,6 @@
 import React from "react";
 import { Globe, Github, Twitter, Linkedin, Mail, Shield, Zap, Lock, Sparkles, BookOpen, FileText, HelpCircle, ChevronRight } from "lucide-react";
+import { RouterLink } from "./RouterLink";
 
 interface FooterProps {
   onSelectCategory: (catId: string) => void;
@@ -210,44 +211,34 @@ export const Footer: React.FC<FooterProps> = ({
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button
-                  onClick={() => onNavigatePage("/how-it-works")}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
-                >
+                <RouterLink href="/how-it-works" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
                   <span>How It Works</span>
-                </button>
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/use-cases")}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
-                >
-                  <span>Use Cases & Examples</span>
-                </button>
+                <RouterLink href="/use-cases" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
+                  <span>Use Cases &amp; Examples</span>
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/docs")}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
-                >
+                <RouterLink href="/docs" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
                   <span>Documentation Hub</span>
-                </button>
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/blog")}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
-                >
-                  <span>Blog & Pillars</span>
-                </button>
+                <RouterLink href="/guides" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
+                  <span>Guides</span>
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/faq")}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
-                >
-                  <span>FAQ & Guidance</span>
-                </button>
+                <RouterLink href="/blog" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
+                  <span>Blog</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink href="/faq" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
+                  <span>FAQ</span>
+                </RouterLink>
               </li>
             </ul>
           </div>
@@ -255,48 +246,33 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Col 5: Company & Legal */}
           <div className="space-y-3">
             <h4 className="text-white font-bold text-sm tracking-wide uppercase font-mono">
-              Company & Legal
+              Company &amp; Legal
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button
-                  onClick={() => onNavigatePage("/about")}
-                  className="hover:text-slate-200 transition-colors cursor-pointer"
-                >
-                  About Us
-                </button>
+                <RouterLink href="/about" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
+                  About
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/contact")}
-                  className="hover:text-slate-200 transition-colors cursor-pointer"
-                >
-                  Contact Us
-                </button>
+                <RouterLink href="/contact" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
+                  Contact
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/privacy")}
-                  className="hover:text-slate-200 transition-colors cursor-pointer"
-                >
+                <RouterLink href="/privacy" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
                   Privacy Policy
-                </button>
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/terms")}
-                  className="hover:text-slate-200 transition-colors cursor-pointer"
-                >
+                <RouterLink href="/terms" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
                   Terms of Service
-                </button>
+                </RouterLink>
               </li>
               <li>
-                <button
-                  onClick={() => onNavigatePage("/security")}
-                  className="hover:text-slate-200 transition-colors cursor-pointer"
-                >
-                  Security Architecture
-                </button>
+                <RouterLink href="/security" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
+                  Security
+                </RouterLink>
               </li>
             </ul>
           </div>
@@ -305,20 +281,20 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
           <div>
-            © 2026 XFree.in • All client-side tools run locally inside your browser memory.
+            © 2026 XFree.in • Local tools run in your browser; AI tools proxy to Google Gemini. Advertising and consent technologies are disclosed in our Privacy Policy.
           </div>
           <div className="flex items-center space-x-4">
-            <button onClick={() => onNavigatePage("/privacy")} className="hover:text-slate-400 cursor-pointer">
+            <RouterLink href="/privacy" onNavigate={onNavigatePage} className="hover:text-slate-400 cursor-pointer">
               Privacy
-            </button>
-            <span>•</span>
-            <button onClick={() => onNavigatePage("/terms")} className="hover:text-slate-400 cursor-pointer">
+            </RouterLink>
+            <span aria-hidden="true">•</span>
+            <RouterLink href="/terms" onNavigate={onNavigatePage} className="hover:text-slate-400 cursor-pointer">
               Terms
-            </button>
-            <span>•</span>
-            <button onClick={() => onNavigatePage("/security")} className="hover:text-slate-400 cursor-pointer">
+            </RouterLink>
+            <span aria-hidden="true">•</span>
+            <RouterLink href="/security" onNavigate={onNavigatePage} className="hover:text-slate-400 cursor-pointer">
               Security
-            </button>
+            </RouterLink>
           </div>
         </div>
       </div>

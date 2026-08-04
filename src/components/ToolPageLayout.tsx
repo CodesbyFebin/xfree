@@ -138,7 +138,7 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
     },
     {
       question: `Does ${tool.title} work offline?`,
-      answer: `Yes! Once loaded in your browser session, processing runs 100% client-side without needing an active server connection.`
+      answer: `Yes! Once loaded in your browser session, local-tool processing runs in your browser without an active server connection.`
     },
     {
       question: `What is the maximum data or payload size supported?`,
