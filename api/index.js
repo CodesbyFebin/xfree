@@ -6611,7 +6611,7 @@ User-agent: BraveBot
 Allow: /
 Disallow: /api/
 
-# --- AI citation / live-fetch bots (allowed \u2014 they cite you back) ---
+# --- AI citation / live-fetch bots ---
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /api/
@@ -6636,27 +6636,34 @@ User-agent: Applebot
 Allow: /
 Disallow: /api/
 
-# --- Bulk training crawlers (disallowed by default; flip if you consent) ---
+# --- AI training crawlers (allowed per site owner) ---
 User-agent: GPTBot
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: ClaudeBot
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Google-Extended
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Applebot-Extended
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: CCBot
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Meta-ExternalAgent
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Bytespider
-Disallow: /
+Allow: /
+Disallow: /api/
 
 # Discovery files
 Sitemap: ${cleanBase}/sitemap.xml

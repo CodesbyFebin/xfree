@@ -242,12 +242,14 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
 export function generateRobotsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = baseUrl.replace(/\/$/, "");
 
-  // Split-brain policy:
-  //   Allow — live-fetch / citation bots that answer user queries and cite us.
-  //   Allow — traditional search bots.
-  //   Disallow — bulk training / data-scraping crawlers.
-  // Edit if your policy differs. `Disallow: /api/` applies to everyone; the
-  // per-agent sections override for AI/training decisions.
+  // Open-crawl policy per site owner: all bots allowed, including bulk
+  // training crawlers (GPTBot, ClaudeBot, Google-Extended, CCBot, etc.).
+  // Trade-off accepted: content ends up in LLM training corpora in exchange
+  // for showing up in model base knowledge. Only /api/ is still disallowed
+  // (private endpoints, not user-facing content).
+  //
+  // To revert to a split-brain policy (block training, allow citation),
+  // restore the pre-<COMMIT> version from git history.
   return `# Global rules
 User-agent: *
 Allow: /
@@ -270,7 +272,7 @@ User-agent: BraveBot
 Allow: /
 Disallow: /api/
 
-# --- AI citation / live-fetch bots (allowed — they cite you back) ---
+# --- AI citation / live-fetch bots ---
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /api/
@@ -295,27 +297,34 @@ User-agent: Applebot
 Allow: /
 Disallow: /api/
 
-# --- Bulk training crawlers (disallowed by default; flip if you consent) ---
+# --- AI training crawlers (allowed per site owner) ---
 User-agent: GPTBot
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: ClaudeBot
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Google-Extended
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Applebot-Extended
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: CCBot
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Meta-ExternalAgent
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Bytespider
-Disallow: /
+Allow: /
+Disallow: /api/
 
 # Discovery files
 Sitemap: ${cleanBase}/sitemap.xml
