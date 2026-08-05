@@ -68,9 +68,14 @@ function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string): s
     `<meta property="og:url" content="${canonical}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="XFree" />`,
+    `<meta property="og:image" content="${BASE}/og-image.png" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image:alt" content="XFree logo" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`,
     `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`,
+    `<meta name="twitter:image" content="${BASE}/og-image.png" />`,
     // AdSense meta + script are in index.html (template) so prerender does NOT
     // re-inject them here — that would produce duplicate meta tags per route.
     `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": meta.jsonLd })}</script>`,

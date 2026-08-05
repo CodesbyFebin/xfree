@@ -288,6 +288,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
+      {/* Skip-to-content link — visible only when keyboard-focused (a11y) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-cyan-500 focus:text-slate-950 focus:font-bold focus:rounded-lg"
+      >
+        Skip to main content
+      </a>
       {/* Global Application Navigation Header */}
       <Header
         onOpenSearch={() => setCommandPaletteOpen(true)}
@@ -319,7 +326,7 @@ export default function App() {
       />
 
       {/* Main Layout Area */}
-      <main className="flex-1 flex flex-col">
+      <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col">
         {!isKnownRoute ? (
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             <NotFoundPage onGoHome={() => navigateTo("/")} path={currentPath} />
