@@ -1,4 +1,4 @@
-import express, { type Request, type Response, type Express } from "express";
+import express, { type Request, type Response, type NextFunction, type Express } from "express";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
