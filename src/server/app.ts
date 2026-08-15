@@ -237,22 +237,103 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
     } catch (err) { next(err); }
   });
 
-  app.post("/api/lead", leadRateLimit, async (req, res, next) => {
-    try {
-      const parsed = LeadSchema.safeParse(req.body);
-      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
-      if (parsed.data.website) return res.status(200).json({ success: true });
-      const result = await deliverMessage("lead", {
-        subject: `New lead — ${parsed.data.email}`,
-        text: `Email: ${parsed.data.email}\nTask: ${parsed.data.taskDescription}\nRecommended: ${parsed.data.recommendedToolTitle || "n/a"} (${parsed.data.recommendedToolSlug || "n/a"})\nSource: ${parsed.data.source}\nPath: ${parsed.data.path || "n/a"}`,
-        meta: { requestId: (req as any).requestId, ip: req.ip },
-      });
-      if (!result.ok) return res.status(502).json({ error: "delivery_failed" });
-      return res.status(200).json({ success: true, provider: result.provider });
-    } catch (err) { next(err); }
-  });
+app.post("/api/lead", leadRateLimit, async (req, res, next) => {
+      try {
+        const parsed = LeadSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+        if (parsed.data.website) return res.status(200).json({ success: true });
+        const result = await deliverMessage("lead", {
+          subject: `New lead — ${parsed.data.email}`,
+          text: `Email: ${parsed.data.email}\nTask: ${parsed.data.taskDescription}\nRecommended: ${parsed.data.recommendedToolTitle || "n/a"} (${parsed.data.recommendedToolSlug || "n/a"})\nSource: ${parsed.data.source}\nPath: ${parsed.data.path || "n/a"}`,
+          meta: { requestId: (req as any).requestId, ip: req.ip },
+        });
+        if (!result.ok) return res.status(502).json({ error: "delivery_failed" });
+        return res.status(200).json({ success: true, provider: result.provider });
+      } catch (err) { next(err); }
+    });
 
-  app.all("/api/*", (_req, res) => {
+    // === EXECUTION ENGINE API ENDPOINTS ===
+    const solveRateLimit = rateLimit({ scope: "solve", limit: 10, windowMs: 60_000 });
+    const executionRateLimit = rateLimit({ scope: "execution", limit: 20, windowMs: 60_000 });
+    const workflowRateLimit = rateLimit({ scope: "workflow", limit: 5, windowMs: 60_000 });
+
+    app.post("/api/v1/solve/:problem*", solveRateLimit, async (req, res, next) => {
+      try {
+        const problem = decodeURIComponent(req.params.problem || "");
+        const context = {
+          userId: req.headers["x-user-id"] as string,
+          organizationId: req.headers["x-org-id"] as string,
+          preferences: {
+            preferredExecution: (req.headers["x-preferred-execution"] as any) || "local",
+            privacy: (req.headers["x-privacy"] as any) || "local",
+            budget: (req.headers["x-budget"] as any) || "free",
+          }
+        };
+        
+        const result = await solveProblem(problem, context);
+        res.json({ success: true, data: result });
+      } catch (err) { next(err); }
+    });
+
+    app.post("/api/v1/execute/:toolId", executionRateLimit, async (req, res, next) => {
+      try {
+        const toolId = req.params.toolId;
+        const context = {
+          userId: req.headers["x-user-id"] as string,
+          organizationId: req.headers["x-org-id"] as string,
+          preferences: {
+            preferredExecution: (req.headers["x-preferred-execution"] as any) || "local",
+            privacy: (req.headers["x-privacy"] as any) || "local",
+            budget: (req.headers["x-budget"] as any) || "free",
+          }
+        };
+        
+        const result = await executeTool({
+          toolId,
+          input: req.body,
+          context,
+          options: {
+            verify: req.query.verify !== "false",
+            timeout: parseInt(req.query.timeout as string) || 30000,
+          }
+        });
+        
+        res.json({ success: true, data: result });
+      } catch (err) { next(err); }
+    });
+
+    app.post("/api/v1/verify/:toolId", executionRateLimit, async (req, res, next) => {
+      try {
+        const toolId = req.params.toolId;
+        const tool = findToolBySlug(toolId);
+        if (!tool) {
+          return res.status(404).json({ error: "Tool not found" });
+        }
+        
+        const verification = await verifyToolResult(tool, req.body.input, req.body.output);
+        res.json({ success: true, data: verification });
+      } catch (err) { next(err); }
+    });
+
+    app.get("/api/v1/capabilities", (_req, res) => {
+      try {
+        const baseUrl = config.PUBLIC_SITE_URL;
+        const capabilitiesJson = generateCapabilitiesJson(baseUrl);
+        res.header("Content-Type", "application/json");
+        res.send(capabilitiesJson);
+      } catch (err) { next(err); }
+    });
+
+    app.get("/api/v1/tools", (_req, res) => {
+      try {
+        const baseUrl = config.PUBLIC_SITE_URL;
+        const toolsJson = generateToolsJson(baseUrl);
+        res.header("Content-Type", "application/json");
+        res.send(toolsJson);
+      } catch (err) { next(err); }
+    });
+
+    app.all("/api/*", (_req, res) => {
     res.status(404).json({ error: "not_found" });
   });
 

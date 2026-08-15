@@ -77,6 +77,33 @@ export interface XFreeScore {
   breakdown?: Record<string, number>;
 }
 
+export interface ExecutionStep {
+  step: number;
+  action: "execute" | "ai" | "wait" | "verify" | "prompt";
+  toolId: string;
+  expectedOutput?: string;
+  verify?: boolean;
+  prompt?: string;
+}
+
+export interface ExecutionPlan {
+  steps: ExecutionStep[];
+  primaryToolId: string;
+  fallbackToolIds?: string[];
+  constraints: IntentConstraints;
+  confidence: number;
+}
+
+export interface IntentConstraints {
+  privacy?: "local" | "private" | "cloud";
+  budget?: "free" | "open-source" | "paid";
+  urgency?: "instant" | "soon" | "flexible";
+  expertise?: "beginner" | "intermediate" | "advanced";
+  platform?: string[];
+  region?: string;
+  size?: "small" | "medium" | "large" | "unlimited";
+}
+
 export interface ToolDefinition {
   id: string;
   slug: string;
