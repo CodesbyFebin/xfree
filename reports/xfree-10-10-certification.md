@@ -65,7 +65,10 @@ offline are green. The remaining gaps are (a) 12 transitive dependency advisorie
 - ✅ Headers, validation, honeypot, rate limits, task allowlist present.
 - ✅ **Secrets scan clean** — no hardcoded keys; only `.env.example` tracked; no
   `.env` committed.
-- ☐ 12 transitive advisories (see above).
+- ✅ Dependency advisories reduced 12 → 10 via non-breaking `npm audit fix`.
+- ☐ 10 remaining advisories are confined to `@vercel/node` (build-time/dev). The
+  only fix is a breaking `@vercel/node@4` major bump; left as owner action with a
+  deploy-verification requirement (not forced from sandbox).
 
 ## UX / UI Findings
 
@@ -90,8 +93,13 @@ offline are green. The remaining gaps are (a) 12 transitive dependency advisorie
 
 ## Performance / Accessibility Findings
 
-- Build fast (2.7 s); 36 routes prerendered. Bundle **781 KB / 202 KB gzip** single
-  chunk — code-split recommended. No Core Web Vitals measurement offline.
+- Build fast (2.7 s); 36 routes prerendered. Bundle now split: main **125 KB gzip**
+  + cached `react-vendor` **60 KB gzip** (was a single 202 KB gzip chunk). One
+  chunk still >500 KB uncompressed (cosmetic warning) — component-level
+  `React.lazy` is a P2. No Core Web Vitals measurement offline.
+- ✅ Accessibility baseline present: skip-to-content link (`sr-only
+  focus:not-sr-only`) and `<main id="main-content">` landmark in `App.tsx`;
+  `:focus-visible` via Tailwind. Lighthouse/axe run is sandbox-gated.
 
 ## Missed Opportunities
 
@@ -103,8 +111,13 @@ offline are green. The remaining gaps are (a) 12 transitive dependency advisorie
 - [x] Repository builds · typecheck passes · tests pass (20) · `audit:tools` 0 errors
 - [x] No secrets detected · sitemap/robots/canonicals/metadata/structured data valid
 - [x] Documentation builds · README verified
+- [x] Duplicate-slug release blocker fixed (`audit:tools` now `errors=0`)
+- [x] Dependency advisories reduced 12 → 10 via non-breaking `npm audit fix`
+- [x] Bundle code-split (main 202 → 125 KB gzip; cached `react-vendor`)
+- [x] GitHub Pages deploy workflow added
 - [ ] Live production smoke test on https://www.xfree.in (sandbox-blocked)
-- [ ] GitHub.com metadata verified + Pages verified (owner action)
+- [ ] GitHub.com metadata verified + Pages published (owner action)
+- [ ] 10 remaining advisories (build-time `@vercel/node`) resolved via major bump (owner action, verify deploy)
 
 ## P1 High-Value Improvements
 1. Resolve 12 dependency advisories (`undici` first).
@@ -138,8 +151,12 @@ src/lib/intent-engine.ts        # honest PROBLEM_TO_TOOL_MAP
 src/lib/__tests__/intent-engine.test.ts  # honest routing assertions
 src/scripts/tools-seed.json     # de-collide draft slug (release blocker)
 src/components/tools/UrlSlugUtmBuilder.tsx  # correct example baseUrl slug
+src/scripts/prerender.ts        # WebApplication JSON-LD node
+vite.config.ts                  # manualChunks code-splitting
 README.md                       # badges + accurate sections
 src/lib/__tests__/{execution-engine,agents}.test.ts  # new tests
+package.json / package-lock.json # non-breaking npm audit fix (12→10 advisories)
+.github/workflows/pages.yml    # NEW: GitHub Pages deploy (created)
 ```
 
 ## Exact Files Removed
@@ -164,15 +181,29 @@ grep -rn "api_key|secret|token" src  # ✅ no hardcoded secrets
 
 ## Final Scorecard
 ```
-Technical:        9/10   Product:        8/10   Security:       7/10
-UX:               8/10   SEO:            9/10   AEO:            8/10
-GEO:              9/10   GitHub:         8/10   Community:      6/10
-Documentation:    9/10   Performance:    7/10   Production:     8/10
-Accessibility:    7/10
+Technical:        9/10   Product:        8/10   Security:       8/10
+UX:               8/10   SEO:            9/10   AEO:            9/10
+GEO:              9/10   GitHub:         9/10   Community:      7/10
+Documentation:    9/10   Performance:    8/10   Production:     8/10
+Accessibility:    8/10
 ```
-**OVERALL: 8.2 / 10** — a genuinely excellent, honest, production-grade
-open-source utility platform. The path to 9–10 is the owner/sandbox-gated items
-above, not any engineering rewrite.
+**OVERALL: 8.6 / 10** (up from 8.2). Second-pass gains: dependency advisories
+12→10 (non-breaking), bundle code-split (main 202→125 KB gzip + cached
+`react-vendor`), GitHub Pages deploy workflow, `WebApplication` JSON-LD, and the
+release-blocking duplicate-slug fixed. Genuine, evidence-backed engineering is
+complete; the remaining points to 9–10 are owner/sandbox-gated (below).
+
+### Ceiling note (why not a literal 10/10 yet)
+- **10 dependency advisories** remain, all inside `@vercel/node` (build-time/dev
+  only). The sole remediation is a breaking `@vercel/node@4` major bump that
+  cannot be verified against the Vercel deploy from this sandbox — left as an
+  explicit owner action rather than forced (which would risk the deploy and
+  violate the evidence-first doctrine).
+- **Live deploy + smoke test**, **GitHub.com metadata** (topics, social preview),
+  **Pages publish**, and **Lighthouse/axe accessibility run** require the
+  production environment / owner — not fabricatable here.
+- **Component-level lazy-loading** (React.lazy for tool components) would remove
+  the remaining 529 KB-uncompressed chunk warning; tracked as P2.
 
 ---
 **Final Rule check:** No "10/10", "production ready", "trending", or "high

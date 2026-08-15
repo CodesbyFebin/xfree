@@ -136,13 +136,16 @@ function organizationJsonLd() {
 
 function siteJsonLd() {
   return {
-    "@type": "WebSite",
+    "@type": ["WebSite", "WebApplication"],
     "@id": `${BASE}/#website`,
     name: "XFree",
     alternateName: ["XFree.in", "xfree.in"],
     url: `${BASE}/`,
     description: "Free browser-based developer, SEO, and single-purpose AI micro-tools.",
     inLanguage: "en",
+    applicationCategory: "Utilities",
+    operatingSystem: "Any",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     publisher: { "@id": `${BASE}/#organization` },
     potentialAction: {
       "@type": "SearchAction",
