@@ -147,23 +147,26 @@ function extractConstraints(query: string): IntentConstraints {
   return constraints;
 }
 
+// Only maps to tools that genuinely exist in TOOLS_REGISTRY and actually
+// perform the described task. Intents with no real tool (e.g. "compress pdf",
+// "remove background") are intentionally absent — we never route a user to a
+// tool that cannot solve their problem.
 const PROBLEM_TO_TOOL_MAP: Record<string, string[]> = {
-  "compress pdf": ["bulk-url-sitemap", "xml-sitemap-generator"],
-  "remove background": ["json-formatter", "regex-tester"],
-  "convert file to pdf": ["base64-encoder-decoder", "json-formatter"],
-  "clean csv": ["json-formatter", "regex-tester"],
   "generate sitemap": ["bulk-url-sitemap", "xml-sitemap-generator"],
-  "format json": ["json-formatter", "regex-tester"],
-  "validate sitemap": ["xml-sitemap-generator", "bulk-url-sitemap"],
-  "remove image background": ["json-formatter", "regex-tester"],
-  "compress image": ["json-formatter", "regex-tester"],
-  "extract urls": ["bulk-url-sitemap", "url-slug-utm-builder"],
+  "extract urls": ["bulk-url-sitemap"],
+  "format json": ["json-formatter"],
+  "validate json": ["json-formatter"],
+  "test regex": ["regex-tester"],
+  "generate cron": ["cron-expression-generator"],
+  "cron schedule": ["cron-expression-generator"],
   "generate meta tags": ["meta-tag-generator", "schema-markup-generator"],
   "generate schema markup": ["schema-markup-generator", "meta-tag-generator"],
-  "edit code": ["json-formatter", "regex-tester"],
-  "test regex": ["regex-tester", "json-formatter"],
-  "generate uuid": ["cron-expression-generator", "url-slug-utm-builder"],
-  "calculate": ["json-formatter", "regex-tester"],
+  "generate robots.txt": ["robots-txt-generator"],
+  "decode base64": ["base64-encoder-decoder"],
+  "decode jwt": ["base64-encoder-decoder"],
+  "generate url slug": ["url-slug-utm-builder"],
+  "utm builder": ["url-slug-utm-builder"],
+  "validate sitemap": ["xml-sitemap-generator", "bulk-url-sitemap"],
 };
 
 export function classifyIntent(query: string): IntentClassification {

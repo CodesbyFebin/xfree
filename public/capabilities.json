@@ -1,0 +1,8 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "XFree Capabilities",
+  "description": "Structured capability definitions for all tools in the XFree registry",
+  "url": "https://www.xfree.in",
+  "itemListElement": []
+}

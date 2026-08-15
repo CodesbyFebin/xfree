@@ -1,0 +1,14 @@
+{
+  "ignorePatterns": [
+    { "pattern": "^https://www.xfree.in/" },
+    { "pattern": "^https://xfree.in/" },
+    { "pattern": "github.com/CodesbyFebin/xfree" },
+    { "pattern": "^mailto:" },
+    { "pattern": "aistudio.google.com" },
+    { "pattern": "ai.google.dev" },
+    { "pattern": "support.google.com" }
+  ],
+  "timeout": "20s",
+  "retryOn429": true,
+  "aliveStatusCodes": [200, 206, 301, 302, 307, 308]
+}

@@ -1,0 +1,22 @@
+name: Documentation
+description: Report a docs error, gap, or suggestion
+title: "[docs]: "
+labels: ["documentation"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Document location
+      placeholder: docs/production-readiness.md or https://www.xfree.in/docs
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong or missing?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix

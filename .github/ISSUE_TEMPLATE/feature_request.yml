@@ -1,0 +1,56 @@
+name: Feature request
+description: Propose a new tool, page, or capability for XFree.in
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One-line description of the proposed capability.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - SEO & URL Tools
+        - Developer Tools
+        - Single-Purpose AI Tools
+        - Text & Diff Tools
+        - Converters & Encoders
+        - Generators
+        - Validators
+        - Other / cross-cutting
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem it solves
+      description: What user intent or pain point does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: How should it work? Is it local (browser) or AI-backed?
+    validations:
+      required: true
+  - type: dropdown
+    id: execution
+    attributes:
+      label: Execution model
+      options:
+        - "Local (runs in browser, no upload)"
+        - "AI-backed (proxied to Gemini server-side)"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to specs, similar tools, or standards.

@@ -1,5 +1,9 @@
 # XFree.in
 
+[![CI](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml/badge.svg)](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](tsconfig.json)
+
 Free browser-based developer, SEO, and single-purpose AI micro-tools. Live at [https://www.xfree.in](https://www.xfree.in).
 
 ## What this actually is
@@ -69,7 +73,7 @@ Every var is defined and validated in [`src/server/env.ts`](src/server/env.ts). 
 |---|---|
 | `npm run dev` | Local dev server + Vite HMR |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run test` | Vitest (no test files yet — `vitest` installed for when they're added) |
+| `npm run test` | Vitest — `src/lib/__tests__/*` (intent engine, execution engine, agents) |
 | `npm run audit:tools` | Fails the build if any `indexable` tool has no matching `case` in `App.tsx` |
 | `npm run lint:noindex` | Fails the build if any non-404 prerendered HTML carries `noindex` |
 | `npm run generate:sitemap` | Emits `public/sitemap.xml`, `rss.xml`, `robots.txt`, `llms.txt` |
@@ -124,15 +128,18 @@ All AI calls run through `generateWithTimeout` (30 s default via `GEMINI_REQUEST
 
 ## Contributing
 
-No `CONTRIBUTING.md` yet. The short version:
+See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md). Short version:
 
 - New tools: `npm run generate:tool -- --slug=... --title=... --category=... --description=...`. Component starts as a placeholder and the registry entry starts as `status: "draft"` — the sitemap and server 404-guard both filter it out until you flip to `indexable` and implement the component for real.
 - New guides: hand-write in `src/data/guides.ts`. Each guide requires an `overview`, sectioned body, and a `lastReviewed` date the author is willing to defend.
 - Content rules: [`docs/content.md`](docs/content.md).
+- Security issues: see [`.github/SECURITY.md`](.github/SECURITY.md) — private reporting only, never a public issue.
+
+CI (`.github/workflows/ci.yml`) runs typecheck → test → `audit:tools` → build → `lint:noindex` on every PR. The `verify` script runs the same locally.
 
 ## License
 
-None declared. If you need a specific license, open an issue.
+[MIT](LICENSE).
 
 ## Status
 

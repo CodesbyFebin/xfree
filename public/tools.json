@@ -1,0 +1,189 @@
+{
+  "@context": "https://schema.org",
+  "@type": "DataCatalog",
+  "name": "XFree Tools Catalog",
+  "description": "Complete catalog of all indexable tools on XFree.in",
+  "url": "https://www.xfree.in",
+  "dataset": [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/xml-sitemap-generator",
+      "name": "XML Sitemap Generator & Validator",
+      "description": "Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets.",
+      "applicationCategory": "SEO & URL Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/xml-sitemap-generator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/robots-txt-generator",
+      "name": "Robots.txt Generator & User-Agent Rule Tester",
+      "description": "Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps.",
+      "applicationCategory": "SEO & URL Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/robots-txt-generator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/meta-tag-generator",
+      "name": "Meta Tag & Open Graph Social Card Preview",
+      "description": "Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.",
+      "applicationCategory": "SEO & URL Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/meta-tag-generator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/schema-markup-generator",
+      "name": "Schema Markup Generator (JSON-LD Structured Data)",
+      "description": "Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.",
+      "applicationCategory": "SEO & URL Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/schema-markup-generator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-formatter",
+      "name": "JSON / XML Formatter, Validator & Tree Viewer",
+      "description": "Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-formatter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/regex-tester",
+      "name": "Regex Tester & Interactive Match Explainer",
+      "description": "Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/regex-tester",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/bulk-url-extractor",
+      "name": "Bulk URL Extractor & Sitemap Generator",
+      "description": "Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.",
+      "applicationCategory": "SEO & URL Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/bulk-url-extractor",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/cron-expression-generator",
+      "name": "Cron Expression Generator & Human Translator",
+      "description": "Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.",
+      "applicationCategory": "Generators",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/cron-expression-generator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/base64-encoder-decoder",
+      "name": "Base64 Encoder/Decoder & JWT Token Inspector",
+      "description": "Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/base64-encoder-decoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/url-slug-utm-builder",
+      "name": "URL Slug Generator & Campaign UTM Parameter Builder",
+      "description": "Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).",
+      "applicationCategory": "Generators",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/url-slug-utm-builder",
+      "sameAs": []
+    }
+  ]
+}
