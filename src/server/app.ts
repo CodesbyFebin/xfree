@@ -26,6 +26,11 @@ import {
   generateLlmsFullTxt,
   generateRobotsTxt,
 } from "../utils/generateSitemap";
+import {
+  generateCapabilitiesJson,
+  generateToolsJson,
+} from "../utils/generateStructuredData";
+import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
 import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";

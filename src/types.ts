@@ -77,13 +77,59 @@ export interface XFreeScore {
   breakdown?: Record<string, number>;
 }
 
+export interface WorkflowStep {
+  step: number;
+  toolId: string;
+  action: "execute" | "ai" | "wait" | "verify" | "prompt";
+  expectedOutput?: string;
+  verify?: boolean;
+  prompt?: string;
+  transform?: (input: any) => any;
+}
+
+export interface WorkflowDefinition {
+  id: string;
+  name: string;
+  description: string;
+  steps: WorkflowStep[];
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExecutionPlan {
+  steps: ExecutionStep[];
+  primaryToolId: string;
+  fallbackToolIds?: string[];
+  constraints: IntentConstraints;
+  confidence: number;
+}
+
 export interface ExecutionStep {
   step: number;
   action: "execute" | "ai" | "wait" | "verify" | "prompt";
   toolId: string;
   expectedOutput?: string;
   verify?: boolean;
+  transform?: (input: any) => any;
   prompt?: string;
+}
+
+export interface ExecutionResult {
+  success: boolean;
+  output?: any;
+  error?: string;
+  verification?: VerificationResult;
+  executionTimeMs: number;
+  toolExecuted?: string;
+}
+
+export interface VerificationResult {
+  valid: boolean;
+  issues: string[];
+  checksPerformed: string[];
+  confidence: number;
+    evidence?: any[];
 }
 
 export interface ExecutionPlan {

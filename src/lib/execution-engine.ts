@@ -1,4 +1,4 @@
-import { XFreeScore, ExecutionStep, ExecutionPlan } from "../types";
+import { ToolDefinition, ExecutionStep, ExecutionPlan, ExecutionResult, VerificationResult, IntentConstraints } from "../types";
 import { TOOLS_REGISTRY, INDEXABLE_TOOLS, findIndexableTool, findToolBySlug } from "../data/toolsRegistry";
 import { classifyIntent, routeIntentToCapabilities, buildExecutionPlan } from "./intent-engine";
 
@@ -11,24 +11,6 @@ export interface ExecutionContext {
     privacy: "local" | "private" | "cloud";
     budget: "free" | "open-source" | "paid";
   };
-}
-
-export interface ExecutionResult {
-  success: boolean;
-  output?: any;
-  error?: string;
-  verification?: VerificationResult;
-  executionTimeMs: number;
-  toolExecuted?: string;
-  traceId: string;
-}
-
-export interface VerificationResult {
-  valid: boolean;
-  issues: string[];
-  checksPerformed: string[];
-  confidence: number;
-  evidence?: any[];
 }
 
 export interface ToolExecutionRequest {
