@@ -7,8 +7,75 @@ export type ToolCategory =
   | "generators"
   | "validators";
 
-export type ToolExecutionMode = "local" | "ai";
+export type ToolExecutionMode = "local" | "ai" | "workflow";
 export type ToolStatus = "draft" | "indexable" | "noindex" | "retired";
+export type VerificationStatus = "verified" | "pending" | "failed" | "unknown";
+export type PricingModel = "free" | "freemium" | "paid" | "custom";
+
+export interface ToolCapabilities {
+  id: string;
+  name: string;
+  description: string;
+  inputSchema: Record<string, any>;
+  outputSchema: Record<string, any>;
+  requiredAuth?: boolean;
+  supportsBatch?: boolean;
+  estimatedLatencyMs?: number;
+}
+
+export interface ToolPricing {
+  model: PricingModel;
+  freeTier?: {
+    limits: string[];
+    features: string[];
+  };
+  paidTiers?: Array<{
+    name: string;
+    price: string;
+    features: string[];
+  }>;
+  currency: string;
+}
+
+export interface ToolLimits {
+  rateLimit?: string;
+  maxInputSize?: string;
+  maxOutputSize?: string;
+  dailyQuota?: number;
+  concurrentRequests?: number;
+}
+
+export interface ToolIntegrations {
+  apis?: string[];
+  webhooks?: string[];
+  mcpServers?: string[];
+  cliTools?: string[];
+  platforms?: string[];
+}
+
+export interface ToolVerification {
+  status: VerificationStatus;
+  lastVerified: string;
+  verificationMethod: "automated" | "manual" | "user-reported" | "provider-reported";
+  verifiedCapabilities: string[];
+  knownIssues?: string[];
+}
+
+export interface XFreeScore {
+  overall: number;
+  capabilityFit: number;
+  reliability: number;
+  speed: number;
+  privacy: number;
+  pricing: number;
+  freeTier: number;
+  ux: number;
+  integrationQuality: number;
+  freshness: number;
+  availability: number;
+  userSuccess: number;
+  breakdown?: Record<string, number>;
+}
 
 export interface ToolDefinition {
   id: string;
@@ -38,6 +105,23 @@ export interface ToolDefinition {
   supportedInputs?: string[];
   supportedOutputs?: string[];
   limitations?: string[];
+
+  // New structured capability fields
+  capabilities?: ToolCapabilities[];
+  pricing?: ToolPricing;
+  limits?: ToolLimits;
+  integrations?: ToolIntegrations;
+  verification?: ToolVerification;
+  xfreeScore?: XFreeScore;
+  supportedRegions?: string[];
+  supportedPlatforms?: string[];
+  availability?: "available" | "degraded" | "unavailable" | "unknown";
+  reliability?: number;
+  securityReview?: {
+    passed: boolean;
+    reviewedAt: string;
+    notes?: string;
+  };
 }
 
 export interface SavedItem {
