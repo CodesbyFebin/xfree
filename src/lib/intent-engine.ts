@@ -148,22 +148,22 @@ function extractConstraints(query: string): IntentConstraints {
 }
 
 const PROBLEM_TO_TOOL_MAP: Record<string, string[]> = {
-  "compress pdf": ["pdf-compression-tool", "bulk-url-extractor-sitemap"],
-  "remove background": ["remove-background-tool", "image-compression-tool"],
-  "convert file to pdf": ["file-converter-tool", "pdf-merge-tool"],
-  "clean csv": ["csv-cleaner-tool", "json-formatter"],
+  "compress pdf": ["bulk-url-sitemap", "xml-sitemap-generator"],
+  "remove background": ["json-formatter", "regex-tester"],
+  "convert file to pdf": ["base64-encoder-decoder", "json-formatter"],
+  "clean csv": ["json-formatter", "regex-tester"],
   "generate sitemap": ["bulk-url-sitemap", "xml-sitemap-generator"],
-  "format json": ["json-formatter", "json-repair-tool"],
-  "validate sitemap": ["sitemap-validator-tool", "xml-sitemap-generator"],
-  "remove image background": ["background-remover-tool", "image-compressor-tool"],
-  "compress image": ["image-compressor-tool", "bulk-url-sitemap"],
-  "extract urls": ["bulk-url-sitemap", "url-extractor-tool"],
+  "format json": ["json-formatter", "regex-tester"],
+  "validate sitemap": ["xml-sitemap-generator", "bulk-url-sitemap"],
+  "remove image background": ["json-formatter", "regex-tester"],
+  "compress image": ["json-formatter", "regex-tester"],
+  "extract urls": ["bulk-url-sitemap", "url-slug-utm-builder"],
   "generate meta tags": ["meta-tag-generator", "schema-markup-generator"],
   "generate schema markup": ["schema-markup-generator", "meta-tag-generator"],
-  "edit code": ["code-editor-tool", "regex-tester"],
-  "test regex": ["regex-tester", "regex-debugger-tool"],
-  "generate uuid": ["uuid-generator-tool", "random-id-tool"],
-  "calculate": ["calculator-tool", "math-tool"],
+  "edit code": ["json-formatter", "regex-tester"],
+  "test regex": ["regex-tester", "json-formatter"],
+  "generate uuid": ["cron-expression-generator", "url-slug-utm-builder"],
+  "calculate": ["json-formatter", "regex-tester"],
 };
 
 export function classifyIntent(query: string): IntentClassification {
@@ -245,6 +245,7 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
 
   const matchingTools: ToolDefinition[] = [];
 
+  // Check capability-based matching first
   if (intent.capabilities && intent.capabilities.length > 0) {
     for (const toolId of intent.capabilities) {
       const tool = TOOLS_REGISTRY.find(t => t.id === toolId || t.slug === toolId);
@@ -254,24 +255,40 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
     }
   }
 
-  const queryLower = intent.intent.toLowerCase();
-  const categorizedTools = INDEXABLE_TOOLS.filter(tool => {
-    for (const keyword of INTENT_KEYWORDS[intent.intent as keyof typeof INTENT_KEYWORDS] || []) {
-      if (keyword.split(" ").some(w => queryLower.includes(w))) {
-        return true;
-      }
+  // Categorize tools based on intent keywords
+  const intentKeywords = INTENT_KEYWORDS[intent.intent as keyof typeof INTENT_KEYWORDS] || [];
+  for (const tool of INDEXABLE_TOOLS) {
+    // Check if tool tags match the intent
+    if (intentKeywords.some(kw => tool.tags.some(tag => tag.toLowerCase().includes(kw.toLowerCase())))) {
+      matchingTools.push(tool);
     }
-    return tool.tags.some(tag => queryLower.includes(tag.toLowerCase()));
-  });
-
-  if (categorizedTools.length > 0) {
-    matchingTools.push(...categorizedTools);
   }
 
-  const allMatched = [...matchingTools, ...categorizedTools.filter(t => !matchingTools.map(m => m.id).includes(t.id))];
-  const deduplicated = Array.from(new Map(allMatched.map(t => [t.id, t])).values());
+  // Also check by entity matching
+  for (const entity of intent.entities) {
+    for (const tool of INDEXABLE_TOOLS) {
+      if (tool.tags.some(tag => tag.toLowerCase().includes(entity)) || 
+          tool.title.toLowerCase().includes(entity.replace(/-/g, " "))) {
+        matchingTools.push(tool);
+      }
+    }
+  }
 
-  if (deduplicated.length === 0) {
+  // Deduplicate
+  const allMatched = Array.from(new Map(matchingTools.map(t => [t.id, t])).values());
+
+  if (allMatched.length === 0) {
+    // Fallback: match by query terms in tool title/description/tags
+    const queryTerms = intent.intent.toLowerCase().split(/[\s-_]+/).filter(t => t.length > 3);
+    for (const tool of INDEXABLE_TOOLS) {
+      const searchableText = `${tool.title} ${tool.shortDescription} ${tool.tags.join(" ")}`.toLowerCase();
+      if (queryTerms.some(term => searchableText.includes(term))) {
+        allMatched.push(tool);
+      }
+    }
+  }
+
+  if (allMatched.length === 0) {
     return {
       toolIds: [],
       confidence: 0.1,
@@ -279,8 +296,8 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
     };
   }
 
-  const primaryTool = deduplicated[0];
-  const secondaryTools = deduplicated.slice(1, 4);
+  const primaryTool = allMatched[0];
+  const secondaryTools = allMatched.slice(1, 4);
 
   results.toolIds = [primaryTool.id, ...secondaryTools.map(t => t.id)];
   results.confidence = Math.min(0.95, primaryTool.isFlagship ? 0.9 : 0.75);
