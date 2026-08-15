@@ -20,7 +20,7 @@ export const UrlSlugUtmBuilder: React.FC<UrlSlugUtmBuilderProps> = ({
   const [separator, setSeparator] = useState("-");
 
   // UTM Builder State
-  const [baseUrl, setBaseUrl] = useState("https://xfree.in/tools/bulk-url-sitemap");
+  const [baseUrl, setBaseUrl] = useState("https://xfree.in/tools/bulk-url-extractor");
   const [utmSource, setUtmSource] = useState("newsletter");
   const [utmMedium, setUtmMedium] = useState("email");
   const [utmCampaign, setUtmCampaign] = useState("launch_2026");
