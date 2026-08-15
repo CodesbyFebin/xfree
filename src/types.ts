@@ -50,6 +50,21 @@ export interface SavedItem {
   starred?: boolean;
 }
 
+export interface IntentDefinition {
+  id: string;
+  phrases: readonly string[];
+  keywords: readonly string[];
+  capabilities: readonly string[];
+  preferredToolId: string;
+  description: string;
+}
+
+export interface IntentMatch {
+  intent: IntentDefinition;
+  score: number;
+  confidence: "high" | "medium" | "low";
+}
+
 export interface WorkspacePreset {
   id: string;
   name: string;

@@ -559,3 +559,7 @@ export function findIndexableTool(slug: string): ToolDefinition | undefined {
 export function findToolBySlug(slug: string): ToolDefinition | undefined {
   return TOOLS_REGISTRY.find((t) => t.slug === slug || t.id === slug);
 }
+
+export function findToolById(id: string): ToolDefinition | undefined {
+  return TOOLS_REGISTRY.find((t) => t.id === id);
+}

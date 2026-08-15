@@ -1,13 +1,9 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { TOOLS_REGISTRY, INDEXABLE_TOOLS, findIndexableTool } from "./data/toolsRegistry";
-import { KEYWORD_CLUSTERS } from "./data/clustersData";
 import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath } from "./data/routes";
 import { findGuide } from "./data/guides";
 import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
 import { Header } from "./components/Header";
-import { HeroBanner } from "./components/HeroBanner";
-import { QuickLinksSection } from "./components/QuickLinksSection";
-import { PopularAndCategoriesSection } from "./components/PopularAndCategoriesSection";
 import { Footer } from "./components/Footer";
 import { ToolCard } from "./components/ToolCard";
 import { CommandPalette } from "./components/CommandPalette";
@@ -18,8 +14,9 @@ import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
 import { ThinkingModeComponent } from "./components/ThinkingModeComponent";
 import { CategoryHubView } from "./components/CategoryHubView";
 import { useMetaTags } from "./hooks/useMetaTags";
+import { IntentHomepage } from "./components/IntentHomepage";
+import { Search } from "lucide-react";
 
-// Import Static Pages
 import { HowItWorksPage } from "./components/pages/HowItWorksPage";
 import { UseCasesPage } from "./components/pages/UseCasesPage";
 import { DocsHubPage } from "./components/pages/DocsHubPage";
@@ -36,7 +33,6 @@ import { GuideIndexPage } from "./components/pages/GuideIndexPage";
 import { GuidePage } from "./components/pages/GuidePage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 
-// Import Micro-Tools
 import { BulkUrlExtractorSitemap } from "./components/tools/BulkUrlExtractorSitemap";
 import { RobotsTxtGenerator } from "./components/tools/RobotsTxtGenerator";
 import { MetaTagOpenGraphPreview } from "./components/tools/MetaTagOpenGraphPreview";
@@ -50,16 +46,17 @@ import { TimestampColorConverter } from "./components/tools/TimestampColorConver
 import { TextDiffChecker } from "./components/tools/TextDiffChecker";
 import { AiMicroToolComponent } from "./components/tools/AiMicroToolComponent";
 
+export type ActiveView = "intent" | "tools" | "clusters" | "thinking" | "category-hub" | "page";
+
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
-  const [activeView, setActiveView] = useState<"tools" | "clusters" | "thinking" | "category-hub" | "page">("tools");
+  const [activeView, setActiveView] = useState<ActiveView>("intent");
   const [searchQuery, setSearchQuery] = useState("");
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [savedDrawerOpen, setSavedDrawerOpen] = useState(false);
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
 
-  // Persistence State
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem("xfree_favorites") || "[]");
@@ -84,7 +81,6 @@ export default function App() {
     }
   });
 
-  // Handle browser popstate / back / forward navigation
   useEffect(() => {
     const handleLocationChange = () => {
       setCurrentPath(window.location.pathname);
@@ -95,34 +91,40 @@ export default function App() {
     return () => window.removeEventListener("popstate", handleLocationChange);
   }, []);
 
-  // Sync favorites to localStorage
   useEffect(() => {
     localStorage.setItem("xfree_favorites", JSON.stringify(favoriteIds));
   }, [favoriteIds]);
 
-  // Sync history to localStorage
   useEffect(() => {
     localStorage.setItem("xfree_history", JSON.stringify(savedHistory));
   }, [savedHistory]);
 
-  const navigateTo = (path: string) => {
+  const navigateTo = useCallback((path: string) => {
     window.history.pushState({}, "", path);
     setCurrentPath(path);
-    if (["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app"].includes(path)) {
+    if (path === "/") {
+      setActiveView("intent");
+    } else if (["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/guides"].includes(path)) {
       setActiveView("page");
-    } else if (path === "/") {
+    } else if (path.startsWith("/tools/")) {
       setActiveView("tools");
+    } else if (path.startsWith("/category/")) {
+      setActiveView("category-hub");
+    } else if (path.startsWith("/clusters")) {
+      setActiveView("clusters");
+    } else if (path.startsWith("/thinking")) {
+      setActiveView("thinking");
     }
     window.scrollTo(0, 0);
-  };
+  }, []);
 
-  const toggleFavorite = (toolId: string) => {
+  const toggleFavorite = useCallback((toolId: string) => {
     setFavoriteIds((prev) =>
       prev.includes(toolId) ? prev.filter((id) => id !== toolId) : [...prev, toolId]
     );
-  };
+  }, []);
 
-  const handleSaveHistory = (toolId: string, toolTitle: string, inputSnippet: string, outputSnippet: string) => {
+  const handleSaveHistory = useCallback((toolId: string, toolTitle: string, inputSnippet: string, outputSnippet: string) => {
     const newItem: SavedItem = {
       id: `${toolId}-${Date.now()}`,
       toolId,
@@ -132,36 +134,32 @@ export default function App() {
       outputSnippet,
     };
     setSavedHistory((prev) => [newItem, ...prev.slice(0, 19)]);
-  };
+  }, []);
 
-  const handleSaveWorkspace = (presetData: Omit<WorkspacePreset, "id" | "timestamp">) => {
+  const handleSaveWorkspace = useCallback((presetData: Omit<WorkspacePreset, "id" | "timestamp">) => {
     const newPreset: WorkspacePreset = {
       ...presetData,
       id: `preset_${Date.now()}`,
       timestamp: Date.now(),
     };
     setWorkspacePresets((prev) => [newPreset, ...prev]);
-  };
+  }, []);
 
-  const handleDeleteWorkspace = (presetId: string) => {
+  const handleDeleteWorkspace = useCallback((presetId: string) => {
     setWorkspacePresets((prev) => prev.filter((p) => p.id !== presetId));
-  };
+  }, []);
 
-  const handleLoadWorkspacePreset = (preset: WorkspacePreset) => {
+  const handleLoadWorkspacePreset = useCallback((preset: WorkspacePreset) => {
     navigateTo(`/tools/${preset.toolSlug}`);
-  };
+  }, [navigateTo]);
 
-  const clearHistory = () => {
+  const clearHistory = useCallback(() => {
     setSavedHistory([]);
-  };
+  }, []);
 
-  // Find active tool if path is /tools/:slug — no dynamic thin-content generation.
   const activeToolSlug = currentPath.startsWith("/tools/") ? currentPath.replace("/tools/", "").replace(/\/$/, "") : null;
   const activeTool = useMemo(() => {
     if (!activeToolSlug) return null;
-    // IMPORTANT: only INDEXABLE tools render. Draft/planned slugs fall through
-    // to the 404 view so the client agrees with the server's HTTP 404 rather
-    // than hydrating a fake "planned utility" page over a 404 shell.
     return findIndexableTool(activeToolSlug) ?? null;
   }, [activeToolSlug]);
 
@@ -177,7 +175,6 @@ export default function App() {
     return false;
   }, [currentPath, activeTool, activeToolSlug, activeGuide, activeGuideSlug]);
 
-  // Hook for dynamic head meta tag management (SEO pSEO pillar keywords & JSON-LD schemas)
   useMetaTags({
     tool: activeTool,
     isClusterPage: activeView === "clusters",
@@ -185,29 +182,19 @@ export default function App() {
     currentPath,
   });
 
-  // Filter tools based on category and search
   const filteredTools = useMemo(() => {
-    return TOOLS_REGISTRY.filter((tool) => {
-      const matchesCategory =
-        activeCategory === "all" ||
-        tool.category === activeCategory ||
-        (activeCategory === "seo-tools" && (tool.category as string) === "seo-url") ||
-        (activeCategory === "developer-tools" && (tool.category as string) === "developer");
-
-      const query = searchQuery.toLowerCase().trim();
-      if (!query) return matchesCategory;
-
+    if (!searchQuery) return INDEXABLE_TOOLS;
+    const q = searchQuery.toLowerCase().trim();
+    return INDEXABLE_TOOLS.filter((tool) => {
       const matchesQuery =
-        tool.title.toLowerCase().includes(query) ||
-        tool.shortDescription.toLowerCase().includes(query) ||
-        tool.tags.some((tag) => tag.toLowerCase().includes(query)) ||
-        (tool.pillarKeyword && tool.pillarKeyword.toLowerCase().includes(query));
-
-      return matchesCategory && matchesQuery;
+        tool.title.toLowerCase().includes(q) ||
+        tool.shortDescription.toLowerCase().includes(q) ||
+        tool.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+        (tool.pillarKeyword && tool.pillarKeyword.toLowerCase().includes(q));
+      return matchesQuery;
     });
-  }, [activeCategory, searchQuery]);
+  }, [searchQuery]);
 
-  // Render micro-tool component based on ID or fallback
   const renderToolComponent = (tool: ToolDefinition) => {
     const saveHist = (inSnip: string, outSnip: string) => {
       handleSaveHistory(tool.id, tool.title, inSnip, outSnip);
@@ -242,7 +229,6 @@ export default function App() {
     }
   };
 
-  // Render Static SEO/Trust Page Content if path matches
   const renderStaticPage = () => {
     switch (currentPath) {
       case "/how-it-works":
@@ -286,16 +272,23 @@ export default function App() {
 
   const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/guides"].includes(currentPath) || activeGuideSlug !== null;
 
+  const popularTools = INDEXABLE_TOOLS.filter((t) => t.isFlagship || t.isAi).slice(0, 6);
+  const allToolsByCategory: Record<string, ToolDefinition[]> = {};
+  INDEXABLE_TOOLS.forEach((tool) => {
+    const cat = tool.category;
+    if (!allToolsByCategory[cat]) allToolsByCategory[cat] = [];
+    allToolsByCategory[cat].push(tool);
+  });
+
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
-      {/* Skip-to-content link — visible only when keyboard-focused (a11y) */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-cyan-500 focus:text-slate-950 focus:font-bold focus:rounded-lg"
       >
         Skip to main content
       </a>
-      {/* Global Application Navigation Header */}
+
       <Header
         onOpenSearch={() => setCommandPaletteOpen(true)}
         onOpenSaved={() => setSavedDrawerOpen(true)}
@@ -313,7 +306,7 @@ export default function App() {
         favoritesCount={favoriteIds.length}
         historyCount={savedHistory.length}
         onGoHome={() => {
-          setActiveView("tools");
+          setActiveView("intent");
           navigateTo("/");
         }}
         onGoClusters={() => {
@@ -325,19 +318,16 @@ export default function App() {
         activeView={activeView}
       />
 
-      {/* Main Layout Area */}
       <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col">
         {!isKnownRoute ? (
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             <NotFoundPage onGoHome={() => navigateTo("/")} path={currentPath} />
           </div>
         ) : isStaticRoute ? (
-          /* Render Static Page View */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             {renderStaticPage()}
           </div>
         ) : activeTool ? (
-          /* Tool Detail Screen */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             <ToolPageLayout
               tool={activeTool}
@@ -352,12 +342,10 @@ export default function App() {
             </ToolPageLayout>
           </div>
         ) : activeView === "thinking" ? (
-          /* Thinking Mode View (gemini-3.1-pro-preview) */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             <ThinkingModeComponent />
           </div>
         ) : activeView === "category-hub" ? (
-          /* Dedicated Category Hub View */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             <CategoryHubView
               categorySlug={activeCategory === "all" ? "seo-tools" : activeCategory}
@@ -368,7 +356,6 @@ export default function App() {
             />
           </div>
         ) : activeView === "clusters" ? (
-          /* 100 Keyword Clusters Hub View */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             <ClusterDirectory
               onSelectKeywordTool={(kw) => {
@@ -377,51 +364,74 @@ export default function App() {
               }}
             />
           </div>
+        ) : activeView === "intent" ? (
+          <IntentHomepage
+            onNavigateToTool={(slug) => navigateTo(`/tools/${slug}`)}
+            onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+          />
         ) : (
-          /* Micro-Tools Suite Directory Grid Screen */
-          <div className="p-4 sm:p-8 space-y-12 max-w-7xl mx-auto w-full flex-1">
-            {/* Hero Banner Section */}
-            <HeroBanner
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-              totalTools={INDEXABLE_TOOLS.length}
-              onExploreFreeTools={() => setActiveCategory("all")}
-              onBrowseAiTools={() => setActiveCategory("ai-tools")}
-            />
-
-            {/* Quick Links Section */}
-            <QuickLinksSection onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />
-
-            {/* Micro-Tools Grid */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-400 tracking-wide">
-                <span>
-                  Showing {filteredTools.length} {activeCategory !== "all" ? activeCategory : ""} Tools
-                </span>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="text-cyan-400 hover:underline cursor-pointer"
-                  >
-                    Clear Search Filter
-                  </button>
-                )}
+          <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
+            <div className="space-y-12">
+              <div className="text-center mb-12">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
+                  The fastest way to get things done online.
+                </h1>
+                <p className="text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto mt-6 mb-8">
+                  Tell XFree what you need to accomplish. We'll find the right capability, open the right tool, and help you complete the task.
+                </p>
               </div>
 
-              {filteredTools.length === 0 ? (
-                <div className="p-12 text-center glass-panel rounded-3xl space-y-2">
-                  <div className="text-white font-bold text-base">
-                    No micro-tools found matching "{searchQuery}"
-                  </div>
-                  <p className="text-slate-400 text-xs">
-                    Try searching for "sitemap", "json", "regex", "cron", or "meta tags".
-                  </p>
+              <div className="max-w-4xl mx-auto">
+                <div className="relative mb-6">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="What do you need to get done? (e.g. format json, remove duplicates, generate sitemap)"
+                    className="w-full h-14 pl-14 pr-32 bg-slate-900/80 border border-slate-800 text-white placeholder:text-slate-400 text-base rounded-2xl focus:outline-none focus:border-emerald-500/60 focus:ring-2 focus:ring-emerald-500/20 transition-all font-sans"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <button
+                    onClick={() => searchQuery && navigateTo(`/tools/${filteredTools[0]?.slug || "json-formatter"}`)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                    disabled={!searchQuery || filteredTools.length === 0}
+                  >
+                    Go
+                  </button>
                 </div>
-              ) : (
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold text-white mb-6">Try These Tasks</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[
+                    { task: "Format JSON", toolSlug: "json-formatter" },
+                    { task: "Test regex pattern", toolSlug: "regex-tester" },
+                    { task: "Generate sitemap", toolSlug: "xml-sitemap-generator" },
+                    { task: "Create robots.txt", toolSlug: "robots-txt-generator" },
+                    { task: "Decode JWT token", toolSlug: "base64-encoder-decoder" },
+                    { task: "Build meta tags", toolSlug: "meta-tag-generator" },
+                    { task: "Extract URLs from text", toolSlug: "bulk-url-extractor" },
+                    { task: "Generate cron schedule", toolSlug: "cron-expression-generator" },
+                    { task: "Generate schema markup", toolSlug: "schema-markup-generator" },
+                    { task: "Validate JSON", toolSlug: "json-formatter" },
+                  ].map((item) => (
+                    <div
+                      key={item.toolSlug}
+                      onClick={() => navigateTo(`/tools/${item.toolSlug}`)}
+                      className="glass-panel rounded-xl p-4 hover:scale-[1.02] transition-all cursor-pointer border border-transparent hover:border-cyan-500/30"
+                    >
+                      <div className="text-xs text-cyan-400 font-semibold mb-1">{item.task}</div>
+                      <div className="text-sm text-slate-200">Click to execute instantly</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold text-white mb-6">Popular Tools</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredTools.map((tool) => (
+                  {popularTools.map((tool) => (
                     <ToolCard
                       key={tool.id}
                       tool={tool}
@@ -431,23 +441,45 @@ export default function App() {
                     />
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Popular Tools, Categories & Privacy Section */}
-            <PopularAndCategoriesSection
-              onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
-              onSelectCategory={(catId) => {
-                setActiveCategory(catId as any);
-                setActiveView("category-hub");
-              }}
-              onNavigatePage={navigateTo}
-            />
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold text-white mb-6">Categories</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {["seo-tools", "developer-tools", "validators", "generators", "converters", "ai-tools"].map((catId) => {
+                    const cat = [{ id: "seo-tools", label: "SEO & URL Tools", description: "Sitemaps, robots.txt, meta tags" },
+                      { id: "developer-tools", label: "Developer Tools", description: "JSON, CSS, HTML, XML" },
+                      { id: "validators", label: "Validators", description: "JSON, XML, Schema, Robots" },
+                      { id: "generators", label: "Generators", description: "UUIDs, Cron, UTM links" },
+                      { id: "converters", label: "Converters", description: "Date, Color, Base64" },
+                      { id: "ai-tools", label: "AI Tools", description: "Code generation, debugging" }].find(c => c.id === catId);
+                    if (!cat) return null;
+                    const tools = allToolsByCategory[catId as ToolCategory]?.slice(0, 3) || [];
+                    return (
+                      <div key={catId} className="glass-panel rounded-2xl p-4">
+                        <h3 className="text-lg font-bold text-white mb-2">{cat.label}</h3>
+                        <p className="text-slate-400 text-sm mb-3">{cat.description}</p>
+                        <div className="space-y-2">
+                          {tools.map((tool) => (
+                            <div
+                              key={tool.id}
+                              onClick={() => navigateTo(`/tools/${tool.slug}`)}
+                              className="text-xs text-slate-300 hover:text-cyan-300 cursor-pointer"
+                            >
+                              {tool.title}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </main>
 
-      {/* Expanded 5-Column Footer Component */}
       <Footer
         onSelectCategory={(catId) => {
           setActiveCategory(catId as any);
@@ -458,7 +490,6 @@ export default function App() {
         onNavigatePage={navigateTo}
       />
 
-      {/* Command Palette Modal */}
       <CommandPalette
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
@@ -468,7 +499,6 @@ export default function App() {
         }}
       />
 
-      {/* Saved Drawer Slideout */}
       <SavedDrawer
         isOpen={savedDrawerOpen}
         onClose={() => setSavedDrawerOpen(false)}
@@ -482,14 +512,12 @@ export default function App() {
         onSelectTool={(id) => navigateTo(`/tools/${id}`)}
       />
 
-      {/* Gemini Chatbot Slideout Drawer */}
       <GeminiChatDrawer
         isOpen={chatDrawerOpen}
         onClose={() => setChatDrawerOpen(false)}
         initialContext={activeTool ? activeTool.title : undefined}
       />
 
-      {/* Lead-funnel popup: fires after dwell / exit-intent on non-tool pages */}
       <LeadFunnelPopup
         currentPath={currentPath}
         onOpenTool={(slug) => navigateTo(`/tools/${slug}`)}
