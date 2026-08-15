@@ -31,6 +31,8 @@ import {
   generateToolsJson,
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
+import { findToolBySlug } from "../data/toolsRegistry";
+import type { NextFunction } from "express";
 import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
@@ -320,7 +322,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
       } catch (err) { next(err); }
     });
 
-    app.get("/api/v1/capabilities", (_req, res) => {
+    app.get("/api/v1/capabilities", (_req, res, next) => {
       try {
         const baseUrl = config.PUBLIC_SITE_URL;
         const capabilitiesJson = generateCapabilitiesJson(baseUrl);
@@ -329,7 +331,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
       } catch (err) { next(err); }
     });
 
-    app.get("/api/v1/tools", (_req, res) => {
+    app.get("/api/v1/tools", (_req, res, next) => {
       try {
         const baseUrl = config.PUBLIC_SITE_URL;
         const toolsJson = generateToolsJson(baseUrl);

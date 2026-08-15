@@ -122,6 +122,7 @@ export interface ExecutionResult {
   verification?: VerificationResult;
   executionTimeMs: number;
   toolExecuted?: string;
+  traceId: string;
 }
 
 export interface VerificationResult {
