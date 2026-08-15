@@ -1,4 +1,4 @@
-import express, { type Request, type Response, type NextFunction, type Express } from "express";
+import express, { type Request, type Response, type Express } from "express";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
@@ -32,7 +32,6 @@ import {
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
 import { findToolBySlug } from "../data/toolsRegistry";
-import type { NextFunction } from "express";
 import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
