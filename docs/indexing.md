@@ -38,7 +38,7 @@ Not a strategy essay — a punch list of what's wired and what to actually run.
 ## What's *not* in the repo (deliberately)
 
 - **Google Indexing API integration.** Google reserves this API for `JobPosting` and `BroadcastEvent`; general use is against their terms.
-- **Brave Search auto-submit.** Brave publishes a submit-URL form for humans; I couldn't confirm a stable public unauthenticated POST API. Manual submission at https://search.brave.com/webmaster is the safe path.
+- **Brave Search discovery.** Rely on the public sitemap and IndexNow integration; do not automate an undocumented submission endpoint.
 - **Ping-o-matic / Google `ping` endpoints.** Deprecated.
 
 ## Split-brain `robots.txt` policy shipped

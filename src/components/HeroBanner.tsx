@@ -10,6 +10,7 @@ interface HeroBannerProps {
   totalTools: number;
   onExploreFreeTools?: () => void;
   onBrowseAiTools?: () => void;
+  onOpenStudio?: () => void;
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
@@ -20,6 +21,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   totalTools,
   onExploreFreeTools,
   onBrowseAiTools,
+  onOpenStudio,
 }) => {
   return (
     <div className="mb-12 space-y-10">
@@ -43,16 +45,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
-                onClick={() => {
-                  if (onExploreFreeTools) onExploreFreeTools();
-                  else onCategoryChange("all");
-                }}
+              <a
+                href="https://app.xfree.in/"
+                onClick={(event) => { if (onOpenStudio) { event.preventDefault(); onOpenStudio(); } }}
                 className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm sm:text-base rounded-xl shadow-lg shadow-emerald-500/20 flex items-center space-x-2 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span>Explore Free Tools</span>
+                <span>Open XFree Studio</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-              </button>
+              </a>
 
               <button
                 onClick={() => {
@@ -62,7 +62,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 className="px-6 py-3.5 bg-slate-900/90 hover:bg-slate-800/90 text-white border border-slate-700/80 hover:border-slate-600 font-semibold text-sm sm:text-base rounded-xl flex items-center space-x-2 transition-all cursor-pointer shadow-md"
               >
                 <Sparkles className="w-4 h-4 text-emerald-400" />
-                <span>Browse All Tools</span>
+                <span>Explore Published Tools</span>
               </button>
             </div>
           </div>

@@ -104,8 +104,9 @@ export default function App() {
   }, [savedHistory]);
 
   const navigateTo = (path: string) => {
-    window.history.pushState({}, "", path);
-    setCurrentPath(path);
+    const url = new URL(path, window.location.origin);
+    window.history.pushState({}, "", `${url.pathname}${url.search}`);
+    setCurrentPath(url.pathname);
     if (["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app"].includes(path)) {
       setActiveView("page");
     } else if (path === "/") {
@@ -364,6 +365,7 @@ export default function App() {
               totalTools={PUBLIC_TOOLS.length}
               onExploreFreeTools={() => setActiveCategory("all")}
               onBrowseAiTools={() => setActiveCategory("all")}
+              onOpenStudio={() => { window.location.href = "https://app.xfree.in/"; }}
             />
 
             {/* Quick Links Section */}
