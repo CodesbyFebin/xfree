@@ -28,7 +28,8 @@ export const TermsPage: React.FC = () => {
           <p>
             XFree.in is a collection of free browser-based developer, SEO, and single-purpose AI tools.
             Each tool page discloses whether processing is local (input stays in your browser) or
-            AI-powered (input is sent to our server and forwarded to Google Gemini). See the{" "}
+            cloud-powered (input is sent to our server and forwarded to the provider named in the interface,
+            currently Google Gemini or NVIDIA). See the{" "}
             <a href="/privacy" className="text-cyan-300 underline">Privacy Policy</a> for full data handling.
           </p>
           <p>
@@ -46,7 +47,7 @@ export const TermsPage: React.FC = () => {
             <li>Attempt to overload, probe, or bypass the rate limits, security controls, or abuse protections.</li>
             <li>Scrape, mirror, or systematically extract the tool implementations or content beyond normal use by search-engine crawlers respecting <code>robots.txt</code>.</li>
             <li>Submit content that infringes third-party rights, contains malware, or targets other users of the Service.</li>
-            <li>Use AI tools to generate content that violates Google Gemini's own usage policies (see Google's terms).</li>
+            <li>Use AI tools to generate content that violates the selected provider's usage policies.</li>
           </ul>
           <p>
             We reserve the right to block IPs, revoke access, or refuse service to anyone abusing the
@@ -58,7 +59,7 @@ export const TermsPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">4. AI tools — what to expect</h2>
           <p>
-            AI-powered tools proxy your input to Google Gemini and return the model's output. Model
+            AI-powered tools proxy your input to the provider selected or identified in the interface and return the model's output. Model
             outputs are generated probabilistically and may be inaccurate, out of date, biased,
             offensive, or unsafe. You are responsible for reviewing AI output before you use, publish,
             or act on it.
@@ -84,7 +85,7 @@ export const TermsPage: React.FC = () => {
           <h2 className="text-lg font-bold text-white">6. Intellectual property</h2>
           <p>
             The XFree.in brand, site design, and original written content (guide articles, hand-authored
-            explanations) belong to the operator listed below. The name "Google Gemini" and any third-party
+            explanations) belong to the operator listed below. The names "Google Gemini", "NVIDIA", and any third-party
             marks are the property of their respective owners.
           </p>
           <p>

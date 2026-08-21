@@ -64,7 +64,8 @@ export const SecurityPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">4. AI tools</h2>
           <p>
-            AI-powered tool variants proxy your input through XFree.in to Google Gemini. Every AI tool
+            Cloud AI features proxy your submitted input through XFree.in to the provider identified in the UI,
+            currently Google Gemini or NVIDIA NIM. Every cloud feature
             page discloses this on the page itself. Server-side controls:
           </p>
           <ul className="list-disc pl-5 space-y-1">
@@ -101,7 +102,8 @@ export const SecurityPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">7. Secrets and configuration</h2>
           <ul className="list-disc pl-5 space-y-1">
-            <li>The Google Gemini API key lives in the Vercel environment. It is never sent to the browser and never appears in server responses.</li>
+            <li>Google Gemini and NVIDIA API keys live in the Vercel environment. They are never sent to the browser and never appear in server responses.</li>
+            <li>NVIDIA model IDs are discovered and validated server-side before inference; a stale manual selection falls back to another currently available model.</li>
             <li>The IndexNow key is public by protocol design — search engines verify it by fetching <code>/{"<key>"}.txt</code>.</li>
             <li>No credentials, tokens, or private keys are committed to the repository. Environment validation ({" "}
               <code>src/server/env.ts</code>) checks this at boot.</li>

@@ -61,6 +61,7 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     { path: "/terms", priority: "0.3", freq: "yearly" },
     { path: "/security", priority: "0.5", freq: "monthly" },
     { path: "/xfree-app", priority: "0.9", freq: "monthly" },
+    { path: "/studio", priority: "0.9", freq: "weekly" },
     { path: "/guides", priority: "0.7", freq: "weekly" },
   ];
 

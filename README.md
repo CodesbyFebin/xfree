@@ -11,7 +11,8 @@ Free browser-based developer, SEO, and single-purpose AI micro-tools. Live at [h
 - **10 hand-authored tools** (JSON formatter, regex tester, cron generator, base64/JWT decoder, URL/UTM builder, meta-tag preview, schema-markup generator, robots.txt generator, XML sitemap generator, bulk URL extractor). Each has a real React component, unique long-form guide, and per-page JSON-LD.
 - **4 published guides** at `/guides/*` (regex cheat sheet, cron examples, common JSON errors, canonical vs 301).
 - **A `/xfree-app/` PWA-install page** — the site is installable as a Progressive Web App via `site.webmanifest`.
-- **A server-side proxy to Google Gemini** for the AI-flavored variants of the tools above. The API key never touches the browser. AI tools are opt-in and clearly labelled.
+- **Optional server-side Cloud AI** using Google Gemini and NVIDIA NIM. Provider keys never touch the browser; cloud processing is opt-in and clearly labelled.
+- **XFree Studio at `/studio`** with Local Mode as the default and dynamic NVIDIA model discovery when Cloud Mode is enabled.
 - **A `/api/contact`, `/api/feedback`, `/api/lead` set** with Zod validation, honeypot fields, and per-IP rate limits. Delivery via Resend when `RESEND_API_KEY` is set, otherwise logged.
 - **A ~400-entry seed registry of tool ideas** (`src/scripts/tools-seed.json`). These are `status: "draft"` — they have no working component and their routes return HTTP 404 until they're implemented. They are **not** in the sitemap and **not** claimed as live tools anywhere.
 
@@ -62,7 +63,9 @@ Dev server listens on `PORT` (default 3000). Vite handles HMR through the Expres
 Every var is defined and validated in [`src/server/env.ts`](src/server/env.ts). The full annotated list is in [`.env.example`](.env.example). Highlights:
 
 - `PUBLIC_SITE_URL` — canonical base for prerender + sitemap + IndexNow. Production is `https://www.xfree.in`.
-- `GEMINI_API_KEY` — optional. When unset, AI endpoints cleanly return `503 { error: "ai_not_configured" }` instead of crashing.
+- `GEMINI_API_KEY` — optional. When unset, Gemini endpoints cleanly return `503 { error: "ai_not_configured" }` instead of crashing.
+- `NVIDIA_API_KEY` — optional and server-only. When unset, NVIDIA endpoints return `503 { error: "nvidia_not_configured" }`.
+- `NVIDIA_BASE_URL` — defaults to `https://integrate.api.nvidia.com/v1`; may point to a compatible self-hosted NIM endpoint.
 - `RESEND_API_KEY` — optional. When unset, contact / feedback / lead submissions are logged to stdout for review.
 - `AI_RATE_LIMIT_PER_MINUTE`, `AI_RATE_LIMIT_PER_DAY`, `AI_GLOBAL_DAILY_LIMIT`, `AI_THINKING_LIMIT_PER_DAY` — per-IP + global buckets on the in-memory limiter.
 - `TRUST_PROXY` — Express proxy hops. `1` for Vercel.

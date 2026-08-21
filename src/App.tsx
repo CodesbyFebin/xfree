@@ -31,6 +31,7 @@ import { NotFoundPage } from "./components/pages/NotFoundPage";
 import { XFreeAppPage } from "./components/pages/XFreeAppPage";
 import { GuideIndexPage } from "./components/pages/GuideIndexPage";
 import { GuidePage } from "./components/pages/GuidePage";
+import { StudioPage } from "./components/pages/StudioPage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 
 // Import Micro-Tools
@@ -262,6 +263,8 @@ export default function App() {
         return <SecurityPage />;
       case "/xfree-app":
         return <XFreeAppPage onGoHome={() => navigateTo("/")} onOpenTools={() => navigateTo("/")} />;
+      case "/studio":
+        return <StudioPage onNavigate={navigateTo} />;
       case "/guides":
         return <GuideIndexPage onSelectGuide={(slug) => navigateTo(`/guides/${slug}`)} />;
       default:
@@ -279,7 +282,7 @@ export default function App() {
     }
   };
 
-  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/guides"].includes(currentPath) || activeGuideSlug !== null;
+  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/guides"].includes(currentPath) || activeGuideSlug !== null;
 
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
@@ -296,6 +299,7 @@ export default function App() {
         onOpenSearch={() => setCommandPaletteOpen(true)}
         onOpenSaved={() => setSavedDrawerOpen(true)}
         onOpenChat={() => setChatDrawerOpen(true)}
+        onGoStudio={() => navigateTo("/studio")}
         activeCategory={activeCategory}
         onSelectCategory={(catId) => {
           setActiveCategory(catId as any);

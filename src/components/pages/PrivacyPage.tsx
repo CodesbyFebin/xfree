@@ -46,7 +46,9 @@ export const PrivacyPage: React.FC = () => {
           <h2 className="text-lg font-bold text-white">2. Optional Cloud AI Mode</h2>
           <p>
             A feature marked Cloud AI or AI-powered may send the content you deliberately submit to XFree.in's
-            server and then to the provider identified in that feature, currently Google Gemini. Cloud processing
+            server and then to the provider identified in that feature, currently Google Gemini or NVIDIA NIM.
+            NVIDIA Studio requests use only a model currently reported as available to the configured NVIDIA
+            account. Cloud processing
             is not used merely because you open a Local Mode tool.
           </p>
           <p>
@@ -120,7 +122,7 @@ export const PrivacyPage: React.FC = () => {
           <p>
             XFree does not sell the content entered into Local Mode tools. Information may be handled by service
             providers acting on the site's behalf, including hosting, message delivery, AI processing when you
-            choose Cloud AI, and advertising providers. Information may also be disclosed when legally required
+            choose Cloud AI (including Google and NVIDIA), and advertising providers. Information may also be disclosed when legally required
             or necessary to protect users and the service.
           </p>
         </section>

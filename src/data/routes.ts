@@ -11,6 +11,7 @@ export const STATIC_ROUTES = [
   "/terms",
   "/security",
   "/xfree-app",
+  "/studio",
   "/guides",
 ] as const;
 

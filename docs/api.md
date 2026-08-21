@@ -11,9 +11,9 @@ and rate-limited per IP (and globally for AI endpoints).
 
 ## Conventions
 
-- **Auth:** None required for public endpoints. AI endpoints require a server-side
-  `GEMINI_API_KEY`; when it is unset they return `503
-  {"error":"ai_not_configured"}` instead of crashing.
+- **Auth:** None required for public endpoints. Cloud provider credentials are
+  server-side only. Missing Gemini or NVIDIA credentials produce provider-specific
+  `503` responses instead of exposing or crashing the service.
 - **Errors:** `4xx` for client/validation errors (with a `requestId` in
   production), `5xx` only for unexpected server faults. No stack traces are
   returned to clients.
@@ -35,6 +35,19 @@ Readiness probe (dependency/key checks). Returns `200` when the service can serv
 Static, build-generated discovery files. Served directly (see `src/scripts/generateSitemap.ts`).
 
 ## AI endpoints
+
+### `GET /api/nvidia/models`
+Returns the normalized NVIDIA models currently available to the configured account.
+The server caches discovery for ten minutes; the API key is never returned.
+
+### `POST /api/nvidia/validate`
+Validates `{ "model": "provider/model-id" }` against server-side discovery and
+returns the selected model or a safe fallback.
+
+### `POST /api/nvidia/chat`
+Opt-in NVIDIA Cloud chat. Accepts `model` (`auto` or a discovered ID), `taskType`,
+and 1–20 messages. The server validates the model before every inference request,
+performs task-based routing for `auto`, and returns `usedModel` plus `wasFallback`.
 
 ### `POST /api/ai`
 Single-purpose AI task.

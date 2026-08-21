@@ -180,6 +180,12 @@ const STATIC_META: Record<string, { title: string; description: string; h1: stri
     h1: "XFree App",
     intro: "XFree is available as an installable Progressive Web App. Add it to your desktop dock or mobile home screen for one-tap access to every tool. Everything still runs in your browser — the PWA install is just a shortcut, not a separate binary.",
   },
+  "/studio": {
+    title: "XFree Studio — Local Tools & Optional NVIDIA Cloud",
+    description: "Use XFree browser tools locally by default or explicitly enable NVIDIA Cloud Mode with account-aware model discovery.",
+    h1: "XFree Studio",
+    intro: "Local Mode is the default. NVIDIA Cloud Mode is optional and sends only the messages you submit after enabling it.",
+  },
   "/about": { title: "About XFree.in", description: "About the XFree.in micro-tools platform: mission, principles, and who it's built for.", h1: "About XFree.in", intro: "XFree.in is a small, focused micro-tool platform for developers, SEOs, and technical writers." },
   "/contact": { title: "Contact XFree.in", description: "Contact XFree.in for bug reports, tool requests, or partnership inquiries.", h1: "Contact us", intro: "Send us a note — we read every message." },
   "/privacy": { title: "Privacy Policy — XFree.in", description: "How XFree.in handles Local Mode tools, optional Cloud AI, service logs, forms, advertising, cookies, and privacy requests.", h1: "Privacy Policy", intro: "Published Local Mode tools process working data in your browser. Optional Cloud AI and third-party services are disclosed separately." },

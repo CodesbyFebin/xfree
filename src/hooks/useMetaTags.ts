@@ -94,6 +94,10 @@ export function useMetaTags({
       title = "XFree App — Install the Browser Tool Suite";
       description = "Install XFree as a browser app on supported desktop and mobile devices for fast access to published developer and SEO tools.";
       canonicalUrl = `${baseUrl}/xfree-app`;
+    } else if (currentPath === "/studio") {
+      title = "XFree Studio — Local Tools & Optional NVIDIA Cloud";
+      description = "Use XFree browser tools locally by default or explicitly enable NVIDIA Cloud Mode with account-aware model discovery.";
+      canonicalUrl = `${baseUrl}/studio`;
     }
 
     // Update Document Title
