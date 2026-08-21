@@ -1,4 +1,4 @@
-import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { GUIDES } from "../data/guides";
 
 const DEFAULT_BASE_URL = "https://www.xfree.in";
@@ -60,8 +60,6 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     { path: "/privacy", priority: "0.3", freq: "yearly" },
     { path: "/terms", priority: "0.3", freq: "yearly" },
     { path: "/security", priority: "0.5", freq: "monthly" },
-    { path: "/clusters", priority: "0.9", freq: "daily" },
-    { path: "/thinking", priority: "0.8", freq: "weekly" },
     { path: "/xfree-app", priority: "0.9", freq: "monthly" },
     { path: "/guides", priority: "0.7", freq: "weekly" },
   ];
@@ -76,7 +74,7 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
   }
 
   // 3. Category Hub Pages
-  for (const cat of CATEGORIES) {
+  for (const cat of PUBLIC_CATEGORIES) {
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(`${cleanBase}/category/${cat.id}`)}</loc>\n`;
     xml += `    <lastmod>${currentDate}</lastmod>\n`;
@@ -87,7 +85,7 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
 
   // 4. Canonical Working Micro-Tools Pages (Only status:indexable production tools)
   const seenSlugs = new Set<string>();
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     if (!tool.slug || seenSlugs.has(tool.slug)) continue;
     seenSlugs.add(tool.slug);
 
@@ -127,14 +125,14 @@ export function generateRssXml(baseUrl: string = DEFAULT_BASE_URL): string {
   rss += `  <channel>\n`;
   rss += `    <title>XFree.in — Free Online Developer, SEO, AI &amp; Converter Micro-Tools</title>\n`;
   rss += `    <link>${escapeXml(cleanBase)}</link>\n`;
-  rss += `    <description>100% Free client-side developer, SEO, AI, and converter micro-tools. Instant browser execution, no signup.</description>\n`;
+  rss += `    <description>Free local-first developer, SEO, AI, and converter micro-tools with clear processing disclosures.</description>\n`;
   rss += `    <language>en-us</language>\n`;
   rss += `    <lastBuildDate>${buildDate}</lastBuildDate>\n`;
   rss += `    <pubDate>${buildDate}</pubDate>\n`;
   rss += `    <ttl>60</ttl>\n`;
   rss += `    <atom:link href="${escapeXml(`${cleanBase}/rss.xml`)}" rel="self" type="application/rss+xml"/>\n`;
 
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     const toolUrl = `${cleanBase}/tools/${tool.slug}`;
     const pubDate = buildDate;
     const categoryName = tool.categoryLabel || tool.category;
@@ -177,11 +175,10 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
 
   text += `## Primary Sections & Hubs\n\n`;
   text += `- [Home Page](${cleanBase}/): Complete registry search and grid view of indexable micro-tools.\n`;
-  text += `- [100 Keyword Clusters Hub](${cleanBase}/clusters): Programmatic SEO directory mapping 100 search intent clusters and supporting keywords.\n`;
-  text += `- [Gemini Deep Thinking Mode](${cleanBase}/api/ai/thinking): Server-side high-reasoning Gemini 3.1 Pro endpoint for complex SQL, Regex, and SEO architectural analysis.\n\n`;
+  text += `- [Guides](${cleanBase}/guides): Practical documentation connected to published tools.\n\n`;
 
   text += `## Categories\n\n`;
-  for (const cat of CATEGORIES) {
+  for (const cat of PUBLIC_CATEGORIES) {
     text += `- [${cat.label}](${cleanBase}/category/${cat.id}): ${cat.description}\n`;
   }
 
@@ -192,7 +189,7 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   text += `- \`POST /api/ai/chat\`: Multi-turn conversational developer AI assistant.\n\n`;
 
   text += `## Complete Index of Indexable Micro-Tools\n\n`;
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription} (Pillar: ${tool.pillarKeyword})\n`;
   }
 
@@ -208,7 +205,7 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
   let text = `# XFree.in Full System Specification & Indexable Micro-Tools Knowledge Base\n\n`;
   text += `This document provides full technical details, Pillar Keywords, explanations, FAQs, and usage rules for indexable production micro-tools on XFree.in.\n\n`;
 
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     text += `--- \n\n`;
     text += `### ${tool.title}\n`;
     text += `- **URL**: ${cleanBase}/tools/${tool.slug}\n`;

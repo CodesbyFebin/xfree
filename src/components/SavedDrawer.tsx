@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ToolDefinition, SavedItem, WorkspacePreset } from "../types";
-import { TOOLS_REGISTRY } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import { Star, History, X, Trash2, Folder, Download, Play, CheckCircle2 } from "lucide-react";
 
 interface SavedDrawerProps {
@@ -27,7 +27,7 @@ export const SavedDrawer: React.FC<SavedDrawerProps> = ({
   savedItems,
   favorites = [],
   history,
-  tools = TOOLS_REGISTRY,
+  tools = PUBLIC_TOOLS,
   onSelectTool,
   onClearHistory,
   onRemoveFavorite,

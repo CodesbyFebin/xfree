@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { TOOLS_REGISTRY, INDEXABLE_TOOLS, findIndexableTool } from "./data/toolsRegistry";
-import { KEYWORD_CLUSTERS } from "./data/clustersData";
+import { PUBLIC_TOOLS, getPublicToolBySlug } from "./data/publicTools";
 import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath } from "./data/routes";
 import { findGuide } from "./data/guides";
 import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
@@ -13,9 +12,7 @@ import { ToolCard } from "./components/ToolCard";
 import { CommandPalette } from "./components/CommandPalette";
 import { SavedDrawer } from "./components/SavedDrawer";
 import { ToolPageLayout } from "./components/ToolPageLayout";
-import { ClusterDirectory } from "./components/ClusterDirectory";
 import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
-import { ThinkingModeComponent } from "./components/ThinkingModeComponent";
 import { CategoryHubView } from "./components/CategoryHubView";
 import { useMetaTags } from "./hooks/useMetaTags";
 
@@ -53,7 +50,7 @@ import { AiMicroToolComponent } from "./components/tools/AiMicroToolComponent";
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
-  const [activeView, setActiveView] = useState<"tools" | "clusters" | "thinking" | "category-hub" | "page">("tools");
+  const [activeView, setActiveView] = useState<"tools" | "category-hub" | "page">("tools");
   const [searchQuery, setSearchQuery] = useState("");
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [savedDrawerOpen, setSavedDrawerOpen] = useState(false);
@@ -162,7 +159,7 @@ export default function App() {
     // IMPORTANT: only INDEXABLE tools render. Draft/planned slugs fall through
     // to the 404 view so the client agrees with the server's HTTP 404 rather
     // than hydrating a fake "planned utility" page over a 404 shell.
-    return findIndexableTool(activeToolSlug) ?? null;
+    return getPublicToolBySlug(activeToolSlug) ?? null;
   }, [activeToolSlug]);
 
   const activeGuideSlug = guideSlugFromPath(currentPath);
@@ -180,14 +177,12 @@ export default function App() {
   // Hook for dynamic head meta tag management (SEO pSEO pillar keywords & JSON-LD schemas)
   useMetaTags({
     tool: activeTool,
-    isClusterPage: activeView === "clusters",
-    isThinkingPage: activeView === "thinking",
     currentPath,
   });
 
   // Filter tools based on category and search
   const filteredTools = useMemo(() => {
-    return TOOLS_REGISTRY.filter((tool) => {
+    return PUBLIC_TOOLS.filter((tool) => {
       const matchesCategory =
         activeCategory === "all" ||
         tool.category === activeCategory ||
@@ -297,13 +292,10 @@ export default function App() {
       </a>
       {/* Global Application Navigation Header */}
       <Header
+        totalTools={PUBLIC_TOOLS.length}
         onOpenSearch={() => setCommandPaletteOpen(true)}
         onOpenSaved={() => setSavedDrawerOpen(true)}
         onOpenChat={() => setChatDrawerOpen(true)}
-        onOpenThinking={() => {
-          setActiveView("thinking");
-          if (currentPath.startsWith("/tools/") || isStaticRoute) navigateTo("/");
-        }}
         activeCategory={activeCategory}
         onSelectCategory={(catId) => {
           setActiveCategory(catId as any);
@@ -315,12 +307,6 @@ export default function App() {
         onGoHome={() => {
           setActiveView("tools");
           navigateTo("/");
-        }}
-        onGoClusters={() => {
-          setActiveView("clusters");
-          if (currentPath.startsWith("/tools/") || isStaticRoute) {
-            navigateTo("/");
-          }
         }}
         activeView={activeView}
       />
@@ -345,16 +331,11 @@ export default function App() {
               onToggleFavorite={() => toggleFavorite(activeTool.id)}
               onBackToHome={() => navigateTo("/")}
               onSelectTool={(id) => navigateTo(`/tools/${id}`)}
-              allTools={TOOLS_REGISTRY}
+              allTools={PUBLIC_TOOLS}
               onSaveWorkspace={handleSaveWorkspace}
             >
               {renderToolComponent(activeTool)}
             </ToolPageLayout>
-          </div>
-        ) : activeView === "thinking" ? (
-          /* Thinking Mode View (gemini-3.1-pro-preview) */
-          <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
-            <ThinkingModeComponent />
           </div>
         ) : activeView === "category-hub" ? (
           /* Dedicated Category Hub View */
@@ -367,16 +348,6 @@ export default function App() {
               favoriteIds={favoriteIds}
             />
           </div>
-        ) : activeView === "clusters" ? (
-          /* 100 Keyword Clusters Hub View */
-          <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
-            <ClusterDirectory
-              onSelectKeywordTool={(kw) => {
-                const slug = kw.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-                navigateTo(`/tools/${slug}`);
-              }}
-            />
-          </div>
         ) : (
           /* Micro-Tools Suite Directory Grid Screen */
           <div className="p-4 sm:p-8 space-y-12 max-w-7xl mx-auto w-full flex-1">
@@ -386,9 +357,9 @@ export default function App() {
               onSearchChange={setSearchQuery}
               activeCategory={activeCategory}
               onCategoryChange={setActiveCategory}
-              totalTools={INDEXABLE_TOOLS.length}
+              totalTools={PUBLIC_TOOLS.length}
               onExploreFreeTools={() => setActiveCategory("all")}
-              onBrowseAiTools={() => setActiveCategory("ai-tools")}
+              onBrowseAiTools={() => setActiveCategory("all")}
             />
 
             {/* Quick Links Section */}
@@ -441,7 +412,6 @@ export default function App() {
                 setActiveCategory(catId as any);
                 setActiveView("category-hub");
               }}
-              onNavigatePage={navigateTo}
             />
           </div>
         )}

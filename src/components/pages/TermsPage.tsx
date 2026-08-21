@@ -10,18 +10,10 @@ export const TermsPage: React.FC = () => {
           <span>Terms of Service</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Terms of Service</h1>
-        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-05</p>
+        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-22</p>
       </div>
 
       <div className="p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6 text-slate-300 text-sm leading-relaxed">
-        <section className="space-y-2">
-          <p className="text-slate-400">
-            <strong>TODO before public launch:</strong> replace the "Operator" contact block at the bottom
-            with your real legal entity name, jurisdiction, and reachable email. This template ships
-            without that so we don't fabricate identity information.
-          </p>
-        </section>
-
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">1. Acceptance</h2>
           <p>
@@ -121,27 +113,17 @@ export const TermsPage: React.FC = () => {
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">9. Governing law</h2>
-          <p className="text-amber-300 bg-amber-950/30 border border-amber-800 rounded-xl p-4">
-            <strong>TODO — jurisdiction placeholder.</strong> Fill in the governing law and dispute
-            venue that matches the Operator entity below. Consult a lawyer if unsure; getting this
-            wrong makes the Terms hard to enforce.
-          </p>
           <p>
-            These Terms are governed by the laws of <strong>[Your Jurisdiction]</strong>. Disputes will
-            be resolved in the courts of <strong>[Your Jurisdiction]</strong>.
+            These Terms are governed by the laws of India. Subject to applicable consumer-protection
+            law, disputes relating to the Service will be subject to the courts located in Kerala, India.
           </p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">10. Operator and contact</h2>
-          <p className="text-amber-300 bg-amber-950/30 border border-amber-800 rounded-xl p-4">
-            <strong>TODO — placeholder identity.</strong> Replace with your actual legal entity name,
-            registered address or jurisdiction, and a working support email at an @xfree.in address.
-            AdSense reviewers verify that contact information is real and reachable.
-          </p>
           <p>
-            Operator: <strong>[Your legal entity or trading name]</strong><br />
-            Jurisdiction: <strong>[e.g. Kerala, India]</strong><br />
+            Operator: <strong>Febin Francis</strong><br />
+            Location and jurisdiction: <strong>Kerala, India</strong><br />
             Contact:{" "}
             <a href="mailto:support@xfree.in" className="text-cyan-300 underline">support@xfree.in</a>{" "}
             or via the <a href="/contact" className="text-cyan-300 underline">contact form</a>.

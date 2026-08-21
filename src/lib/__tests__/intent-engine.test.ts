@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { classifyIntent, routeIntentToCapabilities } from "../intent-engine";
-import { TOOLS_REGISTRY, INDEXABLE_TOOLS } from "../../data/toolsRegistry";
+import { TOOLS_REGISTRY } from "../../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../../data/publicTools";
 
 describe("Intent Engine — classification", () => {
   it("classifies a PDF intent by entity even without a matching tool", () => {
@@ -47,7 +48,7 @@ describe("Intent Engine — unknown input", () => {
 
 describe("Tool Registry", () => {
   it("has indexable tools", () => {
-    expect(INDEXABLE_TOOLS.length).toBeGreaterThan(0);
+    expect(PUBLIC_TOOLS.length).toBeGreaterThan(0);
   });
 
   it("has flagship tools", () => {
@@ -56,7 +57,7 @@ describe("Tool Registry", () => {
   });
 
   it("never includes a draft tool in the indexable set", () => {
-    const indexableIds = new Set(INDEXABLE_TOOLS.map((t) => t.id));
+    const indexableIds = new Set(PUBLIC_TOOLS.map((t) => t.id));
     const draftInIndex = TOOLS_REGISTRY.filter(
       (t) => t.status === "draft" && indexableIds.has(t.id),
     );
@@ -64,7 +65,11 @@ describe("Tool Registry", () => {
   });
 
   it("every tool carries a valid status enum value", () => {
-    const valid = new Set(["draft", "indexable", "noindex", "retired"]);
-    expect(TOOLS_REGISTRY.every((t) => !t.status || valid.has(t.status))).toBe(true);
+    const valid = new Set(["published", "draft", "roadmap", "retired"]);
+    expect(TOOLS_REGISTRY.every((t) => valid.has(t.status))).toBe(true);
+  });
+
+  it("publishes only explicitly indexable, completed tools", () => {
+    expect(PUBLIC_TOOLS.every((t) => t.status === "published" && t.indexable)).toBe(true);
   });
 });

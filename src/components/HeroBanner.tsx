@@ -62,7 +62,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 className="px-6 py-3.5 bg-slate-900/90 hover:bg-slate-800/90 text-white border border-slate-700/80 hover:border-slate-600 font-semibold text-sm sm:text-base rounded-xl flex items-center space-x-2 transition-all cursor-pointer shadow-md"
               >
                 <Sparkles className="w-4 h-4 text-emerald-400" />
-                <span>Browse AI Tools</span>
+                <span>Browse All Tools</span>
               </button>
             </div>
           </div>
@@ -79,7 +79,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <div className="flex items-center space-x-2 text-[11px]">
                   <span className="px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 flex items-center gap-1">
                     <Check className="w-3 h-3 text-emerald-400" />
-                    100% Browser-Based
+                    Local-First Tools
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1">
                     <Check className="w-3 h-3 text-slate-400" />
@@ -128,7 +128,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   <div className="bg-slate-900/80 p-2 rounded text-[10px] text-slate-400 space-y-1 leading-tight border border-slate-800/50">
                     <p><span className="text-slate-600">1</span> Check out our website: https://xfree.in</p>
                     <p><span className="text-slate-600">2</span> Visit docs at https://docs.xfree.in/getting-started</p>
-                    <p><span className="text-slate-600">3</span> Follow our GitHub: http://github.com/xfree-in/xfree</p>
+                    <p><span className="text-slate-600">3</span> Follow our GitHub: github.com/CodesbyFebin/xfree</p>
                   </div>
 
                   {/* Extract Button */}
@@ -204,4 +204,3 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     </div>
   );
 };
-

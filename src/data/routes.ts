@@ -10,8 +10,6 @@ export const STATIC_ROUTES = [
   "/privacy",
   "/terms",
   "/security",
-  "/clusters",
-  "/thinking",
   "/xfree-app",
   "/guides",
 ] as const;
@@ -24,11 +22,8 @@ export const SOLVE_ROUTES = [
 export const CATEGORY_SLUGS = [
   "seo-tools",
   "developer-tools",
-  "ai-tools",
-  "text-tools",
   "converters",
   "generators",
-  "validators",
 ] as const;
 
 export type StaticRoute = (typeof STATIC_ROUTES)[number];
