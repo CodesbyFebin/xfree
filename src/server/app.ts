@@ -140,7 +140,10 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       const result = await createNvidiaChatCompletion({
         requestedModel: parsed.data.model,
         taskType: parsed.data.taskType,
-        messages: parsed.data.messages,
+        messages: parsed.data.messages.map((message) => ({
+          role: message.role as "system" | "user" | "assistant",
+          content: message.content as string,
+        })),
         temperature: parsed.data.temperature,
         maxTokens: parsed.data.maxTokens,
       });
