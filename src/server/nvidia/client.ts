@@ -1,5 +1,6 @@
 import { config } from "../env";
 import { inferModelCapabilities, selectModelForTask } from "./router";
+import { inferModelKind, isChatCompatibleKind } from "./catalog";
 import type {
   NvidiaChatMessage,
   NvidiaModel,
@@ -66,12 +67,14 @@ function normalizeModel(raw: unknown): NvidiaModel | null {
   const record = raw as Record<string, unknown>;
   if (typeof record.id !== "string" || !record.id.trim()) return null;
   const id = record.id.trim();
-  if (/embed|embedding|rerank|retrieval|nvclip|whisper|speech|tts/i.test(id)) return null;
+  const kind = inferModelKind(id);
   return {
     id,
     name: id.split("/").pop()?.replace(/[-_]+/g, " ") || id,
     ownedBy: typeof record.owned_by === "string" ? record.owned_by : undefined,
     capabilities: inferModelCapabilities(id),
+    kind,
+    chatCompatible: isChatCompatibleKind(kind),
   };
 }
 
@@ -96,14 +99,14 @@ export async function resolveNvidiaModel(
   requestedModel: string | undefined,
   taskType: NvidiaTaskType,
 ): Promise<NvidiaModelResolution> {
-  let models = await listAvailableModels();
+  let models = (await listAvailableModels()).filter((model) => model.chatCompatible);
   if (!models.length) throw new NvidiaApiError("No NVIDIA chat models are available to this account", 503, "unavailable");
 
   const requested = requestedModel?.trim() || "auto";
   if (requested !== "auto") {
     let exact = models.find((model) => model.id === requested);
     if (!exact) {
-      models = await listAvailableModels({ forceRefresh: true });
+      models = (await listAvailableModels({ forceRefresh: true })).filter((model) => model.chatCompatible);
       exact = models.find((model) => model.id === requested);
     }
     if (exact) return { requestedModel: requested, usedModel: exact.id, wasFallback: false };
@@ -144,7 +147,7 @@ export async function createChatCompletion(payload: {
     resolution.requestedModel !== "auto" &&
     !resolution.wasFallback
   ) {
-    const refreshed = await listAvailableModels({ forceRefresh: true });
+    const refreshed = (await listAvailableModels({ forceRefresh: true })).filter((model) => model.chatCompatible);
     const fallback = selectModelForTask(
       payload.taskType,
       refreshed.filter((model) => model.id !== resolution.usedModel),

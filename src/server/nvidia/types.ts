@@ -1,3 +1,5 @@
+import type { NvidiaModelKind } from "./catalog";
+
 export const NVIDIA_TASK_TYPES = ["code", "json", "sql", "summarization", "reasoning", "general"] as const;
 
 export type NvidiaTaskType = (typeof NVIDIA_TASK_TYPES)[number];
@@ -7,6 +9,8 @@ export interface NvidiaModel {
   name: string;
   ownedBy?: string;
   capabilities: Array<"chat" | "code" | "long-context" | "reasoning" | "efficient">;
+  kind: NvidiaModelKind;
+  chatCompatible: boolean;
 }
 
 export interface NvidiaChatMessage {
