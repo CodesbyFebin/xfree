@@ -21,6 +21,17 @@ export interface StudioResult {
   sourceResultId?: string;
 }
 
+export interface StudioMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  provider: "NVIDIA" | "Local";
+  model?: string;
+  fallbackNotice?: string;
+}
+
+export type StudioMobileTab = "files" | "chat" | "results";
+
 export interface LocalEngine {
   id: string;
   name: string;

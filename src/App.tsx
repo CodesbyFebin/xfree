@@ -265,7 +265,7 @@ export default function App() {
       case "/xfree-app":
         return <XFreeAppPage onGoHome={() => navigateTo("/")} onOpenTools={() => navigateTo("/")} />;
       case "/studio":
-        return <StudioPage onNavigate={navigateTo} />;
+        return <StudioPage />;
       case "/guides":
         return <GuideIndexPage onSelectGuide={(slug) => navigateTo(`/guides/${slug}`)} />;
       default:
