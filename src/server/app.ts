@@ -127,9 +127,11 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       const parsed = NvidiaValidateSchema.safeParse(req.body);
       if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
       const models = await listNvidiaModels();
-      const valid = models.some((model) => model.id === parsed.data.model);
+      const selected = models.find((model) => model.id === parsed.data.model);
+      const valid = Boolean(selected);
+      if (!selected?.chatCompatible) return res.json({ success: true, valid, chatCompatible: false, model: selected ?? null });
       const resolution = await resolveNvidiaModel(parsed.data.model, "general");
-      return res.json({ success: true, valid, ...resolution });
+      return res.json({ success: true, valid, chatCompatible: true, ...resolution });
     } catch (err) { next(err); }
   });
 
