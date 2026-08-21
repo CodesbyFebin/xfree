@@ -1,5 +1,5 @@
 import React from "react";
-import { PUBLIC_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import {
   Globe,
   Code2,

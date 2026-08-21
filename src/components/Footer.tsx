@@ -1,7 +1,7 @@
 import React from "react";
 import { Github, Mail } from "lucide-react";
 import { RouterLink } from "./RouterLink";
-import { PUBLIC_CATEGORIES, getPopularTools } from "../data/toolsRegistry";
+import { PUBLIC_CATEGORIES, getPopularTools } from "../data/publicTools";
 
 interface FooterProps {
   onSelectCategory: (catId: string) => void;

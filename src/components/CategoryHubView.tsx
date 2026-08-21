@@ -1,5 +1,5 @@
 import React from "react";
-import { CATEGORIES, getPublicToolsByCategory } from "../data/toolsRegistry";
+import { PUBLIC_CATEGORIES, getPublicToolsByCategory } from "../data/publicTools";
 import { ToolCard } from "./ToolCard";
 import { Globe, Code2, Sparkles, FileText, ArrowLeftRight, Wand2, CheckCircle2 } from "lucide-react";
 
@@ -18,7 +18,7 @@ export function CategoryHubView({
   onToggleFavorite,
   favoriteIds,
 }: CategoryHubViewProps) {
-  const currentCategory = CATEGORIES.find((c) => c.id === categorySlug) || CATEGORIES[0];
+  const currentCategory = PUBLIC_CATEGORIES.find((c) => c.id === categorySlug) || PUBLIC_CATEGORIES[0];
   const categoryTools = getPublicToolsByCategory(currentCategory.id);
 
   const getCategoryIcon = (iconName: string) => {
@@ -75,7 +75,7 @@ export function CategoryHubView({
 
       {/* Category Navigation Pills */}
       <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
-        {CATEGORIES.map((cat) => (
+          {PUBLIC_CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => onNavigateToCategory(cat.id)}

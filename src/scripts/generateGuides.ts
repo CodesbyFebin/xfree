@@ -1,7 +1,7 @@
 /**
  * Guide-content scaffolder.
  *
- * Reads INDEXABLE_TOOLS, finds tools without a guide entry, and prints a
+ * Reads PUBLIC_TOOLS, finds tools without a guide entry, and prints a
  * TypeScript stub you paste into src/data/toolGuides.ts. Fills required
  * fields from the tool registry so the seed content is real, not lorem-ipsum.
  *
@@ -13,7 +13,7 @@
  *   npm run generate:guides -- --gemini       # ask Gemini to draft each stub
  *   npm run generate:guides -- --slug=foo     # target one tool
  */
-import { INDEXABLE_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import { TOOL_GUIDES } from "../data/toolGuides";
 
 const args = process.argv.slice(2);
@@ -58,11 +58,11 @@ async function enrichWithGemini(_toolTitle: string): Promise<string | null> {
 }
 
 async function main() {
-  const missing = INDEXABLE_TOOLS.filter((t) => !TOOL_GUIDES[t.slug]);
+  const missing = PUBLIC_TOOLS.filter((t) => !TOOL_GUIDES[t.slug]);
   const target = only ? missing.filter((t) => t.slug === only) : missing;
 
   if (!target.length) {
-    console.log(`[guides] no missing guides. total tools=${INDEXABLE_TOOLS.length} with-guide=${Object.keys(TOOL_GUIDES).length}`);
+    console.log(`[guides] no missing guides. total tools=${PUBLIC_TOOLS.length} with-guide=${Object.keys(TOOL_GUIDES).length}`);
     return;
   }
 
@@ -70,7 +70,7 @@ async function main() {
 
   for (const tool of target) {
     if (wantGemini) await enrichWithGemini(tool.title);
-    const related = INDEXABLE_TOOLS
+    const related = PUBLIC_TOOLS
       .filter((t) => t.slug !== tool.slug && t.category === tool.category)
       .map((t) => t.slug);
     console.log(stub(tool.slug, tool.title, tool.pillarKeyword || tool.title, tool.category, related));

@@ -1,4 +1,4 @@
-import { PUBLIC_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 
 export function generateCapabilitiesJson(baseUrl: string = "https://www.xfree.in"): string {
   const capabilitiesMap = new Map<string, any[]>();

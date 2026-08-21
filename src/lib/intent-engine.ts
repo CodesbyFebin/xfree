@@ -1,5 +1,5 @@
 import { ToolDefinition, ToolCategory } from "../types";
-import { PUBLIC_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 
 export interface IntentClassification {
   intent: string;

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { classifyIntent, routeIntentToCapabilities } from "../intent-engine";
-import { TOOLS_REGISTRY, PUBLIC_TOOLS } from "../../data/toolsRegistry";
+import { TOOLS_REGISTRY } from "../../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../../data/publicTools";
 
 describe("Intent Engine — classification", () => {
   it("classifies a PDF intent by entity even without a matching tool", () => {

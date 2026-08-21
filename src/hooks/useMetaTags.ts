@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ToolDefinition } from "../types";
-import { CATEGORIES } from "../data/toolsRegistry";
+import { PUBLIC_CATEGORIES } from "../data/publicTools";
 import { findGuide } from "../data/guides";
 import { categorySlugFromPath, guideSlugFromPath } from "../data/routes";
 
@@ -24,7 +24,7 @@ export function useMetaTags({
     let canonicalUrl = `${baseUrl}/`;
 
     const routeCategory = categorySlugFromPath(currentPath);
-    const category = routeCategory ? CATEGORIES.find((item) => item.id === routeCategory) : undefined;
+    const category = routeCategory ? PUBLIC_CATEGORIES.find((item) => item.id === routeCategory) : undefined;
     const routeGuideSlug = guideSlugFromPath(currentPath);
     const guide = routeGuideSlug ? findGuide(routeGuideSlug) : undefined;
 

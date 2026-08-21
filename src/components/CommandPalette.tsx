@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
 import { ToolDefinition } from "../types";
-import { PUBLIC_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import { Search, X, CornerDownLeft } from "lucide-react";
 
 interface CommandPaletteProps {

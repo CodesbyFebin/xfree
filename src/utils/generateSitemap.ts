@@ -1,4 +1,4 @@
-import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { GUIDES } from "../data/guides";
 
 const DEFAULT_BASE_URL = "https://www.xfree.in";

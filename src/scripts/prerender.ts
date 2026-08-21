@@ -9,7 +9,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { STATIC_ROUTES } from "../data/routes";
 import { guideForSlug } from "../data/toolGuides";
 import { GUIDES } from "../data/guides";

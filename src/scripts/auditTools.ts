@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { TOOLS_REGISTRY, PUBLIC_TOOLS } from "../data/toolsRegistry";
+import { TOOLS_REGISTRY } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 
 interface Finding {
   slug: string;

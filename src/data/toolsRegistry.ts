@@ -556,36 +556,9 @@ HAND_CRAFTED_TOOLS.forEach(tool => {
 
 export const TOOLS_REGISTRY: ToolDefinition[] = Array.from(toolMap.values());
 
-// Tools that have a real wired React component AND are approved for indexing/sitemap.
-export const PUBLIC_TOOLS: ToolDefinition[] = TOOLS_REGISTRY.filter(
-  (tool) => tool.status === "published" && tool.indexable === true,
-);
-
-// Backwards-compatible alias for internal generators while PUBLIC_TOOLS is the
-// canonical source of truth for every user-visible surface.
-export const INDEXABLE_TOOLS = PUBLIC_TOOLS;
-
 export const ROADMAP_TOOLS: ToolDefinition[] = TOOLS_REGISTRY.filter(
   (tool) => tool.status === "roadmap" || tool.status === "draft",
 );
-
-export const PUBLIC_CATEGORIES = CATEGORIES.filter((category) =>
-  PUBLIC_TOOLS.some((tool) => tool.category === category.id),
-);
-
-export function getPublicToolsByCategory(category: string): ToolDefinition[] {
-  return PUBLIC_TOOLS.filter((tool) => tool.category === category);
-}
-
-export function getPopularTools(limit = 6): ToolDefinition[] {
-  return PUBLIC_TOOLS.slice(0, Math.max(0, limit));
-}
-
-export const INDEXABLE_TOOL_SLUGS: Set<string> = new Set(INDEXABLE_TOOLS.map((t) => t.slug));
-
-export function findIndexableTool(slug: string): ToolDefinition | undefined {
-  return PUBLIC_TOOLS.find((t) => t.slug === slug || t.id === slug);
-}
 
 export function findToolBySlug(slug: string): ToolDefinition | undefined {
   return TOOLS_REGISTRY.find((t) => t.slug === slug || t.id === slug);

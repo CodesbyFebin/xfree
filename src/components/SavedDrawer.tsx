@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ToolDefinition, SavedItem, WorkspacePreset } from "../types";
-import { PUBLIC_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import { Star, History, X, Trash2, Folder, Download, Play, CheckCircle2 } from "lucide-react";
 
 interface SavedDrawerProps {

@@ -11,7 +11,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
+import { PUBLIC_CATEGORIES, PUBLIC_TOOLS } from "../data/publicTools";
 import { STATIC_ROUTES } from "../data/routes";
 
 const ENDPOINT = "https://api.indexnow.org/indexnow";
@@ -41,8 +41,8 @@ function urlsFromCliArgs(): string[] {
 function allSiteUrls(base: string): string[] {
   const out = new Set<string>();
   for (const route of STATIC_ROUTES) out.add(`${base}${route === "/" ? "" : route}`);
-  for (const c of CATEGORIES) out.add(`${base}/category/${c.id}`);
-  for (const t of INDEXABLE_TOOLS) out.add(`${base}/tools/${t.slug}`);
+  for (const c of PUBLIC_CATEGORIES) out.add(`${base}/category/${c.id}`);
+  for (const t of PUBLIC_TOOLS) out.add(`${base}/tools/${t.slug}`);
   out.add(`${base}/`);
   return Array.from(out);
 }

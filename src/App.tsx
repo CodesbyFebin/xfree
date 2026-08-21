@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { PUBLIC_TOOLS, findIndexableTool } from "./data/toolsRegistry";
+import { PUBLIC_TOOLS, getPublicToolBySlug } from "./data/publicTools";
 import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath } from "./data/routes";
 import { findGuide } from "./data/guides";
 import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
@@ -159,7 +159,7 @@ export default function App() {
     // IMPORTANT: only INDEXABLE tools render. Draft/planned slugs fall through
     // to the 404 view so the client agrees with the server's HTTP 404 rather
     // than hydrating a fake "planned utility" page over a 404 shell.
-    return findIndexableTool(activeToolSlug) ?? null;
+    return getPublicToolBySlug(activeToolSlug) ?? null;
   }, [activeToolSlug]);
 
   const activeGuideSlug = guideSlugFromPath(currentPath);
