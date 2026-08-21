@@ -1,5 +1,5 @@
 import { ToolDefinition, ExecutionStep, ExecutionPlan, ExecutionResult, VerificationResult, IntentConstraints } from "../types";
-import { TOOLS_REGISTRY, INDEXABLE_TOOLS, findIndexableTool, findToolBySlug } from "../data/toolsRegistry";
+import { findIndexableTool } from "../data/toolsRegistry";
 import { classifyIntent, routeIntentToCapabilities, buildExecutionPlan } from "./intent-engine";
 
 export interface ExecutionContext {
@@ -44,7 +44,7 @@ export async function executeTool(
   const traceId = `exec_${Date.now()}_${Math.random().toString(36).slice(2)}`;
   
   try {
-    const tool = findToolBySlug(request.toolId) || findToolBySlug(request.toolId);
+    const tool = findIndexableTool(request.toolId);
     if (!tool) {
       return {
         success: false,
@@ -212,7 +212,7 @@ export async function executeWorkflow(
   let currentInput = input;
   
   for (const step of workflow.steps) {
-    const tool = findToolBySlug(step.toolId);
+    const tool = findIndexableTool(step.toolId);
     if (!tool) {
       results.push({
         success: false,
@@ -340,7 +340,7 @@ export function getCapabilityRecommendations(problem: string): ToolDefinition[] 
   const route = routeIntentToCapabilities(intent);
   
   return route.toolIds
-    .map(id => findToolBySlug(id))
+    .map(id => findIndexableTool(id))
     .filter((t): t is ToolDefinition => t !== undefined);
 }
 
@@ -352,7 +352,7 @@ export function compareTools(
   criteria: string[] = ["capabilityFit", "reliability", "speed", "privacy", "pricing"]
 ): ComparisonResult[] {
   const tools = toolIds
-    .map(id => findToolBySlug(id))
+    .map(id => findIndexableTool(id))
     .filter((t): t is ToolDefinition => t !== undefined);
   
   return tools.map(tool => ({
@@ -418,7 +418,7 @@ export async function healthCheckTool(toolId: string): Promise<{
   error?: string;
   lastChecked: string;
 }> {
-  const tool = findToolBySlug(toolId);
+  const tool = findIndexableTool(toolId);
   if (!tool) {
     return {
       healthy: false,

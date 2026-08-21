@@ -31,7 +31,7 @@ import {
   generateToolsJson,
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
-import { findToolBySlug } from "../data/toolsRegistry";
+import { findIndexableTool } from "../data/toolsRegistry";
 import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
@@ -311,7 +311,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     app.post("/api/v1/verify/:toolId", executionRateLimit, async (req, res, next) => {
       try {
         const toolId = req.params.toolId;
-        const tool = findToolBySlug(toolId);
+        const tool = findIndexableTool(toolId);
         if (!tool) {
           return res.status(404).json({ error: "Tool not found" });
         }

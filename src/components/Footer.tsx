@@ -1,6 +1,7 @@
 import React from "react";
-import { Globe, Github, Twitter, Linkedin, Mail, Shield, Zap, Lock, Sparkles, BookOpen, FileText, HelpCircle, ChevronRight } from "lucide-react";
+import { Github, Mail } from "lucide-react";
 import { RouterLink } from "./RouterLink";
+import { PUBLIC_CATEGORIES, getPopularTools } from "../data/toolsRegistry";
 
 interface FooterProps {
   onSelectCategory: (catId: string) => void;
@@ -9,8 +10,6 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({
-  onSelectCategory,
-  onSelectTool,
   onNavigatePage,
 }) => {
   return (
@@ -38,31 +37,13 @@ export const Footer: React.FC<FooterProps> = ({
 
             <div className="flex items-center space-x-3 pt-2">
               <a
-                href="https://github.com/xfree-in/xfree"
+                href="https://github.com/CodesbyFebin/xfree"
                 target="_blank"
                 rel="noreferrer"
                 className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 transition-colors"
                 title="GitHub Repository"
               >
                 <Github className="w-4 h-4" />
-              </a>
-              <a
-                href="https://twitter.com/xfree_in"
-                target="_blank"
-                rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-cyan-400 hover:border-slate-700 transition-colors"
-                title="Twitter / X"
-              >
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a
-                href="https://linkedin.com/company/xfree-in"
-                target="_blank"
-                rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-blue-400 hover:border-slate-700 transition-colors"
-                title="LinkedIn"
-              >
-                <Linkedin className="w-4 h-4" />
               </a>
               <button
                 onClick={() => onNavigatePage("/contact")}
@@ -80,62 +61,17 @@ export const Footer: React.FC<FooterProps> = ({
               Categories
             </h4>
             <ul className="space-y-2 text-xs">
-              <li>
-                <button
-                  onClick={() => onSelectCategory("seo-tools")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  SEO & URL Tools
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory("developer-tools")}
-                  className="hover:text-indigo-400 transition-colors cursor-pointer"
-                >
-                  Developer Tools
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory("ai-tools")}
-                  className="hover:text-purple-400 transition-colors cursor-pointer"
-                >
-                  AI Utilities
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory("text-tools")}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer"
-                >
-                  Text & Diff Tools
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory("converters")}
-                  className="hover:text-blue-400 transition-colors cursor-pointer"
-                >
-                  Converters & Encoders
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory("generators")}
-                  className="hover:text-amber-400 transition-colors cursor-pointer"
-                >
-                  Generators
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory("validators")}
-                  className="hover:text-rose-400 transition-colors cursor-pointer"
-                >
-                  Validators
-                </button>
-              </li>
+              {PUBLIC_CATEGORIES.map((category) => (
+                <li key={category.id}>
+                  <RouterLink
+                    href={`/category/${category.id}`}
+                    onNavigate={onNavigatePage}
+                    className="hover:text-cyan-400 transition-colors"
+                  >
+                    {category.label}
+                  </RouterLink>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -145,62 +81,17 @@ export const Footer: React.FC<FooterProps> = ({
               Popular Tools
             </h4>
             <ul className="space-y-2 text-xs">
-              <li>
-                <button
-                  onClick={() => onSelectTool("bulk-url-extractor")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  Bulk URL Extractor
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectTool("json-formatter")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  JSON Formatter & Tree
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectTool("regex-tester")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  Regex Tester
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectTool("cron-expression-generator")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  Cron Generator
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectTool("xml-sitemap-generator")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  XML Sitemap Generator
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectTool("meta-tag-generator")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  Meta Tag SERP Preview
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectTool("robots-txt-generator")}
-                  className="hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  Robots.txt Generator
-                </button>
-              </li>
+              {getPopularTools(7).map((tool) => (
+                <li key={tool.id}>
+                  <RouterLink
+                    href={`/tools/${tool.slug}`}
+                    onNavigate={onNavigatePage}
+                    className="hover:text-cyan-400 transition-colors"
+                  >
+                    {tool.title}
+                  </RouterLink>
+                </li>
+              ))}
             </ul>
           </div>
 

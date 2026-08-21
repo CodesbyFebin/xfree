@@ -1,5 +1,5 @@
 import { ToolDefinition, ToolCategory } from "../types";
-import { TOOLS_REGISTRY, INDEXABLE_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/toolsRegistry";
 
 export interface IntentClassification {
   intent: string;
@@ -251,7 +251,7 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
   // Check capability-based matching first
   if (intent.capabilities && intent.capabilities.length > 0) {
     for (const toolId of intent.capabilities) {
-      const tool = TOOLS_REGISTRY.find(t => t.id === toolId || t.slug === toolId);
+      const tool = PUBLIC_TOOLS.find(t => t.id === toolId || t.slug === toolId);
       if (tool) {
         matchingTools.push(tool);
       }
@@ -260,7 +260,7 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
 
   // Categorize tools based on intent keywords
   const intentKeywords = INTENT_KEYWORDS[intent.intent as keyof typeof INTENT_KEYWORDS] || [];
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     // Check if tool tags match the intent
     if (intentKeywords.some(kw => tool.tags.some(tag => tag.toLowerCase().includes(kw.toLowerCase())))) {
       matchingTools.push(tool);
@@ -269,7 +269,7 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
 
   // Also check by entity matching
   for (const entity of intent.entities) {
-    for (const tool of INDEXABLE_TOOLS) {
+    for (const tool of PUBLIC_TOOLS) {
       if (tool.tags.some(tag => tag.toLowerCase().includes(entity)) || 
           tool.title.toLowerCase().includes(entity.replace(/-/g, " "))) {
         matchingTools.push(tool);
@@ -283,7 +283,7 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
   if (allMatched.length === 0) {
     // Fallback: match by query terms in tool title/description/tags
     const queryTerms = intent.intent.toLowerCase().split(/[\s-_]+/).filter(t => t.length > 3);
-    for (const tool of INDEXABLE_TOOLS) {
+    for (const tool of PUBLIC_TOOLS) {
       const searchableText = `${tool.title} ${tool.shortDescription} ${tool.tags.join(" ")}`.toLowerCase();
       if (queryTerms.some(term => searchableText.includes(term))) {
         allMatched.push(tool);

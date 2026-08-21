@@ -10,7 +10,7 @@ export const SecurityPage: React.FC = () => {
           <span>Security</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Security</h1>
-        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-05</p>
+        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-22</p>
       </div>
 
       <div className="p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6 text-slate-300 text-sm leading-relaxed">
@@ -72,7 +72,7 @@ export const SecurityPage: React.FC = () => {
             <li><strong>Zod validation</strong> on every request body — input length caps, message-count caps, allowed roles, unknown fields rejected.</li>
             <li><strong>Timeouts</strong> — every Gemini call is aborted after 30 s via <code>AbortController</code>.</li>
             <li><strong>Rate limits</strong> — per-IP per-minute, per-IP per-day, per-IP-per-day for the thinking endpoint, plus a global daily cap. Enforced via an in-memory bucket keyed on a hashed IP. Exceeded requests return HTTP 429 with <code>Retry-After</code>.</li>
-            <li><strong>No prompt persistence</strong> — we do not store the body of your prompt. We do log request metadata (timestamp, endpoint, response code, latency, hashed IP) for abuse investigation, retained for at most 30 days.</li>
+            <li><strong>No prompt persistence</strong> — the application does not intentionally save the body of your prompt. Hosting and infrastructure providers may process operational logs under their own policies.</li>
           </ul>
         </section>
 
@@ -93,8 +93,8 @@ export const SecurityPage: React.FC = () => {
             and collects data as described in{" "}
             <a href="/privacy" className="text-cyan-300 underline">our Privacy Policy</a> and Google's
             own policies. AdSense operates in the visitor's browser — we do not receive the
-            advertising-cookie contents. For visitors in the EEA/UK/Switzerland we operate a
-            Google-certified consent management platform (Funding Choices).
+            advertising-cookie contents. Consent choices, where presented, are managed through the
+            controls shown in the site or browser.
           </p>
         </section>
 
@@ -128,10 +128,6 @@ export const SecurityPage: React.FC = () => {
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">10. Reporting a vulnerability</h2>
-          <p className="text-amber-300 bg-amber-950/30 border border-amber-800 rounded-xl p-4">
-            <strong>TODO — placeholder security contact.</strong> Replace with a real security-report
-            address before public launch. If you're operating under a bug-bounty scope, publish it here.
-          </p>
           <p>
             If you find a vulnerability, email{" "}
             <a href="mailto:security@xfree.in" className="text-cyan-300 underline">security@xfree.in</a>.

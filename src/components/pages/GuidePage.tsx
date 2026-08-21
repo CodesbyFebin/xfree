@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Guide } from "../../data/guides";
-import { findToolBySlug } from "../../data/toolsRegistry";
+import { findIndexableTool } from "../../data/toolsRegistry";
 
 interface Props {
   guide: Guide;
@@ -56,7 +56,7 @@ export const GuidePage: React.FC<Props> = ({ guide, onGoIndex, onSelectTool, onS
               </button>
             ))}
             {guide.relatedToolSlugs?.map((slug) => {
-              const tool = findToolBySlug(slug);
+              const tool = findIndexableTool(slug);
               if (!tool) return null;
               return (
                 <button

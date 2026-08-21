@@ -1,4 +1,5 @@
 import React from "react";
+import { PUBLIC_TOOLS } from "../data/toolsRegistry";
 import { Zap, ArrowUpRight, Code, Globe, Eye, Sparkles, Binary, FileCode } from "lucide-react";
 
 interface QuickLinksSectionProps {
@@ -78,7 +79,7 @@ export const QuickLinksSection: React.FC<QuickLinksSectionProps> = ({ onSelectTo
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {QUICK_LINK_ITEMS.map((item) => {
+        {QUICK_LINK_ITEMS.filter((item) => PUBLIC_TOOLS.some((tool) => tool.slug === item.slug)).map((item) => {
           const IconComp = item.icon;
           return (
             <div

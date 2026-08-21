@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { generateSitemapXml, generateRssXml, generateLlmsTxt, generateLlmsFullTxt, generateRobotsTxt } from "../utils/generateSitemap";
-import { generateCapabilitiesJson, generateToolsJson, generateProblemPagesSitemap } from "../utils/generateStructuredData";
+import { generateCapabilitiesJson, generateToolsJson } from "../utils/generateStructuredData";
 
 function runGenerator() {
   const publicDir = path.join(process.cwd(), "public");
@@ -18,7 +18,6 @@ function runGenerator() {
   const robotsContent = generateRobotsTxt(baseUrl);
   const capabilitiesContent = generateCapabilitiesJson(baseUrl);
   const toolsContent = generateToolsJson(baseUrl);
-  const problemPagesContent = generateProblemPagesSitemap(baseUrl);
 
   fs.writeFileSync(path.join(publicDir, "sitemap.xml"), sitemapContent, "utf-8");
   fs.writeFileSync(path.join(publicDir, "rss.xml"), rssContent, "utf-8");
@@ -27,9 +26,11 @@ function runGenerator() {
   fs.writeFileSync(path.join(publicDir, "robots.txt"), robotsContent, "utf-8");
   fs.writeFileSync(path.join(publicDir, "capabilities.json"), capabilitiesContent, "utf-8");
   fs.writeFileSync(path.join(publicDir, "tools.json"), toolsContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "problem-pages-sitemap.xml"), problemPagesContent, "utf-8");
 
-  console.log("Successfully generated sitemap.xml, rss.xml, llms.txt, llms-full.txt, robots.txt, capabilities.json, tools.json, and problem-pages-sitemap.xml in /public!");
+  const obsoleteProblemSitemap = path.join(publicDir, "problem-pages-sitemap.xml");
+  if (fs.existsSync(obsoleteProblemSitemap)) fs.unlinkSync(obsoleteProblemSitemap);
+
+  console.log("Successfully generated the public sitemap, feeds, robots, capabilities, and tools catalog.");
 }
 
 runGenerator();

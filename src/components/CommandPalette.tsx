@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
 import { ToolDefinition } from "../types";
-import { TOOLS_REGISTRY } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/toolsRegistry";
 import { Search, X, CornerDownLeft } from "lucide-react";
 
 interface CommandPaletteProps {
@@ -14,7 +14,7 @@ interface CommandPaletteProps {
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
   isOpen,
   onClose,
-  tools = TOOLS_REGISTRY,
+  tools = PUBLIC_TOOLS,
   onSelectTool,
 }) => {
   const [query, setQuery] = useState("");

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { TOOLS_REGISTRY, INDEXABLE_TOOLS } from "../data/toolsRegistry";
+import { TOOLS_REGISTRY, PUBLIC_TOOLS } from "../data/toolsRegistry";
 
 interface Finding {
   slug: string;
@@ -17,6 +17,12 @@ function audit(): Finding[] {
   for (const t of TOOLS_REGISTRY) {
     if (!t.slug) findings.push({ slug: t.slug, id: t.id, severity: "error", message: "missing slug" });
     if (!t.title) findings.push({ slug: t.slug, id: t.id, severity: "error", message: "missing title" });
+    if (t.status === "published" && !t.indexable) {
+      findings.push({ slug: t.slug, id: t.id, severity: "error", message: "published tool is not indexable" });
+    }
+    if (t.status !== "published" && t.indexable) {
+      findings.push({ slug: t.slug, id: t.id, severity: "error", message: "unpublished tool is marked indexable" });
+    }
     if (!t.shortDescription || t.shortDescription.length < 20) {
       findings.push({ slug: t.slug, id: t.id, severity: "warn", message: "short/missing description" });
     }
@@ -35,13 +41,13 @@ function audit(): Finding[] {
   const appPath = path.join(process.cwd(), "src", "App.tsx");
   if (fs.existsSync(appPath)) {
     const app = fs.readFileSync(appPath, "utf-8");
-    for (const t of INDEXABLE_TOOLS) {
+    for (const t of PUBLIC_TOOLS) {
       if (!app.includes(`case "${t.id}"`)) {
         findings.push({
           slug: t.slug,
           id: t.id,
           severity: "error",
-          message: `INDEXABLE but no case "${t.id}" in App.tsx renderToolComponent — page would fall through to AI fallback`,
+            message: `PUBLIC but no case "${t.id}" in App.tsx renderToolComponent — page would fall through to AI fallback`,
         });
       }
     }
@@ -56,7 +62,7 @@ function main() {
   const warns = findings.filter((f) => f.severity === "warn");
   const report = {
     totalTools: TOOLS_REGISTRY.length,
-    indexableTools: INDEXABLE_TOOLS.length,
+    indexableTools: PUBLIC_TOOLS.length,
     errors: errors.length,
     warnings: warns.length,
     findings,

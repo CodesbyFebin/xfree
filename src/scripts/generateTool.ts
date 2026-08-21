@@ -82,14 +82,14 @@ interface Props {
  * - the tool won't appear in the sitemap or the homepage grid
  * - the route /tools/${slug} will 404 at the server
  *
- * When ready, flip the registry status to "indexable" and rebuild.
+ * When ready, set status to "published", indexable to true, and rebuild.
  */
 export const ${componentName}: React.FC<Props> = ({ tool: _tool, onSaveHistory: _onSaveHistory }) => {
   return (
     <div className="p-8 rounded-2xl bg-slate-900/70 border border-amber-800 text-slate-200 space-y-3">
       <div className="text-xs font-bold text-amber-300 uppercase tracking-wider">Draft — not yet implemented</div>
       <h3 className="text-lg font-bold text-white">${title}</h3>
-      <p className="text-sm">This tool is scaffolded but not yet functional. It will not appear in the sitemap or homepage until implementation is complete and its registry status is flipped to "indexable".</p>
+      <p className="text-sm">This tool is scaffolded but not yet functional. It will not appear publicly until implementation is complete and its registry status is set to "published" with indexable enabled.</p>
     </div>
   );
 };
@@ -111,7 +111,8 @@ export const ${componentName}: React.FC<Props> = ({ tool: _tool, onSaveHistory: 
     categoryLabel: ${JSON.stringify(labelForCategory(category))},
     iconName: ${JSON.stringify(iconForCategory(category))},
     execution: "local",
-    status: "draft",  // <-- flip to "indexable" when the component is REAL
+    status: "draft",
+    indexable: false,  // set status to "published" and this to true when the component is REAL
     lastModified: "${new Date().toISOString().slice(0, 10)}",
     tags: [${JSON.stringify(pillar)}, "${category}"],
     exampleInput: "TODO: real example input",
