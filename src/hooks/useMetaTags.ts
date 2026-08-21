@@ -302,5 +302,5 @@ export function useMetaTags({
       document.head.appendChild(scriptEl);
     }
     scriptEl.textContent = JSON.stringify({ "@graph": jsonLdGraph }, null, 2);
-  }, [tool, categoryName, isClusterPage, isThinkingPage, currentPath, baseUrl]);
+  }, [tool, categoryName, currentPath, baseUrl]);
 }
