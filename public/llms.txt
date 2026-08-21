@@ -5,18 +5,14 @@
 ## Primary Sections & Hubs
 
 - [Home Page](https://www.xfree.in/): Complete registry search and grid view of indexable micro-tools.
-- [100 Keyword Clusters Hub](https://www.xfree.in/clusters): Programmatic SEO directory mapping 100 search intent clusters and supporting keywords.
-- [Gemini Deep Thinking Mode](https://www.xfree.in/api/ai/thinking): Server-side high-reasoning Gemini 3.1 Pro endpoint for complex SQL, Regex, and SEO architectural analysis.
+- [Guides](https://www.xfree.in/guides): Practical tutorials for the published XFree tools.
 
 ## Categories
 
 - [SEO & URL Tools](https://www.xfree.in/category/seo-tools): Bulk extraction, XML sitemaps, Meta OpenGraph previews, Robots.txt, and Schema markup
 - [Developer Tools](https://www.xfree.in/category/developer-tools): Format, validate, diff, and convert JSON, XML, YAML, Regex, Cron, JWT, and SQL
-- [Single-Purpose AI Tools](https://www.xfree.in/category/ai-tools): Narrow, deterministic AI assistants for Regex, SQL, JSON Repair, SEO Meta, and Commit Messages
-- [Text & Diff Tools](https://www.xfree.in/category/text-tools): Text diffing, line sorting, word count, slugifier, and regex replacements
 - [Converters & Encoders](https://www.xfree.in/category/converters): Base64, URL encoding, Unix Timestamps, Color space conversion, and CSS units
 - [Generators](https://www.xfree.in/category/generators): UUID v4, Cron schedules, Hash generation (SHA-256/MD5), and UTM campaign links
-- [Validators](https://www.xfree.in/category/validators): JSON, XML, Sitemap, Schema.org, and Robots.txt rule validators
 
 ## Core API Endpoints for Developers & AI Agents
 

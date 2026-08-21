@@ -10,18 +10,10 @@ export const TermsPage: React.FC = () => {
           <span>Terms of Service</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Terms of Service</h1>
-        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-05</p>
+        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-22</p>
       </div>
 
       <div className="p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6 text-slate-300 text-sm leading-relaxed">
-        <section className="space-y-2">
-          <p className="text-slate-400">
-            <strong>TODO before public launch:</strong> replace the "Operator" contact block at the bottom
-            with your real legal entity name, jurisdiction, and reachable email. This template ships
-            without that so we don't fabricate identity information.
-          </p>
-        </section>
-
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">1. Acceptance</h2>
           <p>
@@ -36,7 +28,8 @@ export const TermsPage: React.FC = () => {
           <p>
             XFree.in is a collection of free browser-based developer, SEO, and single-purpose AI tools.
             Each tool page discloses whether processing is local (input stays in your browser) or
-            AI-powered (input is sent to our server and forwarded to Google Gemini). See the{" "}
+            cloud-powered (input is sent to our server and forwarded to the provider named in the interface,
+            currently Google Gemini or NVIDIA). See the{" "}
             <a href="/privacy" className="text-cyan-300 underline">Privacy Policy</a> for full data handling.
           </p>
           <p>
@@ -54,7 +47,7 @@ export const TermsPage: React.FC = () => {
             <li>Attempt to overload, probe, or bypass the rate limits, security controls, or abuse protections.</li>
             <li>Scrape, mirror, or systematically extract the tool implementations or content beyond normal use by search-engine crawlers respecting <code>robots.txt</code>.</li>
             <li>Submit content that infringes third-party rights, contains malware, or targets other users of the Service.</li>
-            <li>Use AI tools to generate content that violates Google Gemini's own usage policies (see Google's terms).</li>
+            <li>Use AI tools to generate content that violates the selected provider's usage policies.</li>
           </ul>
           <p>
             We reserve the right to block IPs, revoke access, or refuse service to anyone abusing the
@@ -66,7 +59,7 @@ export const TermsPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">4. AI tools — what to expect</h2>
           <p>
-            AI-powered tools proxy your input to Google Gemini and return the model's output. Model
+            AI-powered tools proxy your input to the provider selected or identified in the interface and return the model's output. Model
             outputs are generated probabilistically and may be inaccurate, out of date, biased,
             offensive, or unsafe. You are responsible for reviewing AI output before you use, publish,
             or act on it.
@@ -92,7 +85,7 @@ export const TermsPage: React.FC = () => {
           <h2 className="text-lg font-bold text-white">6. Intellectual property</h2>
           <p>
             The XFree.in brand, site design, and original written content (guide articles, hand-authored
-            explanations) belong to the operator listed below. The name "Google Gemini" and any third-party
+            explanations) belong to the operator listed below. The names "Google Gemini", "NVIDIA", and any third-party
             marks are the property of their respective owners.
           </p>
           <p>
@@ -121,27 +114,17 @@ export const TermsPage: React.FC = () => {
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">9. Governing law</h2>
-          <p className="text-amber-300 bg-amber-950/30 border border-amber-800 rounded-xl p-4">
-            <strong>TODO — jurisdiction placeholder.</strong> Fill in the governing law and dispute
-            venue that matches the Operator entity below. Consult a lawyer if unsure; getting this
-            wrong makes the Terms hard to enforce.
-          </p>
           <p>
-            These Terms are governed by the laws of <strong>[Your Jurisdiction]</strong>. Disputes will
-            be resolved in the courts of <strong>[Your Jurisdiction]</strong>.
+            These Terms are governed by the laws of India. Subject to applicable consumer-protection
+            law, disputes relating to the Service will be subject to the courts located in Kerala, India.
           </p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">10. Operator and contact</h2>
-          <p className="text-amber-300 bg-amber-950/30 border border-amber-800 rounded-xl p-4">
-            <strong>TODO — placeholder identity.</strong> Replace with your actual legal entity name,
-            registered address or jurisdiction, and a working support email at an @xfree.in address.
-            AdSense reviewers verify that contact information is real and reachable.
-          </p>
           <p>
-            Operator: <strong>[Your legal entity or trading name]</strong><br />
-            Jurisdiction: <strong>[e.g. Kerala, India]</strong><br />
+            Operator: <strong>Febin Francis</strong><br />
+            Location and jurisdiction: <strong>Kerala, India</strong><br />
             Contact:{" "}
             <a href="mailto:support@xfree.in" className="text-cyan-300 underline">support@xfree.in</a>{" "}
             or via the <a href="/contact" className="text-cyan-300 underline">contact form</a>.

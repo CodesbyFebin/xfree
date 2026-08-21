@@ -9,7 +9,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { STATIC_ROUTES } from "../data/routes";
 import { guideForSlug } from "../data/toolGuides";
 import { GUIDES } from "../data/guides";
@@ -180,9 +180,15 @@ const STATIC_META: Record<string, { title: string; description: string; h1: stri
     h1: "XFree App",
     intro: "XFree is available as an installable Progressive Web App. Add it to your desktop dock or mobile home screen for one-tap access to every tool. Everything still runs in your browser — the PWA install is just a shortcut, not a separate binary.",
   },
+  "/studio": {
+    title: "XFree Studio — Local Tools & Optional NVIDIA Cloud",
+    description: "Use XFree browser tools locally by default or explicitly enable NVIDIA Cloud Mode with account-aware model discovery.",
+    h1: "XFree Studio",
+    intro: "Local Mode is the default. NVIDIA Cloud Mode is optional and sends only the messages you submit after enabling it.",
+  },
   "/about": { title: "About XFree.in", description: "About the XFree.in micro-tools platform: mission, principles, and who it's built for.", h1: "About XFree.in", intro: "XFree.in is a small, focused micro-tool platform for developers, SEOs, and technical writers." },
   "/contact": { title: "Contact XFree.in", description: "Contact XFree.in for bug reports, tool requests, or partnership inquiries.", h1: "Contact us", intro: "Send us a note — we read every message." },
-  "/privacy": { title: "Privacy Policy — XFree.in", description: "How XFree.in handles data: local tools stay local; AI tools securely proxy Google Gemini. What we log and what we don't.", h1: "Privacy Policy", intro: "Local tools run entirely in your browser. AI tools send input to our server and to Google Gemini. Details below." },
+  "/privacy": { title: "Privacy Policy — XFree.in", description: "How XFree.in handles Local Mode tools, optional Cloud AI, service logs, forms, advertising, cookies, and privacy requests.", h1: "Privacy Policy", intro: "Published Local Mode tools process working data in your browser. Optional Cloud AI and third-party services are disclosed separately." },
   "/terms": { title: "Terms of Service — XFree.in", description: "Terms of service for XFree.in micro-tools.", h1: "Terms of Service", intro: "Acceptable use and service limitations for XFree.in tools." },
   "/security": { title: "Security & Sandbox — XFree.in", description: "XFree.in security posture: CSP, rate limits, secret handling, and abuse controls on AI endpoints.", h1: "Security", intro: "How we harden the platform against abuse and protect your data." },
   "/faq": { title: "Frequently Asked Questions — XFree.in", description: "Common questions about XFree.in: pricing, privacy, AI, and how tools work.", h1: "FAQ", intro: "Answers to common questions about XFree.in." },
@@ -190,8 +196,6 @@ const STATIC_META: Record<string, { title: string; description: string; h1: stri
   "/use-cases": { title: "Use Cases — XFree.in", description: "Real-world workflows powered by XFree.in developer and SEO micro-tools.", h1: "Use cases", intro: "Where teams use XFree.in in their day-to-day work." },
   "/docs": { title: "Documentation — XFree.in", description: "Documentation for XFree.in tools and APIs.", h1: "Documentation", intro: "Guides for using XFree.in tools effectively." },
   "/blog": { title: "Blog — XFree.in", description: "Articles and updates from the XFree.in team.", h1: "Blog", intro: "Articles from the XFree.in team." },
-  "/clusters": { title: "Keyword Clusters — XFree.in", description: "Programmatic SEO keyword cluster directory mapping search intent to XFree.in tools.", h1: "Keyword cluster directory", intro: "Browse search-intent clusters mapped to XFree.in tools." },
-  "/thinking": { title: "Deep Reasoning Mode — XFree.in", description: "Deep step-by-step analytical reasoning powered by Google Gemini.", h1: "Deep reasoning mode", intro: "For hard problems: complex SQL, regex, and architecture questions." },
 };
 
 function main() {
@@ -209,7 +213,7 @@ function main() {
     count++;
   }
 
-  for (const cat of CATEGORIES) {
+  for (const cat of PUBLIC_CATEGORIES) {
     const route = `/category/${cat.id}`;
     const title = `${cat.label} — XFree.in`;
     const description = cat.description;
@@ -233,7 +237,7 @@ function main() {
     count++;
   }
 
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     const route = `/tools/${tool.slug}`;
     const title = `${tool.title} — XFree.in`;
     const description = tool.shortDescription;

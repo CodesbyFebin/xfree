@@ -10,7 +10,7 @@ export const SecurityPage: React.FC = () => {
           <span>Security</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Security</h1>
-        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-05</p>
+        <p className="text-slate-400 text-xs font-mono">Last updated: 2026-08-22</p>
       </div>
 
       <div className="p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6 text-slate-300 text-sm leading-relaxed">
@@ -64,7 +64,8 @@ export const SecurityPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">4. AI tools</h2>
           <p>
-            AI-powered tool variants proxy your input through XFree.in to Google Gemini. Every AI tool
+            Cloud AI features proxy your submitted input through XFree.in to the provider identified in the UI,
+            currently Google Gemini or NVIDIA NIM. Every cloud feature
             page discloses this on the page itself. Server-side controls:
           </p>
           <ul className="list-disc pl-5 space-y-1">
@@ -72,7 +73,7 @@ export const SecurityPage: React.FC = () => {
             <li><strong>Zod validation</strong> on every request body — input length caps, message-count caps, allowed roles, unknown fields rejected.</li>
             <li><strong>Timeouts</strong> — every Gemini call is aborted after 30 s via <code>AbortController</code>.</li>
             <li><strong>Rate limits</strong> — per-IP per-minute, per-IP per-day, per-IP-per-day for the thinking endpoint, plus a global daily cap. Enforced via an in-memory bucket keyed on a hashed IP. Exceeded requests return HTTP 429 with <code>Retry-After</code>.</li>
-            <li><strong>No prompt persistence</strong> — we do not store the body of your prompt. We do log request metadata (timestamp, endpoint, response code, latency, hashed IP) for abuse investigation, retained for at most 30 days.</li>
+            <li><strong>No prompt persistence</strong> — the application does not intentionally save the body of your prompt. Hosting and infrastructure providers may process operational logs under their own policies.</li>
           </ul>
         </section>
 
@@ -93,15 +94,16 @@ export const SecurityPage: React.FC = () => {
             and collects data as described in{" "}
             <a href="/privacy" className="text-cyan-300 underline">our Privacy Policy</a> and Google's
             own policies. AdSense operates in the visitor's browser — we do not receive the
-            advertising-cookie contents. For visitors in the EEA/UK/Switzerland we operate a
-            Google-certified consent management platform (Funding Choices).
+            advertising-cookie contents. Consent choices, where presented, are managed through the
+            controls shown in the site or browser.
           </p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">7. Secrets and configuration</h2>
           <ul className="list-disc pl-5 space-y-1">
-            <li>The Google Gemini API key lives in the Vercel environment. It is never sent to the browser and never appears in server responses.</li>
+            <li>Google Gemini and NVIDIA API keys live in the Vercel environment. They are never sent to the browser and never appear in server responses.</li>
+            <li>NVIDIA model IDs are discovered and validated server-side before inference; a stale manual selection falls back to another currently available model.</li>
             <li>The IndexNow key is public by protocol design — search engines verify it by fetching <code>/{"<key>"}.txt</code>.</li>
             <li>No credentials, tokens, or private keys are committed to the repository. Environment validation ({" "}
               <code>src/server/env.ts</code>) checks this at boot.</li>
@@ -128,10 +130,6 @@ export const SecurityPage: React.FC = () => {
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">10. Reporting a vulnerability</h2>
-          <p className="text-amber-300 bg-amber-950/30 border border-amber-800 rounded-xl p-4">
-            <strong>TODO — placeholder security contact.</strong> Replace with a real security-report
-            address before public launch. If you're operating under a bug-bounty scope, publish it here.
-          </p>
           <p>
             If you find a vulnerability, email{" "}
             <a href="mailto:security@xfree.in" className="text-cyan-300 underline">security@xfree.in</a>.

@@ -23,7 +23,9 @@ export const AboutPage: React.FC<PageProps> = ({ onGoHome }) => {
           We created XFree.in because existing online converter and formatting sites are slow, cluttered with invasive ads, and upload sensitive user code to unknown backend servers.
         </p>
         <p>
-          XFree.in delivers a small, curated set of single-purpose micro-tools that execute 100% locally in browser memory. No registration required, no hidden paywalls, and zero latency.
+          XFree.in delivers a small, curated set of single-purpose micro-tools. Published Local Mode
+          tools process their input in browser memory, while optional Cloud AI features clearly disclose
+          when input must be sent to a service provider. No registration or paid plan is required.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800">

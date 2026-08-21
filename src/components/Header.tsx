@@ -1,31 +1,31 @@
 import React from "react";
-import { Search, Sparkles, Zap, Bookmark } from "lucide-react";
+import { Search, Sparkles, Bookmark, PanelsTopLeft } from "lucide-react";
 
 interface HeaderProps {
+  totalTools: number;
   onOpenSearch: () => void;
   onOpenSaved: () => void;
   onOpenChat: () => void;
-  onOpenThinking: () => void;
+  onGoStudio: () => void;
   activeCategory: string;
   onSelectCategory: (catId: string) => void;
   favoritesCount: number;
   historyCount: number;
   onGoHome: () => void;
-  onGoClusters: () => void;
-  activeView: "tools" | "clusters" | "thinking" | "category-hub";
+  activeView: "tools" | "category-hub" | "page";
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  totalTools,
   onOpenSearch,
   onOpenSaved,
   onOpenChat,
-  onOpenThinking,
+  onGoStudio,
   activeCategory,
   onSelectCategory,
   favoritesCount,
   historyCount,
   onGoHome,
-  onGoClusters,
   activeView,
 }) => {
   return (
@@ -54,34 +54,8 @@ export const Header: React.FC<HeaderProps> = ({
                 : "glass-pill text-slate-300 hover:text-white"
             }`}
           >
-            Tools Registry (400)
+            Tools ({totalTools})
           </button>
-
-          <button
-            onClick={onGoClusters}
-            className={`px-3 py-1.5 rounded-lg cursor-pointer flex items-center gap-1.5 transition-all ${
-              activeView === "clusters"
-                ? "glass-pill-active font-bold"
-                : "glass-pill text-amber-300 hover:text-amber-200"
-            }`}
-          >
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>100 Clusters</span>
-          </button>
-
-          <button
-            onClick={onOpenThinking}
-            className={`px-3 py-1.5 rounded-lg cursor-pointer flex items-center gap-1.5 transition-all ${
-              activeView === "thinking"
-                ? "bg-purple-600/30 text-purple-300 border border-purple-500/50 shadow-lg shadow-purple-500/20 font-bold"
-                : "glass-pill text-purple-300 hover:text-purple-200"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-            <span>Thinking Mode</span>
-          </button>
-
-          <span className="h-4 w-[1px] bg-white/10 mx-1" />
 
           <button
             onClick={() => {
@@ -122,24 +96,19 @@ export const Header: React.FC<HeaderProps> = ({
           >
             Dev
           </button>
-          <button
-            onClick={() => {
-              onGoHome();
-              onSelectCategory("ai-tools");
-            }}
-            className={`px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-              activeCategory === "ai-tools"
-                ? "text-cyan-400 font-bold"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            AI Suite
-          </button>
         </div>
       </div>
 
       {/* Global Search & Actions */}
       <div className="flex items-center gap-2 sm:gap-3">
+        <button
+          onClick={onGoStudio}
+          className="h-9 px-3.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-200 font-semibold text-xs flex items-center gap-2 transition-all"
+          title="Open XFree Studio"
+        >
+          <PanelsTopLeft className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Studio</span>
+        </button>
         {/* Gemini Chatbot Drawer Trigger */}
         <button
           onClick={onOpenChat}

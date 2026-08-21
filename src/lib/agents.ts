@@ -1,5 +1,4 @@
 import { ToolDefinition } from "../types";
-import { TOOLS_REGISTRY } from "../data/toolsRegistry";
 
 export type AgentType = 
   | "intent"

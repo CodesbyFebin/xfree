@@ -8,7 +8,8 @@
  */
 import { classifyIntent, routeIntentToCapabilities } from "../src/lib/intent-engine";
 import { getCapabilityRecommendations } from "../src/lib/execution-engine";
-import { TOOLS_REGISTRY, INDEXABLE_TOOLS } from "../src/data/toolsRegistry";
+import { TOOLS_REGISTRY } from "../src/data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../src/data/publicTools";
 
 function show(label: string, query: string) {
   const intent = classifyIntent(query);
@@ -22,7 +23,7 @@ function show(label: string, query: string) {
   console.log("recommendations:", recs.map((t) => t.title).join(" | ") || "—");
 }
 
-console.log(`Registry: ${TOOLS_REGISTRY.length} total, ${INDEXABLE_TOOLS.length} indexable`);
+console.log(`Registry: ${TOOLS_REGISTRY.length} total, ${PUBLIC_TOOLS.length} public`);
 
 // A real, supported intent → must route to real tools.
 show("Supported", "generate a sitemap for my site");

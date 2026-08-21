@@ -13,10 +13,19 @@ import {
   AiBatchSchema,
   AiChatSchema,
   AiThinkingSchema,
+  NvidiaChatSchema,
+  NvidiaValidateSchema,
   ContactSchema,
   FeedbackSchema,
   LeadSchema,
 } from "./schemas";
+import {
+  createChatCompletion as createNvidiaChatCompletion,
+  listAvailableModels as listNvidiaModels,
+  NvidiaApiError,
+  NvidiaNotConfiguredError,
+  resolveNvidiaModel,
+} from "./nvidia/client";
 import { deliverMessage } from "./delivery";
 import { securityHeadersMiddleware } from "../middleware/security-headers";
 import {
@@ -31,8 +40,7 @@ import {
   generateToolsJson,
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
-import { findToolBySlug } from "../data/toolsRegistry";
-import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
+import { getPublicToolBySlug, PUBLIC_TOOL_SLUGS } from "../data/publicTools";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
 
@@ -60,10 +68,11 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
   });
 
   app.get("/api/ready", (_req, res) => {
-    const ready = Boolean(config.GEMINI_API_KEY) || !isProduction;
+    const ready = Boolean(config.GEMINI_API_KEY || config.NVIDIA_API_KEY) || !isProduction;
     res.status(ready ? 200 : 503).json({
       ready,
       geminiConfigured: Boolean(config.GEMINI_API_KEY),
+      nvidiaConfigured: Boolean(config.NVIDIA_API_KEY),
       deliveryProvider: config.RESEND_API_KEY ? "resend" : "log",
     });
   });
@@ -98,6 +107,56 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
   const feedbackRateLimit = rateLimit({ scope: "feedback", limit: 10, windowMs: 3_600_000 });
   const leadRateLimit = rateLimit({ scope: "lead", limit: 3, windowMs: 3_600_000 });
   const globalCap = globalDailyGuard(config.AI_GLOBAL_DAILY_LIMIT);
+  const nvidiaDiscoveryLimit = rateLimit({ scope: "nvidia-models", limit: 30, windowMs: 60_000 });
+
+  app.get("/api/nvidia/models", nvidiaDiscoveryLimit, async (_req, res, next) => {
+    try {
+      const models = await listNvidiaModels();
+      return res.json({
+        success: true,
+        provider: "NVIDIA",
+        label: "NVIDIA models available to this account",
+        models,
+        cachedForSeconds: 600,
+      });
+    } catch (err) { next(err); }
+  });
+
+  app.post("/api/nvidia/validate", nvidiaDiscoveryLimit, async (req, res, next) => {
+    try {
+      const parsed = NvidiaValidateSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+      const models = await listNvidiaModels();
+      const valid = models.some((model) => model.id === parsed.data.model);
+      const resolution = await resolveNvidiaModel(parsed.data.model, "general");
+      return res.json({ success: true, valid, ...resolution });
+    } catch (err) { next(err); }
+  });
+
+  app.post("/api/nvidia/chat", aiPerMinute, aiPerDay, globalCap, async (req, res, next) => {
+    try {
+      const parsed = NvidiaChatSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+      const result = await createNvidiaChatCompletion({
+        requestedModel: parsed.data.model,
+        taskType: parsed.data.taskType,
+        messages: parsed.data.messages.map((message) => ({
+          role: message.role as "system" | "user" | "assistant",
+          content: message.content as string,
+        })),
+        temperature: parsed.data.temperature,
+        maxTokens: parsed.data.maxTokens,
+      });
+      console.info("[nvidia] completion", {
+        requestId: (req as any).requestId,
+        requestedModel: result.requestedModel,
+        usedModel: result.usedModel,
+        wasFallback: result.wasFallback,
+        totalTokens: result.usage?.total_tokens,
+      });
+      return res.json({ success: true, provider: "NVIDIA", ...result });
+    } catch (err) { next(err); }
+  });
 
   app.post("/api/ai", aiPerMinute, aiPerDay, globalCap, async (req, res, next) => {
     try {
@@ -311,7 +370,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     app.post("/api/v1/verify/:toolId", executionRateLimit, async (req, res, next) => {
       try {
         const toolId = req.params.toolId;
-        const tool = findToolBySlug(toolId);
+        const tool = getPublicToolBySlug(toolId);
         if (!tool) {
           return res.status(404).json({ error: "Tool not found" });
         }
@@ -351,7 +410,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     if (staticRouteSet.has(pathname)) return "known";
     if (categoryRouteSet.has(pathname)) return "known";
     const toolMatch = pathname.match(/^\/tools\/([^/]+)\/?$/);
-    if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) return "known";
+    if (toolMatch && PUBLIC_TOOL_SLUGS.has(toolMatch[1])) return "known";
     const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
     if (guideMatch && guideSlugSet.has(guideMatch[1])) return "known";
     return "unknown";
@@ -366,6 +425,12 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     if (res.headersSent) return;
     if (err instanceof GeminiNotConfiguredError) {
       return res.status(503).json({ error: "ai_not_configured", requestId });
+    }
+    if (err instanceof NvidiaNotConfiguredError) {
+      return res.status(503).json({ error: "nvidia_not_configured", requestId });
+    }
+    if (err instanceof NvidiaApiError) {
+      return res.status(err.status).json({ error: err.code, message: err.message, requestId });
     }
     res.status(500).json({ error: "internal_error", requestId });
   });

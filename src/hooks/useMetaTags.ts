@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { ToolDefinition } from "../types";
+import { PUBLIC_CATEGORIES } from "../data/publicTools";
+import { findGuide } from "../data/guides";
+import { categorySlugFromPath, guideSlugFromPath } from "../data/routes";
 
 interface UseMetaTagsOptions {
   tool?: ToolDefinition | null;
   categoryName?: string;
-  isClusterPage?: boolean;
-  isThinkingPage?: boolean;
   currentPath?: string;
   baseUrl?: string;
 }
@@ -13,8 +14,6 @@ interface UseMetaTagsOptions {
 export function useMetaTags({
   tool,
   categoryName,
-  isClusterPage = false,
-  isThinkingPage = false,
   currentPath = typeof window !== "undefined" ? window.location.pathname : "/",
   baseUrl = "https://www.xfree.in",
 }: UseMetaTagsOptions) {
@@ -24,26 +23,33 @@ export function useMetaTags({
       "Free browser-based developer utilities, SEO analyzers, AI single-purpose assistants, data formatters, and converters with local-tool privacy.";
     let canonicalUrl = `${baseUrl}/`;
 
+    const routeCategory = categorySlugFromPath(currentPath);
+    const category = routeCategory ? PUBLIC_CATEGORIES.find((item) => item.id === routeCategory) : undefined;
+    const routeGuideSlug = guideSlugFromPath(currentPath);
+    const guide = routeGuideSlug ? findGuide(routeGuideSlug) : undefined;
+
     // 1. Determine Title & Description based on route / tool
     if (tool) {
       const pillar = tool.pillarKeyword ? ` | ${tool.pillarKeyword}` : "";
       title = `${tool.title}${pillar} — Free Browser Utility | XFree.in`;
       description = tool.shortDescription
         ? `${tool.shortDescription} Free browser-based execution.`
-        : `Use ${tool.title} for free online in your browser with zero registration and 100% privacy.`;
+        : `Use ${tool.title} for free online with no registration and clear local or cloud processing disclosure.`;
       canonicalUrl = `${baseUrl}/tools/${tool.slug}`;
-    } else if (categoryName) {
-      title = `${categoryName} Hub — 100% Free Browser Micro-Tools | XFree.in`;
-      description = `Explore free online ${categoryName} utilities. Clean, client-side browser execution, instant data exports, zero registration.`;
-      canonicalUrl = `${baseUrl}/category/${categoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-    } else if (isClusterPage) {
-      title = "100 SEO Keyword Clusters & Micro-Tool Directory | XFree.in";
-      description = "Programmatic SEO directory mapping 100 search intent keyword clusters to XFree browser tools.";
-      canonicalUrl = `${baseUrl}/clusters`;
-    } else if (isThinkingPage) {
-      title = "Gemini 3.1 Pro Deep Thinking Mode — Complex Analytical Reasoning | XFree.in";
-      description = "Perform step-by-step deep analytical reasoning for complex SQL queries, regex logic, and SEO architecture migration using Gemini 3.1 Pro preview.";
-      canonicalUrl = `${baseUrl}/thinking`;
+    } else if (categoryName || category) {
+      const label = categoryName || category!.label;
+      const slug = category?.id || label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      title = `${label} — Free Browser Tools | XFree.in`;
+      description = category?.description || `Explore published ${label} utilities with clear local or cloud processing disclosures.`;
+      canonicalUrl = `${baseUrl}/category/${slug}`;
+    } else if (guide) {
+      title = `${guide.title} — XFree.in`;
+      description = guide.description;
+      canonicalUrl = `${baseUrl}/guides/${guide.slug}`;
+    } else if (currentPath === "/guides") {
+      title = "Developer & SEO Tool Guides | XFree.in";
+      description = "Practical guides for JSON, regex, cron, sitemaps, technical SEO, and browser-based developer tools.";
+      canonicalUrl = `${baseUrl}/guides`;
     } else if (currentPath === "/how-it-works") {
       title = "How It Works — XFree.in Browser Micro-Tools Architecture";
       description = "Learn how XFree.in executes browser-based web utilities that keep local-tool input off our servers.";
@@ -84,6 +90,14 @@ export function useMetaTags({
       title = "Security & Sandbox Architecture | XFree.in";
       description = "Deep dive into XFree.in browser sandbox execution, CSP headers, and API key security.";
       canonicalUrl = `${baseUrl}/security`;
+    } else if (currentPath === "/xfree-app") {
+      title = "XFree App — Install the Browser Tool Suite";
+      description = "Install XFree as a browser app on supported desktop and mobile devices for fast access to published developer and SEO tools.";
+      canonicalUrl = `${baseUrl}/xfree-app`;
+    } else if (currentPath === "/studio") {
+      title = "XFree Studio — Local Tools & Optional NVIDIA Cloud";
+      description = "Use XFree browser tools locally by default or explicitly enable NVIDIA Cloud Mode with account-aware model discovery.";
+      canonicalUrl = `${baseUrl}/studio`;
     }
 
     // Update Document Title
@@ -292,5 +306,5 @@ export function useMetaTags({
       document.head.appendChild(scriptEl);
     }
     scriptEl.textContent = JSON.stringify({ "@graph": jsonLdGraph }, null, 2);
-  }, [tool, categoryName, isClusterPage, isThinkingPage, currentPath, baseUrl]);
+  }, [tool, categoryName, currentPath, baseUrl]);
 }

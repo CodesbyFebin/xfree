@@ -1,4 +1,5 @@
 import React from "react";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import {
   Globe,
   Code2,
@@ -24,13 +25,11 @@ import {
 interface PopularAndCategoriesProps {
   onSelectTool: (slug: string) => void;
   onSelectCategory: (catId: string) => void;
-  onNavigatePage?: (path: string) => void;
 }
 
 export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = ({
   onSelectTool,
   onSelectCategory,
-  onNavigatePage,
 }) => {
   const popularTools = [
     {
@@ -84,12 +83,12 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
     },
     {
       slug: "base64-encoder-decoder",
-      title: "Hash Generator",
-      description: "Generate MD5, SHA-1, SHA-256 and more.",
+      title: "Base64 & JWT Decoder",
+      description: "Encode Base64 and inspect JWT payloads locally.",
       icon: Hash,
       color: "text-rose-400",
     },
-  ];
+  ].filter((tool) => PUBLIC_TOOLS.some((published) => published.slug === tool.slug));
 
   const categories = [
     {
@@ -148,7 +147,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
       icon: Calculator,
       color: "text-teal-400",
     },
-  ];
+  ].filter((category) => PUBLIC_TOOLS.some((tool) => tool.category === category.id));
 
   return (
     <div className="space-y-20 py-8">
@@ -256,10 +255,10 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
           <div className="lg:col-span-7 space-y-6">
             <div className="space-y-2">
               <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-                Privacy-First. Always.
+                Local-First Processing
               </h2>
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                Your data stays in your browser. We believe powerful tools should be private, fast, and hassle-free.
+                Local tools process your input in the browser. Optional cloud features are labeled before any input is transmitted.
               </p>
             </div>
 
@@ -269,9 +268,9 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
                   <Code2 className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-sm sm:text-base">100% Local Processing</h4>
+                  <h4 className="font-bold text-white text-sm sm:text-base">Local Mode by Default</h4>
                   <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                    Everything runs in your browser. Your data never leaves your device.
+                    Published local utilities run in your browser without uploading tool input to XFree.in.
                   </p>
                 </div>
               </div>

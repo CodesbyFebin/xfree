@@ -174,6 +174,7 @@ const PROCESSED_SEED_TOOLS: ToolDefinition[] = (seedToolsData as any[]).map((see
     iconName: iconName,
     execution: isAi ? "ai" : "local",
     status: "draft",
+    indexable: false,
     lastModified: "2026-03-15",
     isAi: isAi,
     toolComponent: seed.toolComponent,
@@ -206,7 +207,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     isFlagship: true,
     tags: ["sitemap", "url extractor", "bulk urls", "xml sitemap", "seo", "domain filter"],
@@ -239,7 +241,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["xml sitemap", "seo", "google indexing", "sitemap validator"],
     exampleInput: "https://example.com/\nhttps://example.com/about\nhttps://example.com/services",
@@ -270,7 +273,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "Developer Tools",
     iconName: "Code2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     isFlagship: true,
     tags: ["json formatter", "json validator", "json tree", "json repair", "xml format"],
@@ -323,7 +327,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "Developer Tools",
     iconName: "Code2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["regex tester", "regular expression", "regex match", "regex replace"],
     exampleInput: "Contact support@xfree.in or sales@company.com for inquiries.",
@@ -354,7 +359,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "Generators",
     iconName: "Wand2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["cron generator", "cron syntax", "cron schedule", "cron expression"],
     exampleInput: "*/15 9-17 * * 1-5",
@@ -385,7 +391,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["meta tags", "open graph", "twitter card", "serp preview", "seo"],
     exampleInput: "Title: XFree.in Platform\nDescription: Free developer and SEO micro-tools.",
@@ -416,7 +423,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["robots.txt", "crawler rules", "allow disallow", "seo auditing"],
     exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://xfree.in/sitemap.xml",
@@ -447,7 +455,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["schema markup", "json-ld", "structured data", "faq schema", "rich snippet"],
     exampleInput: "Name: XFree\nURL: https://xfree.in",
@@ -478,7 +487,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "Converters & Encoders",
     iconName: "ArrowLeftRight",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["base64", "jwt decoder", "url encode", "base64url", "oauth token"],
     exampleInput: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXggRGV2IiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoiYWRtaW4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
@@ -509,7 +519,8 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     categoryLabel: "Generators",
     iconName: "Wand2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["url slug", "utm builder", "google analytics", "campaign tracking", "clean url"],
     exampleInput: "Title: How to Build a Modern Technical SEO Sitemap in 2026!",
@@ -545,16 +556,9 @@ HAND_CRAFTED_TOOLS.forEach(tool => {
 
 export const TOOLS_REGISTRY: ToolDefinition[] = Array.from(toolMap.values());
 
-// Tools that have a real wired React component AND are approved for indexing/sitemap.
-export const INDEXABLE_TOOLS: ToolDefinition[] = TOOLS_REGISTRY.filter(
-  (t) => t.status === "indexable",
+export const ROADMAP_TOOLS: ToolDefinition[] = TOOLS_REGISTRY.filter(
+  (tool) => tool.status === "roadmap" || tool.status === "draft",
 );
-
-export const INDEXABLE_TOOL_SLUGS: Set<string> = new Set(INDEXABLE_TOOLS.map((t) => t.slug));
-
-export function findIndexableTool(slug: string): ToolDefinition | undefined {
-  return INDEXABLE_TOOLS.find((t) => t.slug === slug);
-}
 
 export function findToolBySlug(slug: string): ToolDefinition | undefined {
   return TOOLS_REGISTRY.find((t) => t.slug === slug || t.id === slug);
