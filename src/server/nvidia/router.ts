@@ -1,4 +1,5 @@
 import type { NvidiaModel, NvidiaTaskType } from "./types";
+import { inferModelKind, isChatCompatibleKind } from "./catalog";
 
 const TASK_HINTS: Record<NvidiaTaskType, string[]> = {
   code: ["coder", "code", "devstral", "starcoder", "qwen"],
@@ -30,14 +31,16 @@ function scoreModel(model: NvidiaModel, taskType: NvidiaTaskType): number {
 }
 
 export function selectModelForTask(taskType: NvidiaTaskType, availableModels: NvidiaModel[]): NvidiaModel | null {
-  if (!availableModels.length) return null;
-  return availableModels.reduce((best, model) =>
+  const compatible = availableModels.filter((model) => model.chatCompatible);
+  if (!compatible.length) return null;
+  return compatible.reduce((best, model) =>
     scoreModel(model, taskType) > scoreModel(best, taskType) ? model : best,
   );
 }
 
 export function inferModelCapabilities(modelId: string): NvidiaModel["capabilities"] {
   const id = modelId.toLowerCase();
+  if (!isChatCompatibleKind(inferModelKind(id))) return [];
   const capabilities: NvidiaModel["capabilities"] = ["chat"];
   if (/code|coder|devstral|starcoder|qwen/.test(id)) capabilities.push("code");
   if (/long|128k|70b|120b|large/.test(id)) capabilities.push("long-context");

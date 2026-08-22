@@ -1,12 +1,12 @@
 import React from "react";
-import { Cpu, ShieldCheck, Zap, Globe, Lock, ArrowRight, Code2, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ArrowRight, CheckCircle2, AlertTriangle, Cloud, MonitorCog } from "lucide-react";
 
 interface PageProps {
   onGoHome: () => void;
   onSelectCategory: (catId: string) => void;
 }
 
-export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory }) => {
+export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory: _onSelectCategory }) => {
   return (
     <div className="max-w-5xl mx-auto py-10 px-4 space-y-12">
       {/* Header */}
@@ -19,7 +19,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           How XFree.in Works
         </h1>
         <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Discover how XFree.in delivers blazing-fast developer and SEO micro-tools without ever compromising your data privacy or requiring registration.
+          See how a request moves from a published tool page to browser processing, result review, and export—and how optional cloud features differ.
         </p>
       </div>
 
@@ -29,9 +29,9 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-black text-lg flex items-center justify-center">
             1
           </div>
-          <h3 className="text-xl font-bold text-white">Load into Memory</h3>
+          <h2 className="text-xl font-bold text-white">Choose a published tool</h2>
           <p className="text-slate-400 text-sm leading-relaxed">
-            When you visit any tool page on XFree.in, the lightweight JavaScript execution engine loads directly into your browser's WebAssembly / JS sandbox.
+            Public navigation exposes only tools marked published and indexable. Each page explains accepted input, output, examples, and known constraints before you run it.
           </p>
         </div>
 
@@ -39,9 +39,9 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 font-black text-lg flex items-center justify-center">
             2
           </div>
-          <h3 className="text-xl font-bold text-white">Local Transformation</h3>
+          <h2 className="text-xl font-bold text-white">Process in the declared mode</h2>
           <p className="text-slate-400 text-sm leading-relaxed">
-            All parsing, formatting, regex matching, and XML sitemap parsing happen locally inside your browser memory. Your sensitive input data never leaves your computer.
+            Local tools execute with browser JavaScript or a Web Worker. Optional cloud features are separate, require an explicit choice, and disclose the provider before data leaves the browser.
           </p>
         </div>
 
@@ -49,32 +49,40 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-400 font-black text-lg flex items-center justify-center">
             3
           </div>
-          <h3 className="text-xl font-bold text-white">Instant Output & Export</h3>
+          <h2 className="text-xl font-bold text-white">Verify and export the result</h2>
           <p className="text-slate-400 text-sm leading-relaxed">
-            Get instant transformed output with 1-click clipboard copying or direct file downloads (JSON, XML, CSV). Zero latency, zero wait queues.
+            Review the generated value, diagnostics, preview, or file before copying or downloading it. Documentation identifies cases that still require specialist validation.
           </p>
         </div>
       </div>
 
       {/* Technical Deep Dive */}
       <div className="p-8 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-6">
-        <h2 className="text-2xl font-bold text-white">Why Local Browser Execution Matters</h2>
+        <h2 className="text-2xl font-bold text-white">Local Mode, workers, and cloud requests</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-slate-300">
           <div className="space-y-2">
-            <h4 className="font-bold text-emerald-400 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4" /> Complete Data Confidentiality
-            </h4>
+            <h3 className="font-bold text-emerald-400 flex items-center gap-2">
+              <MonitorCog className="w-4 h-4" /> Browser JavaScript
+            </h3>
             <p className="text-slate-400 leading-relaxed">
-              Standard web utilities send your API keys, private JSON payloads, or SQL schemas to remote backend servers. XFree.in guarantees zero backend logging for all local tools.
+              Lightweight formatters and generators can run directly in the page. They avoid a tool-processing upload, but unusually large or pathological input may still affect responsiveness.
             </p>
           </div>
           <div className="space-y-2">
-            <h4 className="font-bold text-emerald-400 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4" /> Offline & Offline-First Capability
-            </h4>
+            <h3 className="font-bold text-emerald-400 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" /> Web Worker execution
+            </h3>
             <p className="text-slate-400 leading-relaxed">
-              Once loaded in your browser session, XFree.in tools continue functioning even if your internet connection drops or stutters.
+              Selected heavy operations use a worker to move computation away from the interface thread. A worker improves responsiveness; it does not remove memory or timeout limits.
             </p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-bold text-cyan-400 flex items-center gap-2"><Cloud className="w-4 h-4" /> Optional Cloud Mode</h3>
+            <p className="text-slate-400 leading-relaxed">Cloud AI is opt-in. The interface must identify the provider and warn that submitted content will leave the browser before a request is sent.</p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-bold text-amber-400 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Verify production use</h3>
+            <p className="text-slate-400 leading-relaxed">Generated output is a working aid, not proof of security, standards compliance, or suitability for every runtime. Check the documented edge cases.</p>
           </div>
         </div>
       </div>
@@ -82,6 +90,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
       {/* CTA */}
       <div className="text-center pt-4">
         <button
+          type="button"
           onClick={onGoHome}
           className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl inline-flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
         >

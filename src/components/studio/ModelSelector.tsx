@@ -5,6 +5,8 @@ export interface NvidiaModelOption {
   id: string;
   name: string;
   capabilities: string[];
+  kind: string;
+  chatCompatible: boolean;
 }
 
 interface ModelSelectorProps {
@@ -42,6 +44,8 @@ export function ModelSelector({ active, value, onChange }: ModelSelectorProps) {
   }, [active, reloadKey]);
 
   if (!active) return null;
+  const chatModels = models.filter((model) => model.chatCompatible);
+  const specializedCount = models.length - chatModels.length;
 
   return (
     <div className="space-y-2">
@@ -67,7 +71,7 @@ export function ModelSelector({ active, value, onChange }: ModelSelectorProps) {
         className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white focus:border-cyan-500 focus:outline-none disabled:opacity-60"
       >
         <option value="auto">Auto (task-based routing)</option>
-        {models.map((model) => (
+        {chatModels.map((model) => (
           <option key={model.id} value={model.id}>{model.id}</option>
         ))}
       </select>
@@ -75,7 +79,7 @@ export function ModelSelector({ active, value, onChange }: ModelSelectorProps) {
         <p className="text-xs text-rose-300">{error}. Check the server-side NVIDIA configuration.</p>
       ) : (
         <p className="text-[11px] text-slate-500">
-          Availability and pricing are controlled by NVIDIA and can change.
+          {chatModels.length} chat-compatible models available{specializedCount > 0 ? ` · ${specializedCount} specialized models discovered` : ""}. Availability and pricing are controlled by NVIDIA.
         </p>
       )}
     </div>

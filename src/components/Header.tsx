@@ -6,7 +6,6 @@ interface HeaderProps {
   onOpenSearch: () => void;
   onOpenSaved: () => void;
   onOpenChat: () => void;
-  onGoStudio: () => void;
   activeCategory: string;
   onSelectCategory: (catId: string) => void;
   favoritesCount: number;
@@ -20,7 +19,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSearch,
   onOpenSaved,
   onOpenChat,
-  onGoStudio,
   activeCategory,
   onSelectCategory,
   favoritesCount,
@@ -101,14 +99,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Global Search & Actions */}
       <div className="flex items-center gap-2 sm:gap-3">
-        <button
-          onClick={onGoStudio}
+        <a
+          href="https://app.xfree.in/"
           className="h-9 px-3.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-200 font-semibold text-xs flex items-center gap-2 transition-all"
           title="Open XFree Studio"
+          aria-label="Open XFree Studio application"
         >
           <PanelsTopLeft className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Studio</span>
-        </button>
+        </a>
         {/* Gemini Chatbot Drawer Trigger */}
         <button
           onClick={onOpenChat}

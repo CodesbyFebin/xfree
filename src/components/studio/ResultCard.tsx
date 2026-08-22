@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { Check, Clipboard, Download, Link2 } from "lucide-react";
 import type { StudioResult } from "../../lib/studio/types";
 
-export function ResultCard({ result, onDownload, onChain }: { result: StudioResult; onDownload: () => void; onChain: () => void }) {
+interface ResultCardProps {
+  key?: React.Key;
+  result: StudioResult;
+  onDownload: () => void;
+  onChain: () => void;
+}
+
+export function ResultCard({ result, onDownload, onChain }: ResultCardProps) {
   const [copied, setCopied] = useState(false);
   return <article className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
     <div className="flex items-start justify-between gap-2"><div><h3 className="text-sm font-semibold text-stone-800">{result.title}</h3><p className={`text-[10px] ${result.processing === "Local" ? "text-emerald-700" : "text-indigo-700"}`}>{result.processing === "Local" ? "Processed locally" : `NVIDIA • ${result.model}`}</p></div>{result.sourceResultId ? <span className="rounded bg-stone-100 px-1.5 py-0.5 text-[9px] text-stone-400">Chained</span> : null}</div>

@@ -18,8 +18,8 @@
  * printed snippets. This is deliberate: it forces a human read of the
  * generated stub before it can ship.
  *
- * When the component is REALLY implemented, flip status: "draft" -> "indexable"
- * and the tool will appear in the sitemap on next build.
+ * When the component is genuinely implemented, maintainers may separately
+ * review promotion from draft/non-indexable to published/indexable.
  */
 import fs from "fs";
 import path from "path";
@@ -150,7 +150,7 @@ export const ${componentName}: React.FC<Props> = ({ tool: _tool, onSaveHistory: 
     lastReviewed: "${new Date().toISOString().slice(0, 10)}"
   },`);
 
-  console.log("\n[generate:tool] done. Next: paste the snippets above, implement the component, then flip status → indexable.");
+  console.log("\n[generate:tool] done. Next: paste the snippets, implement and test the component, then request a separate publication review.");
 }
 
 function labelForCategory(cat: string): string {

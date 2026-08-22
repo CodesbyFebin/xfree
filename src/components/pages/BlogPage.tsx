@@ -22,18 +22,19 @@ export const BlogPage: React.FC<PageProps> = ({ onGoHome: _onGoHome, onSelectToo
       <header className="space-y-3">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-semibold text-cyan-300">
           <BookOpen className="w-4 h-4" />
-          <span>Blog</span>
+          <span>Blog &amp; Pillars</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Blog</h1>
+        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Blog &amp; Pillar Guides</h1>
         <p className="text-slate-300 text-sm">
-          Long-form articles will land here at their own URLs. Our current published writing lives
+          This editorial hub grows progressively. Our current published writing lives
           under <RouterLink href="/guides" onNavigate={navigate} className="text-cyan-300 underline">Guides</RouterLink> —
           each guide has its own permanent route, canonical, and structured data.
         </p>
       </header>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-white">Published guides</h2>
+        <h2 className="text-lg font-bold text-white">Published technical guides</h2>
+        <p className="text-sm leading-6 text-slate-400">Each guide answers a defined problem, includes concrete examples, links to relevant working tools, and is reviewed before its canonical URL enters the sitemap.</p>
         <ul className="space-y-2 text-sm">
           {GUIDES.map((g) => (
             <li key={g.slug}>
@@ -51,9 +52,8 @@ export const BlogPage: React.FC<PageProps> = ({ onGoHome: _onGoHome, onSelectToo
       </section>
 
       <p className="text-xs text-slate-500 italic">
-        We intentionally don&apos;t list article teasers without real per-article URLs — that&apos;s the
-        pattern Google&apos;s spam policy calls scaled content abuse when the shell is one page.
-        Articles will appear here once each has its own permanent URL and unique metadata.
+        Planned pillar and cluster pages stay private until their utility, references, canonical metadata,
+        and internal links are complete. No placeholder article is exposed merely to increase page count.
       </p>
     </div>
   );

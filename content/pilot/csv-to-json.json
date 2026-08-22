@@ -1,0 +1,60 @@
+{
+  "name": "CSV to JSON Converter",
+  "slug": "csv-to-json",
+  "category": "data-conversion",
+  "pillarSlug": "csv-data-tools",
+  "summary": "Parse a header-based CSV document into a JSON array of objects in a browser Web Worker, with quoted-field and doubled-quote handling.",
+  "engine": { "id": "csv-to-json", "status": "working", "tested": true },
+  "inputParameters": ["CSV text whose first non-empty row contains column headers"],
+  "outputFormats": ["Pretty-printed JSON array"],
+  "useCases": [
+    "Convert a spreadsheet export into records for API testing",
+    "Inspect quoted CSV values containing commas, line breaks, or doubled quotes",
+    "Prepare a small header-based dataset for JavaScript processing"
+  ],
+  "searchIntents": [
+    "convert CSV to JSON locally without upload",
+    "parse quoted CSV into JSON array",
+    "CSV header row to JSON objects browser",
+    "CSV doubled quote parser online"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "web-worker",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The first parsed row becomes the property-name list and duplicate headers overwrite earlier values in each output object.",
+      "Rows shorter than the header receive empty strings for missing cells, while cells beyond the header count are ignored.",
+      "The parser supports comma delimiters only and does not expose delimiter, encoding, type inference, or schema options.",
+      "All output values remain strings and the practical document size depends on browser memory and a thirty-second worker-client timeout."
+    ]
+  },
+  "metadata": {
+    "title": "CSV to JSON Converter in Local Mode | XFree Studio",
+    "description": "Convert header-based CSV into a JSON object array in a browser Web Worker, including quoted commas and line breaks, without uploading working data.",
+    "h1": "CSV to JSON Converter"
+  },
+  "content": {
+    "directAnswer": "The CSV to JSON Converter reads the first parsed CSV row as property names and turns each later row into one JSON object. It handles comma delimiters, quoted fields, doubled quotes, and line breaks inside quotes. XFree runs the parser in a browser Web Worker in Local Mode.",
+    "technicalDetails": "The worker scans the CSV string one character at a time while tracking the current row, current cell, and whether parsing is inside a quoted field. A double quote toggles quoted state, except two consecutive quotes inside a quoted field, which become one literal quote. Commas terminate cells only outside quotes. Carriage returns and line feeds terminate rows only outside quotes; a CRLF pair is consumed as one boundary. A completed row is retained when at least one cell is non-empty. After parsing, the first retained row becomes the header list. Each later row is converted with Object.fromEntries by pairing every header with the cell at the same position. A missing cell becomes an empty string. Extra cells have no header and are ignored. Duplicate header names are legal JavaScript object keys but cannot coexist in one object, so a later occurrence overwrites an earlier occurrence. Blank header names also create empty-string properties and should be corrected before conversion. The engine does not infer numbers, Booleans, dates, nulls, arrays, or nested objects: every retained cell is emitted as a JSON string. It does not detect dialects, semicolon/tab delimiters, comments, byte-order marks, or spreadsheet formulas. The pretty JSON result uses two-space indentation. Parsing and serialization execute in a dedicated Web Worker, preventing ordinary documents from blocking the Studio interface. The working CSV is posted to that same-origin worker and not submitted to XFree servers or AI providers. Browser memory, duplicated string representations, output size, and the worker client's thirty-second timeout impose practical limits.",
+    "instructions": "Select CSV to JSON in XFree Studio and paste CSV whose first non-empty row contains unique, meaningful headers. Confirm that the delimiter is a comma. Wrap fields in double quotes when they contain commas, carriage returns, line feeds, or quotes; represent one quote inside a quoted field as two consecutive quotes. Run the conversion and inspect several records before using the result. Verify that each row has the expected number of cells. Short rows receive empty strings, and extra cells are discarded because no output property can represent them. Remove duplicate and blank headers before processing, because duplicate property names collapse during object construction. Remember that values remain strings: the text 42 becomes \"42\", not the JSON number 42, and false remains \"false\". Apply a separate schema-aware transformation when types matter. Spreadsheet exports can contain formulas beginning with equals, plus, minus, or at-sign characters; this converter preserves them as strings and does not evaluate them, but importing the result back into spreadsheet software may require formula-injection precautions. For large files, test a representative sample first and confirm memory use, row shape, and quoting. Do not close or reload the tab while the worker is active. Retain the source file until downstream validation confirms that no extra columns or duplicate headers were lost.",
+    "examples": [
+      { "title": "Convert two simple records", "input": "id,name,active\n1,Ada,true\n2,Lin,false", "output": "[\n  {\n    \"id\": \"1\",\n    \"name\": \"Ada\",\n    \"active\": \"true\"\n  },\n  {\n    \"id\": \"2\",\n    \"name\": \"Lin\",\n    \"active\": \"false\"\n  }\n]", "explanation": "The header row supplies property names. Numeric and Boolean-looking cells remain strings because the parser performs no type inference." },
+      { "title": "Preserve a comma and quote", "input": "name,note\n\"Doe, Jane\",\"She said \"\"yes\"\"\"", "output": "[\n  {\n    \"name\": \"Doe, Jane\",\n    \"note\": \"She said \\\"yes\\\"\"\n  }\n]", "explanation": "The comma stays within the quoted name field, and doubled CSV quotes become one literal quote in the JSON string value." }
+    ],
+    "edgeCases": [
+      "An empty document or document with no retained header row produces an empty JSON array.",
+      "Duplicate headers overwrite earlier same-name properties, so the resulting object cannot preserve both columns.",
+      "Unclosed quotes keep subsequent delimiters and line breaks inside the current field rather than producing a dedicated syntax error.",
+      "Rows containing only empty cells are skipped, while short retained rows receive empty strings for missing header positions."
+    ],
+    "faqs": [
+      { "question": "Does the converter infer numbers, dates, or Booleans?", "answer": "No. Every parsed cell becomes a JSON string. Apply an explicit schema-aware conversion afterward when downstream consumers require typed values." },
+      { "question": "What happens when CSV rows have different lengths?", "answer": "Missing cells become empty strings. Cells beyond the number of headers are ignored, so inspect row width before relying on the output." },
+      { "question": "Can it parse semicolon- or tab-delimited files?", "answer": "No. The current worker recognizes commas only and has no delimiter setting or automatic dialect detection." },
+      { "question": "Is the CSV uploaded during conversion?", "answer": "No working CSV is sent to XFree servers or AI providers by this engine. Parsing runs in a browser Web Worker within the active session." }
+    ]
+  }
+}

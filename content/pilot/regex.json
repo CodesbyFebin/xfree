@@ -1,0 +1,52 @@
+{
+  "name": "JavaScript Regex Tester",
+  "slug": "regex",
+  "category": "developer-utilities",
+  "pillarSlug": "regex-tools",
+  "summary": "Test a JavaScript regular expression against multiline text and inspect each full match, starting index, and named capture-group object.",
+  "engine": { "id": "regex", "status": "working", "tested": true },
+  "inputParameters": ["A first line in /pattern/flags notation", "Test text on all following lines"],
+  "outputFormats": ["JSON array containing each full match, zero-based index, and named groups"],
+  "useCases": ["Check JavaScript pattern behavior against a sample string", "Inspect global match positions across multiline test data", "Test named capture groups before using a pattern in application code"],
+  "searchIntents": ["JavaScript regex tester locally", "test regular expression without upload", "regex named groups JSON output", "multiline JavaScript regexp tester"],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "Regular-expression evaluation runs synchronously on the interface thread with no execution timeout or Web Worker isolation.",
+      "Pathological backtracking patterns can freeze the page and should not be tested against large or untrusted text.",
+      "The result includes the full match and named groups but omits numbered capture groups and match indices produced by the d flag.",
+      "Patterns use the browser JavaScript RegExp implementation and may differ from PCRE, RE2, Python, Java, or .NET syntax and behavior."
+    ]
+  },
+  "metadata": {
+    "title": "JavaScript Regex Tester with Match JSON | XFree Studio",
+    "description": "Test JavaScript regex patterns locally and inspect full matches, offsets, and named groups, with explicit backtracking and syntax limitations.",
+    "h1": "JavaScript Regex Tester"
+  },
+  "content": {
+    "directAnswer": "The JavaScript Regex Tester reads a /pattern/flags expression from the first input line and tests it against the remaining multiline text. It ensures global matching, then returns JSON records containing each full match, zero-based index, and named groups. Evaluation runs locally in the browser.",
+    "technicalDetails": "The engine splits the Studio input at newline characters. The first line is parsed with a wrapper expression requiring an opening slash, a closing slash, and flags from d, g, i, m, s, u, v, and y. The pattern portion is greedy, so the closing delimiter is the last slash that still permits a valid flag suffix. Remaining lines are rejoined with newlines as the test string. If flags omit g, the engine appends it because String.matchAll requires a global expression. It constructs a native browser RegExp and expands matchAll into an array. Each record contains the full match, its zero-based UTF-16 index, and named groups or an empty object. Numbered captures and index ranges from the d flag are not copied into output. Semantics come from the browser JavaScript engine. Lookbehind, Unicode properties, the v flag, and named-group rules depend on browser support; this is not PCRE compatibility. Invalid patterns, repeated flags, or incompatible flags cause construction to fail. Evaluation is synchronous on the main thread with no timeout, cancellation, or worker isolation. Catastrophic backtracking can monopolize the interface, especially with long near-matching input. Local Mode prevents submission of working text to XFree servers or AI providers; it does not make an unsafe pattern computationally safe.",
+    "instructions": "Put the expression on the first line in slash notation, such as /error:\\s+(?<message>.+)/i, and test text on following lines. Run the tester and inspect its JSON. Because the engine adds g when absent, expect all non-overlapping matches. Use m for line-boundary anchors, s when dot should include newlines, and i for case-insensitive matching. Use u or v only where target browsers support the required behavior. Start with short, controlled input. Avoid ambiguous nested quantifiers such as (a+)+ and overlapping alternatives that can cause excessive backtracking. Do not paste large untrusted text before assessing the pattern because a running match cannot be interrupted. Validate in the same JavaScript runtime family as the final application; expressions from other dialects can behave differently or fail. Displayed indices count UTF-16 code units. Test in application code if you need numbered captures or d-flag ranges, which this UI does not emit.",
+    "examples": [
+      { "title": "Extract named values", "input": "/id=(?<id>\\d+)/\nid=42 and id=105", "output": "[\n  {\n    \"match\": \"id=42\",\n    \"index\": 0,\n    \"groups\": { \"id\": \"42\" }\n  },\n  {\n    \"match\": \"id=105\",\n    \"index\": 10,\n    \"groups\": { \"id\": \"105\" }\n  }\n]", "explanation": "The engine adds global matching, returns both non-overlapping matches, and serializes the named id group for each record." },
+      { "title": "Use multiline anchors", "input": "/^warn/im\nInfo\nWARN: disk\nwarn: cpu", "output": "Two match records beginning at the W in WARN and the w in warn", "explanation": "The i flag ignores case and m lets the caret match after newline boundaries; actual indices are measured as UTF-16 code units." }
+    ],
+    "edgeCases": [
+      "A zero-length pattern can produce zero-length matches; native matchAll advances according to JavaScript RegExp rules to avoid an endless iterator.",
+      "The sticky y flag remains active when global matching is added and can yield fewer results because each match must start at the current lastIndex position.",
+      "A slash inside the pattern must be represented consistently with the first-line slash notation, and invalid JavaScript escaping causes construction to fail.",
+      "Catastrophic backtracking can block the browser interface because the current engine has no timeout, cancellation, or worker boundary."
+    ],
+    "faqs": [
+      { "question": "Does this tester support PCRE syntax?", "answer": "No. It constructs the browser’s native JavaScript RegExp, so syntax and behavior must follow the ECMAScript implementation available in that browser." },
+      { "question": "Why is the global flag applied when I omit it?", "answer": "The engine uses String.matchAll to return every match. It appends g when necessary because matchAll requires a global regular expression." },
+      { "question": "Can the tester stop a slow or catastrophic expression?", "answer": "No. The current implementation runs synchronously on the main thread without a timeout or cancellation mechanism. Test risky patterns only against small controlled samples." },
+      { "question": "Which capture information appears in the JSON result?", "answer": "Each record includes the complete match, its zero-based UTF-16 index, and named capture groups. Numbered captures and d-flag index ranges are not currently emitted." },
+      { "question": "Is the pattern or test text uploaded?", "answer": "No working input is sent to XFree servers or AI providers by this engine. Pattern compilation and matching occur in the current browser page." }
+    ]
+  }
+}

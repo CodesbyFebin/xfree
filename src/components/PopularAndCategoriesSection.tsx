@@ -166,10 +166,16 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
           {popularTools.map((tool) => {
             const Icon = tool.icon;
             return (
-              <div
+              <a
                 key={tool.slug}
-                onClick={() => onSelectTool(tool.slug)}
+                href={`/tools/${tool.slug}`}
+                onClick={(event) => {
+                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
+                  event.preventDefault();
+                  onSelectTool(tool.slug);
+                }}
                 className="group p-5 rounded-2xl bg-slate-900/70 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 hover:shadow-xl hover:shadow-emerald-500/5"
+                aria-label={`${tool.title} — ${tool.description}`}
               >
                 <div className="space-y-3">
                   <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -184,7 +190,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
                     </p>
                   </div>
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>
@@ -215,10 +221,16 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
           {categories.map((cat) => {
             const Icon = cat.icon;
             return (
-              <div
+              <a
                 key={cat.id}
-                onClick={() => onSelectCategory(cat.id)}
+                href={`/category/${cat.id}`}
+                onClick={(event) => {
+                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
+                  event.preventDefault();
+                  onSelectCategory(cat.id);
+                }}
                 className="group p-5 rounded-2xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition-all duration-200 cursor-pointer flex flex-col space-y-3"
+                aria-label={`${cat.title} — ${cat.description}`}
               >
                 <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Icon className={`w-5 h-5 ${cat.color}`} />
@@ -231,7 +243,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
                     {cat.description}
                   </p>
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>

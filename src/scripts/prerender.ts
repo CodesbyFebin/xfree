@@ -13,6 +13,7 @@ import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { STATIC_ROUTES } from "../data/routes";
 import { guideForSlug } from "../data/toolGuides";
 import { GUIDES } from "../data/guides";
+import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
 
 const DIST = path.join(process.cwd(), "dist");
 const BASE = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
@@ -57,7 +58,7 @@ function renderGuideBodyHtml(g: import("../data/guides").Guide): string {
   return `${sections}<p><em>Authored by the XFree.in team. Last reviewed ${escapeHtml(g.lastReviewed)}.</em></p>`;
 }
 
-function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string): string {
+function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string, prerenderRootHtml?: string): string {
   const canonical = `${BASE}${meta.route === "/" ? "/" : meta.route}`;
   const headExtras = [
     `<title>${escapeHtml(meta.title)}</title>`,
@@ -90,12 +91,6 @@ function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string): s
       ${guideHtml}
       ${extra}
     </noscript>
-    <div id="prerender-shell" hidden aria-hidden="true">
-      <h1>${escapeHtml(meta.h1)}</h1>
-      <p>${escapeHtml(meta.intro)}</p>
-      ${guideHtml}
-      ${extra}
-    </div>
   `;
 
   // Function-form replacements avoid JS's $&/$`/$'/$n interpretation in the
@@ -104,8 +99,19 @@ function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string): s
   let out = template.replace(/<title>[^<]*<\/title>/i, () => "");
   out = out.replace(/<link rel="canonical"[^>]*>\n?/i, () => "");
   out = out.replace("</head>", () => `    ${headExtras}\n  </head>`);
-  out = out.replace('<div id="root"></div>', () => `<div id="root"></div>${shell}`);
+  out = out.replace('<div id="root"></div>', () => `<div id="root">${prerenderRootHtml || ""}</div>${shell}`);
   return out;
+}
+
+function renderGeneratedArtifactHtml(page: import("../content-pipeline/published-artifact-schema").PublishedArtifact): string {
+  const examples = page.content.examples.map((example) =>
+    `<article><h3>${escapeHtml(example.title)}</h3><p><strong>Input</strong></p><pre><code>${escapeHtml(example.input)}</code></pre><p><strong>Output</strong></p><pre><code>${escapeHtml(example.output)}</code></pre><p>${escapeHtml(example.explanation)}</p></article>`,
+  ).join("");
+  const faqs = page.content.faqs.map((faq) =>
+    `<details><summary>${escapeHtml(faq.question)}</summary><p>${escapeHtml(faq.answer)}</p></details>`,
+  ).join("");
+  const limitations = page.processing.limitations.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  return `<article><header><h1>${escapeHtml(page.metadata.h1)}</h1><p><a href="${escapeHtml(page.studioDeepLink)}">Open in XFree Studio</a></p></header><section aria-labelledby="direct-answer"><h2 id="direct-answer">What is the ${escapeHtml(page.metadata.h1)} and how does it work?</h2><p>${escapeHtml(page.content.directAnswer)}</p></section><section aria-labelledby="technical-details"><h2 id="technical-details">Technical architecture and local processing</h2><p>${escapeHtml(page.content.technicalDetails)}</p></section><section aria-labelledby="instructions"><h2 id="instructions">Step-by-step usage guide</h2><p>${escapeHtml(page.content.instructions)}</p></section><section><h2>Worked examples</h2>${examples}</section><aside><h2>Verified specifications</h2><p>Processing: ${escapeHtml(page.processing.mode)}</p><ul>${limitations}</ul></aside><section aria-labelledby="troubleshooting"><h2 id="troubleshooting">Technical troubleshooting and edge cases</h2>${faqs}</section></article>`;
 }
 
 function writeRoute(route: string, html: string) {
@@ -169,10 +175,10 @@ function breadcrumbs(items: Array<{ name: string; url: string }>) {
 
 const STATIC_META: Record<string, { title: string; description: string; h1: string; intro: string }> = {
   "/": {
-    title: "XFree — Free Developer, SEO & AI Tools | XFree.in",
-    description: "XFree is a free browser-based suite of developer utilities, technical SEO helpers, formatters, validators, converters, and single-purpose AI tools. No signup required.",
+    title: `XFree — ${PUBLIC_TOOLS.length} Free Developer, SEO & AI Tools`,
+    description: `Explore ${PUBLIC_TOOLS.length} published developer, technical SEO, formatter, converter, and focused AI tools. Local Mode is the default and no signup is required.`,
     h1: "XFree — Free Developer, SEO & AI Tools",
-    intro: "XFree is a free browser-based platform for developer utilities, technical SEO tools, formatters, validators, converters, and focused AI micro-tools. Everything runs in your browser unless a tool explicitly proxies to Google Gemini — and that's disclosed on the tool itself.",
+    intro: `XFree currently publishes ${PUBLIC_TOOLS.length} working developer, technical SEO, formatter, converter, and focused AI tools. Local Mode is the default; tools that use cloud providers disclose that before submission.`,
   },
   "/xfree-app": {
     title: "XFree App — Install the Free Browser-Based Developer & SEO Toolkit",
@@ -191,11 +197,11 @@ const STATIC_META: Record<string, { title: string; description: string; h1: stri
   "/privacy": { title: "Privacy Policy — XFree.in", description: "How XFree.in handles Local Mode tools, optional Cloud AI, service logs, forms, advertising, cookies, and privacy requests.", h1: "Privacy Policy", intro: "Published Local Mode tools process working data in your browser. Optional Cloud AI and third-party services are disclosed separately." },
   "/terms": { title: "Terms of Service — XFree.in", description: "Terms of service for XFree.in micro-tools.", h1: "Terms of Service", intro: "Acceptable use and service limitations for XFree.in tools." },
   "/security": { title: "Security & Sandbox — XFree.in", description: "XFree.in security posture: CSP, rate limits, secret handling, and abuse controls on AI endpoints.", h1: "Security", intro: "How we harden the platform against abuse and protect your data." },
-  "/faq": { title: "Frequently Asked Questions — XFree.in", description: "Common questions about XFree.in: pricing, privacy, AI, and how tools work.", h1: "FAQ", intro: "Answers to common questions about XFree.in." },
-  "/how-it-works": { title: "How XFree.in Works", description: "How the XFree.in micro-tools platform works: local execution vs AI proxy, and where your data goes.", h1: "How XFree.in works", intro: "Local tools process data in your browser. AI tools proxy through our rate-limited server to Google Gemini." },
-  "/use-cases": { title: "Use Cases — XFree.in", description: "Real-world workflows powered by XFree.in developer and SEO micro-tools.", h1: "Use cases", intro: "Where teams use XFree.in in their day-to-day work." },
-  "/docs": { title: "Documentation — XFree.in", description: "Documentation for XFree.in tools and APIs.", h1: "Documentation", intro: "Guides for using XFree.in tools effectively." },
-  "/blog": { title: "Blog — XFree.in", description: "Articles and updates from the XFree.in team.", h1: "Blog", intro: "Articles from the XFree.in team." },
+  "/faq": { title: "FAQ & Guidance — Local and Cloud Tools | XFree.in", description: "Answers about XFree Local Mode, optional cloud processing, browser limits, sensitive data, accounts, tool verification, and production use.", h1: "FAQ & Guidance", intro: "Understand which tools run locally, when optional cloud processing sends submitted content to a named provider, how browser limits affect large input, and why generated output still requires production review." },
+  "/how-it-works": { title: "How XFree Works — Browser Tools and Optional Cloud Mode", description: "Follow XFree processing from a published tool page through browser JavaScript or Web Workers to result review, export, and optional cloud handoff.", h1: "How XFree.in works", intro: "XFree exposes only published, indexable tools. Local operations use the browser implementation declared on each tool page; optional cloud features require an explicit choice and disclose the provider before submitted content leaves the browser." },
+  "/use-cases": { title: "Developer and SEO Tool Use Cases & Examples | XFree.in", description: "Practical XFree workflows for technical SEO, API payload inspection, regex testing, scheduled jobs, metadata previews, and content comparison.", h1: "Use cases & examples", intro: "Explore practical workflows built from currently published tools: prepare crawl data, validate API payloads, test JavaScript regex patterns, plan cron schedules, compare text revisions, and preview metadata before publishing." },
+  "/docs": { title: "XFree Documentation Hub — Inputs, Examples and Limits", description: "Find verified XFree tool references, input and output behavior, worked examples, processing disclosures, limitations, and reviewed technical guides.", h1: "Documentation Hub", intro: "Documentation follows the behavior of published implementations. Draft engines stay excluded, processing language is scoped per tool, and examples describe limitations instead of promising universal standards compliance." },
+  "/blog": { title: "XFree Blog & Pillar Guides — Reviewed Technical Content", description: "Read XFree technical guides and progressively published pillar content with permanent URLs, unique metadata, real examples, and working tool links.", h1: "Blog & Pillar Guides", intro: "Current editorial content consists of reviewed guides with permanent routes. Planned pillar and cluster pages remain private until their utility, examples, metadata, and internal links are complete." },
 };
 
 function main() {
@@ -298,6 +304,33 @@ function main() {
     }
 
     writeRoute(route, injectMeta(template, { route, title, description, h1: tool.title, intro, jsonLd, guide }));
+    count++;
+  }
+
+  // Generated pages are compiled from content/published only after their
+  // source, engine, QA gates, and exact content-bound approval are rechecked.
+  // Handwritten public tool pages win on slug collisions.
+  const handwrittenToolSlugs = new Set(PUBLIC_TOOLS.map((tool) => tool.slug));
+  for (const page of Object.values(GENERATED_PUBLISHED_CONTENT)) {
+    if (handwrittenToolSlugs.has(page.slug)) continue;
+    const route = `/tools/${page.slug}`;
+    const bodyHtml = renderGeneratedArtifactHtml(page);
+    writeRoute(route, injectMeta(template, {
+      route,
+      title: page.metadata.title,
+      description: page.metadata.description,
+      h1: page.metadata.h1,
+      intro: page.content.directAnswer,
+      jsonLd: [
+        organizationJsonLd(),
+        siteJsonLd(),
+        breadcrumbs([
+          { name: "Home", url: `${BASE}/` },
+          { name: page.metadata.h1, url: `${BASE}${route}` },
+        ]),
+        page.jsonLd,
+      ],
+    }, undefined, bodyHtml));
     count++;
   }
 

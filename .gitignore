@@ -4,6 +4,9 @@ dist/
 coverage/
 .DS_Store
 *.log
+.xfree-build-cache.json
+.xfree-build-cache.json.tmp
+.xfree-review-queue/
 .env*
 !.env.example
 # api/index.js is checked in — it's the Vercel function bundle produced by

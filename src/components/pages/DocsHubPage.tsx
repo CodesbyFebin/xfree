@@ -1,12 +1,14 @@
 import React from "react";
-import { BookOpen, Search, Code2, Globe, Sparkles, FileText, ArrowRight, Terminal } from "lucide-react";
+import { BookOpen, ArrowRight, ShieldCheck } from "lucide-react";
+import { PUBLIC_TOOL_SLUGS } from "../../data/publicTools";
+import { GUIDES } from "../../data/guides";
 
 interface PageProps {
   onGoHome: () => void;
   onSelectTool: (slug: string) => void;
 }
 
-export const DocsHubPage: React.FC<PageProps> = ({ onGoHome, onSelectTool }) => {
+export const DocsHubPage: React.FC<PageProps> = ({ onGoHome: _onGoHome, onSelectTool }) => {
   const guides = [
     {
       title: "Generating Technical XML Sitemaps for Large Sites",
@@ -57,16 +59,17 @@ export const DocsHubPage: React.FC<PageProps> = ({ onGoHome, onSelectTool }) => 
           XFree.in Documentation Hub
         </h1>
         <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto">
-          Comprehensive guides, technical specs, and step-by-step tutorials for every micro-tool on the platform.
+          Start with verified tool references, then move into reviewed guides for deeper examples, limitations, and production checks.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {guides.map((g, i) => (
-          <div
-            key={i}
+        {guides.filter((guide) => PUBLIC_TOOL_SLUGS.has(guide.toolSlug)).map((g) => (
+          <button
+            type="button"
+            key={g.toolSlug}
             onClick={() => onSelectTool(g.toolSlug)}
-            className="p-6 rounded-2xl bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
+            className="p-6 text-left rounded-2xl bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer flex flex-col justify-between space-y-4 group"
           >
             <div className="space-y-3">
               <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
@@ -83,9 +86,20 @@ export const DocsHubPage: React.FC<PageProps> = ({ onGoHome, onSelectTool }) => 
               <span>Read Guide & Launch Tool</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
-          </div>
+          </button>
         ))}
       </div>
+
+      <section className="grid gap-5 rounded-3xl border border-slate-800 bg-slate-900/70 p-6 sm:grid-cols-[1fr_auto] sm:items-center">
+        <div className="space-y-2">
+          <h2 className="flex items-center gap-2 text-xl font-bold text-white"><ShieldCheck className="h-5 w-5 text-emerald-400" /> Documentation contract</h2>
+          <p className="text-sm leading-6 text-slate-300">References describe the implementation that is currently published. Draft engines are excluded, privacy language is scoped per processing mode, and examples identify limitations rather than promising universal compliance.</p>
+        </div>
+        <div className="rounded-2xl border border-slate-700 bg-slate-950 px-5 py-4 text-center">
+          <strong className="block text-2xl text-white">{GUIDES.length}</strong>
+          <span className="text-xs text-slate-400">reviewed long-form guides</span>
+        </div>
+      </section>
     </div>
   );
 };
