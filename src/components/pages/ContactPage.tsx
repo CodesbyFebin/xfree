@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, Mail, Github } from "lucide-react";
 
 interface PageProps {
   onGoHome: () => void;
@@ -48,9 +48,29 @@ export const ContactPage: React.FC<PageProps> = ({ onGoHome: _onGoHome }) => {
       <div className="text-center space-y-3">
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Contact Support & Feedback</h1>
         <p className="text-slate-300 text-sm sm:text-base">
-          Have a tool request, bug report, or partnership inquiry? Reach out directly.
+          Have a tool request, bug report, policy question, or partnership inquiry? Reach XFree through the form or a direct public channel.
         </p>
       </div>
+
+      <section aria-labelledby="direct-contact" className="grid gap-3 sm:grid-cols-2">
+        <a
+          href="mailto:support@xfree.in"
+          className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 transition-colors hover:border-cyan-500/40"
+        >
+          <div className="flex items-center gap-2 text-white font-bold text-sm"><Mail className="w-4 h-4 text-cyan-400" /> Email support</div>
+          <p className="mt-2 text-xs text-slate-400">support@xfree.in</p>
+        </a>
+        <a
+          href="https://github.com/CodesbyFebin/xfree/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 transition-colors hover:border-cyan-500/40"
+        >
+          <div className="flex items-center gap-2 text-white font-bold text-sm"><Github className="w-4 h-4 text-cyan-400" /> Public issue tracker</div>
+          <p className="mt-2 text-xs text-slate-400">Bug reports and reproducible tool issues</p>
+        </a>
+        <h2 id="direct-contact" className="sr-only">Direct contact methods</h2>
+      </section>
 
       <div className="p-8 rounded-3xl bg-slate-900/90 border border-slate-800">
         {status === "success" ? (
@@ -87,7 +107,7 @@ export const ContactPage: React.FC<PageProps> = ({ onGoHome: _onGoHome }) => {
                 maxLength={4000}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Describe the tool feature, bug, or feedback..."
+                placeholder="Describe the tool feature, bug, policy question, or feedback..."
                 className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-500"
               />
             </div>
@@ -108,6 +128,10 @@ export const ContactPage: React.FC<PageProps> = ({ onGoHome: _onGoHome }) => {
           </form>
         )}
       </div>
+
+      <p className="text-center text-xs leading-relaxed text-slate-500">
+        Please do not send passwords, API keys, private keys, regulated personal data, or other secrets through the contact form or public issue tracker.
+      </p>
     </div>
   );
 };
