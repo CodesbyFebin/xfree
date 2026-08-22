@@ -1,5 +1,6 @@
 import React from "react";
 import type { GuideContent } from "../data/toolGuides";
+import { AdSenseUnit } from "./AdSenseUnit";
 
 interface Props {
   guide: GuideContent;
@@ -63,6 +64,8 @@ export const ToolGuide: React.FC<Props> = ({ guide, toolTitle, onSelectTool }) =
           ))}
         </div>
       </div>
+
+      <AdSenseUnit slot={import.meta.env.VITE_ADSENSE_TOOL_SLOT} />
 
       {onSelectTool && guide.relatedSlugs.length > 0 && (
         <div className="space-y-3">
