@@ -1,0 +1,20 @@
+{
+  "status": "build-metadata",
+  "service": "www.xfree.in",
+  "canonicalOrigin": "https://www.xfree.in",
+  "version": "0.1.0",
+  "contentLastReviewed": "2026-08-23",
+  "publishedTools": 10,
+  "indexablePillars": 5,
+  "roadmapConcepts": 25000,
+  "roadmapDisclaimer": "Roadmap concepts are planned taxonomy entries, not live or indexed tools.",
+  "runtimeHealthEndpoint": "https://www.xfree.in/api/health",
+  "note": "This static file describes the build. Use /api/health for runtime liveness.",
+  "endpoints": {
+    "sitemap": "https://www.xfree.in/sitemap-index.xml",
+    "llms": "https://www.xfree.in/llms.txt",
+    "tools": "https://www.xfree.in/tools.json",
+    "openapi": "https://www.xfree.in/openapi.json",
+    "github": "https://github.com/CodesbyFebin/xfree"
+  }
+}

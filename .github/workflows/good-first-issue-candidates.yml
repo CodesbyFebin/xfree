@@ -1,0 +1,85 @@
+name: Good First Issue Candidates
+
+on:
+  schedule:
+    - cron: "31 7 * * 1"
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "Number of deterministic roadmap candidates (1-10)"
+        required: true
+        default: "5"
+      offset:
+        description: "Roadmap offset for deterministic rotation"
+        required: true
+        default: "0"
+      pillar:
+        description: "Optional pillar slug, or all"
+        required: true
+        default: "all"
+      create_issues:
+        description: "Create GitHub issues after duplicate checks"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  candidates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Generate deterministic candidate batch
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_COUNT: ${{ inputs.count }}
+          INPUT_OFFSET: ${{ inputs.offset }}
+          INPUT_PILLAR: ${{ inputs.pillar }}
+        run: |
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            COUNT=3
+            OFFSET=$(( $(date -u +%V) * 3 ))
+            PILLAR=all
+          else
+            COUNT="${INPUT_COUNT:-5}"
+            OFFSET="${INPUT_OFFSET:-0}"
+            PILLAR="${INPUT_PILLAR:-all}"
+          fi
+          npx tsx src/scripts/generateGoodFirstIssues.ts --count "$COUNT" --offset "$OFFSET" --pillar "$PILLAR" --output good-first-issue-candidates.json
+      - name: Upload candidate artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: good-first-issue-candidates
+          path: good-first-issue-candidates.json
+      - name: Ensure contribution labels exist
+        if: ${{ github.event_name == 'schedule' || inputs.create_issues }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create "good first issue" --description "Good for newcomers" --color "7057ff" --force
+          gh label create "help wanted" --description "Extra attention is needed" --color "008672" --force
+          gh label create "tool-request" --description "Roadmap tool contribution" --color "0e8a16" --force
+      - name: Create explicitly approved issues with duplicate-title checks
+        if: ${{ github.event_name == 'schedule' || inputs.create_issues }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          jq -c '.[]' good-first-issue-candidates.json | while read -r row; do
+            title=$(jq -r '.title' <<<"$row")
+            if gh issue list --state all --limit 200 --json title --jq '.[].title' | grep -Fxq "$title"; then
+              echo "Skip existing issue: $title"
+              continue
+            fi
+            body_file=$(mktemp)
+            jq -r '.body' <<<"$row" > "$body_file"
+            gh issue create --title "$title" --body-file "$body_file" --label "good first issue,help wanted,tool-request"
+            rm -f "$body_file"
+          done

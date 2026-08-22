@@ -30,9 +30,14 @@ export const Header: React.FC<HeaderProps> = ({
     <nav className="h-16 glass-header sticky top-0 z-40 flex items-center justify-between px-4 sm:px-8">
       <div className="flex items-center gap-4 md:gap-8">
         {/* Brand logo */}
-        <div
+        <a
+          href="/"
           className="text-xl sm:text-2xl font-black tracking-tight flex items-center cursor-pointer select-none group"
-          onClick={onGoHome}
+          onClick={(event) => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+            event.preventDefault();
+            onGoHome();
+          }}
         >
           <span className="bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 px-2.5 py-0.5 rounded-lg font-black shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
             X
@@ -40,12 +45,17 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="ml-2 text-white font-black tracking-tight group-hover:text-cyan-300 transition-colors">
             Free<span className="text-cyan-400 font-mono text-sm">.in</span>
           </span>
-        </div>
+        </a>
 
         {/* View & Category Navigation Links */}
         <div className="hidden xl:flex gap-2 text-xs font-semibold tracking-wide items-center">
-          <button
-            onClick={onGoHome}
+          <a
+            href="/"
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+              event.preventDefault();
+              onGoHome();
+            }}
             className={`px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
               activeView === "tools"
                 ? "glass-pill-active font-bold"
@@ -53,11 +63,13 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             Tools ({totalTools})
-          </button>
+          </a>
 
-          <button
-            onClick={() => {
-              onGoHome();
+          <a
+            href="/"
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+              event.preventDefault();
               onSelectCategory("all");
             }}
             className={`px-2.5 py-1 text-xs transition-colors cursor-pointer ${
@@ -67,10 +79,12 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             All
-          </button>
-          <button
-            onClick={() => {
-              onGoHome();
+          </a>
+          <a
+            href="/category/seo-tools"
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+              event.preventDefault();
               onSelectCategory("seo-tools");
             }}
             className={`px-2.5 py-1 text-xs transition-colors cursor-pointer ${
@@ -80,10 +94,12 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             SEO
-          </button>
-          <button
-            onClick={() => {
-              onGoHome();
+          </a>
+          <a
+            href="/category/developer-tools"
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+              event.preventDefault();
               onSelectCategory("developer-tools");
             }}
             className={`px-2.5 py-1 text-xs transition-colors cursor-pointer ${
@@ -93,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           >
             Dev
-          </button>
+          </a>
         </div>
       </div>
 

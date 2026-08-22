@@ -1,5 +1,14 @@
 # XFree.in — Production Readiness
 
+> **Historical baseline (2026-07-29).** Several deployment and SEO items in this audit have since been resolved. For the current crawl/canonical/GSC contract, use [`docs/indexing.md`](./indexing.md) and the build-time `validate:seo` gate.
+
+
+## Current snapshot — 2026-08-23
+
+The July section below is retained as historical evidence. The current merge has since added CI/tests, Vercel configuration, truthful Local/Cloud privacy copy, direct-route/404 hardening, split canonical sitemaps, the 25K roadmap separation, governed pillar publication, `/contribute`, and a build-time SEO validator. See `reports/final-addon-merge-audit-2026-08-23.md` for the current gate results.
+
+Current local crawl simulation: 38 canonical sitemap URLs, 85 prerendered route index files plus 404, 0 duplicate sitemap titles/descriptions, and intentional roadmap/empty-pillar `noindex,follow`. Dependency-backed CI and the exact production deployment remain external release gates.
+
 Session date: 2026-07-29
 Verdict: **NOT READY FOR PRODUCTION** — deployable to controlled beta after the outstanding items below are addressed. Deployment itself was **not performed** (no credentials / target platform available in this session).
 
@@ -48,7 +57,7 @@ Ran locally against a production build with a placeholder `GEMINI_API_KEY`:
 | `GET /api/health` | 200 |
 | `GET /api/ready` | 200 |
 | `GET /` | 200 with unique title in raw HTML |
-| `GET /tools/regex-tester-explainer` | 200; unique title; correct canonical `https://xfree.in/tools/regex-tester-explainer`; JSON-LD present in raw HTML |
+| `GET /tools/regex-tester-explainer` | 200; unique title; correct canonical `https://www.xfree.in/tools/regex-tester-explainer`; JSON-LD present in raw HTML |
 | `GET /tools/does-not-exist` | **404** |
 | `GET /category/nope` | **404** |
 | `GET /category/seo-tools` | 200 |

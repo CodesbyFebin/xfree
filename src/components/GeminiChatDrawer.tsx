@@ -114,7 +114,7 @@ export function GeminiChatDrawer({ isOpen, onClose, initialContext }: GeminiChat
               <h2 className="text-base font-semibold text-white flex items-center gap-2">
                 Gemini Multi-Turn AI Chatbot
                 <span className="px-2 py-0.5 text-xs font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-full">
-                  gemini-3.6-flash
+                  Server-selected model
                 </span>
               </h2>
               <p className="text-xs text-slate-400">Ask coding, regex, SEO, or schema questions anytime</p>

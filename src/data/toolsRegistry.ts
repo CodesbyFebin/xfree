@@ -427,7 +427,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     indexable: true,
     lastModified: "2026-03-15",
     tags: ["robots.txt", "crawler rules", "allow disallow", "seo auditing"],
-    exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://xfree.in/sitemap.xml",
+    exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://www.xfree.in/sitemap.xml",
     explanation: "Builds RFC 9309 compliant robots.txt files with Allow/Disallow rule groups, crawl-delay directives, and sitemap references.",
     howToUse: [
       "Add user-agent rules (e.g. Googlebot, Bingbot, *).",
@@ -459,7 +459,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
     indexable: true,
     lastModified: "2026-03-15",
     tags: ["schema markup", "json-ld", "structured data", "faq schema", "rich snippet"],
-    exampleInput: "Name: XFree\nURL: https://xfree.in",
+    exampleInput: "Name: XFree\nURL: https://www.xfree.in",
     explanation: "Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.",
     howToUse: [
       "Select Schema type (e.g. WebSite, Organization, FAQPage, Article).",

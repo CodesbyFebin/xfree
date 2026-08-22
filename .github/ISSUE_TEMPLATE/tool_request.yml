@@ -1,0 +1,66 @@
+name: Tool request / roadmap contribution
+description: Propose a new XFree tool or claim a roadmap concept for implementation.
+title: "Build: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping build XFree. Planned concepts are not published or indexed until a real implementation passes automated and human review.
+  - type: input
+    id: tool-name
+    attributes:
+      label: Tool name
+      description: A concise, user-facing name for the proposed utility.
+      placeholder: JSON Lines Validator
+    validations:
+      required: true
+  - type: input
+    id: roadmap
+    attributes:
+      label: Roadmap concept or pillar
+      description: Paste the roadmap ID/name or the closest pillar if one exists.
+      placeholder: R123 — Data Engineering Validators
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and user value
+      description: What concrete problem does this tool solve, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: io
+    attributes:
+      label: Inputs and outputs
+      description: Describe expected inputs, outputs, validation rules, and important edge cases.
+    validations:
+      required: true
+  - type: dropdown
+    id: processing
+    attributes:
+      label: Proposed processing mode
+      description: Choose the expected implementation. The final mode must match the code and disclosure.
+      options:
+        - Local / browser only
+        - Cloud / server assisted
+        - Hybrid
+        - Unsure — needs design review
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security and privacy considerations
+      description: Note sensitive inputs, third-party dependencies, network requests, file handling, or other risks.
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Contribution agreement
+      options:
+        - label: I understand that roadmap concepts do not get individual indexable pages before implementation and review.
+          required: true
+        - label: I will not add fabricated usage, review, ranking, security, or performance claims.
+          required: true
+        - label: I will add tests, accessibility, error handling, and truthful processing disclosure before requesting publication.
+          required: true

@@ -1,0 +1,5 @@
+XFree.in
+Repository: https://github.com/CodesbyFebin/xfree
+License: MIT
+Mission: free, focused developer and SEO utilities with transparent processing disclosures.
+Content policy: implementation-first; planned concepts remain outside the index until reviewed.

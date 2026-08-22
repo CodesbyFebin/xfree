@@ -27,8 +27,8 @@ export const SchemaMarkupGenerator: React.FC<SchemaMarkupGeneratorProps> = ({
 
   // Organization State
   const [orgName, setOrgName] = useState("XFree Platform");
-  const [orgUrl, setOrgUrl] = useState("https://xfree.in");
-  const [orgLogo, setOrgLogo] = useState("https://xfree.in/logo.png");
+  const [orgUrl, setOrgUrl] = useState("https://www.xfree.in");
+  const [orgLogo, setOrgLogo] = useState("https://www.xfree.in/logo.png");
 
   // Article State
   const [articleTitle, setArticleTitle] = useState("Top 10 Developer & SEO Micro-Tools in 2026");

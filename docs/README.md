@@ -33,3 +33,7 @@ This sentence is the single source of truth used in `README.md`,
 See [CONTRIBUTING.md](https://github.com/CodesbyFebin/xfree/blob/main/.github/CONTRIBUTING.md).
 Documentation PRs are welcome — follow [`content.md`](./content.md) rules (no
 fabricated claims, no keyword stuffing).
+
+## Community
+
+- [Open Participation & Tool Contribution](open-participation.md) — roadmap-to-production workflow, quality gates, and safe good-first-issue automation.

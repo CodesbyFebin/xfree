@@ -3,9 +3,6 @@ import { Brain, Sparkles, RefreshCw, Copy, Check, ArrowRight, Lightbulb, Zap } f
 
 export function ThinkingModeComponent() {
   const [prompt, setPrompt] = useState("");
-  const [systemInstruction, setSystemInstruction] = useState(
-    "You are XFree Deep Reasoning Engine. Perform thorough, step-by-step analytical thinking before delivering the final clean solution."
-  );
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -38,8 +35,8 @@ export function ThinkingModeComponent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          taskId: "general",
           prompt: prompt.trim(),
-          systemInstruction,
         }),
       });
 
@@ -76,7 +73,7 @@ export function ThinkingModeComponent() {
               Gemini Thinking Mode
               <span className="px-2.5 py-0.5 text-xs font-mono bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-full flex items-center gap-1">
                 <Zap className="w-3 h-3" />
-                gemini-3.1-pro-preview (HIGH Reasoning)
+                Server-selected reasoning model
               </span>
             </h2>
             <p className="text-xs text-slate-400">
@@ -114,7 +111,7 @@ export function ThinkingModeComponent() {
           <label className="text-xs font-mono uppercase text-slate-300">
             Complex Query or Code Problem:
           </label>
-          <span className="text-xs text-slate-500 font-mono">ThinkingLevel: HIGH (4096 tokens)</span>
+          <span className="text-xs text-slate-500 font-mono">ThinkingLevel: HIGH · server-configured output limit</span>
         </div>
         <textarea
           rows={5}
@@ -135,7 +132,7 @@ export function ThinkingModeComponent() {
           {loading ? (
             <>
               <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Thinking deeply with gemini-3.1-pro-preview...</span>
+              <span>Thinking with the server-selected reasoning model...</span>
             </>
           ) : (
             <>

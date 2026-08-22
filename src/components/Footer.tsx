@@ -19,9 +19,10 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {/* Col 1: Brand & Social */}
           <div className="space-y-4 sm:col-span-2 lg:col-span-1">
-            <div
+            <RouterLink
+              href="/"
+              onNavigate={onNavigatePage}
               className="text-xl font-black tracking-tight flex items-center cursor-pointer select-none group"
-              onClick={() => onNavigatePage("/")}
             >
               <span className="bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 px-2 py-0.5 rounded-lg font-black shadow-lg shadow-cyan-500/20">
                 X
@@ -29,7 +30,7 @@ export const Footer: React.FC<FooterProps> = ({
               <span className="ml-2 text-white font-black tracking-tight group-hover:text-cyan-300 transition-colors">
                 Free<span className="text-emerald-400 font-mono text-xs">.in</span>
               </span>
-            </div>
+            </RouterLink>
 
             <p className="text-slate-400 text-xs leading-relaxed">
               Fast, privacy-first browser micro-tools for developers, SEO professionals, creators, and AI builders.
@@ -45,13 +46,15 @@ export const Footer: React.FC<FooterProps> = ({
               >
                 <Github className="w-4 h-4" />
               </a>
-              <button
-                onClick={() => onNavigatePage("/contact")}
+              <RouterLink
+                href="/contact"
+                onNavigate={onNavigatePage}
                 className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:border-slate-700 transition-colors cursor-pointer"
                 title="Contact Support"
+                aria-label="Contact XFree.in support"
               >
                 <Mail className="w-4 h-4" />
-              </button>
+              </RouterLink>
             </div>
           </div>
 
@@ -127,6 +130,21 @@ export const Footer: React.FC<FooterProps> = ({
                 </RouterLink>
               </li>
               <li>
+                <RouterLink href="/pillars" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
+                  <span>Tool Pillars</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink href="/roadmap" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
+                  <span>25K Concept Roadmap</span>
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink href="/contribute" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
+                  <span>Contribute a Tool</span>
+                </RouterLink>
+              </li>
+              <li>
                 <RouterLink href="/faq" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
                   <span>FAQ</span>
                 </RouterLink>
@@ -172,7 +190,7 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
           <div>
-            © 2026 XFree.in • Local tools run in your browser; AI tools proxy to Google Gemini. Advertising and consent technologies are disclosed in our Privacy Policy.
+            © 2026 XFree.in • Published tools disclose whether processing stays local or uses an optional cloud provider. Advertising, consent, and cloud-processing details are documented in our Privacy Policy.
           </div>
           <div className="flex items-center space-x-4">
             <RouterLink href="/privacy" onNavigate={onNavigatePage} className="hover:text-slate-400 cursor-pointer">

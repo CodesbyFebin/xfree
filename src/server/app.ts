@@ -30,6 +30,10 @@ import { deliverMessage } from "./delivery";
 import { securityHeadersMiddleware } from "../middleware/security-headers";
 import {
   generateSitemapXml,
+  generateSitemapIndexXml,
+  generatePagesSitemapXml,
+  generateToolsSitemapXml,
+  generateGuidesSitemapXml,
   generateRssXml,
   generateLlmsTxt,
   generateLlmsFullTxt,
@@ -41,7 +45,10 @@ import {
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
 import { getPublicToolBySlug, PUBLIC_TOOL_SLUGS } from "../data/publicTools";
+import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
+import { PILLARS_50 } from "../data/masterBlueprint";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
+import { CANONICAL_ORIGIN } from "../data/siteConfig";
 import { GUIDES } from "../data/guides";
 
 export interface AppOptions {
@@ -57,6 +64,27 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
 
   app.use((req, _res, next) => {
     (req as any).requestId = crypto.randomUUID();
+    next();
+  });
+
+  // Canonical URL enforcement. Keep preview hosts usable, but permanently
+  // consolidate the public apex host and duplicate trailing-slash variants.
+  app.use((req, res, next) => {
+    const host = (req.headers.host || "").split(":")[0].toLowerCase();
+    if (isProduction && host === "xfree.in") {
+      return res.redirect(308, `https://www.xfree.in${req.originalUrl}`);
+    }
+    if ((req.method === "GET" || req.method === "HEAD") && req.path.length > 1 && req.path.endsWith("/") && !req.path.startsWith("/api/")) {
+      const query = req.originalUrl.slice(req.path.length);
+      return res.redirect(308, `${req.path.replace(/\/+$/, "")}${query}`);
+    }
+    if ((req.method === "GET" || req.method === "HEAD") && req.path === "/clusters") {
+      return res.redirect(308, "/pillars");
+    }
+    const legacyTool = req.path.match(/^\/tool\/([^/]+)$/);
+    if ((req.method === "GET" || req.method === "HEAD") && legacyTool) {
+      return res.redirect(308, `/tools/${legacyTool[1]}`);
+    }
     next();
   });
 
@@ -79,9 +107,25 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
 
   const baseUrl = config.PUBLIC_SITE_URL;
 
-  app.get(["/sitemap.xml", "/sitemap-tools.xml", "/app/sitemap.xml"], (_req, res) => {
+  app.get(["/sitemap.xml", "/app/sitemap.xml"], (_req, res) => {
     res.header("Content-Type", "application/xml; charset=utf-8");
     res.status(200).send(generateSitemapXml(baseUrl));
+  });
+  app.get("/sitemap-index.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generateSitemapIndexXml(baseUrl));
+  });
+  app.get("/sitemap-pages.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generatePagesSitemapXml(baseUrl));
+  });
+  app.get("/sitemap-tools.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generateToolsSitemapXml(baseUrl));
+  });
+  app.get("/sitemap-guides.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generateGuidesSitemapXml(baseUrl));
   });
   app.get("/rss.xml", (_req, res) => {
     res.header("Content-Type", "application/xml; charset=utf-8");
@@ -384,8 +428,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
 
     app.get("/api/v1/capabilities", (_req, res, next) => {
       try {
-        const baseUrl = config.PUBLIC_SITE_URL;
-        const capabilitiesJson = generateCapabilitiesJson(baseUrl);
+        const capabilitiesJson = generateCapabilitiesJson(CANONICAL_ORIGIN);
         res.header("Content-Type", "application/json");
         res.send(capabilitiesJson);
       } catch (err) { next(err); }
@@ -393,8 +436,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
 
     app.get("/api/v1/tools", (_req, res, next) => {
       try {
-        const baseUrl = config.PUBLIC_SITE_URL;
-        const toolsJson = generateToolsJson(baseUrl);
+        const toolsJson = generateToolsJson(CANONICAL_ORIGIN);
         res.header("Content-Type", "application/json");
         res.send(toolsJson);
       } catch (err) { next(err); }
@@ -407,12 +449,16 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
   const staticRouteSet = new Set<string>(STATIC_ROUTES);
   const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/category/${s}`));
   const guideSlugSet = new Set<string>(GUIDES.map((g) => g.slug));
+  const generatedToolSlugSet = new Set<string>(Object.keys(GENERATED_PUBLISHED_CONTENT));
+  const pillarSlugSet = new Set<string>(PILLARS_50.map((pillar) => pillar.slug));
 
   (app as any)._classifyPath = function classifyPath(pathname: string): "known" | "unknown" {
     if (staticRouteSet.has(pathname)) return "known";
     if (categoryRouteSet.has(pathname)) return "known";
     const toolMatch = pathname.match(/^\/tools\/([^/]+)\/?$/);
-    if (toolMatch && PUBLIC_TOOL_SLUGS.has(toolMatch[1])) return "known";
+    if (toolMatch && (PUBLIC_TOOL_SLUGS.has(toolMatch[1]) || generatedToolSlugSet.has(toolMatch[1]))) return "known";
+    const pillarMatch = pathname.match(/^\/pillar\/([^/]+)\/?$/);
+    if (pillarMatch && pillarSlugSet.has(pillarMatch[1])) return "known";
     const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
     if (guideMatch && guideSlugSet.has(guideMatch[1])) return "known";
     return "unknown";

@@ -7,6 +7,11 @@ adheres to semantic versioning once it reaches `v1.0.0`.
 ## [Unreleased]
 
 ### Added
+- 25,000-concept roadmap and 50-pillar planning taxonomy, explicitly separated from the published/indexable tool registry.
+- `/contribute` authority page, tool-request issue template, and maintainer-run good-first-issue candidate workflow.
+- Split sitemap index, `openapi.json`, `ai.txt`, entity/knowledge-graph metadata, build health metadata, and `/.well-known/security.txt`.
+- Build-time SEO validator covering canonical parity, sitemap/prerender parity, duplicate metadata, H1 presence, intentional noindex, and 404 behavior.
+- Archived SEO/community reference prompts under `docs/reference/` with an advisory-only authority policy.
 - `AUDIT.md` — Phase 0 forensic audit (open-source + AI authority initiative).
 - `examples/` — runnable usage examples for the intent and execution engines.
 - `docs/README.md` — GitHub Pages-ready documentation index.
