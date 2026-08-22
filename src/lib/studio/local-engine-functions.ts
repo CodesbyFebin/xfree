@@ -198,7 +198,7 @@ export function deduplicateLines(input: string): string {
 }
 
 export function sortLines(input: string): string {
-  return splitLines(input).toSorted((left, right) => left.localeCompare(right)).join("\n");
+  return [...splitLines(input)].sort((left, right) => left.localeCompare(right)).join("\n");
 }
 
 export function parseQueryString(input: string): string {

@@ -64,7 +64,10 @@ function printReview(slug: string, payload: ReviewPayload): void {
 function approve(slug: string, payload: ReviewPayload): void {
   const reviewer = requiredArgument("reviewer");
   const notes = requiredArgument("notes");
-  const candidate = ToolCandidateSchema.parse({ ...payload.spec, content: payload.content, metadata: payload.metadata });
+  const spec = payload.spec && typeof payload.spec === "object" && !Array.isArray(payload.spec)
+    ? payload.spec as Record<string, unknown>
+    : {};
+  const candidate = ToolCandidateSchema.parse({ ...spec, content: payload.content, metadata: payload.metadata });
   const contentFingerprint = fingerprintPublicationContent(candidate);
   const reviewedSimilaritySlugs = (argument("review-similarity") ?? "")
     .split(",")
