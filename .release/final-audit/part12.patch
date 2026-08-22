@@ -1,0 +1,203 @@
++          <span className="text-xs text-slate-500 font-mono">ThinkingLevel: HIGH · server-configured output limit</span>
+         </div>
+         <textarea
+           rows={5}
+@@ -135,7 +132,7 @@ export function ThinkingModeComponent() {
+           {loading ? (
+             <>
+               <RefreshCw className="w-4 h-4 animate-spin" />
+-              <span>Thinking deeply with gemini-3.1-pro-preview...</span>
++              <span>Thinking with the server-selected reasoning model...</span>
+             </>
+           ) : (
+             <>
+diff --git a/src/components/tools/AiMicroToolComponent.tsx b/src/components/tools/AiMicroToolComponent.tsx
+index 08d68d5..c01ad5f 100644
+--- a/src/components/tools/AiMicroToolComponent.tsx
++++ b/src/components/tools/AiMicroToolComponent.tsx
+@@ -8,6 +8,21 @@ interface AiMicroToolProps {
+   onSaveHistory: (input: string, output: string) => void;
+ }
+ 
++const SUPPORTED_AI_TASK_IDS = new Set([
++  "ai-regex",
++  "ai-json-repair",
++  "ai-meta-optimizer",
++  "ai-sql-generator",
++  "ai-search-intent",
++  "ai-code-explainer",
++  "ai-commit-generator",
++  "ai-schema-generator",
++]);
++
++function taskIdForTool(toolId: string): string {
++  return SUPPORTED_AI_TASK_IDS.has(toolId) ? toolId : "general";
++}
++
+ export const AiMicroToolComponent: React.FC<AiMicroToolProps> = ({
+   tool,
+   onSaveHistory,
+@@ -33,7 +48,7 @@ export const AiMicroToolComponent: React.FC<AiMicroToolProps> = ({
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+-          toolId: tool.id,
++          taskId: taskIdForTool(tool.id),
+           input: inputVal,
+         }),
+       });
+@@ -67,7 +82,7 @@ export const AiMicroToolComponent: React.FC<AiMicroToolProps> = ({
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({
+-        toolId: tool.id,
++        taskId: taskIdForTool(tool.id),
+         items: lines,
+       }),
+     });
+diff --git a/src/components/tools/Base64JwtDecoder.tsx b/src/components/tools/Base64JwtDecoder.tsx
+index 1f8fa3d..480cdf3 100644
+--- a/src/components/tools/Base64JwtDecoder.tsx
++++ b/src/components/tools/Base64JwtDecoder.tsx
+@@ -23,7 +23,7 @@ export const Base64JwtDecoder: React.FC<Base64JwtDecoderProps> = ({
+   const [base64Mode, setBase64Mode] = useState<"encode" | "decode">("encode");
+ 
+   // URL State
+-  const [urlText, setUrlText] = useState("https://xfree.in/search?q=developer tools & sitemaps");
++  const [urlText, setUrlText] = useState("https://www.xfree.in/search?q=developer tools & sitemaps");
+   const [urlMode, setUrlMode] = useState<"encode" | "decode">("encode");
+ 
+   const [copied, setCopied] = useState(false);
+diff --git a/src/components/tools/MetaTagOpenGraphPreview.tsx b/src/components/tools/MetaTagOpenGraphPreview.tsx
+index c5544f9..49b528e 100644
+--- a/src/components/tools/MetaTagOpenGraphPreview.tsx
++++ b/src/components/tools/MetaTagOpenGraphPreview.tsx
+@@ -15,7 +15,7 @@ export const MetaTagOpenGraphPreview: React.FC<MetaTagOpenGraphPreviewProps> = (
+   const [description, setDescription] = useState(
+     "Fast, privacy-first browser micro-tools for developers, SEO pros, and creators. Get X done for free with zero setup or software installation."
+   );
+-  const [url, setUrl] = useState("https://xfree.in/");
++  const [url, setUrl] = useState("https://www.xfree.in/");
+   const [imageUrl, setImageUrl] = useState("https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&auto=format&fit=crop&q=80");
+   const [siteName, setSiteName] = useState("XFree.in");
+   const [twitterHandle, setTwitterHandle] = useState("@xfree_in");
+diff --git a/src/components/tools/SchemaMarkupGenerator.tsx b/src/components/tools/SchemaMarkupGenerator.tsx
+index 05754da..1d790eb 100644
+--- a/src/components/tools/SchemaMarkupGenerator.tsx
++++ b/src/components/tools/SchemaMarkupGenerator.tsx
+@@ -27,8 +27,8 @@ export const SchemaMarkupGenerator: React.FC<SchemaMarkupGeneratorProps> = ({
+ 
+   // Organization State
+   const [orgName, setOrgName] = useState("XFree Platform");
+-  const [orgUrl, setOrgUrl] = useState("https://xfree.in");
+-  const [orgLogo, setOrgLogo] = useState("https://xfree.in/logo.png");
++  const [orgUrl, setOrgUrl] = useState("https://www.xfree.in");
++  const [orgLogo, setOrgLogo] = useState("https://www.xfree.in/logo.png");
+ 
+   // Article State
+   const [articleTitle, setArticleTitle] = useState("Top 10 Developer & SEO Micro-Tools in 2026");
+diff --git a/src/components/tools/UrlSlugUtmBuilder.tsx b/src/components/tools/UrlSlugUtmBuilder.tsx
+index ba6910d..f5fe9eb 100644
+--- a/src/components/tools/UrlSlugUtmBuilder.tsx
++++ b/src/components/tools/UrlSlugUtmBuilder.tsx
+@@ -20,7 +20,7 @@ export const UrlSlugUtmBuilder: React.FC<UrlSlugUtmBuilderProps> = ({
+   const [separator, setSeparator] = useState("-");
+ 
+   // UTM Builder State
+-  const [baseUrl, setBaseUrl] = useState("https://xfree.in/tools/bulk-url-extractor");
++  const [baseUrl, setBaseUrl] = useState("https://www.xfree.in/tools/bulk-url-extractor");
+   const [utmSource, setUtmSource] = useState("newsletter");
+   const [utmMedium, setUtmMedium] = useState("email");
+   const [utmCampaign, setUtmCampaign] = useState("launch_2026");
+diff --git a/src/data/routes.ts b/src/data/routes.ts
+index 93e4037..1b2b631 100644
+--- a/src/data/routes.ts
++++ b/src/data/routes.ts
+@@ -13,6 +13,9 @@ export const STATIC_ROUTES = [
+   "/xfree-app",
+   "/studio",
+   "/guides",
++  "/pillars",
++  "/roadmap",
++  "/contribute",
+ ] as const;
+ 
+ export const SOLVE_ROUTES = [
+@@ -57,3 +60,8 @@ export function guideSlugFromPath(pathname: string): string | null {
+   const m = pathname.match(/^\/guides\/([^/]+)\/?$/);
+   return m ? m[1] : null;
+ }
++
++export function pillarSlugFromPath(pathname: string): string | null {
++  const m = pathname.match(/^\/pillar\/([^/]+)\/?$/);
++  return m ? m[1] : null;
++}
+diff --git a/src/data/toolsRegistry.ts b/src/data/toolsRegistry.ts
+index 651c0f1..88dc6d3 100644
+--- a/src/data/toolsRegistry.ts
++++ b/src/data/toolsRegistry.ts
+@@ -427,7 +427,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
+     indexable: true,
+     lastModified: "2026-03-15",
+     tags: ["robots.txt", "crawler rules", "allow disallow", "seo auditing"],
+-    exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://xfree.in/sitemap.xml",
++    exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://www.xfree.in/sitemap.xml",
+     explanation: "Builds RFC 9309 compliant robots.txt files with Allow/Disallow rule groups, crawl-delay directives, and sitemap references.",
+     howToUse: [
+       "Add user-agent rules (e.g. Googlebot, Bingbot, *).",
+@@ -459,7 +459,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
+     indexable: true,
+     lastModified: "2026-03-15",
+     tags: ["schema markup", "json-ld", "structured data", "faq schema", "rich snippet"],
+-    exampleInput: "Name: XFree\nURL: https://xfree.in",
++    exampleInput: "Name: XFree\nURL: https://www.xfree.in",
+     explanation: "Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.",
+     howToUse: [
+       "Select Schema type (e.g. WebSite, Organization, FAQPage, Article).",
+diff --git a/src/hooks/useMetaTags.ts b/src/hooks/useMetaTags.ts
+index 69ae93c..8e0e9b9 100644
+--- a/src/hooks/useMetaTags.ts
++++ b/src/hooks/useMetaTags.ts
+@@ -2,8 +2,10 @@ import { useEffect } from "react";
+ import { ToolDefinition } from "../types";
+ import { PUBLIC_CATEGORIES, PUBLIC_TOOLS } from "../data/publicTools";
+ import { findGuide } from "../data/guides";
+-import { categorySlugFromPath, guideSlugFromPath } from "../data/routes";
++import { categorySlugFromPath, guideSlugFromPath, pillarSlugFromPath } from "../data/routes";
+ import type { PublishedArtifact } from "../content-pipeline/published-artifact-schema";
++import { CANONICAL_ORIGIN } from "../data/siteConfig";
++import { getPillarBySlug } from "../data/masterBlueprint";
+ 
+ interface UseMetaTagsOptions {
+   tool?: ToolDefinition | null;
+@@ -11,48 +13,73 @@ interface UseMetaTagsOptions {
+   currentPath?: string;
+   baseUrl?: string;
+   generatedPage?: PublishedArtifact | null;
++  indexable?: boolean;
++  notFound?: boolean;
+ }
+ 
+ export function useMetaTags({
+   tool,
+   categoryName,
+   currentPath = typeof window !== "undefined" ? window.location.pathname : "/",
+-  baseUrl = "https://www.xfree.in",
++  baseUrl = CANONICAL_ORIGIN,
+   generatedPage,
++  indexable = true,
++  notFound = false,
+ }: UseMetaTagsOptions) {
+   useEffect(() => {
+-    let title = `XFree.in — ${PUBLIC_TOOLS.length} Free Developer, SEO & AI Tools`;
++    let title = `Free Developer, SEO & AI Tools — XFree.in | No Signup`;
+     let description =
+-      "Free browser-based developer utilities, SEO analyzers, AI single-purpose assistants, data formatters, and converters with local-tool privacy.";
++      `Use ${PUBLIC_TOOLS.length} published XFree developer, SEO, formatter, converter, and focused AI tools. No signup; local processing is the default and cloud features are disclosed.`;
+     let canonicalUrl = `${baseUrl}/`;
+ 
+     const routeCategory = categorySlugFromPath(currentPath);
+     const category = routeCategory ? PUBLIC_CATEGORIES.find((item) => item.id === routeCategory) : undefined;
+     const routeGuideSlug = guideSlugFromPath(currentPath);
+     const guide = routeGuideSlug ? findGuide(routeGuideSlug) : undefined;
++    const routePillarSlug = pillarSlugFromPath(currentPath);
