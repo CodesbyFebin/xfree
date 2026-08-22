@@ -1,0 +1,96 @@
+name: Apply Final Audit Merge
+
+on:
+  push:
+    branches:
+      - release/final-audit-2026-08-23
+    paths:
+      - .github/workflows/apply-final-audit.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xfree-final-audit-merge
+  cancel-in-progress: false
+
+jobs:
+  apply-verify-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact staging branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruct and verify audited patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .release/final-audit/part*.patch > /tmp/xfree-final.patch
+          echo 'daeda98d899b2b729f3b745205aef0a7efa6b04f1abcb2e02530a2708df83ce6  /tmp/xfree-final.patch' | sha256sum -c -
+          test "$(git merge-base HEAD 260972d010f69f9b6f0de01ca0b08301ff9ea825)" = "260972d010f69f9b6f0de01ca0b08301ff9ea825"
+          git apply --check /tmp/xfree-final.patch
+          git apply /tmp/xfree-final.patch
+          git diff --check
+
+      - name: Remove transfer-only files
+        shell: bash
+        run: |
+          rm -rf .release/final-audit
+          rm -f .github/workflows/apply-final-audit.yml
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Tool implementation audit
+        run: npm run audit:tools
+
+      - name: Vercel production build
+        run: npm run build:vercel
+
+      - name: SEO canonical and sitemap validation
+        run: npm run validate:seo
+
+      - name: Intentional noindex validation
+        run: npm run lint:noindex
+
+      - name: Final diff hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test ! -e .github/workflows/apply-final-audit.yml
+          test ! -e .release/final-audit
+
+      - name: Upload verified production dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: xfree-final-production-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Commit verified final source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git status --short
+          git commit -m 'feat: finalize SEO AEO GEO production merge'
+          git push origin HEAD:release/final-audit-2026-08-23
