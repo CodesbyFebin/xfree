@@ -10,7 +10,7 @@ export const PrivacyPage: React.FC = () => {
           <span>Local-first privacy</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Privacy Policy</h1>
-        <p className="text-slate-400 text-xs font-mono">Last updated: 22 August 2026</p>
+        <p className="text-slate-400 text-xs font-mono">Last updated: 23 August 2026</p>
       </header>
 
       <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-7 text-slate-300 text-sm leading-relaxed">
@@ -48,8 +48,7 @@ export const PrivacyPage: React.FC = () => {
             A feature marked Cloud AI or AI-powered may send the content you deliberately submit to XFree.in's
             server and then to the provider identified in that feature, currently Google Gemini or NVIDIA NIM.
             NVIDIA Studio requests use only a model currently reported as available to the configured NVIDIA
-            account. Cloud processing
-            is not used merely because you open a Local Mode tool.
+            account. Cloud processing is not used merely because you open a Local Mode tool.
           </p>
           <p>
             Before using Cloud AI, remove passwords, access tokens, private keys, confidential business data,
@@ -83,26 +82,39 @@ export const PrivacyPage: React.FC = () => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-lg font-bold text-white">5. Google AdSense and cookies</h2>
+          <h2 className="text-lg font-bold text-white">5. Google AdSense, advertising cookies, and identifiers</h2>
           <p>
-            XFree.in uses Google AdSense. Google and participating advertising partners may use cookies or similar
-            technologies to deliver ads, measure performance, limit repetition, prevent fraud, and personalize ads
-            where permitted. Information processed by advertising services may include IP address, device and
-            browser information, referring page, pages viewed, and advertising interactions.
+            XFree.in uses Google AdSense. Third-party vendors, including Google, may place or read cookies on your
+            browser, use web beacons, IP addresses, or other identifiers, and process device/browser information as
+            a consequence of ad serving. Google and participating advertising partners may use these technologies
+            to deliver ads, measure performance, limit repetition, prevent fraud, and provide personalized or
+            non-personalized advertising where permitted.
           </p>
           <p>
-            You can manage Google advertising preferences at{" "}
+            Third-party vendors, including Google, use advertising cookies to serve ads based on a user's prior visits
+            to XFree.in or other websites. Google's use of advertising cookies enables Google and its partners to
+            serve ads based on visits to this site and/or other sites on the Internet. Users may opt out of
+            personalized advertising through{" "}
             <a href="https://adssettings.google.com/" className="text-cyan-300 underline" target="_blank" rel="noopener noreferrer">
               Google Ads Settings
-            </a>{" "}
-            and learn how Google uses information from partner sites at{" "}
-            <a href="https://policies.google.com/technologies/partner-sites" className="text-cyan-300 underline" target="_blank" rel="noopener noreferrer">
-              Google's partner-sites policy
             </a>.
           </p>
           <p>
+            You can learn how Google uses information from sites and apps that use its services at{" "}
+            <a href="https://policies.google.com/technologies/partner-sites" className="text-cyan-300 underline" target="_blank" rel="noopener noreferrer">
+              How Google uses data when you use partners' sites or apps
+            </a>.
+          </p>
+          <p>
+            If additional third-party ad vendors or networks are enabled, this policy will identify them or link to
+            the relevant vendor disclosures and available opt-out mechanisms. XFree does not disguise advertising as
+            tool controls, navigation, downloads, or system messages.
+          </p>
+          <p>
             Where consent is legally required, advertising behavior and available choices must follow the consent
-            interface presented to you. You can also restrict cookies through your browser settings.
+            interface presented to you. For users in the EEA, the UK, or Switzerland, XFree will only enable
+            personalized advertising where the required Google-certified consent-management requirements are met.
+            You can also restrict cookies through your browser settings.
           </p>
         </section>
 
