@@ -8,6 +8,21 @@ interface AiMicroToolProps {
   onSaveHistory: (input: string, output: string) => void;
 }
 
+const SUPPORTED_AI_TASK_IDS = new Set([
+  "ai-regex",
+  "ai-json-repair",
+  "ai-meta-optimizer",
+  "ai-sql-generator",
+  "ai-search-intent",
+  "ai-code-explainer",
+  "ai-commit-generator",
+  "ai-schema-generator",
+]);
+
+function taskIdForTool(toolId: string): string {
+  return SUPPORTED_AI_TASK_IDS.has(toolId) ? toolId : "general";
+}
+
 export const AiMicroToolComponent: React.FC<AiMicroToolProps> = ({
   tool,
   onSaveHistory,
@@ -33,7 +48,7 @@ export const AiMicroToolComponent: React.FC<AiMicroToolProps> = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          toolId: tool.id,
+          taskId: taskIdForTool(tool.id),
           input: inputVal,
         }),
       });
@@ -67,7 +82,7 @@ export const AiMicroToolComponent: React.FC<AiMicroToolProps> = ({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        toolId: tool.id,
+        taskId: taskIdForTool(tool.id),
         items: lines,
       }),
     });

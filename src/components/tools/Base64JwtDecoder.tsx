@@ -23,7 +23,7 @@ export const Base64JwtDecoder: React.FC<Base64JwtDecoderProps> = ({
   const [base64Mode, setBase64Mode] = useState<"encode" | "decode">("encode");
 
   // URL State
-  const [urlText, setUrlText] = useState("https://xfree.in/search?q=developer tools & sitemaps");
+  const [urlText, setUrlText] = useState("https://www.xfree.in/search?q=developer tools & sitemaps");
   const [urlMode, setUrlMode] = useState<"encode" | "decode">("encode");
 
   const [copied, setCopied] = useState(false);

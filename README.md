@@ -14,11 +14,12 @@ Free browser-based developer, SEO, and single-purpose AI micro-tools. Live at [h
 - **Optional server-side Cloud AI** using Google Gemini and NVIDIA NIM. Provider keys never touch the browser; cloud processing is opt-in and clearly labelled.
 - **XFree Studio at `/studio`** with Local Mode as the default and dynamic NVIDIA model discovery when Cloud Mode is enabled.
 - **A `/api/contact`, `/api/feedback`, `/api/lead` set** with Zod validation, honeypot fields, and per-IP rate limits. Delivery via Resend when `RESEND_API_KEY` is set, otherwise logged.
-- **A ~400-entry seed registry of tool ideas** (`src/scripts/tools-seed.json`). These are `status: "draft"` — they have no working component and their routes return HTTP 404 until they're implemented. They are **not** in the sitemap and **not** claimed as live tools anywhere.
+- **A 25,000-concept roadmap across 50 pillars**, separate from the published registry. The roadmap is a planning taxonomy, not a live-tool count. Planned concepts and empty pillars stay out of the sitemap; only implementation-backed pages may become indexable.
+- **A governed contribution funnel at `/contribute`** with a tool-request template and maintainer-run good-first-issue candidate workflow. The older ~400 seed ideas remain draft implementation inputs, not public working tools.
 
 ## What this deliberately isn't
 
-- **Not "400+ working tools."** Ten. The rest are stubs excluded from every public surface.
+- **Not "25,000 working tools."** Ten tools are currently published. The 25,000 figure is the public planning taxonomy, and planned concepts do not receive indexable tool pages.
 - **Not fully client-side.** Local tools process input in-browser; AI tools proxy to Gemini; the site itself loads Google AdSense which sets advertising cookies. The Privacy page is honest about all of this.
 - **Not a Next.js app.** Vite + React on the client, Express on the server, deployed as a Vercel serverless function plus prerendered static HTML.
 
@@ -78,8 +79,8 @@ Every var is defined and validated in [`src/server/env.ts`](src/server/env.ts). 
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run test` | Vitest — `src/lib/__tests__/*` (intent engine, execution engine, agents) |
 | `npm run audit:tools` | Fails the build if any `indexable` tool has no matching `case` in `App.tsx` |
-| `npm run lint:noindex` | Fails the build if any non-404 prerendered HTML carries `noindex` |
-| `npm run generate:sitemap` | Emits `public/sitemap.xml`, `rss.xml`, `robots.txt`, `llms.txt` |
+| `npm run lint:noindex` | Fails on accidental noindex; allows only 404, roadmap, and pillar pages that the publication policy intentionally marks noindex |
+| `npm run generate:sitemap` | Emits canonical split sitemaps plus RSS, robots, LLM/AI discovery, OpenAPI, entity, health, and tool-catalog artifacts |
 | `npm run prerender` | Emits `dist/<route>/index.html` for every static route + `dist/404.html` |
 | `npm run generate:tool` | Scaffolds a new tool: draft-status registry entry + placeholder component + guide stub. Requires manual paste (deliberate — forces a human read) |
 | `npm run generate:guides` | Scaffolds guide stubs for indexable tools without a `toolGuides` entry |
@@ -114,8 +115,8 @@ All AI calls run through `generateWithTimeout` (30 s default via `GEMINI_REQUEST
 ## SEO / indexing
 
 - **Prerender** ([`src/scripts/prerender.ts`](src/scripts/prerender.ts)) — every indexable route gets its own HTML file with unique title, meta description, canonical, OG/Twitter tags, and JSON-LD (`Organization`, `WebSite`, `BreadcrumbList`, per-page `SoftwareApplication`/`HowTo`/`FAQPage`/`TechArticle` as applicable).
-- **Sitemap** filters strictly to `INDEXABLE_TOOLS`. Draft slugs never appear.
-- **robots.txt** ships a split-brain policy: allow citation bots (`OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Claude-User`, `Applebot`, `Googlebot`, `Bingbot`, `DuckDuckBot`, `BraveBot`), block bulk training crawlers (`GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Meta-ExternalAgent`, `Bytespider`).
+- **Sitemap** is generated only from published tools, reviewed guides, valid static pages, and pillars backed by published tools. Draft/roadmap concepts never appear.
+- **robots.txt** allows normal crawling and explicitly supports major search/answer-engine user agents while excluding `/api/`; the canonical sitemap index is the only advertised sitemap entry.
 - **IndexNow** — key file lives at `public/dfa1cd2746301dcafa9c926f5a9d7f16.txt`. `npm run indexnow` pushes new/changed URLs.
 - **AdSense** — publisher `pub-3573741815038097`. `ads.txt`, meta tag, and script are wired. See [`docs/production-readiness.md`](docs/production-readiness.md) for the review-readiness checklist.
 
@@ -133,7 +134,8 @@ All AI calls run through `generateWithTimeout` (30 s default via `GEMINI_REQUEST
 
 See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md). Short version:
 
-- New tools: `npm run generate:tool -- --slug=... --title=... --category=... --description=...`. Component starts as a placeholder and the registry entry starts as `status: "draft"` — the sitemap and server 404-guard both filter it out until you flip to `indexable` and implement the component for real.
+- Start at [`/contribute`](https://www.xfree.in/contribute) or the tool-request issue template. Pick a roadmap concept, implement it in the current React/TypeScript architecture, add tests/accessibility/error handling/processing disclosure, and submit a PR. Publication/indexability is granted only after the governed gates pass.
+- `npm run community:candidates -- --count 5 --offset 0 --pillar all` produces a deterministic maintainer review batch; the GitHub workflow does **not** create issues unless explicitly requested.
 - New guides: hand-write in `src/data/guides.ts`. Each guide requires an `overview`, sectioned body, and a `lastReviewed` date the author is willing to defend.
 - Content rules: [`docs/content.md`](docs/content.md).
 - Security issues: see [`.github/SECURITY.md`](.github/SECURITY.md) — private reporting only, never a public issue.

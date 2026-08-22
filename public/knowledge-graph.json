@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "canonicalEntity": "https://www.xfree.in/#website",
+  "canonicalOrigin": "https://www.xfree.in",
+  "repository": "https://github.com/CodesbyFebin/xfree",
+  "relationships": [
+    {
+      "subject": "XFree",
+      "predicate": "publishes",
+      "object": "PublishedTools",
+      "count": 10
+    },
+    {
+      "subject": "XFree",
+      "predicate": "organizesRoadmapWith",
+      "object": "ToolPillars",
+      "count": 50
+    },
+    {
+      "subject": "ToolPillars",
+      "predicate": "indexableWhen",
+      "object": "ContainsPublishedTool"
+    },
+    {
+      "subject": "Roadmap",
+      "predicate": "containsPlannedConcepts",
+      "object": 25000
+    }
+  ]
+}

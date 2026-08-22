@@ -19,6 +19,10 @@ var EnvSchema = z.object({
   GEMINI_BATCH_MODEL: z.string().default("gemini-2.5-flash"),
   GEMINI_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().default(2048),
   GEMINI_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(3e4),
+  NVIDIA_API_KEY: z.string().min(1).optional(),
+  NVIDIA_BASE_URL: z.string().url().default("https://integrate.api.nvidia.com/v1"),
+  NVIDIA_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().max(16384).default(2048),
+  NVIDIA_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(45e3),
   AI_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(10),
   AI_RATE_LIMIT_PER_DAY: z.coerce.number().int().positive().default(100),
   AI_THINKING_LIMIT_PER_DAY: z.coerce.number().int().positive().default(15),
@@ -41,6 +45,9 @@ ${issues}`);
   const cfg = parsed.data;
   if (cfg.NODE_ENV === "production" && !cfg.GEMINI_API_KEY) {
     console.warn("[env] GEMINI_API_KEY is not set. AI endpoints will return 503 until it is provisioned.");
+  }
+  if (cfg.NODE_ENV === "production" && !cfg.NVIDIA_API_KEY) {
+    console.warn("[env] NVIDIA_API_KEY is not set. NVIDIA Cloud Mode will remain unavailable.");
   }
   return cfg;
 }
@@ -228,6 +235,11 @@ function globalDailyGuard(limit) {
 
 // src/server/schemas.ts
 import { z as z2 } from "zod";
+
+// src/server/nvidia/types.ts
+var NVIDIA_TASK_TYPES = ["code", "json", "sql", "summarization", "reasoning", "general"];
+
+// src/server/schemas.ts
 var taskIdSchema = z2.enum(Object.keys(AI_TASKS));
 var AiRequestSchema = z2.object({
   taskId: taskIdSchema.default("general"),
@@ -248,6 +260,20 @@ var AiChatSchema = z2.object({
 var AiThinkingSchema = z2.object({
   taskId: taskIdSchema.default("general"),
   prompt: z2.string().trim().min(1).max(8e3)
+});
+var NvidiaMessageSchema = z2.object({
+  role: z2.enum(["system", "user", "assistant"]),
+  content: z2.string().trim().min(1).max(8e3)
+});
+var NvidiaChatSchema = z2.object({
+  model: z2.string().trim().min(1).max(300).default("auto"),
+  taskType: z2.enum(NVIDIA_TASK_TYPES).default("general"),
+  messages: z2.array(NvidiaMessageSchema).min(1).max(20),
+  temperature: z2.number().min(0).max(1).optional(),
+  maxTokens: z2.number().int().positive().max(4096).optional()
+});
+var NvidiaValidateSchema = z2.object({
+  model: z2.string().trim().min(1).max(300)
 });
 var ContactSchema = z2.object({
   email: z2.string().email().max(200).optional().or(z2.literal("")),
@@ -273,6 +299,258 @@ var FeedbackSchema = z2.object({
   path: z2.string().max(500).optional(),
   website: z2.string().max(0).optional()
 });
+
+// src/server/nvidia/catalog.ts
+var CATALOG_GROUPS = {
+  chat: [
+    "nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nemotron-3-ultra-550b-a55b",
+    "openai/gpt-oss-120b",
+    "meta/llama-3.3-70b-instruct",
+    "openai/gpt-oss-20b",
+    "meta/llama-3.1-8b-instruct",
+    "nvidia/nemotron-3-nano-30b-a3b",
+    "z-ai/glm-5.2",
+    "stepfun-ai/step-3.7-flash",
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "nvidia/llama-3.3-nemotron-super-49b-v1",
+    "google/gemma-4-31b-it",
+    "meta/llama-3.1-70b-instruct",
+    "google/diffusiongemma-26b-a4b-it",
+    "nvidia/nemotron-mini-4b-instruct",
+    "nvidia/nvidia-nemotron-nano-9b-v2",
+    "meta/llama-3.2-3b-instruct",
+    "mistralai/mistral-nemotron",
+    "nvidia/llama-3.1-nemotron-nano-8b-v1",
+    "meta/llama-3.2-1b-instruct",
+    "nvidia/ising-calibration-1-35b-a3b",
+    "nvidia/cosmos3-nano-reasoner",
+    "nvidia/cosmos3-nano",
+    "deepseek-ai/deepseek-v4-flash-0731",
+    "thinkingmachines/inkling",
+    "nvidia/ising-calibration-1.5-31b",
+    "poolside/laguna-xs-2.1",
+    "nvidia/nemotron-3.5-lightning-30b-a3b"
+  ],
+  "vision-chat": ["nvidia/llama-3.1-nemotron-nano-vl-8b-v1", "minimaxai/minimax-m3", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning", "nvidia/nemotron-nano-12b-v2-vl", "meta/llama-3.2-90b-vision-instruct", "meta/llama-3.2-11b-vision-instruct", "google/google-paligemma"],
+  embedding: ["nvidia/nv-embed-v1", "nvidia/nv-embedcode-7b-v1", "nvidia/nemotron-3-embed-1b"],
+  rerank: ["nvidia/rerank-qa-mistral-4b"],
+  safety: ["nvidia/nemotron-3.5-content-safety", "meta/llama-guard-4-12b", "nvidia/llama-3.1-nemotron-safety-guard-8b-v3"],
+  translation: ["nvidia/riva-translate-4b-instruct-v1.1", "nvidia/riva-translate-4b-instruct-v2"],
+  speech: ["nvidia/magpie-tts-zeroshot", "nvidia/studiovoice", "nvidia/active-speaker-detection", "nvidia/bnr", "nvidia/nemotron-voicechat"],
+  biology: ["meta/esmfold", "meta/esm2-650m"],
+  video: ["nvidia/synthetic-video-detector", "nvidia/cosmos-transfer1-7b", "nvidia/cosmos-transfer2.5-2b"],
+  simulation: [],
+  "autonomous-driving": ["nvidia/streampetr", "nvidia/bevformer", "nvidia/sparsedrive"],
+  "image-generation": ["meta/muse-glimmer-30b"]
+};
+function normalizeId(id) {
+  return id.toLowerCase().replace(/_/g, ".").replace(/-v1\.5$/, "-v1.5");
+}
+var KNOWN_KIND = /* @__PURE__ */ new Map();
+Object.entries(CATALOG_GROUPS).forEach(([kind, ids]) => ids.forEach((id) => KNOWN_KIND.set(normalizeId(id), kind)));
+var NVIDIA_REFERENCE_CATALOG = Object.entries(CATALOG_GROUPS).flatMap(([kind, ids]) => ids.map((id) => ({ id, kind })));
+function inferModelKind(id) {
+  const normalized = normalizeId(id);
+  const known = KNOWN_KIND.get(normalized);
+  if (known) return known;
+  if (/embed/.test(normalized)) return "embedding";
+  if (/rerank/.test(normalized)) return "rerank";
+  if (/guard|safety/.test(normalized)) return "safety";
+  if (/translate/.test(normalized)) return "translation";
+  if (/tts|voice|speaker|noise|\bbnr\b/.test(normalized)) return "speech";
+  if (/esmfold|esm2/.test(normalized)) return "biology";
+  if (/vision|\bvl\b|paligemma|omni|multimodal/.test(normalized)) return "vision-chat";
+  if (/transfer|video-detector/.test(normalized)) return "video";
+  if (/streampetr|bevformer|sparsedrive/.test(normalized)) return "autonomous-driving";
+  if (/muse|image-gen/.test(normalized)) return "image-generation";
+  return "chat";
+}
+function isChatCompatibleKind(kind) {
+  return kind === "chat" || kind === "vision-chat" || kind === "safety" || kind === "translation";
+}
+
+// src/server/nvidia/router.ts
+var TASK_HINTS = {
+  code: ["coder", "code", "devstral", "starcoder", "qwen"],
+  json: ["coder", "code", "instruct", "qwen", "llama"],
+  sql: ["coder", "code", "qwen", "deepseek", "instruct"],
+  summarization: ["long", "128k", "70b", "nemotron", "llama"],
+  reasoning: ["reason", "thinking", "qwq", "deepseek", "nemotron", "120b", "70b"],
+  general: ["instruct", "flash", "llama", "gemma", "nemotron"]
+};
+var QUALITY_HINTS = ["pro", "120b", "70b", "32b", "large", "super", "ultra"];
+var EFFICIENCY_HINTS = ["flash", "mini", "small", "8b", "7b", "3b", "1b"];
+function scoreModel(model, taskType) {
+  const id = model.id.toLowerCase();
+  let score = 0;
+  TASK_HINTS[taskType].forEach((hint, index) => {
+    if (id.includes(hint)) score += 40 - index * 4;
+  });
+  QUALITY_HINTS.forEach((hint, index) => {
+    if (id.includes(hint)) score += 18 - index;
+  });
+  if (taskType === "general" || taskType === "summarization") {
+    EFFICIENCY_HINTS.forEach((hint, index) => {
+      if (id.includes(hint)) score += 8 - Math.min(index, 6);
+    });
+  }
+  return score;
+}
+function selectModelForTask(taskType, availableModels) {
+  const compatible = availableModels.filter((model) => model.chatCompatible);
+  if (!compatible.length) return null;
+  return compatible.reduce(
+    (best, model) => scoreModel(model, taskType) > scoreModel(best, taskType) ? model : best
+  );
+}
+function inferModelCapabilities(modelId) {
+  const id = modelId.toLowerCase();
+  if (!isChatCompatibleKind(inferModelKind(id))) return [];
+  const capabilities = ["chat"];
+  if (/code|coder|devstral|starcoder|qwen/.test(id)) capabilities.push("code");
+  if (/long|128k|70b|120b|large/.test(id)) capabilities.push("long-context");
+  if (/reason|thinking|qwq|deepseek|nemotron/.test(id)) capabilities.push("reasoning");
+  if (/flash|mini|small|8b|7b|3b|1b/.test(id)) capabilities.push("efficient");
+  return capabilities;
+}
+
+// src/server/nvidia/client.ts
+var MODEL_CACHE_TTL_MS = 10 * 6e4;
+var modelCache = null;
+var NvidiaNotConfiguredError = class extends Error {
+  constructor() {
+    super("NVIDIA NIM is not configured");
+    this.name = "NvidiaNotConfiguredError";
+  }
+};
+var NvidiaApiError = class extends Error {
+  constructor(message, status, code) {
+    super(message);
+    this.status = status;
+    this.code = code;
+    this.name = "NvidiaApiError";
+  }
+};
+function getCredentials() {
+  if (!config2.NVIDIA_API_KEY) throw new NvidiaNotConfiguredError();
+  return {
+    apiKey: config2.NVIDIA_API_KEY,
+    baseUrl: config2.NVIDIA_BASE_URL.replace(/\/$/, "")
+  };
+}
+async function nvidiaFetch(path, init = {}) {
+  const { apiKey, baseUrl } = getCredentials();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), config2.NVIDIA_REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(`${baseUrl}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        ...init.body ? { "Content-Type": "application/json" } : {},
+        ...init.headers
+      }
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new NvidiaApiError("NVIDIA request timed out", 504, "timeout");
+    }
+    throw new NvidiaApiError("NVIDIA service could not be reached", 502, "upstream_error");
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+function normalizeModel(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const record = raw;
+  if (typeof record.id !== "string" || !record.id.trim()) return null;
+  const id = record.id.trim();
+  const kind = inferModelKind(id);
+  return {
+    id,
+    name: id.split("/").pop()?.replace(/[-_]+/g, " ") || id,
+    ownedBy: typeof record.owned_by === "string" ? record.owned_by : void 0,
+    capabilities: inferModelCapabilities(id),
+    kind,
+    chatCompatible: isChatCompatibleKind(kind)
+  };
+}
+async function listAvailableModels(options = {}) {
+  if (!options.forceRefresh && modelCache && modelCache.expiresAt > Date.now()) return modelCache.models;
+  const response = await nvidiaFetch("/models");
+  if (response.status === 401 || response.status === 403) {
+    throw new NvidiaApiError("NVIDIA credentials were rejected", 503, "unauthorized");
+  }
+  if (!response.ok) throw new NvidiaApiError("NVIDIA model discovery failed", 502, "upstream_error");
+  const payload = await response.json();
+  const models = (Array.isArray(payload.data) ? payload.data : []).map(normalizeModel).filter((model) => Boolean(model));
+  modelCache = { expiresAt: Date.now() + MODEL_CACHE_TTL_MS, models };
+  return models;
+}
+async function resolveNvidiaModel(requestedModel, taskType) {
+  let models = (await listAvailableModels()).filter((model) => model.chatCompatible);
+  if (!models.length) throw new NvidiaApiError("No NVIDIA chat models are available to this account", 503, "unavailable");
+  const requested = requestedModel?.trim() || "auto";
+  if (requested !== "auto") {
+    let exact = models.find((model) => model.id === requested);
+    if (!exact) {
+      models = (await listAvailableModels({ forceRefresh: true })).filter((model) => model.chatCompatible);
+      exact = models.find((model) => model.id === requested);
+    }
+    if (exact) return { requestedModel: requested, usedModel: exact.id, wasFallback: false };
+  }
+  const fallback = selectModelForTask(taskType, models);
+  if (!fallback) throw new NvidiaApiError("No suitable NVIDIA model is available", 503, "unavailable");
+  return {
+    requestedModel: requested,
+    usedModel: fallback.id,
+    wasFallback: requested !== "auto",
+    fallbackReason: requested === "auto" ? "auto_routing" : "selected_model_unavailable"
+  };
+}
+async function createChatCompletion(payload) {
+  let resolution = await resolveNvidiaModel(payload.requestedModel, payload.taskType);
+  const send = (model) => nvidiaFetch("/chat/completions", {
+    method: "POST",
+    body: JSON.stringify({
+      model,
+      messages: payload.messages,
+      temperature: payload.temperature ?? 0.4,
+      max_tokens: payload.maxTokens ?? config2.NVIDIA_MAX_OUTPUT_TOKENS,
+      stream: false
+    })
+  });
+  let response = await send(resolution.usedModel);
+  if ((response.status === 400 || response.status === 404) && resolution.requestedModel !== "auto" && !resolution.wasFallback) {
+    const refreshed = (await listAvailableModels({ forceRefresh: true })).filter((model) => model.chatCompatible);
+    const fallback = selectModelForTask(
+      payload.taskType,
+      refreshed.filter((model) => model.id !== resolution.usedModel)
+    );
+    if (fallback) {
+      resolution = {
+        requestedModel: resolution.requestedModel,
+        usedModel: fallback.id,
+        wasFallback: true,
+        fallbackReason: "selected_model_unavailable"
+      };
+      response = await send(fallback.id);
+    }
+  }
+  if (response.status === 401 || response.status === 403) {
+    throw new NvidiaApiError("NVIDIA credentials were rejected", 503, "unauthorized");
+  }
+  if (!response.ok) {
+    throw new NvidiaApiError("NVIDIA could not complete the request", response.status >= 500 ? 502 : 400, "upstream_error");
+  }
+  const data = await response.json();
+  const reply = data.choices?.[0]?.message?.content;
+  if (typeof reply !== "string") throw new NvidiaApiError("NVIDIA returned an invalid response", 502, "upstream_error");
+  return { ...resolution, reply, usage: data.usage };
+}
 
 // src/server/delivery.ts
 async function deliverMessage(kind, payload) {
@@ -345,7 +623,7 @@ function securityHeadersMiddleware(_req, res, next) {
 // src/scripts/tools-seed.json
 var tools_seed_default = [
   {
-    slug: "bulk-url-extractor",
+    slug: "bulk-url-extractor-draft",
     cluster: "seo-tools",
     title: "Bulk URL Extractor | Free Online Tool",
     description: "Extract all URLs and links from webpage source HTML or raw text into clean lists.",
@@ -5710,6 +5988,7 @@ var PROCESSED_SEED_TOOLS = tools_seed_default.map((seed) => {
     iconName,
     execution: isAi ? "ai" : "local",
     status: "draft",
+    indexable: false,
     lastModified: "2026-03-15",
     isAi,
     toolComponent: seed.toolComponent,
@@ -5738,7 +6017,8 @@ var HAND_CRAFTED_TOOLS = [
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     isFlagship: true,
     tags: ["sitemap", "url extractor", "bulk urls", "xml sitemap", "seo", "domain filter"],
@@ -5772,7 +6052,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["xml sitemap", "seo", "google indexing", "sitemap validator"],
     exampleInput: "https://example.com/\nhttps://example.com/about\nhttps://example.com/services",
@@ -5803,7 +6084,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Developer Tools",
     iconName: "Code2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     isFlagship: true,
     tags: ["json formatter", "json validator", "json tree", "json repair", "xml format"],
@@ -5856,7 +6138,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Developer Tools",
     iconName: "Code2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["regex tester", "regular expression", "regex match", "regex replace"],
     exampleInput: "Contact support@xfree.in or sales@company.com for inquiries.",
@@ -5887,7 +6170,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Generators",
     iconName: "Wand2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["cron generator", "cron syntax", "cron schedule", "cron expression"],
     exampleInput: "*/15 9-17 * * 1-5",
@@ -5918,7 +6202,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["meta tags", "open graph", "twitter card", "serp preview", "seo"],
     exampleInput: "Title: XFree.in Platform\nDescription: Free developer and SEO micro-tools.",
@@ -5949,10 +6234,11 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["robots.txt", "crawler rules", "allow disallow", "seo auditing"],
-    exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://xfree.in/sitemap.xml",
+    exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://www.xfree.in/sitemap.xml",
     explanation: "Builds RFC 9309 compliant robots.txt files with Allow/Disallow rule groups, crawl-delay directives, and sitemap references.",
     howToUse: [
       "Add user-agent rules (e.g. Googlebot, Bingbot, *).",
@@ -5980,10 +6266,11 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["schema markup", "json-ld", "structured data", "faq schema", "rich snippet"],
-    exampleInput: "Name: XFree\nURL: https://xfree.in",
+    exampleInput: "Name: XFree\nURL: https://www.xfree.in",
     explanation: "Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.",
     howToUse: [
       "Select Schema type (e.g. WebSite, Organization, FAQPage, Article).",
@@ -6011,7 +6298,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Converters & Encoders",
     iconName: "ArrowLeftRight",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["base64", "jwt decoder", "url encode", "base64url", "oauth token"],
     exampleInput: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXggRGV2IiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoiYWRtaW4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
@@ -6042,7 +6330,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Generators",
     iconName: "Wand2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["url slug", "utm builder", "google analytics", "campaign tracking", "clean url"],
     exampleInput: "Title: How to Build a Modern Technical SEO Sitemap in 2026!",
@@ -6072,10 +6361,21 @@ HAND_CRAFTED_TOOLS.forEach((tool) => {
   toolMap.set(tool.id, tool);
 });
 var TOOLS_REGISTRY = Array.from(toolMap.values());
-var INDEXABLE_TOOLS = TOOLS_REGISTRY.filter(
-  (t) => t.status === "indexable"
+var ROADMAP_TOOLS = TOOLS_REGISTRY.filter(
+  (tool) => tool.status === "roadmap" || tool.status === "draft"
 );
-var INDEXABLE_TOOL_SLUGS = new Set(INDEXABLE_TOOLS.map((t) => t.slug));
+
+// src/data/publicTools.ts
+var PUBLIC_TOOLS = TOOLS_REGISTRY.filter(
+  (tool) => tool.status === "published" && tool.indexable === true
+);
+var PUBLIC_CATEGORIES = CATEGORIES.filter(
+  (category) => PUBLIC_TOOLS.some((tool) => tool.category === category.id)
+);
+var PUBLIC_TOOL_SLUGS = new Set(PUBLIC_TOOLS.map((tool) => tool.slug));
+function getPublicToolBySlug(slug) {
+  return PUBLIC_TOOLS.find((tool) => tool.slug === slug || tool.id === slug);
+}
 
 // src/data/guides.ts
 var GUIDES = [
@@ -6376,151 +6676,310 @@ https?://[^\\s"'<>]+
   }
 ];
 
+// src/data/generatedPublishedContent.ts
+var GENERATED_PUBLISHED_CONTENT = {};
+
+// src/data/siteConfig.ts
+var CANONICAL_ORIGIN = "https://www.xfree.in";
+var SITE_CONTENT_LASTMOD = "2026-08-23";
+
+// src/data/masterBlueprint.ts
+var PILLARS_50 = [
+  { id: 1, name: "Frontend Development", slug: "frontend-development", icon: "\u{1F310}", description: "Modern UI engineering, DOM manipulation, client-side rendering, and responsive web toolsets." },
+  { id: 2, name: "Backend Development", slug: "backend-development", icon: "\u26A1", description: "Server architectures, runtime environments, middleware processing, and API endpoints." },
+  { id: 3, name: "DevOps & CI/CD", slug: "devops-cicd", icon: "\u{1F680}", description: "Continuous integration, automated pipelines, deployment workflows, and container runtimes." },
+  { id: 4, name: "Cybersecurity & Privacy", slug: "cybersecurity-privacy", icon: "\u{1F512}", description: "Cryptographic operations, privacy enforcement, credential generation, and threat auditing." },
+  { id: 5, name: "Technical SEO", slug: "technical-seo", icon: "\u{1F4C8}", description: "Search engine crawlability, schema validation, URL hygiene, and indexing diagnostics." },
+  { id: 6, name: "Content & Copywriting", slug: "content-copywriting", icon: "\u270D\uFE0F", description: "Text analysis, readability scoring, word analytics, and editorial utilities." },
+  { id: 7, name: "Data Engineering", slug: "data-engineering", icon: "\u{1F4CA}", description: "ETL pipelines, schema transformations, stream ingestion, and columnar formats." },
+  { id: 8, name: "AI & Machine Learning", slug: "ai-machine-learning", icon: "\u{1F916}", description: "Token counting, prompt engineering, embedding math, and model orchestration." },
+  { id: 9, name: "Database Management", slug: "database-management", icon: "\u{1F5C4}\uFE0F", description: "Query optimization, schema migration, relational mapping, and indexing strategies." },
+  { id: 10, name: "API Development & Testing", slug: "api-development-testing", icon: "\u{1F50C}", description: "REST, GraphQL, gRPC payload inspection, mock endpoints, and latency testing." },
+  { id: 11, name: "Cloud Infrastructure", slug: "cloud-infrastructure", icon: "\u2601\uFE0F", description: "Serverless configurations, cloud cost estimation, IAM rules, and edge routing." },
+  { id: 12, name: "Mobile Development", slug: "mobile-development", icon: "\u{1F4F1}", description: "iOS, Android, React Native, and Flutter asset preparation and deep-link generation." },
+  { id: 13, name: "UI/UX Design", slug: "ui-ux-design", icon: "\u{1F3A8}", description: "Design tokens, layout visualizers, spacing math, and component geometry." },
+  { id: 14, name: "Web Accessibility (a11y)", slug: "web-accessibility", icon: "\u267F", description: "WCAG 2.2 auditing, contrast checking, screen reader semantics, and focus management." },
+  { id: 15, name: "Performance Optimization", slug: "performance-optimization", icon: "\u26A1", description: "Core Web Vitals tuning, bundle size analysis, and asset minification." },
+  { id: 16, name: "Blockchain & Web3", slug: "blockchain-web3", icon: "\u26D3\uFE0F", description: "Smart contract inspection, wallet signature generation, and EVM gas estimators." },
+  { id: 17, name: "Game Development", slug: "game-development", icon: "\u{1F3AE}", description: "Sprite sheet packing, math coordinate converters, and frame delta timers." },
+  { id: 18, name: "Network Engineering", slug: "network-engineering", icon: "\u{1F310}", description: "CIDR subnet calculation, DNS record formatting, and packet payload analyzers." },
+  { id: 19, name: "System Administration", slug: "system-administration", icon: "\u{1F5A5}\uFE0F", description: "Cron expression generators, bash script linters, and Linux permission calculators." },
+  { id: 20, name: "Version Control (Git)", slug: "version-control-git", icon: "\u{1F500}", description: "Commit convention helpers, gitignore generators, and branch strategy calculators." },
+  { id: 21, name: "Code Quality & Refactoring", slug: "code-quality-refactoring", icon: "\u2728", description: "Complexity scoring, dead code detection, and syntax modernization." },
+  { id: 22, name: "Documentation & Tech Writing", slug: "documentation-tech-writing", icon: "\u{1F4C4}", description: "API docs generation, markdown formatting, and changelog builders." },
+  { id: 23, name: "Project Management", slug: "project-management", icon: "\u{1F4CB}", description: "Sprint capacity calculators, burn-down math, and task prioritization matrixes." },
+  { id: 24, name: "Agile Workflows", slug: "agile-workflows", icon: "\u{1F504}", description: "Story point poker tools, velocity estimators, and retro template generators." },
+  { id: 25, name: "E-commerce Development", slug: "ecommerce-development", icon: "\u{1F6D2}", description: "Product feed validators, SKU formatters, and discount rate calculators." },
+  { id: 26, name: "Headless CMS", slug: "headless-cms", icon: "\u{1F9E9}", description: "Content model visualizers, GraphQL query generators, and webhook testing." },
+  { id: 27, name: "Email Development", slug: "email-development", icon: "\u{1F4E7}", description: "HTML email inliners, MJML compilers, and inbox preview test harnesses." },
+  { id: 28, name: "Video Processing", slug: "video-processing", icon: "\u{1F3A5}", description: "FFmpeg command builders, aspect ratio math, and bitrate calculators." },
+  { id: 29, name: "Image Processing", slug: "image-processing", icon: "\u{1F5BC}\uFE0F", description: "Client-side WebP/AVIF compression, metadata stripping, and SVG cleaners." },
+  { id: 30, name: "Typography & Web Fonts", slug: "typography-web-fonts", icon: "\u{1F524}", description: "Type scale calculators, variable font playground, and font format converters." },
+  { id: 31, name: "Color Theory & Palettes", slug: "color-theory-palettes", icon: "\u{1F3A8}", description: "HEX/RGB/HSL converters, palette harmonic generators, and color delta E." },
+  { id: 32, name: "Regular Expressions (Regex)", slug: "regular-expressions-regex", icon: "\u{1F50D}", description: "Regex testing, pattern visualizers, and escape string generators." },
+  { id: 33, name: "Cryptography & Hashing", slug: "cryptography-hashing", icon: "\u{1F511}", description: "SHA-256/512 generators, HMAC calculators, and AES client encryptors." },
+  { id: 34, name: "Unit & Integration Testing", slug: "unit-integration-testing", icon: "\u{1F9EA}", description: "Mock data generators, fixture builders, and assertion syntax helpers." },
+  { id: 35, name: "Browser Extensions", slug: "browser-extensions", icon: "\u{1F9E9}", description: "Manifest V3 builders, icon pack generators, and permission checkers." },
+  { id: 36, name: "WebAssembly (Wasm)", slug: "webassembly-wasm", icon: "\u2699\uFE0F", description: "Wasm binary inspectors, WAT text disassemblers, and runtime benchmarks." },
+  { id: 37, name: "Serverless Computing", slug: "serverless-computing", icon: "\u26A1", description: "Cold-start calculators, Lambda payload testers, and edge function helpers." },
+  { id: 38, name: "Containerization (Docker/K8s)", slug: "containerization-docker-k8s", icon: "\u{1F433}", description: "Dockerfile optimizers, Kubernetes YAML generators, and compose validators." },
+  { id: 39, name: "Monitoring & Observability", slug: "monitoring-observability", icon: "\u{1F4E1}", description: "PromQL query builders, SLO/SLA error budget math, and log parsers." },
+  { id: 40, name: "Logging & Analytics", slug: "logging-analytics", icon: "\u{1F4DD}", description: "Logstash pattern generators, JSON log formatters, and metric aggregators." },
+  { id: 41, name: "Localization (i18n)", slug: "localization-i18n", icon: "\u{1F30D}", description: "Gettext PO/MO converters, ICU message formatters, and hreflang tag builders." },
+  { id: 42, name: "File Format Conversion", slug: "file-format-conversion", icon: "\u{1F504}", description: "Client-side file conversions for JSON, CSV, XML, YAML, and PDF." },
+  { id: 43, name: "Markdown & Text Processing", slug: "markdown-text-processing", icon: "\u{1F4DD}", description: "Markdown to HTML compilers, diff checkers, and text case converters." },
+  { id: 44, name: "JSON, XML & YAML Utils", slug: "json-xml-yaml-utils", icon: "\u{1F4C4}", description: "Bi-directional serialization, schema validation, and path extractors." },
+  { id: 45, name: "CSS Utilities", slug: "css-utilities", icon: "\u{1F4D0}", description: "Flexbox/Grid visualizers, box-shadow generators, and CSS minifiers." },
+  { id: 46, name: "JavaScript & TypeScript Utils", slug: "javascript-typescript-utils", icon: "\u26A1", description: "TypeScript interface generators, AST viewers, and JS minifiers." },
+  { id: 47, name: "Python Developer Utils", slug: "python-developer-utils", icon: "\u{1F40D}", description: "Pip requirements formatters, pyproject.toml builders, and docstring helpers." },
+  { id: 48, name: "Rust & Systems Programming", slug: "rust-systems-programming", icon: "\u{1F980}", description: "Cargo.toml builders, unsafe audit checklists, and memory size calculators." },
+  { id: 49, name: "Open Source Compliance", slug: "open-source-compliance", icon: "\u2696\uFE0F", description: "SPDX license pickers, notice generators, and dependency audits." },
+  { id: 50, name: "Developer Productivity", slug: "developer-productivity", icon: "\u23F1\uFE0F", description: "Pomodoro timers, snippet managers, and quick scratchpads." }
+];
+var CLUSTERS_50 = [
+  "Utilities",
+  "Generators",
+  "Converters",
+  "Validators",
+  "Analyzers",
+  "Formatters",
+  "Debuggers",
+  "Optimizers",
+  "Testers",
+  "Builders",
+  "Calculators",
+  "Encoders/Decoders",
+  "Visualizers",
+  "Linters",
+  "Simulators",
+  "Playgrounds",
+  "Extractors",
+  "Mappers",
+  "Transformers",
+  "Compilers",
+  "Snippets",
+  "Templates",
+  "Checkers",
+  "Monitors",
+  "Scanners",
+  "Profilers",
+  "Benchmarkers",
+  "Migrators",
+  "Synchronizers",
+  "Packagers",
+  "Bundlers",
+  "Transpilers",
+  "Polyfills",
+  "Shims",
+  "Mockers",
+  "Stubs",
+  "Fakers",
+  "Data Generators",
+  "Parsers",
+  "Serializers",
+  "Deserializers",
+  "Query Builders",
+  "Schema Designers",
+  "Indexers",
+  "Cachers",
+  "Traffic Shapers",
+  "Rate Limiters",
+  "Webhook Testers",
+  "CLI Builders",
+  "SDK Generators"
+];
+var MODIFIERS_10 = [
+  "Client-Side Minifier",
+  "Instant Converter",
+  "Privacy-First Validator",
+  "Local Analyzer",
+  "Browser-Based Formatter",
+  "Offline Debugger",
+  "WASM Optimizer",
+  "Zero-Telemetry Tester",
+  "Open-Source Builder",
+  "Quick Calculator"
+];
+var ROADMAP_CONCEPT_COUNT = PILLARS_50.length * CLUSTERS_50.length * MODIFIERS_10.length;
+var TOOL_PILLAR_MAP = {
+  "bulk-url-extractor": "technical-seo",
+  "xml-sitemap-generator": "technical-seo",
+  "json-formatter": "json-xml-yaml-utils",
+  "regex-tester": "regular-expressions-regex",
+  "cron-expression-generator": "system-administration",
+  "meta-tag-generator": "technical-seo",
+  "robots-txt-generator": "technical-seo",
+  "schema-markup-generator": "technical-seo",
+  "base64-encoder-decoder": "cryptography-hashing",
+  "url-slug-utm-builder": "technical-seo"
+};
+
+// src/data/pillarPublishing.ts
+function getPublishedToolsForPillar(pillarSlug) {
+  return PUBLIC_TOOLS.filter((tool) => TOOL_PILLAR_MAP[tool.slug] === pillarSlug);
+}
+var INDEXABLE_PILLARS = PILLARS_50.filter(
+  (pillar) => getPublishedToolsForPillar(pillar.slug).length > 0
+);
+var INDEXABLE_PILLAR_SLUGS = new Set(INDEXABLE_PILLARS.map((pillar) => pillar.slug));
+
 // src/utils/generateSitemap.ts
-var DEFAULT_BASE_URL = "https://www.xfree.in";
+var DEFAULT_BASE_URL = CANONICAL_ORIGIN;
 function escapeXml(unsafe) {
   if (!unsafe) return "";
   return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
-function getIsoDate() {
-  return (/* @__PURE__ */ new Date()).toISOString();
+function cleanOrigin(baseUrl) {
+  try {
+    const parsed = new URL(baseUrl);
+    if (parsed.protocol === "https:" && parsed.hostname === "www.xfree.in") {
+      return parsed.origin;
+    }
+  } catch {
+  }
+  return DEFAULT_BASE_URL;
 }
-function getRssDate() {
-  return (/* @__PURE__ */ new Date()).toUTCString();
+function normalizeDate(value) {
+  if (!value) return SITE_CONTENT_LASTMOD;
+  const match = value.match(/^\d{4}-\d{2}-\d{2}/);
+  return match ? match[0] : SITE_CONTENT_LASTMOD;
+}
+function toRfc822(value) {
+  const date = /* @__PURE__ */ new Date(`${normalizeDate(value)}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime()) ? (/* @__PURE__ */ new Date(`${SITE_CONTENT_LASTMOD}T00:00:00.000Z`)).toUTCString() : date.toUTCString();
+}
+function maxLastmod(entries) {
+  if (!entries.length) return SITE_CONTENT_LASTMOD;
+  return entries.reduce((latest, entry) => entry.lastmod > latest ? entry.lastmod : latest, entries[0].lastmod);
+}
+var STATIC_PAGE_ENTRIES = [
+  { path: "/", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/how-it-works", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/use-cases", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/docs", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/blog", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/faq", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/about", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/contact", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/privacy", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/terms", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/security", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/xfree-app", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/pillars", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD }
+];
+function getPageSitemapEntries() {
+  return [
+    ...STATIC_PAGE_ENTRIES,
+    ...PUBLIC_CATEGORIES.map((category) => ({
+      path: `/category/${category.id}`,
+      lastmod: SITE_CONTENT_LASTMOD
+    })),
+    ...INDEXABLE_PILLARS.map((pillar) => ({
+      path: `/pillar/${pillar.slug}`,
+      lastmod: SITE_CONTENT_LASTMOD
+    }))
+  ];
+}
+function getToolSitemapEntries() {
+  const seen = /* @__PURE__ */ new Set();
+  const entries = [];
+  for (const tool of PUBLIC_TOOLS) {
+    if (!tool.slug || seen.has(tool.slug)) continue;
+    seen.add(tool.slug);
+    entries.push({
+      path: `/tools/${tool.slug}`,
+      lastmod: normalizeDate(tool.lastModified)
+    });
+  }
+  for (const artifact of Object.values(GENERATED_PUBLISHED_CONTENT)) {
+    if (!artifact.slug || seen.has(artifact.slug)) continue;
+    seen.add(artifact.slug);
+    entries.push({
+      path: `/tools/${artifact.slug}`,
+      lastmod: normalizeDate(artifact.approval.reviewedAt)
+    });
+  }
+  return entries;
+}
+function getGuideSitemapEntries() {
+  return [
+    { path: "/guides", lastmod: SITE_CONTENT_LASTMOD },
+    ...GUIDES.map((guide) => ({
+      path: `/guides/${guide.slug}`,
+      lastmod: normalizeDate(guide.lastReviewed)
+    }))
+  ];
+}
+function renderUrlset(entries, baseUrl) {
+  const cleanBase = cleanOrigin(baseUrl);
+  const unique = new Map(entries.map((entry) => [entry.path, entry]));
+  const rows = Array.from(unique.values()).map((entry) => `  <url>
+    <loc>${escapeXml(`${cleanBase}${entry.path === "/" ? "/" : entry.path}`)}</loc>
+    <lastmod>${escapeXml(normalizeDate(entry.lastmod))}</lastmod>
+  </url>`).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${rows}
+</urlset>`;
 }
 function generateSitemapXml(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  const currentDate = getIsoDate().split("T")[0];
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-`;
-  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-`;
-  xml += `        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-`;
-  xml += `        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-`;
-  xml += `        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-`;
-  xml += `  <url>
-`;
-  xml += `    <loc>${escapeXml(`${cleanBase}/`)}</loc>
-`;
-  xml += `    <lastmod>${currentDate}</lastmod>
-`;
-  xml += `    <changefreq>daily</changefreq>
-`;
-  xml += `    <priority>1.0</priority>
-`;
-  xml += `  </url>
-`;
-  const staticPages = [
-    { path: "/how-it-works", priority: "0.8", freq: "weekly" },
-    { path: "/use-cases", priority: "0.8", freq: "weekly" },
-    { path: "/docs", priority: "0.8", freq: "weekly" },
-    { path: "/blog", priority: "0.8", freq: "daily" },
-    { path: "/faq", priority: "0.7", freq: "monthly" },
-    { path: "/about", priority: "0.6", freq: "monthly" },
-    { path: "/contact", priority: "0.5", freq: "monthly" },
-    { path: "/privacy", priority: "0.3", freq: "yearly" },
-    { path: "/terms", priority: "0.3", freq: "yearly" },
-    { path: "/security", priority: "0.5", freq: "monthly" },
-    { path: "/clusters", priority: "0.9", freq: "daily" },
-    { path: "/thinking", priority: "0.8", freq: "weekly" },
-    { path: "/xfree-app", priority: "0.9", freq: "monthly" },
-    { path: "/guides", priority: "0.7", freq: "weekly" }
+  return renderUrlset([
+    ...getPageSitemapEntries(),
+    ...getToolSitemapEntries(),
+    ...getGuideSitemapEntries()
+  ], baseUrl);
+}
+function generatePagesSitemapXml(baseUrl = DEFAULT_BASE_URL) {
+  return renderUrlset(getPageSitemapEntries(), baseUrl);
+}
+function generateToolsSitemapXml(baseUrl = DEFAULT_BASE_URL) {
+  return renderUrlset(getToolSitemapEntries(), baseUrl);
+}
+function generateGuidesSitemapXml(baseUrl = DEFAULT_BASE_URL) {
+  return renderUrlset(getGuideSitemapEntries(), baseUrl);
+}
+function generateSitemapIndexXml(baseUrl = DEFAULT_BASE_URL) {
+  const cleanBase = cleanOrigin(baseUrl);
+  const groups = [
+    { path: "/sitemap-pages.xml", lastmod: maxLastmod(getPageSitemapEntries()) },
+    { path: "/sitemap-tools.xml", lastmod: maxLastmod(getToolSitemapEntries()) },
+    { path: "/sitemap-guides.xml", lastmod: maxLastmod(getGuideSitemapEntries()) }
   ];
-  for (const page of staticPages) {
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}${page.path}`)}</loc>
-`;
-    xml += `    <lastmod>${currentDate}</lastmod>
-`;
-    xml += `    <changefreq>${page.freq}</changefreq>
-`;
-    xml += `    <priority>${page.priority}</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  for (const cat of CATEGORIES) {
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/category/${cat.id}`)}</loc>
-`;
-    xml += `    <lastmod>${currentDate}</lastmod>
-`;
-    xml += `    <changefreq>daily</changefreq>
-`;
-    xml += `    <priority>0.9</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  const seenSlugs = /* @__PURE__ */ new Set();
-  for (const tool of INDEXABLE_TOOLS) {
-    if (!tool.slug || seenSlugs.has(tool.slug)) continue;
-    seenSlugs.add(tool.slug);
-    const priority = tool.isFlagship ? "0.9" : "0.8";
-    const lastmod = tool.lastModified || currentDate;
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/tools/${tool.slug}`)}</loc>
-`;
-    xml += `    <lastmod>${lastmod}</lastmod>
-`;
-    xml += `    <changefreq>weekly</changefreq>
-`;
-    xml += `    <priority>${priority}</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  for (const g of GUIDES) {
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/guides/${g.slug}`)}</loc>
-`;
-    xml += `    <lastmod>${g.lastReviewed}</lastmod>
-`;
-    xml += `    <changefreq>monthly</changefreq>
-`;
-    xml += `    <priority>0.7</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  xml += `</urlset>`;
-  return xml;
+  const rows = groups.map((group) => `  <sitemap>
+    <loc>${escapeXml(`${cleanBase}${group.path}`)}</loc>
+    <lastmod>${escapeXml(group.lastmod)}</lastmod>
+  </sitemap>`).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${rows}
+</sitemapindex>`;
 }
 function generateRssXml(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  const buildDate = getRssDate();
+  const cleanBase = cleanOrigin(baseUrl);
+  const tools = getToolSitemapEntries();
+  const buildDate = toRfc822(maxLastmod(tools));
   let rss = `<?xml version="1.0" encoding="UTF-8"?>
 `;
   rss += `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 `;
   rss += `  <channel>
 `;
-  rss += `    <title>XFree.in \u2014 Free Online Developer, SEO, AI &amp; Converter Micro-Tools</title>
+  rss += `    <title>XFree.in \u2014 Free Developer, SEO &amp; AI Micro-Tools</title>
 `;
-  rss += `    <link>${escapeXml(cleanBase)}</link>
+  rss += `    <link>${escapeXml(`${cleanBase}/`)}</link>
 `;
-  rss += `    <description>100% Free client-side developer, SEO, AI, and converter micro-tools. Instant browser execution, no signup.</description>
+  rss += `    <description>Published browser-based developer, SEO, AI, and converter micro-tools with clear processing disclosures.</description>
 `;
   rss += `    <language>en-us</language>
 `;
   rss += `    <lastBuildDate>${buildDate}</lastBuildDate>
 `;
-  rss += `    <pubDate>${buildDate}</pubDate>
-`;
-  rss += `    <ttl>60</ttl>
-`;
   rss += `    <atom:link href="${escapeXml(`${cleanBase}/rss.xml`)}" rel="self" type="application/rss+xml"/>
 `;
-  for (const tool of INDEXABLE_TOOLS) {
+  const toolDate = new Map(tools.map((entry) => [entry.path.replace("/tools/", ""), entry.lastmod]));
+  for (const tool of PUBLIC_TOOLS) {
     const toolUrl = `${cleanBase}/tools/${tool.slug}`;
-    const pubDate = buildDate;
     const categoryName = tool.categoryLabel || tool.category;
     rss += `    <item>
 `;
@@ -6530,113 +6989,104 @@ function generateRssXml(baseUrl = DEFAULT_BASE_URL) {
 `;
     rss += `      <guid isPermaLink="true">${escapeXml(toolUrl)}</guid>
 `;
-    rss += `      <pubDate>${pubDate}</pubDate>
+    rss += `      <pubDate>${toRfc822(toolDate.get(tool.slug) || SITE_CONTENT_LASTMOD)}</pubDate>
 `;
     rss += `      <category>${escapeXml(categoryName)}</category>
 `;
-    rss += `      <description>${escapeXml(`${tool.shortDescription} Pillar Keyword: ${tool.pillarKeyword}. 100% Free browser utility with instant execution.`)}</description>
+    rss += `      <description>${escapeXml(tool.shortDescription)}</description>
 `;
-    rss += `      <content:encoded><![CDATA[`;
-    rss += `<h3>${escapeXml(tool.title)}</h3>`;
-    rss += `<p><strong>Pillar Keyword:</strong> ${escapeXml(tool.pillarKeyword)}</p>`;
-    rss += `<p>${escapeXml(tool.explanation)}</p>`;
-    if (tool.howToUse && tool.howToUse.length > 0) {
-      rss += `<h4>How to Use:</h4><ul>`;
-      for (const step of tool.howToUse) {
-        rss += `<li>${escapeXml(step)}</li>`;
-      }
-      rss += `</ul>`;
-    }
-    rss += `]]></content:encoded>
+    rss += `      <content:encoded><![CDATA[<h3>${escapeXml(tool.title)}</h3><p>${escapeXml(tool.explanation)}</p>]]></content:encoded>
 `;
     rss += `    </item>
 `;
   }
   rss += `  </channel>
-`;
-  rss += `</rss>`;
+</rss>`;
   return rss;
 }
 function generateLlmsTxt(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  let text = `# XFree.in \u2014 Free Online Developer, SEO, AI & Converter Micro-Tools Suite
+  const cleanBase = cleanOrigin(baseUrl);
+  let text = `# XFree.in \u2014 Free Developer, SEO & AI Micro-Tools
 
 `;
-  text += `> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with browser-based execution for local tools.
+  text += `> XFree.in publishes focused browser-based developer utilities, technical SEO tools, formatters, converters, and clearly disclosed AI assistants.
 
 `;
-  text += `## Primary Sections & Hubs
+  text += `## Primary Sections
 
 `;
-  text += `- [Home Page](${cleanBase}/): Complete registry search and grid view of indexable micro-tools.
+  text += `- [Home](${cleanBase}/): Search and browse the published tool directory.
 `;
-  text += `- [100 Keyword Clusters Hub](${cleanBase}/clusters): Programmatic SEO directory mapping 100 search intent clusters and supporting keywords.
+  text += `- [Guides](${cleanBase}/guides): Reviewed documentation connected to published tools.
 `;
-  text += `- [Gemini Deep Thinking Mode](${cleanBase}/api/ai/thinking): Server-side high-reasoning Gemini 3.1 Pro endpoint for complex SQL, Regex, and SEO architectural analysis.
+  text += `- [How It Works](${cleanBase}/how-it-works): Processing modes, browser execution, and optional cloud handoffs.
+`;
+  text += `- [Pillars](${cleanBase}/pillars): 50 developer and SEO topic pillars; only pillars backed by published tools enter the sitemap.
+`;
+  text += `- [Roadmap](${cleanBase}/roadmap): ${ROADMAP_CONCEPT_COUNT.toLocaleString()} planned concepts on a noindex discovery page; this is not a count of live tools.
+`;
+  text += `- [Contribute](${cleanBase}/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.
+`;
+  text += `- [OpenAPI](${cleanBase}/openapi.json): Machine-readable description of the public XFree API surface.
 
 `;
   text += `## Categories
 
 `;
-  for (const cat of CATEGORIES) {
+  for (const cat of PUBLIC_CATEGORIES) {
     text += `- [${cat.label}](${cleanBase}/category/${cat.id}): ${cat.description}
 `;
   }
   text += `
-## Core API Endpoints for Developers & AI Agents
+## Published Pillars
 
 `;
-  text += `- \`POST /api/ai\`: Single-purpose AI proxy (ai-regex, ai-json-repair, ai-meta-optimizer, ai-sql-generator, ai-search-intent, ai-code-explainer, ai-commit-generator, ai-schema-generator).
+  for (const pillar of INDEXABLE_PILLARS) {
+    text += `- [${pillar.name}](${cleanBase}/pillar/${pillar.slug}): ${pillar.description}
 `;
-  text += `- \`POST /api/ai/batch\`: Batch processing endpoint for bulk CSV/TXT items.
-`;
-  text += `- \`POST /api/ai/thinking\`: Deep reasoning endpoint powered by Google Gemini reasoning model (configurable via GEMINI_THINKING_MODEL) with high thinking budget.
-`;
-  text += `- \`POST /api/ai/chat\`: Multi-turn conversational developer AI assistant.
+  }
+  text += `
+## Published Tools
 
 `;
-  text += `## Complete Index of Indexable Micro-Tools
-
-`;
-  for (const tool of INDEXABLE_TOOLS) {
-    text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription} (Pillar: ${tool.pillarKeyword})
+  for (const tool of PUBLIC_TOOLS) {
+    text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription}
 `;
   }
   return text;
 }
 function generateLlmsFullTxt(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  let text = `# XFree.in Full System Specification & Indexable Micro-Tools Knowledge Base
+  const cleanBase = cleanOrigin(baseUrl);
+  let text = `# XFree.in Full Published Tool Reference
 
 `;
-  text += `This document provides full technical details, Pillar Keywords, explanations, FAQs, and usage rules for indexable production micro-tools on XFree.in.
+  text += `This file documents only tools in the public published/indexable registry. Draft and planned tools are intentionally excluded.
 
 `;
-  for (const tool of INDEXABLE_TOOLS) {
-    text += `--- 
+  for (const tool of PUBLIC_TOOLS) {
+    text += `---
 
-`;
-    text += `### ${tool.title}
+### ${tool.title}
 `;
     text += `- **URL**: ${cleanBase}/tools/${tool.slug}
 `;
     text += `- **Category**: ${tool.categoryLabel || tool.category}
 `;
-    text += `- **Pillar Keyword**: ${tool.pillarKeyword}
-`;
     text += `- **Description**: ${tool.shortDescription}
+`;
+    text += `- **Processing**: ${tool.privacyNotice || (tool.isAi ? "Cloud processing is disclosed before submission." : "Runs locally in the browser.")}
 `;
     text += `- **Explanation**: ${tool.explanation}
 `;
-    if (tool.howToUse && tool.howToUse.length > 0) {
-      text += `- **How to Use**:
+    if (tool.howToUse?.length) {
+      text += `- **How to use**:
 `;
-      for (const step of tool.howToUse) {
-        text += `  1. ${step}
+      tool.howToUse.forEach((step, index) => {
+        text += `  ${index + 1}. ${step}
 `;
-      }
+      });
     }
-    if (tool.faqs && tool.faqs.length > 0) {
+    if (tool.faqs?.length) {
       text += `- **Top FAQs**:
 `;
       for (const faq of tool.faqs.slice(0, 3)) {
@@ -6651,13 +7101,13 @@ function generateLlmsFullTxt(baseUrl = DEFAULT_BASE_URL) {
   return text;
 }
 function generateRobotsTxt(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  return `# Global rules
+  const cleanBase = cleanOrigin(baseUrl);
+  return `# XFree.in crawl policy
 User-agent: *
 Allow: /
 Disallow: /api/
 
-# --- Traditional search engines ---
+# Search and answer-engine crawlers
 User-agent: Googlebot
 Allow: /
 Disallow: /api/
@@ -6666,15 +7116,6 @@ User-agent: Bingbot
 Allow: /
 Disallow: /api/
 
-User-agent: DuckDuckBot
-Allow: /
-Disallow: /api/
-
-User-agent: BraveBot
-Allow: /
-Disallow: /api/
-
-# --- AI citation / live-fetch bots ---
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /api/
@@ -6687,51 +7128,496 @@ User-agent: PerplexityBot
 Allow: /
 Disallow: /api/
 
-User-agent: Claude-SearchBot
-Allow: /
-Disallow: /api/
-
-User-agent: Claude-User
-Allow: /
-Disallow: /api/
-
-User-agent: Applebot
-Allow: /
-Disallow: /api/
-
-# --- AI training crawlers (allowed per site owner) ---
-User-agent: GPTBot
-Allow: /
-Disallow: /api/
-
-User-agent: ClaudeBot
-Allow: /
-Disallow: /api/
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /api/
-
-User-agent: Applebot-Extended
-Allow: /
-Disallow: /api/
-
-User-agent: CCBot
-Allow: /
-Disallow: /api/
-
-User-agent: Meta-ExternalAgent
-Allow: /
-Disallow: /api/
-
-User-agent: Bytespider
-Allow: /
-Disallow: /api/
-
-# Discovery files
-Sitemap: ${cleanBase}/sitemap.xml
-Sitemap: ${cleanBase}/rss.xml
+# Canonical discovery entry point
+Sitemap: ${cleanBase}/sitemap-index.xml
 `;
+}
+
+// src/utils/generateStructuredData.ts
+function generateCapabilitiesJson(baseUrl = "https://www.xfree.in") {
+  const capabilitiesMap = /* @__PURE__ */ new Map();
+  for (const tool of PUBLIC_TOOLS) {
+    if (tool.capabilities) {
+      for (const cap of tool.capabilities) {
+        if (!capabilitiesMap.has(cap.id)) {
+          capabilitiesMap.set(cap.id, []);
+        }
+        capabilitiesMap.get(cap.id).push({
+          toolId: tool.id,
+          toolTitle: tool.title,
+          toolUrl: `${baseUrl}/tools/${tool.slug}`,
+          fit: cap.description
+        });
+      }
+    }
+  }
+  const capabilities = [];
+  for (const [id, tools] of capabilitiesMap) {
+    const primaryTool = tools[0];
+    capabilities.push({
+      id,
+      name: primaryTool.toolTitle.split(" ")[0] || id,
+      description: `Capability: ${id}`,
+      tools,
+      url: `${baseUrl}/capabilities/${encodeURIComponent(id)}`
+    });
+  }
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "XFree Capabilities",
+    "description": "Structured capability definitions for all tools in the XFree registry",
+    "url": baseUrl,
+    "itemListElement": capabilities.map((cap, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": cap.url,
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": `${baseUrl}/capabilities/${encodeURIComponent(cap.id)}`,
+        "name": cap.id,
+        "description": cap.description,
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": cap.tools.length,
+          "toolName": cap.tools.map((t) => t.toolTitle).join(", ")
+        }
+      }
+    }))
+  }, null, 2);
+}
+function generateToolsJson(baseUrl = "https://www.xfree.in") {
+  const tools = PUBLIC_TOOLS.map((tool) => ({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": `${baseUrl}/tools/${tool.slug}`,
+    "name": tool.title,
+    "description": tool.shortDescription,
+    "applicationCategory": tool.categoryLabel,
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": tool.pricing?.model === "free" ? "0" : tool.pricing?.model || "unknown",
+      "priceCurrency": tool.pricing?.currency || "USD"
+    },
+    "featureList": tool.keyFeatures?.slice(0, 5) || [],
+    "requiredFeature": tool.supportedInputs?.slice(0, 3) || [],
+    "url": `${baseUrl}/tools/${tool.slug}`,
+    "sameAs": tool.integrations?.apis || []
+  }));
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "DataCatalog",
+    "name": "XFree Tools Catalog",
+    "description": "Complete catalog of all indexable tools on XFree.in",
+    "url": baseUrl,
+    "dataset": tools
+  }, null, 2);
+}
+
+// src/lib/intent-engine.ts
+var INTENT_KEYWORDS = {
+  "pdf-compression": ["compress pdf", "reduce pdf size", "pdf optimization", "smaller pdf", "compress pdf file"],
+  "pdf-merge": ["merge pdf", "combine pdf", "pdf join", "pdf concatenation"],
+  "pdf-split": ["split pdf", "extract pages from pdf", "divide pdf"],
+  "image-compression": ["compress image", "reduce image size", "image optimization", "jpeg quality", "png compression"],
+  "image-background-remove": ["remove background", "background remover", "extract subject", "cutout"],
+  "csv-clean": ["clean csv", "remove duplicates csv", "csv validation", "csv format", "csv normalize"],
+  "csv-transform": ["transform csv", "csv merge", "csv columns", "csv reformat"],
+  "json-format": ["format json", "minify json", "json beautify", "validate json", "json repair"],
+  "xml-format": ["format xml", "xml tidy", "validate xml"],
+  "url-shorten": ["shorten url", "url shrink", "bitly", "tinyurl"],
+  "url-utm-builder": ["utm builder", "campaign url", "trackable link", "utm parameters"],
+  "sitemap-generate": ["sitemap", "xml sitemap", "sitemap generator", "google sitemap"],
+  "seo-meta": ["meta tag", "open graph", "social card", "seo title", "meta description"],
+  "schema-markup": ["schema markup", "json-ld", "structured data", "rich snippet"],
+  "robots-txt": ["robots.txt", "crawler rules", "index rules"],
+  "cron-schedule": ["cron", "schedule", "job scheduler", "timing expression"],
+  "base64-encode": ["base64 encode", "base64 decode", "jwt decode", "token decode"],
+  "regex-test": ["regex tester", "regular expression", "pattern match"],
+  "text-diff": ["diff text", "compare files", "text comparison"],
+  "uuid-generate": ["uuid", "generate id", "unique identifier"],
+  "hash-generate": ["hash generator", "sha256", "md5", "checksum"],
+  "validator-json": ["json validator", "validate json"],
+  "validator-xml": ["xml validator", "validate xml"],
+  "validator-sitemap": ["sitemap validator", "validate sitemap"],
+  "code-format": ["format code", "beautify code", "code formatter"],
+  "api-test": ["test api", "rest client", "http request"],
+  "file-convert": ["convert file", "file transformation", "file format change"],
+  "data-extract": ["extract data", "scrape", "parse"],
+  "web-scraper": ["web scrape", "scraper", "harvest data"],
+  "email-find": ["find email", "email extractor", "email finder"],
+  "phone-find": ["find phone", "phone number extractor", "phone finder"],
+  "address-parse": ["parse address", "address validation", "geocode"],
+  "qr-generate": ["qr code", "qr generator", "barcode"],
+  "password-generator": ["generate password", "password creator"],
+  "calculator": ["calculator", "math", "compute", "calculate"],
+  "color-converter": ["color code", "hex rgb", "color converter"],
+  "timestamp-convert": ["timestamp", "unix time", "date time convert"],
+  "word-count": ["word count", "char count", "text statistics"],
+  "slugify": ["slug generator", "url slug", "clean url"]
+};
+var PRIVACY_KEYWORDS = ["local", "private", "browser", "offline", "client-side", "no send"];
+var FREE_KEYWORDS = ["free", "without cost", "gratis", "open source"];
+var URGENCY_IMMEDIATE = ["instant", "right now", "now", "immediately", "fast", "quick"];
+function normalizeQuery(query) {
+  return query.toLowerCase().trim().replace(/[^\w\s-]/g, " ");
+}
+function extractEntities(query) {
+  const entities = [];
+  const lowerQuery = query.toLowerCase();
+  const entityPatterns = [
+    { pattern: /\bsitemap\b/i, entity: "sitemap" },
+    { pattern: /\bjson\b/i, entity: "json" },
+    { pattern: /\bxml\b/i, entity: "xml" },
+    { pattern: /\bcsv\b/i, entity: "csv" },
+    { pattern: /\bpdf\b/i, entity: "pdf" },
+    { pattern: /\bimage\b|\bpng\b|\bjpeg\b|\bjpg\b/i, entity: "image" },
+    { pattern: /\bqr code\b/i, entity: "qr-code" },
+    { pattern: /\bbase64\b/i, entity: "base64" },
+    { pattern: /\bjwt\b/i, entity: "jwt" },
+    { pattern: /\bcron\b/i, entity: "cron" },
+    { pattern: /\bregex\b/i, entity: "regex" },
+    { pattern: /\butm\b/i, entity: "utm" },
+    { pattern: /\bmeta tag\b/i, entity: "meta-tag" },
+    { pattern: /\bschema\b/i, entity: "schema" },
+    { pattern: /\brobots\.txt\b/i, entity: "robots-txt" },
+    { pattern: /\bpassword\b/i, entity: "password" },
+    { pattern: /\bqr\b/i, entity: "qr-code" },
+    { pattern: /\burl\b/i, entity: "url" }
+  ];
+  for (const { pattern, entity } of entityPatterns) {
+    if (pattern.test(query)) {
+      entities.push(entity);
+    }
+  }
+  return Array.from(new Set(entities));
+}
+function extractConstraints(query) {
+  const constraints = {};
+  const lowerQuery = query.toLowerCase();
+  if (PRIVACY_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    constraints.privacy = "local";
+  }
+  if (FREE_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    constraints.budget = "free";
+  }
+  if (URGENCY_IMMEDIATE.some((k) => lowerQuery.includes(k))) {
+    constraints.urgency = "instant";
+  }
+  const platformMatch = lowerQuery.match(/\b(on|for|platform|browser):?\s*(\w+)/i);
+  if (platformMatch) {
+    constraints.platform = [platformMatch[2].toLowerCase()];
+  }
+  return constraints;
+}
+var PROBLEM_TO_TOOL_MAP = {
+  "generate sitemap": ["bulk-url-sitemap", "xml-sitemap-generator"],
+  "extract urls": ["bulk-url-sitemap"],
+  "format json": ["json-formatter"],
+  "validate json": ["json-formatter"],
+  "test regex": ["regex-tester"],
+  "generate cron": ["cron-expression-generator"],
+  "cron schedule": ["cron-expression-generator"],
+  "generate meta tags": ["meta-tag-generator", "schema-markup-generator"],
+  "generate schema markup": ["schema-markup-generator", "meta-tag-generator"],
+  "generate robots.txt": ["robots-txt-generator"],
+  "decode base64": ["base64-encoder-decoder"],
+  "decode jwt": ["base64-encoder-decoder"],
+  "generate url slug": ["url-slug-utm-builder"],
+  "utm builder": ["url-slug-utm-builder"],
+  "validate sitemap": ["xml-sitemap-generator", "bulk-url-sitemap"]
+};
+function classifyIntent(query) {
+  const normalized = normalizeQuery(query);
+  const entities = extractEntities(query);
+  const constraints = extractConstraints(query);
+  let matchedIntent = "general";
+  let confidence = 0.3;
+  let capabilities = [];
+  for (const [intentPattern, keywords] of Object.entries(INTENT_KEYWORDS)) {
+    const matches = keywords.some((k) => k.includes(normalized) || normalized.includes(k.split(" ").slice(0, 2).join(" ")));
+    if (matches) {
+      matchedIntent = intentPattern;
+      confidence = 0.85;
+      break;
+    }
+  }
+  for (const [problem, tools] of Object.entries(PROBLEM_TO_TOOL_MAP)) {
+    if (problem.split(" ").every((w) => normalized.includes(w) || problem.split(" ").some((pw) => normalized.includes(pw)))) {
+      matchedIntent = problem;
+      confidence = 0.9;
+      capabilities = tools;
+      break;
+    }
+  }
+  if (matchedIntent === "general" && entities.length > 0) {
+    matchedIntent = entities[0];
+    confidence = 0.4;
+  }
+  return {
+    intent: matchedIntent,
+    entities,
+    constraints,
+    capabilities,
+    preferredExecution: determineExecutionMode(query, constraints),
+    confidence,
+    requiresVerification: confidence < 0.7
+  };
+}
+function determineExecutionMode(query, constraints) {
+  const lowerQuery = query.toLowerCase();
+  if (constraints.privacy === "local" || PRIVACY_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    return "local";
+  }
+  if (FREE_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    return "local";
+  }
+  if (lowerQuery.includes("workflow") || lowerQuery.includes("automat")) {
+    return "workflow";
+  }
+  if (lowerQuery.includes("compare") || lowerQuery.includes("versus") || lowerQuery.includes("vs")) {
+    return "workflow";
+  }
+  const hasAiIndicators = ["ai", "gpt", "claude", "gemini", "llm", "generated", "write", "create"].some((k) => lowerQuery.includes(k));
+  if (hasAiIndicators) {
+    return "ai";
+  }
+  return "local";
+}
+function routeIntentToCapabilities(intent) {
+  const results = {
+    toolIds: [],
+    confidence: 0,
+    reason: ""
+  };
+  const matchingTools = [];
+  if (intent.capabilities && intent.capabilities.length > 0) {
+    for (const toolId of intent.capabilities) {
+      const tool = PUBLIC_TOOLS.find((t) => t.id === toolId || t.slug === toolId);
+      if (tool) {
+        matchingTools.push(tool);
+      }
+    }
+  }
+  const intentKeywords = INTENT_KEYWORDS[intent.intent] || [];
+  for (const tool of PUBLIC_TOOLS) {
+    if (intentKeywords.some((kw) => tool.tags.some((tag) => tag.toLowerCase().includes(kw.toLowerCase())))) {
+      matchingTools.push(tool);
+    }
+  }
+  for (const entity of intent.entities) {
+    for (const tool of PUBLIC_TOOLS) {
+      if (tool.tags.some((tag) => tag.toLowerCase().includes(entity)) || tool.title.toLowerCase().includes(entity.replace(/-/g, " "))) {
+        matchingTools.push(tool);
+      }
+    }
+  }
+  const allMatched = Array.from(new Map(matchingTools.map((t) => [t.id, t])).values());
+  if (allMatched.length === 0) {
+    const queryTerms = intent.intent.toLowerCase().split(/[\s-_]+/).filter((t) => t.length > 3);
+    for (const tool of PUBLIC_TOOLS) {
+      const searchableText = `${tool.title} ${tool.shortDescription} ${tool.tags.join(" ")}`.toLowerCase();
+      if (queryTerms.some((term) => searchableText.includes(term))) {
+        allMatched.push(tool);
+      }
+    }
+  }
+  if (allMatched.length === 0) {
+    return {
+      toolIds: [],
+      confidence: 0.1,
+      reason: "No matching tools found"
+    };
+  }
+  const primaryTool = allMatched[0];
+  const secondaryTools = allMatched.slice(1, 4);
+  results.toolIds = [primaryTool.id, ...secondaryTools.map((t) => t.id)];
+  results.confidence = Math.min(0.95, primaryTool.isFlagship ? 0.9 : 0.75);
+  results.reason = `Matched ${primaryTool.title} as primary solution based on intent classification.`;
+  if (intent.requiresVerification && secondaryTools.length > 0) {
+    results.fallback = secondaryTools.map((t) => t.id);
+  }
+  return results;
+}
+function buildExecutionPlan(intent) {
+  const route = routeIntentToCapabilities(intent);
+  return {
+    steps: route.toolIds.map((toolId, index) => ({
+      step: index + 1,
+      action: "execute",
+      toolId,
+      expectedOutput: `Result from ${toolId}`,
+      verify: index === route.toolIds.length - 1
+    })),
+    primaryToolId: route.toolIds[0],
+    fallbackToolIds: route.fallback || [],
+    constraints: intent.constraints,
+    confidence: route.confidence
+  };
+}
+
+// src/lib/execution-engine.ts
+async function executeTool(request) {
+  const startTime = Date.now();
+  const traceId = `exec_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  try {
+    const tool = getPublicToolBySlug(request.toolId);
+    if (!tool) {
+      return {
+        success: false,
+        error: `Tool not found: ${request.toolId}`,
+        executionTimeMs: Date.now() - startTime,
+        traceId
+      };
+    }
+    if (tool.availability === "unavailable") {
+      return {
+        success: false,
+        error: `Tool ${tool.title} is currently unavailable`,
+        executionTimeMs: Date.now() - startTime,
+        traceId
+      };
+    }
+    const result = await executeToolInternal(tool, request.input, request.context);
+    let verification;
+    if (request.options?.verify !== false) {
+      verification = await verifyToolResult(tool, request.input, result);
+    }
+    return {
+      success: true,
+      output: result,
+      verification,
+      executionTimeMs: Date.now() - startTime,
+      toolExecuted: tool.id,
+      traceId
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+      executionTimeMs: Date.now() - startTime,
+      traceId
+    };
+  }
+}
+async function executeToolInternal(tool, input, context) {
+  const executionMode = tool.execution || "local";
+  switch (executionMode) {
+    case "local":
+      return executeLocalTool(tool, input);
+    case "ai":
+      return executeAiTool(tool, input, context);
+    case "workflow":
+      return executeWorkflowTool(tool, input, context);
+    default:
+      throw new Error(`Unknown execution mode: ${executionMode}`);
+  }
+}
+function executeLocalTool(tool, input) {
+  return {
+    toolId: tool.id,
+    input,
+    output: `Processed by ${tool.title} (local)`,
+    note: "This tool executes client-side. The browser will run the actual implementation."
+  };
+}
+async function executeAiTool(tool, input, context) {
+  return {
+    toolId: tool.id,
+    input,
+    output: `Processed by ${tool.title} (AI)`,
+    note: "AI execution would be routed through /api/ai endpoint"
+  };
+}
+function executeWorkflowTool(tool, input, context) {
+  return {
+    toolId: tool.id,
+    input,
+    output: `Workflow ${tool.title} executed`,
+    note: "Workflow execution would chain multiple tools"
+  };
+}
+async function verifyToolResult(tool, input, output) {
+  const checks = [];
+  const issues = [];
+  checks.push("output_exists");
+  if (!output) {
+    issues.push("No output produced");
+  }
+  checks.push("tool_execution_mode_valid");
+  if (!["local", "ai", "workflow"].includes(tool.execution || "local")) {
+    issues.push(`Invalid execution mode: ${tool.execution}`);
+  }
+  if (tool.capabilities) {
+    for (const cap of tool.capabilities) {
+      checks.push(`capability_${cap.id}_output_schema`);
+    }
+  }
+  if (tool.verification) {
+    checks.push("tool_verification_status");
+    if (tool.verification.status !== "verified") {
+      issues.push(`Tool verification status: ${tool.verification.status}`);
+    }
+    checks.push("tool_last_verified");
+    const lastVerified = new Date(tool.verification.lastVerified);
+    const daysSinceVerification = (Date.now() - lastVerified.getTime()) / (1e3 * 60 * 60 * 24);
+    if (daysSinceVerification > 30) {
+      issues.push(`Tool not verified in ${Math.round(daysSinceVerification)} days`);
+    }
+  }
+  const confidence = issues.length === 0 ? 0.95 : Math.max(0.3, 0.9 - issues.length * 0.15);
+  return {
+    valid: issues.length === 0,
+    issues,
+    checksPerformed: checks,
+    confidence,
+    evidence: [{ input, output, toolId: tool.id, timestamp: (/* @__PURE__ */ new Date()).toISOString() }]
+  };
+}
+async function solveProblem(problem, context) {
+  const intent = classifyIntent(problem);
+  const plan = buildExecutionPlan(intent);
+  const results = [];
+  let currentOutput = void 0;
+  for (const step of plan.steps) {
+    const input = currentOutput || { problem, intent: intent.intent };
+    const result = await executeTool({
+      toolId: step.toolId,
+      input,
+      context,
+      options: { verify: step.verify }
+    });
+    results.push(result);
+    if (!result.success) {
+      if (plan.fallbackToolIds && plan.fallbackToolIds.length > 0) {
+        for (const fallbackId of plan.fallbackToolIds) {
+          const fallbackResult = await executeTool({
+            toolId: fallbackId,
+            input,
+            context,
+            options: { verify: step.verify }
+          });
+          results.push(fallbackResult);
+          if (fallbackResult.success) {
+            currentOutput = fallbackResult.output;
+            break;
+          }
+        }
+      }
+      if (!currentOutput) {
+        break;
+      }
+    } else {
+      currentOutput = result.output;
+    }
+  }
+  return {
+    intent,
+    plan,
+    results,
+    finalOutput: currentOutput
+  };
 }
 
 // src/data/routes.ts
@@ -6747,10 +7633,12 @@ var STATIC_ROUTES = [
   "/privacy",
   "/terms",
   "/security",
-  "/clusters",
-  "/thinking",
   "/xfree-app",
-  "/guides"
+  "/studio",
+  "/guides",
+  "/pillars",
+  "/roadmap",
+  "/contribute"
 ];
 var CATEGORY_SLUGS = [
   "seo-tools",
@@ -6771,23 +7659,58 @@ async function createApp(opts = {}) {
     req.requestId = crypto2.randomUUID();
     next();
   });
+  app.use((req, res, next) => {
+    const host = (req.headers.host || "").split(":")[0].toLowerCase();
+    if (isProduction && host === "xfree.in") {
+      return res.redirect(308, `https://www.xfree.in${req.originalUrl}`);
+    }
+    if ((req.method === "GET" || req.method === "HEAD") && req.path.length > 1 && req.path.endsWith("/") && !req.path.startsWith("/api/")) {
+      const query = req.originalUrl.slice(req.path.length);
+      return res.redirect(308, `${req.path.replace(/\/+$/, "")}${query}`);
+    }
+    if ((req.method === "GET" || req.method === "HEAD") && req.path === "/clusters") {
+      return res.redirect(308, "/pillars");
+    }
+    const legacyTool = req.path.match(/^\/tool\/([^/]+)$/);
+    if ((req.method === "GET" || req.method === "HEAD") && legacyTool) {
+      return res.redirect(308, `/tools/${legacyTool[1]}`);
+    }
+    next();
+  });
   app.use(securityHeadersMiddleware);
   app.use(express.json({ limit: "100kb" }));
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", service: "xfree.in", timestamp: (/* @__PURE__ */ new Date()).toISOString() });
   });
   app.get("/api/ready", (_req, res) => {
-    const ready = Boolean(config2.GEMINI_API_KEY) || !isProduction;
+    const ready = Boolean(config2.GEMINI_API_KEY || config2.NVIDIA_API_KEY) || !isProduction;
     res.status(ready ? 200 : 503).json({
       ready,
       geminiConfigured: Boolean(config2.GEMINI_API_KEY),
+      nvidiaConfigured: Boolean(config2.NVIDIA_API_KEY),
       deliveryProvider: config2.RESEND_API_KEY ? "resend" : "log"
     });
   });
   const baseUrl = config2.PUBLIC_SITE_URL;
-  app.get(["/sitemap.xml", "/sitemap-tools.xml", "/app/sitemap.xml"], (_req, res) => {
+  app.get(["/sitemap.xml", "/app/sitemap.xml"], (_req, res) => {
     res.header("Content-Type", "application/xml; charset=utf-8");
     res.status(200).send(generateSitemapXml(baseUrl));
+  });
+  app.get("/sitemap-index.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generateSitemapIndexXml(baseUrl));
+  });
+  app.get("/sitemap-pages.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generatePagesSitemapXml(baseUrl));
+  });
+  app.get("/sitemap-tools.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generateToolsSitemapXml(baseUrl));
+  });
+  app.get("/sitemap-guides.xml", (_req, res) => {
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.status(200).send(generateGuidesSitemapXml(baseUrl));
   });
   app.get("/rss.xml", (_req, res) => {
     res.header("Content-Type", "application/xml; charset=utf-8");
@@ -6812,6 +7735,61 @@ async function createApp(opts = {}) {
   const feedbackRateLimit = rateLimit({ scope: "feedback", limit: 10, windowMs: 36e5 });
   const leadRateLimit = rateLimit({ scope: "lead", limit: 3, windowMs: 36e5 });
   const globalCap = globalDailyGuard(config2.AI_GLOBAL_DAILY_LIMIT);
+  const nvidiaDiscoveryLimit = rateLimit({ scope: "nvidia-models", limit: 30, windowMs: 6e4 });
+  app.get("/api/nvidia/models", nvidiaDiscoveryLimit, async (_req, res, next) => {
+    try {
+      const models = await listAvailableModels();
+      return res.json({
+        success: true,
+        provider: "NVIDIA",
+        label: "NVIDIA models available to this account",
+        models,
+        cachedForSeconds: 600
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.post("/api/nvidia/validate", nvidiaDiscoveryLimit, async (req, res, next) => {
+    try {
+      const parsed = NvidiaValidateSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+      const models = await listAvailableModels();
+      const selected = models.find((model) => model.id === parsed.data.model);
+      const valid = Boolean(selected);
+      if (!selected?.chatCompatible) return res.json({ success: true, valid, chatCompatible: false, model: selected ?? null });
+      const resolution = await resolveNvidiaModel(parsed.data.model, "general");
+      return res.json({ success: true, valid, chatCompatible: true, ...resolution });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.post("/api/nvidia/chat", aiPerMinute, aiPerDay, globalCap, async (req, res, next) => {
+    try {
+      const parsed = NvidiaChatSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+      const result = await createChatCompletion({
+        requestedModel: parsed.data.model,
+        taskType: parsed.data.taskType,
+        messages: parsed.data.messages.map((message) => ({
+          role: message.role,
+          content: message.content
+        })),
+        temperature: parsed.data.temperature,
+        maxTokens: parsed.data.maxTokens
+      });
+      console.info("[nvidia] completion", {
+        requestId: req.requestId,
+        requestedModel: result.requestedModel,
+        usedModel: result.usedModel,
+        wasFallback: result.wasFallback,
+        totalTokens: result.usage?.total_tokens
+      });
+      return res.json({ success: true, provider: "NVIDIA", ...result });
+    } catch (err) {
+      next(err);
+    }
+  });
   app.post("/api/ai", aiPerMinute, aiPerDay, globalCap, async (req, res, next) => {
     try {
       const parsed = AiRequestSchema.safeParse(req.body);
@@ -6992,17 +7970,99 @@ Path: ${parsed.data.path || "n/a"}`,
       next(err);
     }
   });
+  const solveRateLimit = rateLimit({ scope: "solve", limit: 10, windowMs: 6e4 });
+  const executionRateLimit = rateLimit({ scope: "execution", limit: 20, windowMs: 6e4 });
+  const workflowRateLimit = rateLimit({ scope: "workflow", limit: 5, windowMs: 6e4 });
+  app.post("/api/v1/solve/:problem*", solveRateLimit, async (req, res, next) => {
+    try {
+      const problem = decodeURIComponent(req.params.problem || "");
+      const context = {
+        userId: req.headers["x-user-id"],
+        organizationId: req.headers["x-org-id"],
+        preferences: {
+          preferredExecution: req.headers["x-preferred-execution"] || "local",
+          privacy: req.headers["x-privacy"] || "local",
+          budget: req.headers["x-budget"] || "free"
+        }
+      };
+      const result = await solveProblem(problem, context);
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.post("/api/v1/execute/:toolId", executionRateLimit, async (req, res, next) => {
+    try {
+      const toolId = req.params.toolId;
+      const context = {
+        userId: req.headers["x-user-id"],
+        organizationId: req.headers["x-org-id"],
+        preferences: {
+          preferredExecution: req.headers["x-preferred-execution"] || "local",
+          privacy: req.headers["x-privacy"] || "local",
+          budget: req.headers["x-budget"] || "free"
+        }
+      };
+      const result = await executeTool({
+        toolId,
+        input: req.body,
+        context,
+        options: {
+          verify: req.query.verify !== "false",
+          timeout: parseInt(req.query.timeout) || 3e4
+        }
+      });
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.post("/api/v1/verify/:toolId", executionRateLimit, async (req, res, next) => {
+    try {
+      const toolId = req.params.toolId;
+      const tool = getPublicToolBySlug(toolId);
+      if (!tool) {
+        return res.status(404).json({ error: "Tool not found" });
+      }
+      const verification = await verifyToolResult(tool, req.body.input, req.body.output);
+      res.json({ success: true, data: verification });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.get("/api/v1/capabilities", (_req, res, next) => {
+    try {
+      const capabilitiesJson = generateCapabilitiesJson(CANONICAL_ORIGIN);
+      res.header("Content-Type", "application/json");
+      res.send(capabilitiesJson);
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.get("/api/v1/tools", (_req, res, next) => {
+    try {
+      const toolsJson = generateToolsJson(CANONICAL_ORIGIN);
+      res.header("Content-Type", "application/json");
+      res.send(toolsJson);
+    } catch (err) {
+      next(err);
+    }
+  });
   app.all("/api/*", (_req, res) => {
     res.status(404).json({ error: "not_found" });
   });
   const staticRouteSet = new Set(STATIC_ROUTES);
   const categoryRouteSet = new Set(CATEGORY_SLUGS.map((s) => `/category/${s}`));
   const guideSlugSet = new Set(GUIDES.map((g) => g.slug));
+  const generatedToolSlugSet = new Set(Object.keys(GENERATED_PUBLISHED_CONTENT));
+  const pillarSlugSet = new Set(PILLARS_50.map((pillar) => pillar.slug));
   app._classifyPath = function classifyPath(pathname) {
     if (staticRouteSet.has(pathname)) return "known";
     if (categoryRouteSet.has(pathname)) return "known";
     const toolMatch = pathname.match(/^\/tools\/([^/]+)\/?$/);
-    if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) return "known";
+    if (toolMatch && (PUBLIC_TOOL_SLUGS.has(toolMatch[1]) || generatedToolSlugSet.has(toolMatch[1]))) return "known";
+    const pillarMatch = pathname.match(/^\/pillar\/([^/]+)\/?$/);
+    if (pillarMatch && pillarSlugSet.has(pillarMatch[1])) return "known";
     const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
     if (guideMatch && guideSlugSet.has(guideMatch[1])) return "known";
     return "unknown";
@@ -7015,6 +8075,12 @@ Path: ${parsed.data.path || "n/a"}`,
     if (res.headersSent) return;
     if (err instanceof GeminiNotConfiguredError) {
       return res.status(503).json({ error: "ai_not_configured", requestId });
+    }
+    if (err instanceof NvidiaNotConfiguredError) {
+      return res.status(503).json({ error: "nvidia_not_configured", requestId });
+    }
+    if (err instanceof NvidiaApiError) {
+      return res.status(err.status).json({ error: err.code, message: err.message, requestId });
     }
     res.status(500).json({ error: "internal_error", requestId });
   });

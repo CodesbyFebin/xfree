@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { ToolDefinition } from "../types";
 import { PUBLIC_CATEGORIES, PUBLIC_TOOLS } from "../data/publicTools";
 import { findGuide } from "../data/guides";
-import { categorySlugFromPath, guideSlugFromPath } from "../data/routes";
+import { categorySlugFromPath, guideSlugFromPath, pillarSlugFromPath } from "../data/routes";
 import type { PublishedArtifact } from "../content-pipeline/published-artifact-schema";
+import { CANONICAL_ORIGIN } from "../data/siteConfig";
+import { getPillarBySlug } from "../data/masterBlueprint";
 
 interface UseMetaTagsOptions {
   tool?: ToolDefinition | null;
@@ -11,48 +13,73 @@ interface UseMetaTagsOptions {
   currentPath?: string;
   baseUrl?: string;
   generatedPage?: PublishedArtifact | null;
+  indexable?: boolean;
+  notFound?: boolean;
 }
 
 export function useMetaTags({
   tool,
   categoryName,
   currentPath = typeof window !== "undefined" ? window.location.pathname : "/",
-  baseUrl = "https://www.xfree.in",
+  baseUrl = CANONICAL_ORIGIN,
   generatedPage,
+  indexable = true,
+  notFound = false,
 }: UseMetaTagsOptions) {
   useEffect(() => {
-    let title = `XFree.in — ${PUBLIC_TOOLS.length} Free Developer, SEO & AI Tools`;
+    let title = `Free Developer, SEO & AI Tools — XFree.in | No Signup`;
     let description =
-      "Free browser-based developer utilities, SEO analyzers, AI single-purpose assistants, data formatters, and converters with local-tool privacy.";
+      `Use ${PUBLIC_TOOLS.length} published XFree developer, SEO, formatter, converter, and focused AI tools. No signup; local processing is the default and cloud features are disclosed.`;
     let canonicalUrl = `${baseUrl}/`;
 
     const routeCategory = categorySlugFromPath(currentPath);
     const category = routeCategory ? PUBLIC_CATEGORIES.find((item) => item.id === routeCategory) : undefined;
     const routeGuideSlug = guideSlugFromPath(currentPath);
     const guide = routeGuideSlug ? findGuide(routeGuideSlug) : undefined;
+    const routePillarSlug = pillarSlugFromPath(currentPath);
+    const pillar = routePillarSlug ? getPillarBySlug(routePillarSlug) : undefined;
 
-    // 1. Determine Title & Description based on route / tool
-    if (generatedPage) {
+    // 1. Determine Title & Description based on route / tool. Unknown
+    // client-side routes must preserve the server's 404/noindex semantics and
+    // must never inherit the homepage canonical.
+    if (notFound) {
+      title = "404 — Page Not Found | XFree.in";
+      description = "This URL does not map to a published XFree.in tool or page.";
+      canonicalUrl = "";
+    } else if (generatedPage) {
       title = generatedPage.metadata.title;
       description = generatedPage.metadata.description;
-      canonicalUrl = generatedPage.metadata.canonical;
+      canonicalUrl = `${baseUrl}/tools/${generatedPage.slug}`;
     } else if (tool) {
-      const pillar = tool.pillarKeyword ? ` | ${tool.pillarKeyword}` : "";
-      title = `${tool.title}${pillar} — Free Browser Utility | XFree.in`;
-      description = tool.shortDescription
-        ? `${tool.shortDescription} Free browser-based execution.`
-        : `Use ${tool.title} for free online with no registration and clear local or cloud processing disclosure.`;
+      title = `${tool.title} — XFree.in`;
+      description = tool.shortDescription || `Use ${tool.title} for free online with no registration and clear local or cloud processing disclosure.`;
       canonicalUrl = `${baseUrl}/tools/${tool.slug}`;
     } else if (categoryName || category) {
       const label = categoryName || category!.label;
       const slug = category?.id || label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      title = `${label} — Free Browser Tools | XFree.in`;
+      title = `${label} — XFree.in`;
       description = category?.description || `Explore published ${label} utilities with clear local or cloud processing disclosures.`;
       canonicalUrl = `${baseUrl}/category/${slug}`;
     } else if (guide) {
       title = `${guide.title} — XFree.in`;
       description = guide.description;
       canonicalUrl = `${baseUrl}/guides/${guide.slug}`;
+    } else if (pillar) {
+      title = `${pillar.name} Tools | XFree.in`;
+      description = `Browse published XFree ${pillar.name} tools and reviewed roadmap context. Planned concepts stay noindex until implementation and editorial gates pass.`;
+      canonicalUrl = `${baseUrl}/pillar/${pillar.slug}`;
+    } else if (currentPath === "/pillars") {
+      title = "XFree Tool Pillars — Developer & SEO Utilities";
+      description = "Explore XFree's 50 developer and SEO tool pillars. Pillars with published utilities are indexable; planned concepts remain roadmap-only until implementation and review.";
+      canonicalUrl = `${baseUrl}/pillars`;
+    } else if (currentPath === "/roadmap") {
+      title = "XFree 25,000-Concept Tool Roadmap — Planned Developer Utilities";
+      description = "Explore XFree's 25,000-concept planning matrix. This roadmap is not a claim that 25,000 tools are live; planned concepts remain noindex until built, tested, and approved.";
+      canonicalUrl = `${baseUrl}/roadmap`;
+    } else if (currentPath === "/contribute") {
+      title = "Contribute to XFree — Build Free Developer & SEO Tools";
+      description = "Build and contribute real XFree developer and SEO tools through the public roadmap, automated quality gates, security review, and governed publication pipeline.";
+      canonicalUrl = `${baseUrl}/contribute`;
     } else if (currentPath === "/guides") {
       title = "Developer & SEO Tool Guides | XFree.in";
       description = "Practical guides for JSON, regex, cron, sitemaps, technical SEO, and browser-based developer tools.";
@@ -91,7 +118,7 @@ export function useMetaTags({
       canonicalUrl = `${baseUrl}/privacy`;
     } else if (currentPath === "/terms") {
       title = "Terms of Service — XFree.in Web Utilities";
-      description = "Terms of service and acceptable use policy for XFree.in online micro-tools.";
+      description = "Read XFree.in terms for acceptable use, local and cloud processing, AI output limitations, intellectual property, service availability, and liability.";
       canonicalUrl = `${baseUrl}/terms`;
     } else if (currentPath === "/security") {
       title = "Security & Sandbox Architecture | XFree.in";
@@ -124,6 +151,10 @@ export function useMetaTags({
     // Helper to update or create link tag
     const setLinkTag = (rel: string, href: string) => {
       let el = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
+      if (!href) {
+        el?.remove();
+        return;
+      }
       if (!el) {
         el = document.createElement("link");
         el.setAttribute("rel", rel);
@@ -134,6 +165,7 @@ export function useMetaTags({
 
     // Standard Meta Tags
     setMetaTag('meta[name="description"]', "name", "description", description);
+    setMetaTag('meta[name="robots"]', "name", "robots", !notFound && indexable ? "index,follow" : "noindex,follow");
     setLinkTag("canonical", canonicalUrl);
 
     // OpenGraph Meta Tags
@@ -152,6 +184,11 @@ export function useMetaTags({
     // Dynamic JSON-LD Structured Data Injection
     // ==========================================
     const jsonLdGraph: any[] = [];
+
+    if (notFound || !indexable) {
+      document.getElementById("json-ld-structured-data")?.remove();
+      return;
+    }
 
     // 1. BreadcrumbList Schema
     const breadcrumbs: any[] = [
@@ -183,12 +220,27 @@ export function useMetaTags({
         name: tool.title,
         item: `${baseUrl}/tools/${tool.slug}`,
       });
-    } else if (categoryName) {
+    } else if (categoryName || category) {
+      const label = categoryName || category!.label;
+      const slug = category?.id || label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
       breadcrumbs.push({
         "@type": "ListItem",
         position: 2,
-        name: categoryName,
-        item: `${baseUrl}/category/${categoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        name: label,
+        item: `${baseUrl}/category/${slug}`,
+      });
+    } else if (pillar) {
+      breadcrumbs.push({
+        "@type": "ListItem",
+        position: 2,
+        name: "Pillars",
+        item: `${baseUrl}/pillars`,
+      });
+      breadcrumbs.push({
+        "@type": "ListItem",
+        position: 3,
+        name: pillar.name,
+        item: `${baseUrl}/pillar/${pillar.slug}`,
       });
     } else if (currentPath && currentPath !== "/") {
       const cleanName = currentPath.replace("/", "").replace(/-/g, " ");
@@ -261,7 +313,7 @@ export function useMetaTags({
         jsonLdGraph.push({
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          mainEntity: tool.faqs.map((faq) => ({
+          mainEntity: tool.faqs.slice(0, 6).map((faq) => ({
             "@type": "Question",
             name: faq.question,
             acceptedAnswer: {
@@ -322,5 +374,5 @@ export function useMetaTags({
       document.head.appendChild(scriptEl);
     }
     scriptEl.textContent = JSON.stringify({ "@graph": jsonLdGraph }, null, 2);
-  }, [tool, generatedPage, categoryName, currentPath, baseUrl]);
+  }, [tool, generatedPage, categoryName, currentPath, baseUrl, indexable]);
 }

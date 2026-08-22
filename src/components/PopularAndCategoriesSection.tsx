@@ -196,13 +196,18 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
         </div>
 
         <div className="text-center pt-2">
-          <button
-            onClick={() => onSelectCategory("all")}
+          <a
+            href="/"
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+              event.preventDefault();
+              onSelectCategory("all");
+            }}
             className="inline-flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 font-semibold text-sm group cursor-pointer"
           >
             <span>Browse all tools</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          </a>
         </div>
       </section>
 
@@ -327,13 +332,18 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
         </div>
 
         <div>
-          <button
-            onClick={() => onSelectCategory("all")}
+          <a
+            href="/"
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+              event.preventDefault();
+              onSelectCategory("all");
+            }}
             className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm sm:text-base rounded-xl shadow-lg shadow-emerald-500/20 inline-flex items-center space-x-2 transition-all cursor-pointer hover:scale-105"
           >
             <span>Find Your Tool</span>
             <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-          </button>
+          </a>
         </div>
       </section>
     </div>

@@ -11,8 +11,8 @@
  */
 import fs from "fs";
 import path from "path";
-import { PUBLIC_CATEGORIES, PUBLIC_TOOLS } from "../data/publicTools";
-import { STATIC_ROUTES } from "../data/routes";
+import { getPageSitemapEntries, getToolSitemapEntries, getGuideSitemapEntries } from "../utils/generateSitemap";
+import { CANONICAL_ORIGIN } from "../data/siteConfig";
 
 const ENDPOINT = "https://api.indexnow.org/indexnow";
 const publicDir = path.join(process.cwd(), "public");
@@ -28,8 +28,7 @@ function resolveKey(): string {
 }
 
 function resolveHost(): string {
-  const raw = process.env.PUBLIC_SITE_URL || "https://www.xfree.in";
-  return new URL(raw).host;
+  return new URL(CANONICAL_ORIGIN).host;
 }
 
 function urlsFromCliArgs(): string[] {
@@ -39,12 +38,12 @@ function urlsFromCliArgs(): string[] {
 }
 
 function allSiteUrls(base: string): string[] {
-  const out = new Set<string>();
-  for (const route of STATIC_ROUTES) out.add(`${base}${route === "/" ? "" : route}`);
-  for (const c of PUBLIC_CATEGORIES) out.add(`${base}/category/${c.id}`);
-  for (const t of PUBLIC_TOOLS) out.add(`${base}/tools/${t.slug}`);
-  out.add(`${base}/`);
-  return Array.from(out);
+  const entries = [
+    ...getPageSitemapEntries(),
+    ...getToolSitemapEntries(),
+    ...getGuideSitemapEntries(),
+  ];
+  return Array.from(new Set(entries.map((entry) => `${base}${entry.path === "/" ? "/" : entry.path}`)));
 }
 
 async function ping(urls: string[]) {
@@ -74,7 +73,7 @@ async function ping(urls: string[]) {
 
 async function main() {
   const cliUrls = urlsFromCliArgs();
-  const base = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
+  const base = CANONICAL_ORIGIN;
   const urls = cliUrls.length ? cliUrls : allSiteUrls(base);
   if (!urls.length) { console.log("[indexnow] no urls to ping"); return; }
   await ping(urls);

@@ -18,7 +18,8 @@ export function CategoryHubView({
   onToggleFavorite,
   favoriteIds,
 }: CategoryHubViewProps) {
-  const currentCategory = PUBLIC_CATEGORIES.find((c) => c.id === categorySlug) || PUBLIC_CATEGORIES[0];
+  const currentCategory = PUBLIC_CATEGORIES.find((c) => c.id === categorySlug);
+  if (!currentCategory) return null;
   const categoryTools = getPublicToolsByCategory(currentCategory.id);
 
   const getCategoryIcon = (iconName: string) => {
@@ -76,9 +77,14 @@ export function CategoryHubView({
       {/* Category Navigation Pills */}
       <div className="flex items-center space-x-2 overflow-x-auto pb-2 no-scrollbar">
           {PUBLIC_CATEGORIES.map((cat) => (
-          <button
+          <a
             key={cat.id}
-            onClick={() => onNavigateToCategory(cat.id)}
+            href={`/category/${cat.id}`}
+            onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+              event.preventDefault();
+              onNavigateToCategory(cat.id);
+            }}
             className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
               cat.id === currentCategory.id
                 ? "bg-cyan-500 text-slate-950 border-cyan-400 shadow-lg shadow-cyan-500/20"
@@ -86,7 +92,7 @@ export function CategoryHubView({
             }`}
           >
             {cat.label}
-          </button>
+          </a>
         ))}
       </div>
 

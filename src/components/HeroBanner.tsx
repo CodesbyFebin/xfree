@@ -34,13 +34,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
           {/* Left Column: Headline, Copy, CTAs */}
           <div className="lg:col-span-6 space-y-6 text-left">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
-              Get <span className="text-white">X Done</span> <br className="hidden sm:inline" />
-              for <span className="text-emerald-400 font-black">Free</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Free browser tools · no signup
+            </div>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05]">
+              XFree: Free Developer, SEO <span className="text-emerald-400">&amp; AI Tools</span>
             </h1>
 
             <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-xl font-normal">
-              A free suite of AI, SEO, and developer micro-tools to help you solve problems faster—right in your browser.
+              <strong className="text-white">Get X done for free.</strong> Run focused developer utilities, technical SEO tools, formatters, validators, converters, and clearly disclosed AI assistants. Local Mode is the default.
             </p>
 
             {/* CTA Buttons */}
@@ -126,7 +129,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   </div>
 
                   <div className="bg-slate-900/80 p-2 rounded text-[10px] text-slate-400 space-y-1 leading-tight border border-slate-800/50">
-                    <p><span className="text-slate-600">1</span> Check out our website: https://xfree.in</p>
+                    <p><span className="text-slate-600">1</span> Check out our website: https://www.xfree.in</p>
                     <p><span className="text-slate-600">2</span> Visit docs at https://docs.xfree.in/getting-started</p>
                     <p><span className="text-slate-600">3</span> Follow our GitHub: github.com/CodesbyFebin/xfree</p>
                   </div>
@@ -143,7 +146,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   <div className="space-y-1 pt-1 text-[10px]">
                     <span className="text-slate-400 text-[9px] uppercase font-bold tracking-wider">Extracted URLs</span>
                     <div className="flex items-center justify-between text-cyan-400 bg-slate-900/60 px-2 py-1 rounded border border-slate-800">
-                      <span className="truncate">1. https://xfree.in</span>
+                      <span className="truncate">1. https://www.xfree.in</span>
                       <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                     </div>
                     <div className="flex items-center justify-between text-cyan-400 bg-slate-900/60 px-2 py-1 rounded border border-slate-800">

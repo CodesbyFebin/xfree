@@ -1,0 +1,16 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "@id": "https://www.xfree.in/#website",
+  "name": "XFree",
+  "alternateName": [
+    "XFree.in",
+    "XFree App"
+  ],
+  "url": "https://www.xfree.in/",
+  "description": "Free browser-based developer, technical SEO, formatter, converter, and clearly disclosed AI micro-tools.",
+  "sameAs": [
+    "https://github.com/CodesbyFebin/xfree"
+  ],
+  "disambiguatingDescription": "XFree.in is a browser-tool platform and is unrelated to the historical XFree86 X Window System implementation."
+}

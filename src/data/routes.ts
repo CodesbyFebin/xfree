@@ -13,6 +13,9 @@ export const STATIC_ROUTES = [
   "/xfree-app",
   "/studio",
   "/guides",
+  "/pillars",
+  "/roadmap",
+  "/contribute",
 ] as const;
 
 export const SOLVE_ROUTES = [
@@ -55,5 +58,10 @@ export function toolSlugFromPath(pathname: string): string | null {
 
 export function guideSlugFromPath(pathname: string): string | null {
   const m = pathname.match(/^\/guides\/([^/]+)\/?$/);
+  return m ? m[1] : null;
+}
+
+export function pillarSlugFromPath(pathname: string): string | null {
+  const m = pathname.match(/^\/pillar\/([^/]+)\/?$/);
   return m ? m[1] : null;
 }

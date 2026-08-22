@@ -15,7 +15,7 @@
 3. **Set production environment variables** in the Vercel dashboard (Settings → Environment Variables) or via CLI:
    ```bash
    vercel env add GEMINI_API_KEY production
-   vercel env add PUBLIC_SITE_URL production          # https://xfree.in
+   vercel env add PUBLIC_SITE_URL production          # https://www.xfree.in
    vercel env add GEMINI_DEFAULT_MODEL production      # gemini-2.5-flash
    vercel env add GEMINI_THINKING_MODEL production     # gemini-2.5-pro
    vercel env add NVIDIA_API_KEY production            # optional NVIDIA Cloud Mode
