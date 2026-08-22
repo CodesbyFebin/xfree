@@ -1,0 +1,173 @@
++| Tool publication | Only the public/published registry can enter search, sitemap, prerender, or API discovery |
++| Roadmap separation | `/roadmap` and empty pillar pages are `noindex,follow`; a pillar enters the sitemap only when backed by a published tool |
++| Community authority | `/contribute` is an indexable, prerendered authority page describing the governed roadmap → production workflow |
++| Direct routes | Tool, category, guide, and static URLs resolve from the pathname on first load |
++| Crawl discovery | Important homepage, category, header, footer, and tool navigation uses real `<a href>` links |
++| Prerender | Every indexable sitemap URL receives route-specific title, description, canonical, H1, crawlable content, and applicable JSON-LD |
++| Sitemap | `sitemap-index.xml` points to page, tool, and guide sitemaps; `sitemap.xml` remains a compatibility full sitemap |
++| Freshness | `lastmod` comes from content metadata/review dates, not request time |
++| Robots | Crawl is allowed except `/api/`; only the canonical sitemap index is advertised |
++| IndexNow | The pinger always submits canonical `www` URLs |
++| SEO validation | `npm run validate:seo` fails if the generated crawl/index invariants drift |
++
++## Build-time SEO gate
++
++Run:
+ 
+-Not a strategy essay — a punch list of what's wired and what to actually run.
+-
+-## What ships in the repo
+-
+-| Feature | Where | Status |
+-|---|---|---|
+-| Sitemap (indexable tools + categories + static pages) | generated → `dist/sitemap.xml` | wired |
+-| Split-brain `robots.txt` (allow citation bots, block bulk-training bots) | generated → `dist/robots.txt` | wired |
+-| Per-page prerender: unique `<title>`, meta description, canonical, OG/Twitter, JSON-LD | `src/scripts/prerender.ts` → `dist/**/index.html` | wired |
+-| JSON-LD: `Organization`, `WebSite`, `BreadcrumbList`, `SoftwareApplication`, `HowTo`, `FAQPage` (as applicable) | prerender | wired |
+-| `llms.txt` + `llms-full.txt` | generated → `dist/llms.txt` | wired |
+-| `noindex` self-sabotage lint (fails build if a non-404 page carries `noindex`) | `npm run lint:noindex` | wired |
+-| IndexNow key file at `/<key>.txt` | `public/<key>.txt` (checked in — the key is a self-issued site token, not a secret) | wired |
+-| IndexNow pinger | `npm run indexnow` | wired |
+-| Tool audit (indexable tool without a wired component → build fails) | `npm run audit:tools` | wired |
+-
+-## What to actually do at launch
++```bash
++npm run build
++```
+ 
+-1. **Attach the domain.** In Vercel dashboard → Domains, add `xfree.in`. Set `PUBLIC_SITE_URL=https://xfree.in` in production env vars. Redeploy so canonicals + sitemap + IndexNow use the real host.
+-2. **Verify the IndexNow key file is publicly reachable.** After deploy:
+-   ```bash
+-   curl -sI https://xfree.in/dfa1cd2746301dcafa9c926f5a9d7f16.txt
+-   ```
+-   Must return 200. If not, IndexNow will reject every ping.
+-3. **Submit the sitemap** in Google Search Console and Bing Webmaster Tools once. That's it — after that, IndexNow pushes updates.
+-4. **Ping IndexNow after every deploy** — one shot for the whole indexable URL set:
+-   ```bash
+-   PUBLIC_SITE_URL=https://xfree.in npm run indexnow
+-   ```
+-   Or wire it into your Vercel deploy hook. IndexNow reaches Bing / Yandex / DuckDuckGo / Seznam / Naver from a single call.
+-5. **Ping IndexNow per URL** when you publish or edit one page:
+-   ```bash
+-   PUBLIC_SITE_URL=https://xfree.in npm run indexnow -- --url=https://xfree.in/tools/regex-tester-explainer
+-   ```
++The build includes `npm run validate:seo`. A green validation must confirm:
+ 
+-## What's *not* in the repo (deliberately)
++- split sitemap union equals the full sitemap URL set;
++- every sitemap URL has a prerendered HTML document;
++- each indexable document has exactly one matching self-canonical;
++- each indexable document has a useful title, description, H1, and `index,follow`;
++- the 404 document has `noindex,follow` and no canonical;
++- no `https://xfree.in` URL leaks into discovery artifacts;
++- the homepage exposes crawlable category/tool links;
++- all sitemap titles and meta descriptions are unique and within the enforced length bounds;
++- `/contribute` is indexable, substantive, and linked to the canonical GitHub issue flow;
++- roadmap-only pillars remain noindex and absent from the sitemap.
+ 
+-- **Google Indexing API integration.** Google reserves this API for `JobPosting` and `BroadcastEvent`; general use is against their terms.
+-- **Brave Search discovery.** Rely on the public sitemap and IndexNow integration; do not automate an undocumented submission endpoint.
+-- **Ping-o-matic / Google `ping` endpoints.** Deprecated.
++## Production smoke test
+ 
+-## Split-brain `robots.txt` policy shipped
++After deployment, run representative checks before asking Google to validate a
++fix:
+ 
+-- **Allowed:** `Googlebot`, `Bingbot`, `DuckDuckBot`, `BraveBot`, `OAI-SearchBot`, `ChatGPT-User`, `PerplexityBot`, `Claude-SearchBot`, `Claude-User`, `Applebot`. These fetch to answer live queries and cite you.
+-- **Disallowed:** `GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Meta-ExternalAgent`, `Bytespider`. These crawl in bulk for training corpora.
++```bash
++# Canonical host must redirect.
++curl -sI https://xfree.in/tools/json-formatter
++
++# Canonical pages must be HTTP 200.
++curl -sI https://www.xfree.in/
++curl -sI https://www.xfree.in/tools/json-formatter
++curl -sI https://www.xfree.in/category/developer-tools
++curl -sI https://www.xfree.in/guides
++
++# Invalid paths must be real 404s, not a 200 SPA shell.
++curl -sI https://www.xfree.in/tools/this-tool-does-not-exist
++curl -sI https://www.xfree.in/category/this-category-does-not-exist
++
++# Discovery files must be public.
++curl -sI https://www.xfree.in/robots.txt
++curl -sI https://www.xfree.in/sitemap-index.xml
++curl -sI https://www.xfree.in/sitemap-pages.xml
++curl -sI https://www.xfree.in/sitemap-tools.xml
++curl -sI https://www.xfree.in/sitemap-guides.xml
++```
+ 
+-If you want to consent to training too, flip the `Disallow: /` lines in [src/utils/generateSitemap.ts](../src/utils/generateSitemap.ts#L229) to `Allow: /`.
++Expected result: canonical pages return 200; the apex host permanently
++redirects to `www`; invalid routes return 404; discovery files return 200.
++
++## Google Search Console sequence
++
++1. Keep a single Domain property if available, and make `https://www.xfree.in`
++   the canonical web origin used by the site.
++2. In **Sitemaps**, submit only:
++   `https://www.xfree.in/sitemap-index.xml`.
++3. Remove stale submitted sitemap URLs that point at the non-`www` host, RSS,
++   or retired news/video feeds.
++4. Inspect a representative set of URLs:
++   - `/`
++   - `/tools/json-formatter`
++   - `/category/seo-tools`
++   - `/guides`
++   - `/contribute`
++   - one published `/pillar/*` URL
++   - one roadmap-only `/pillar/*` URL
++   - one guide detail URL
++   - one deliberately nonexistent `/tools/*` URL
++5. For valid URLs confirm Google sees HTTP 200, indexing allowed, the rendered
++   content, and the same user-declared canonical shown in the HTML.
++6. For the invalid URL confirm HTTP 404. Do not request indexing for it.
++7. Review **Page indexing** for these patterns and validate them only after the
++   corrected production deployment is live:
++   - Soft 404
++   - Duplicate without user-selected canonical
++   - Google chose different canonical than user
++   - Crawled - currently not indexed
++   - Discovered - currently not indexed
++   - Server error (5xx)
++8. Review **HTTPS**, **Core Web Vitals**, **Manual actions**, **Security issues**,
++   and structured-data enhancement reports.
++9. Use **Validate Fix** on issue groups after the deploy. Request indexing only
++   for a small representative set of high-value URLs; sitemap discovery handles
++   the broader set.
++
++## IndexNow
++
++The checked-in public key is a site-verification token, not a secret. Ping the
++canonical URL inventory after a meaningful publish:
+ 
+-## Rotating the IndexNow key
++```bash
++npm run indexnow
++```
+ 
+-The key is public by design — search engines verify by reading `/<key>.txt`. Rotating is only useful if you leaked the wrong key or want a new one:
++Or one explicit canonical URL:
+ 
+ ```bash
+-NEW=$(openssl rand -hex 16)
+-rm public/*.txt.new 2>/dev/null || true
+-rm public/[0-9a-f]*.txt
+-printf '%s' "$NEW" > "public/${NEW}.txt"
++npm run indexnow -- --url=https://www.xfree.in/tools/regex-tester-explainer
+ ```
+ 
+-The pinger auto-detects the key from `public/*.txt` on next run.
++The script ignores `PUBLIC_SITE_URL` for host selection so an environment typo
++cannot submit non-canonical apex-host URLs.
+ 
+-## Content-side notes (not code)
++## Publishing rule
+ 
+-- The `generate20Faqs` helper produces 20 near-identical FAQs per tool. This is content-farming shape and search engines increasingly discount it. Trim to 4–6 tool-specific FAQs before requesting reindexation.
+-- `PrivacyPage.tsx` / `TermsPage.tsx` / `SecurityPage.tsx` still assert "100% client-side, zero logging" language that predates the AI/contact/feedback endpoints. Rewrite before public launch.
+-- Author byline / E-E-A-T signals are absent on tool pages — SoftwareApplication schema doesn't need it, but blog / docs pages will.
++A URL belongs in the sitemap only when it is published, functional, unique,
++server/prerender rendered, internally linked, self-canonical, and returns 200.
++Draft tool seeds stay out of search-facing registries until those gates pass.
