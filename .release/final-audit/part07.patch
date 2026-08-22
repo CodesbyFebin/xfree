@@ -1,0 +1,71 @@
+-      <content:encoded><![CDATA[<h3>Schema Markup Generator (JSON-LD Structured Data)</h3><p><strong>Pillar Keyword:</strong> Schema Markup Generator</p><p>Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.</p><h4>How to Use:</h4><ul><li>Select Schema type (e.g. WebSite, Organization, FAQPage, Article).</li><li>Fill in required metadata fields.</li><li>Copy formatted JSON-LD script tag.</li></ul>]]></content:encoded>
++      <description>Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.</description>
++      <content:encoded><![CDATA[<h3>Schema Markup Generator (JSON-LD Structured Data)</h3><p>Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.</p>]]></content:encoded>
+     </item>
+     <item>
+       <title>JSON / XML Formatter, Validator &amp; Tree Viewer</title>
+       <link>https://www.xfree.in/tools/json-formatter</link>
+       <guid isPermaLink="true">https://www.xfree.in/tools/json-formatter</guid>
+-      <pubDate>Sat, 15 Aug 2026 17:00:43 GMT</pubDate>
++      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+       <category>Developer Tools</category>
+-      <description>Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics. Pillar Keyword: JSON Formatter and Validator. 100% Free browser utility with instant execution.</description>
+-      <content:encoded><![CDATA[<h3>JSON / XML Formatter, Validator &amp; Tree Viewer</h3><p><strong>Pillar Keyword:</strong> JSON Formatter and Validator</p><p>Parses JSON and XML payloads, identifies syntax errors with line/column markers, provides formatting, minification, and visual tree hierarchy.</p><h4>How to Use:</h4><ul><li>Paste JSON or XML payload into the input editor.</li><li>Toggle between Format, Minify, and Interactive Tree modes.</li><li>Review validation diagnostics or click Auto-Fix for minor syntax repairs.</li></ul>]]></content:encoded>
++      <description>Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.</description>
++      <content:encoded><![CDATA[<h3>JSON / XML Formatter, Validator &amp; Tree Viewer</h3><p>Parses JSON and XML payloads, identifies syntax errors with line/column markers, provides formatting, minification, and visual tree hierarchy.</p>]]></content:encoded>
+     </item>
+     <item>
+       <title>Regex Tester &amp; Interactive Match Explainer</title>
+       <link>https://www.xfree.in/tools/regex-tester</link>
+       <guid isPermaLink="true">https://www.xfree.in/tools/regex-tester</guid>
+-      <pubDate>Sat, 15 Aug 2026 17:00:43 GMT</pubDate>
++      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+       <category>Developer Tools</category>
+-      <description>Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m). Pillar Keyword: Regex Tester. 100% Free browser utility with instant execution.</description>
+-      <content:encoded><![CDATA[<h3>Regex Tester &amp; Interactive Match Explainer</h3><p><strong>Pillar Keyword:</strong> Regex Tester</p><p>Evaluates regex patterns against sample text in real-time, showing match groups, indices, and string replacement outputs.</p><h4>How to Use:</h4><ul><li>Type regular expression pattern and flags.</li><li>Enter test string into input box.</li><li>View highlighted matches and captured group tables.</li></ul>]]></content:encoded>
++      <description>Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).</description>
++      <content:encoded><![CDATA[<h3>Regex Tester &amp; Interactive Match Explainer</h3><p>Evaluates regex patterns against sample text in real-time, showing match groups, indices, and string replacement outputs.</p>]]></content:encoded>
+     </item>
+     <item>
+       <title>Bulk URL Extractor &amp; Sitemap Generator</title>
+       <link>https://www.xfree.in/tools/bulk-url-extractor</link>
+       <guid isPermaLink="true">https://www.xfree.in/tools/bulk-url-extractor</guid>
+-      <pubDate>Sat, 15 Aug 2026 17:00:43 GMT</pubDate>
++      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+       <category>SEO &amp; URL Tools</category>
+-      <description>Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting. Pillar Keyword: Free Bulk URL Extractor &amp; Sitemap Generator Online. 100% Free browser utility with instant execution.</description>
+-      <content:encoded><![CDATA[<h3>Bulk URL Extractor &amp; Sitemap Generator</h3><p><strong>Pillar Keyword:</strong> Free Bulk URL Extractor &amp; Sitemap Generator Online</p><p>Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.</p><h4>How to Use:</h4><ul><li>Paste any raw text or HTML snippet into the input area.</li><li>Select domain filter, query parameter removal, and deduplication options.</li><li>View real-time extracted URL stats.</li><li>Download generated XML Sitemap file.</li></ul>]]></content:encoded>
++      <description>Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.</description>
++      <content:encoded><![CDATA[<h3>Bulk URL Extractor &amp; Sitemap Generator</h3><p>Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.</p>]]></content:encoded>
+     </item>
+     <item>
+       <title>Cron Expression Generator &amp; Human Translator</title>
+       <link>https://www.xfree.in/tools/cron-expression-generator</link>
+       <guid isPermaLink="true">https://www.xfree.in/tools/cron-expression-generator</guid>
+-      <pubDate>Sat, 15 Aug 2026 17:00:43 GMT</pubDate>
++      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+       <category>Generators</category>
+-      <description>Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times. Pillar Keyword: Cron Expression Generator. 100% Free browser utility with instant execution.</description>
+-      <content:encoded><![CDATA[<h3>Cron Expression Generator &amp; Human Translator</h3><p><strong>Pillar Keyword:</strong> Cron Expression Generator</p><p>Translates cron syntax into human-readable sentences and calculates exact future execution timestamps.</p><h4>How to Use:</h4><ul><li>Configure minute, hour, day of month, month, and day of week options.</li><li>Review generated 5-part cron expression string.</li><li>Inspect upcoming execution times list.</li></ul>]]></content:encoded>
++      <description>Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.</description>
++      <content:encoded><![CDATA[<h3>Cron Expression Generator &amp; Human Translator</h3><p>Translates cron syntax into human-readable sentences and calculates exact future execution timestamps.</p>]]></content:encoded>
+     </item>
+     <item>
+       <title>Base64 Encoder/Decoder &amp; JWT Token Inspector</title>
+       <link>https://www.xfree.in/tools/base64-encoder-decoder</link>
+       <guid isPermaLink="true">https://www.xfree.in/tools/base64-encoder-decoder</guid>
+-      <pubDate>Sat, 15 Aug 2026 17:00:43 GMT</pubDate>
++      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+       <category>Converters &amp; Encoders</category>
+-      <description>Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims. Pillar Keyword: Base64 &amp; JWT Decoder. 100% Free browser utility with instant execution.</description>
+-      <content:encoded><![CDATA[<h3>Base64 Encoder/Decoder &amp; JWT Token Inspector</h3><p><strong>Pillar Keyword:</strong> Base64 &amp; JWT Decoder</p><p>Decodes JWT headers and payload claims without transmitting tokens to external servers. Supports UTF-8 safe Base64 and Base64URL encoding/decoding.</p><h4>How to Use:</h4><ul><li>Select JWT, Base64, or URL mode.</li><li>Paste token or text input.</li><li>View decoded header, payload claims, and expiration date.</li></ul>]]></content:encoded>
++      <description>Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.</description>
++      <content:encoded><![CDATA[<h3>Base64 Encoder/Decoder &amp; JWT Token Inspector</h3><p>Decodes JWT headers and payload claims without transmitting tokens to external servers. Supports UTF-8 safe Base64 and Base64URL encoding/decoding.</p>]]></content:encoded>
+     </item>
+     <item>
+       <title>URL Slug Generator &amp; Campaign UTM Parameter Builder</title>
+       <link>https://www.xfree.in/tools/url-slug-utm-builder</link>
+       <guid isPermaLink="true">https://www.xfree.in/tools/url-slug-utm-builder</guid>
+-      <pubDate>Sat, 15 Aug 2026 17:00:43 GMT</pubDate>
++      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+       <category>Generators</category>
