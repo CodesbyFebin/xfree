@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { validateForPublication } from "../../content-pipeline/validate";
 
-const paragraph = Array.from({ length: 120 }, (_, index) => `technical-word-${index}`).join(" ");
+const directAnswer = Array.from({ length: 45 }, (_, index) => `answer${index}`).join(" ");
+const paragraph = Array.from({ length: 180 }, (_, index) => `technical${index}`).join(" ");
 
 function candidate(overrides: Record<string, unknown> = {}) {
   return {
@@ -23,7 +24,7 @@ function candidate(overrides: Record<string, unknown> = {}) {
       limitations: ["Available memory and nesting depth determine the practical input limit"],
     },
     content: {
-      directAnswer: paragraph,
+      directAnswer,
       technicalDetails: paragraph,
       instructions: paragraph,
       examples: [{ title: "Nested record", input: '{"user":{"id":1}}', output: '{"user.id":1}', explanation: "The nested key is converted into a predictable dotted path for downstream processing." }],
