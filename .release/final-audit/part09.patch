@@ -1,0 +1,184 @@
+ import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
+ import { Header } from "./components/Header";
+@@ -9,6 +9,8 @@ import { HeroBanner } from "./components/HeroBanner";
+ import { QuickLinksSection } from "./components/QuickLinksSection";
+ import { PopularAndCategoriesSection } from "./components/PopularAndCategoriesSection";
+ import { ResourceHubSection } from "./components/ResourceHubSection";
++import { HomeAuthoritySection } from "./components/HomeAuthoritySection";
++import { HomeFaqSection } from "./components/HomeFaqSection";
+ import { Footer } from "./components/Footer";
+ import { ToolCard } from "./components/ToolCard";
+ import { CommandPalette } from "./components/CommandPalette";
+@@ -35,7 +37,13 @@ import { GuideIndexPage } from "./components/pages/GuideIndexPage";
+ import { GuidePage } from "./components/pages/GuidePage";
+ import { StudioPage } from "./components/pages/StudioPage";
+ import { GeneratedToolPage } from "./components/pages/GeneratedToolPage";
++import { PillarHubsPage } from "./components/pages/PillarHubsPage";
++import { PillarDetailPage } from "./components/pages/PillarDetailPage";
++import { RoadmapPage } from "./components/pages/RoadmapPage";
++import { ContributePage } from "./components/pages/ContributePage";
+ import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
++import { getPillarBySlug } from "./data/masterBlueprint";
++import { isPillarIndexable } from "./data/pillarPublishing";
+ 
+ // Import Micro-Tools
+ import { BulkUrlExtractorSitemap } from "./components/tools/BulkUrlExtractorSitemap";
+@@ -53,8 +61,11 @@ import { AiMicroToolComponent } from "./components/tools/AiMicroToolComponent";
+ 
+ export default function App() {
+   const [currentPath, setCurrentPath] = useState(window.location.pathname);
+-  const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">("all");
+-  const [activeView, setActiveView] = useState<"tools" | "category-hub" | "page">("tools");
++  const initialCategory = categorySlugFromPath(window.location.pathname) as ToolCategory | null;
++  const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">(initialCategory || "all");
++  const [activeView, setActiveView] = useState<"tools" | "category-hub" | "page">(
++    initialCategory ? "category-hub" : isKnownStaticRoute(window.location.pathname) ? "page" : "tools",
++  );
+   const [searchQuery, setSearchQuery] = useState("");
+   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+   const [savedDrawerOpen, setSavedDrawerOpen] = useState(false);
+@@ -88,7 +99,11 @@ export default function App() {
+   // Handle browser popstate / back / forward navigation
+   useEffect(() => {
+     const handleLocationChange = () => {
+-      setCurrentPath(window.location.pathname);
++      const nextPath = window.location.pathname;
++      const nextCategory = categorySlugFromPath(nextPath);
++      setCurrentPath(nextPath);
++      setActiveCategory((nextCategory as ToolCategory | null) || "all");
++      setActiveView(nextCategory ? "category-hub" : isKnownStaticRoute(nextPath) ? "page" : "tools");
+       window.scrollTo(0, 0);
+     };
+ 
+@@ -110,9 +125,13 @@ export default function App() {
+     const url = new URL(path, window.location.origin);
+     window.history.pushState({}, "", `${url.pathname}${url.search}`);
+     setCurrentPath(url.pathname);
+-    if (["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app"].includes(path)) {
++    const routeCategory = categorySlugFromPath(url.pathname);
++    setActiveCategory((routeCategory as ToolCategory | null) || "all");
++    if (isKnownStaticRoute(url.pathname)) {
+       setActiveView("page");
+-    } else if (path === "/") {
++    } else if (routeCategory) {
++      setActiveView("category-hub");
++    } else if (url.pathname === "/") {
+       setActiveView("tools");
+     }
+     window.scrollTo(0, 0);
+@@ -157,6 +176,10 @@ export default function App() {
+     setSavedHistory([]);
+   };
+ 
++  // Route-derived state is authoritative for crawlable URLs. UI filter state is
++  // secondary and must never cause a direct category URL to hydrate as home.
++  const routeCategorySlug = categorySlugFromPath(currentPath);
++
+   // Find active tool if path is /tools/:slug — no dynamic thin-content generation.
+   const activeToolSlug = currentPath.startsWith("/tools/") ? currentPath.replace("/tools/", "").replace(/\/$/, "") : null;
+   const activeTool = useMemo(() => {
+@@ -173,21 +196,28 @@ export default function App() {
+ 
+   const activeGuideSlug = guideSlugFromPath(currentPath);
+   const activeGuide = useMemo(() => (activeGuideSlug ? findGuide(activeGuideSlug) ?? null : null), [activeGuideSlug]);
++  const activePillarSlug = pillarSlugFromPath(currentPath);
++  const activePillar = useMemo(() => (activePillarSlug ? getPillarBySlug(activePillarSlug) ?? null : null), [activePillarSlug]);
+ 
+   const isKnownRoute = useMemo(() => {
+     if (currentPath === "/") return true;
+     if (isKnownStaticRoute(currentPath)) return true;
+-    if (categorySlugFromPath(currentPath)) return true;
++    if (routeCategorySlug) return true;
+     if (activeToolSlug) return Boolean(activeTool || activeGeneratedPage);
+     if (activeGuideSlug) return Boolean(activeGuide);
++    if (activePillarSlug) return Boolean(activePillar);
+     return false;
+-  }, [currentPath, activeTool, activeToolSlug, activeGeneratedPage, activeGuide, activeGuideSlug]);
++  }, [currentPath, routeCategorySlug, activeTool, activeToolSlug, activeGeneratedPage, activeGuide, activeGuideSlug, activePillar, activePillarSlug]);
++
++  const routeIndexable = isKnownRoute && currentPath !== "/roadmap" && (!activePillarSlug || isPillarIndexable(activePillarSlug));
+ 
+   // Hook for dynamic head meta tag management (SEO pSEO pillar keywords & JSON-LD schemas)
+   useMetaTags({
+     tool: activeTool,
+     generatedPage: activeGeneratedPage,
+     currentPath,
++    indexable: routeIndexable,
++    notFound: !isKnownRoute,
+   });
+ 
+   // Filter tools based on category and search
+@@ -276,6 +306,12 @@ export default function App() {
+         return <StudioPage />;
+       case "/guides":
+         return <GuideIndexPage onSelectGuide={(slug) => navigateTo(`/guides/${slug}`)} />;
++      case "/pillars":
++        return <PillarHubsPage onNavigate={navigateTo} />;
++      case "/roadmap":
++        return <RoadmapPage onNavigate={navigateTo} />;
++      case "/contribute":
++        return <ContributePage onNavigate={navigateTo} />;
+       default:
+         if (activeGuide) {
+           return (
+@@ -291,7 +327,7 @@ export default function App() {
+     }
+   };
+ 
+-  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/guides"].includes(currentPath) || activeGuideSlug !== null;
++  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/guides", "/pillars", "/roadmap", "/contribute"].includes(currentPath) || activeGuideSlug !== null;
+ 
+   return (
+     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
+@@ -310,9 +346,15 @@ export default function App() {
+         onOpenChat={() => setChatDrawerOpen(true)}
+         activeCategory={activeCategory}
+         onSelectCategory={(catId) => {
++          if (catId === "all") {
++            setActiveCategory("all");
++            setActiveView("tools");
++            navigateTo("/");
++            return;
++          }
+           setActiveCategory(catId as any);
+           setActiveView("category-hub");
+-          if (isStaticRoute || currentPath.startsWith("/tools/")) navigateTo("/");
++          navigateTo(`/category/${catId}`);
+         }}
+         favoritesCount={favoriteIds.length}
+         historyCount={savedHistory.length}
+@@ -334,6 +376,23 @@ export default function App() {
+           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
+             {renderStaticPage()}
+           </div>
++        ) : routeCategorySlug ? (
++          <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
++            <CategoryHubView
++              categorySlug={routeCategorySlug}
++              onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
++              onNavigateToCategory={(catSlug) => {
++                setActiveCategory(catSlug as any);
++                navigateTo(`/category/${catSlug}`);
++              }}
++              onToggleFavorite={toggleFavorite}
++              favoriteIds={favoriteIds}
++            />
++          </div>
++        ) : activePillar ? (
++          <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
++            <PillarDetailPage pillar={activePillar} onNavigate={navigateTo} />
++          </div>
+         ) : activeGeneratedPage ? (
+           <div className="flex-1 p-4 sm:p-8">
+             <GeneratedToolPage page={activeGeneratedPage} />
+@@ -379,6 +438,8 @@ export default function App() {
+               onOpenStudio={() => { window.location.href = "https://app.xfree.in/"; }}
+             />
+ 
++            <HomeAuthoritySection onNavigate={navigateTo} />
++
+             {/* Quick Links Section */}
+             <QuickLinksSection onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />
+ 
+@@ -428,10 +489,13 @@ export default function App() {
+               onSelectCategory={(catId) => {
