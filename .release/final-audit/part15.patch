@@ -1,0 +1,154 @@
+ const publicDir = path.join(process.cwd(), "public");
+@@ -28,8 +28,7 @@ function resolveKey(): string {
+ }
+ 
+ function resolveHost(): string {
+-  const raw = process.env.PUBLIC_SITE_URL || "https://www.xfree.in";
+-  return new URL(raw).host;
++  return new URL(CANONICAL_ORIGIN).host;
+ }
+ 
+ function urlsFromCliArgs(): string[] {
+@@ -39,12 +38,12 @@ function urlsFromCliArgs(): string[] {
+ }
+ 
+ function allSiteUrls(base: string): string[] {
+-  const out = new Set<string>();
+-  for (const route of STATIC_ROUTES) out.add(`${base}${route === "/" ? "" : route}`);
+-  for (const c of PUBLIC_CATEGORIES) out.add(`${base}/category/${c.id}`);
+-  for (const t of PUBLIC_TOOLS) out.add(`${base}/tools/${t.slug}`);
+-  out.add(`${base}/`);
+-  return Array.from(out);
++  const entries = [
++    ...getPageSitemapEntries(),
++    ...getToolSitemapEntries(),
++    ...getGuideSitemapEntries(),
++  ];
++  return Array.from(new Set(entries.map((entry) => `${base}${entry.path === "/" ? "/" : entry.path}`)));
+ }
+ 
+ async function ping(urls: string[]) {
+@@ -74,7 +73,7 @@ async function ping(urls: string[]) {
+ 
+ async function main() {
+   const cliUrls = urlsFromCliArgs();
+-  const base = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
++  const base = CANONICAL_ORIGIN;
+   const urls = cliUrls.length ? cliUrls : allSiteUrls(base);
+   if (!urls.length) { console.log("[indexnow] no urls to ping"); return; }
+   await ping(urls);
+diff --git a/src/scripts/prerender.ts b/src/scripts/prerender.ts
+index 31f27c1..0ac7d9b 100644
+--- a/src/scripts/prerender.ts
++++ b/src/scripts/prerender.ts
+@@ -14,9 +14,12 @@ import { STATIC_ROUTES } from "../data/routes";
+ import { guideForSlug } from "../data/toolGuides";
+ import { GUIDES } from "../data/guides";
+ import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
++import { CANONICAL_ORIGIN } from "../data/siteConfig";
++import { PILLARS_50, ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
++import { getPublishedToolsForPillar, isPillarIndexable } from "../data/pillarPublishing";
+ 
+ const DIST = path.join(process.cwd(), "dist");
+-const BASE = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
++const BASE = CANONICAL_ORIGIN;
+ 
+ function escapeHtml(s: string): string {
+   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+@@ -36,6 +39,8 @@ interface PageMeta {
+   intro: string;
+   jsonLd: any[];
+   guide?: import("../data/toolGuides").GuideContent;
++  robots?: "index,follow" | "noindex,follow";
++  canonical?: string | null;
+ }
+ 
+ function renderGuideHtml(guide: import("../data/toolGuides").GuideContent, toolTitle: string): string {
+@@ -58,48 +63,59 @@ function renderGuideBodyHtml(g: import("../data/guides").Guide): string {
+   return `${sections}<p><em>Authored by the XFree.in team. Last reviewed ${escapeHtml(g.lastReviewed)}.</em></p>`;
+ }
+ 
+-function injectMeta(template: string, meta: PageMeta, extraBodyHtml?: string, prerenderRootHtml?: string): string {
+-  const canonical = `${BASE}${meta.route === "/" ? "/" : meta.route}`;
++function injectMeta(template: string, meta: PageMeta, extraBodyHtml = ""): string {
++  const canonical = meta.canonical === undefined
++    ? `${BASE}${meta.route === "/" ? "/" : meta.route}`
++    : meta.canonical;
++  const robots = meta.robots || "index,follow";
++
+   const headExtras = [
+     `<title>${escapeHtml(meta.title)}</title>`,
+     `<meta name="description" content="${escapeHtml(meta.description)}" />`,
+-    `<link rel="canonical" href="${canonical}" />`,
++    `<meta name="robots" content="${robots}" />`,
++    canonical ? `<link rel="canonical" href="${canonical}" />` : "",
+     `<meta property="og:title" content="${escapeHtml(meta.title)}" />`,
+     `<meta property="og:description" content="${escapeHtml(meta.description)}" />`,
+-    `<meta property="og:url" content="${canonical}" />`,
++    canonical ? `<meta property="og:url" content="${canonical}" />` : "",
+     `<meta property="og:type" content="website" />`,
+-    `<meta property="og:site_name" content="XFree" />`,
++    `<meta property="og:site_name" content="XFree.in" />`,
+     `<meta property="og:image" content="${BASE}/og-image.png" />`,
+     `<meta property="og:image:width" content="1200" />`,
+     `<meta property="og:image:height" content="630" />`,
+-    `<meta property="og:image:alt" content="XFree logo" />`,
++    `<meta property="og:image:alt" content="XFree.in — free developer, SEO and AI tools" />`,
+     `<meta name="twitter:card" content="summary_large_image" />`,
+     `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`,
+     `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`,
+     `<meta name="twitter:image" content="${BASE}/og-image.png" />`,
+-    // AdSense meta + script are in index.html (template) so prerender does NOT
+-    // re-inject them here — that would produce duplicate meta tags per route.
+-    `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": meta.jsonLd })}</script>`,
+-  ].join("\n    ");
++    meta.jsonLd.length
++      ? `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": meta.jsonLd })}</script>`
++      : "",
++  ].filter(Boolean).join("\n    ");
+ 
+   const guideHtml = meta.guide ? renderGuideHtml(meta.guide, meta.h1) : "";
+-  const extra = extraBodyHtml || "";
+-  const shell = `
+-    <noscript>
++  const shell = `<div id="prerender-shell" style="max-width:1180px;margin:0 auto;padding:32px 20px;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;line-height:1.6">
++    <nav aria-label="Primary" style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px">
++      <a href="/">Home</a><a href="/guides">Guides</a><a href="/how-it-works">How it works</a><a href="/docs">Docs</a><a href="/contribute">Contribute</a><a href="/faq">FAQ</a>
++    </nav>
++    <main>
+       <h1>${escapeHtml(meta.h1)}</h1>
+       <p>${escapeHtml(meta.intro)}</p>
+       ${guideHtml}
+-      ${extra}
+-    </noscript>
+-  `;
+-
+-  // Function-form replacements avoid JS's $&/$`/$'/$n interpretation in the
+-  // replacement string, which would otherwise embed the entire template
+-  // prefix/suffix into the shell whenever guide/example text contains `$`.
+-  let out = template.replace(/<title>[^<]*<\/title>/i, () => "");
+-  out = out.replace(/<link rel="canonical"[^>]*>\n?/i, () => "");
++      ${extraBodyHtml}
++    </main>
++  </div>`;
++
++  // Remove any SEO tags from the shared Vite shell, then inject exactly one
++  // route-specific set. The visible prerender shell is removed by main.tsx
++  // before React mounts; with JavaScript disabled it remains useful content.
++  let out = template.replace(/<title>[^<]*<\/title>\s*/gi, () => "");
++  out = out.replace(/<meta\s+name=["']description["'][^>]*>\s*/gi, () => "");
++  out = out.replace(/<meta\s+name=["']robots["'][^>]*>\s*/gi, () => "");
++  out = out.replace(/<link\s+rel=["']canonical["'][^>]*>\s*/gi, () => "");
++  out = out.replace(/<meta\s+property=["']og:[^"']+["'][^>]*>\s*/gi, () => "");
++  out = out.replace(/<meta\s+name=["']twitter:[^"']+["'][^>]*>\s*/gi, () => "");
+   out = out.replace("</head>", () => `    ${headExtras}\n  </head>`);
+-  out = out.replace('<div id="root"></div>', () => `<div id="root">${prerenderRootHtml || ""}</div>${shell}`);
++  out = out.replace('<div id="root"></div>', () => `${shell}<div id="root"></div>`);
+   return out;
+ }
+ 
+@@ -111,7 +127,7 @@ function renderGeneratedArtifactHtml(page: import("../content-pipeline/published
+     `<details><summary>${escapeHtml(faq.question)}</summary><p>${escapeHtml(faq.answer)}</p></details>`,
+   ).join("");
+   const limitations = page.processing.limitations.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+-  return `<article><header><h1>${escapeHtml(page.metadata.h1)}</h1><p><a href="${escapeHtml(page.studioDeepLink)}">Open in XFree Studio</a></p></header><section aria-labelledby="direct-answer"><h2 id="direct-answer">What is the ${escapeHtml(page.metadata.h1)} and how does it work?</h2><p>${escapeHtml(page.content.directAnswer)}</p></section><section aria-labelledby="technical-details"><h2 id="technical-details">Technical architecture and local processing</h2><p>${escapeHtml(page.content.technicalDetails)}</p></section><section aria-labelledby="instructions"><h2 id="instructions">Step-by-step usage guide</h2><p>${escapeHtml(page.content.instructions)}</p></section><section><h2>Worked examples</h2>${examples}</section><aside><h2>Verified specifications</h2><p>Processing: ${escapeHtml(page.processing.mode)}</p><ul>${limitations}</ul></aside><section aria-labelledby="troubleshooting"><h2 id="troubleshooting">Technical troubleshooting and edge cases</h2>${faqs}</section></article>`;
