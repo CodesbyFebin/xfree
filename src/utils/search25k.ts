@@ -54,7 +54,7 @@ export function searchRoadmap(query: string, pillarSlug = "all", limit = 60): Ro
   const q = query.trim().toLowerCase();
   const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
 
-  const published: RoadmapSearchItem[] = PUBLIC_TOOLS.map((tool) => ({
+  const published: RoadmapSearchItem[] = PUBLIC_TOOLS.map<RoadmapSearchItem>((tool) => ({
     id: `published-${tool.slug}`,
     name: tool.title,
     slug: tool.slug,
