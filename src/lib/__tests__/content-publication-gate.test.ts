@@ -26,7 +26,7 @@ function candidate(overrides: Record<string, unknown> = {}) {
       directAnswer: paragraph,
       technicalDetails: paragraph,
       instructions: paragraph,
-      examples: [{ title: "Nested record", input: "{"user":{"id":1}}", output: "{"user.id":1}", explanation: "The nested key is converted into a predictable dotted path for downstream processing." }],
+      examples: [{ title: "Nested record", input: '{"user":{"id":1}}', output: '{"user.id":1}', explanation: "The nested key is converted into a predictable dotted path for downstream processing." }],
       edgeCases: ["Arrays require an explicit expansion strategy to avoid ambiguous output columns.", "Circular references are invalid JSON and must be removed before processing."],
       faqs: [
         { question: "Does working input leave the browser?", answer: "No. This verified engine performs its transformation in a browser Web Worker." },

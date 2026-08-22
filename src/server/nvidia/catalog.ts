@@ -21,7 +21,7 @@ function normalizeId(id: string) { return id.toLowerCase().replace(/_/g, ".").re
 const KNOWN_KIND = new Map<string, NvidiaModelKind>();
 Object.entries(CATALOG_GROUPS).forEach(([kind, ids]) => ids.forEach((id) => KNOWN_KIND.set(normalizeId(id), kind as NvidiaModelKind)));
 
-export const NVIDIA_REFERENCE_CATALOG = Object.entries(CATALOG_GROUPS).flatMap(([kind, ids]) => ids.map((id) => ({ id, kind: kind as NvidiaModelKind }));
+export const NVIDIA_REFERENCE_CATALOG = Object.entries(CATALOG_GROUPS).flatMap(([kind, ids]) => ids.map((id) => ({ id, kind: kind as NvidiaModelKind })));
 
 export function inferModelKind(id: string): NvidiaModelKind {
   const normalized = normalizeId(id);
