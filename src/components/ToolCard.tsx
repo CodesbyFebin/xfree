@@ -43,12 +43,13 @@ export const ToolCard: React.FC<ToolCardProps> = ({
   };
 
   return (
-    <a
-      href={href}
-      onClick={handleClick}
-      className="glass-panel-interactive rounded-2xl p-5 flex flex-col justify-between cursor-pointer group select-none relative overflow-hidden no-underline text-inherit"
-      aria-label={`${tool.title} — ${tool.shortDescription}`}
-    >
+    <article className="glass-panel-interactive relative overflow-hidden rounded-2xl">
+      <a
+        href={href}
+        onClick={handleClick}
+        className="group flex h-full cursor-pointer select-none flex-col justify-between p-5 text-inherit no-underline"
+        aria-label={`${tool.title} — ${tool.shortDescription}`}
+      >
       <div>
         <div className="flex justify-between items-center mb-3">
           <span className={`px-2.5 py-0.5 text-[10px] font-semibold tracking-wide rounded-full border ${getBadgeStyle()} flex items-center gap-1`}>
@@ -57,18 +58,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({
             <span>{tool.isFlagship ? "Flagship Tool" : tool.isAi ? "AI Powered" : tool.categoryLabel || tool.category}</span>
           </span>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleFavorite(tool.id);
-            }}
-            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-            aria-label={isFavorite ? `Remove ${tool.title} from favorites` : `Save ${tool.title} to favorites`}
-          >
-            <Star className={`w-4 h-4 ${isFavorite ? "text-amber-400 fill-amber-400" : "text-slate-500 hover:text-slate-300"}`} />
-          </button>
+          <span className="h-7 w-7" aria-hidden="true" />
         </div>
 
         <h4 className="font-bold text-base text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between gap-1 leading-snug">
@@ -95,6 +85,15 @@ export const ToolCard: React.FC<ToolCardProps> = ({
           <span aria-hidden="true">→</span>
         </span>
       </div>
-    </a>
+      </a>
+      <button
+        type="button"
+        onClick={() => onToggleFavorite(tool.id)}
+        className="absolute right-5 top-5 z-10 rounded-lg p-1.5 transition-colors hover:bg-white/10"
+        aria-label={isFavorite ? `Remove ${tool.title} from favorites` : `Save ${tool.title} to favorites`}
+      >
+        <Star className={`h-4 w-4 ${isFavorite ? "fill-amber-400 text-amber-400" : "text-slate-500 hover:text-slate-300"}`} />
+      </button>
+    </article>
   );
 };

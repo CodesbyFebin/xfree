@@ -47,6 +47,11 @@ interface ToolPageLayoutProps {
   children: React.ReactNode;
 }
 
+const STUDIO_ENGINE_BY_TOOL: Record<string, string> = {
+  "regex-tester": "regex",
+  "base64-encoder-decoder": "base64-decode",
+};
+
 export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
   tool,
   isFavorite,
@@ -71,6 +76,10 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
   const [workspaceSaved, setWorkspaceSaved] = useState(false);
 
   const pillarKeyword = tool.pillarKeyword || tool.title;
+  const studioEngine = STUDIO_ENGINE_BY_TOOL[tool.slug || tool.id];
+  const studioUrl = studioEngine
+    ? `https://app.xfree.in/?tool=${encodeURIComponent(studioEngine)}`
+    : "https://app.xfree.in/";
 
   // Dynamically suggest 2-3 related tools based primarily on the current tool's category
   const suggestedNextSteps = useMemo(() => {
@@ -104,16 +113,20 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
   }, [tool, allTools]);
 
   const keyFeatures = tool.keyFeatures || [
-    "High-speed browser processing with 100% local execution and zero server latency.",
+    tool.isAi
+      ? "Cloud AI processing is clearly disclosed before your input is submitted."
+      : "Local Mode processes working input in your browser by default.",
     "Real-time syntax validation, formatting, and live error feedback.",
     "1-Click copy to clipboard and instant text/file export options.",
     "Save workspace presets locally to reload configurations anytime.",
-    "Zero registration or signup required for unlimited usage."
+    "No registration or signup is required for published standard tools."
   ];
 
   const benefits = tool.benefits || [
-    "100% Privacy-First: Your data stays strictly in your browser memory and never gets uploaded to third-party databases.",
-    "No Backend Timeouts: Handle large datasets and files smoothly without server timeouts or API rate limits.",
+    tool.isAi
+      ? "Transparent Cloud Mode: The interface identifies when submitted content is sent to an AI provider."
+      : "Local-First Privacy: Working input stays in browser memory during normal tool processing.",
+    "Responsive Processing: Performance and practical limits depend on your browser, device memory, and input size.",
     "Production Ready: Clean, standards-compliant output ready for immediate deployment in web apps, SEO campaigns, or CMS platforms.",
     "Cross-Platform & Lightweight: Fully responsive interface optimized for keyboard navigation and quick workflow efficiency."
   ];
@@ -130,7 +143,9 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
     },
     {
       question: `Is my input data secure when using ${tool.title}?`,
-      answer: `Yes. All data processing occurs locally inside your browser's JavaScript engine. Your input text or files are never uploaded to remote server databases.`
+      answer: tool.isAi
+        ? `This AI tool uses disclosed Cloud Mode processing. Content you submit is sent to the configured AI provider; avoid submitting sensitive information.`
+        : `This tool runs in Local Mode by default, so working input is processed in your browser rather than submitted to a tool-processing endpoint.`
     },
     {
       question: `Can I use ${tool.title} on mobile devices?`,
@@ -138,11 +153,13 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
     },
     {
       question: `Does ${tool.title} work offline?`,
-      answer: `Yes! Once loaded in your browser session, local-tool processing runs in your browser without an active server connection.`
+      answer: tool.isAi
+        ? `No. This AI tool needs a network connection to reach the disclosed cloud provider.`
+        : `The core transformation can run in your browser after the application assets have loaded, although some browser or site features may still require a connection.`
     },
     {
       question: `What is the maximum data or payload size supported?`,
-      answer: `Because processing runs locally on your device, it can process large datasets up to 50MB smoothly depending on your browser memory.`
+      answer: `There is no universal guaranteed payload size. Practical limits depend on the selected tool, browser, device memory, and input complexity.`
     }
   ];
 
@@ -252,6 +269,14 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
 
           {/* Action Bar */}
           <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+            <a
+              href={studioUrl}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-indigo-500/20 transition-colors hover:bg-indigo-400"
+              aria-label={studioEngine ? `Open ${tool.title} workflow in XFree Studio` : "Open XFree Studio"}
+            >
+              <Layers className="h-4 w-4" />
+              <span>{studioEngine ? "Open in Studio" : "Open Studio"}</span>
+            </a>
             {onLoadExample && (
               <button
                 onClick={onLoadExample}
@@ -487,7 +512,7 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
             {tool.explanation}
           </p>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Whether you are auditing complex website architecture, optimizing search engine crawl budget, debugging production APIs, or standardizing code quality, <strong className="text-white">{tool.title}</strong> delivers native desktop-level execution speed directly inside your browser.
+            Whether you are auditing website architecture, optimizing crawl paths, debugging structured data, or standardizing output, <strong className="text-white">{tool.title}</strong> provides a focused workflow with processing behavior disclosed on this page.
           </p>
         </div>
 

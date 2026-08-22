@@ -1,0 +1,76 @@
+{
+  "name": "JWT Decoder — Signature Not Verified",
+  "slug": "jwt-decode",
+  "category": "security-utilities",
+  "pillarSlug": "token-inspection-tools",
+  "summary": "Decode the three sections of a JSON Web Token locally while clearly distinguishing inspection from cryptographic signature verification.",
+  "engine": { "id": "jwt-decode", "status": "working", "tested": true },
+  "inputParameters": ["A compact JWT containing three non-empty dot-separated sections"],
+  "outputFormats": ["JSON inspection report"],
+  "useCases": [
+    "Inspect token header fields and payload claims during application debugging",
+    "Read Unicode claims from a Base64URL-encoded JWT payload",
+    "Confirm token structure before using a trusted library for signature verification"
+  ],
+  "searchIntents": [
+    "decode JWT locally without uploading token",
+    "inspect JWT header and payload browser",
+    "JWT decoder signature not verified warning",
+    "read Base64URL token claims"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The decoder does not verify the signature, issuer, audience, nonce, algorithm policy, expiry, or any other trust decision.",
+      "Only compact tokens containing exactly three non-empty sections are accepted by the current engine.",
+      "The header and payload sections must decode to valid UTF-8 JSON documents.",
+      "Decoded claims may contain sensitive information and should not be copied into public logs or support messages."
+    ]
+  },
+  "metadata": {
+    "title": "JWT Decoder for Local Inspection | XFree Studio",
+    "description": "Inspect JWT header and payload JSON locally with an explicit signature-not-verified warning. No working token is submitted by the decoding engine.",
+    "h1": "JWT Decoder — Signature Not Verified"
+  },
+  "content": {
+    "directAnswer": "The JWT Decoder reads the header and payload sections of a three-part compact JSON Web Token and presents their JSON fields for inspection. It also returns the encoded signature section, but it does not verify authenticity. XFree performs this decoding locally in the active browser session.",
+    "technicalDetails": "A compact JWT normally contains a Base64URL-encoded header, a Base64URL-encoded payload, and a signature value separated by periods. The engine requires exactly three non-empty sections. It converts the URL-safe alphabet by replacing hyphens with plus signs and underscores with slashes, restores required padding, decodes the bytes, and uses TextDecoder to interpret the header and payload as UTF-8. Each decoded section is then parsed with JSON.parse. The output contains a fixed warning, the parsed header object, the parsed payload object, and the original encoded signature section. This procedure reveals data; it establishes no trust. The engine does not retrieve a JSON Web Key Set, apply a public or shared key, validate an algorithm, compare a signature, or enforce issuer and audience policy. It does not evaluate exp, nbf, iat, nonce, azp, scope, or application-specific authorization semantics. A forged token can contain perfectly readable JSON, so successful decoding must never be treated as authentication. Verification belongs in a maintained JOSE library and must use keys and policy supplied by the service that issued the token. The decoding function runs as browser JavaScript. The working token is processed inside the Studio session and is not submitted to XFree or an AI provider by this engine. Even with local processing, bearer tokens are credentials: anyone who obtains a still-valid token may be able to use it against its target service. Avoid production tokens when a redacted development token can answer the debugging question.",
+    "instructions": "Open the JWT Decode engine and paste the complete compact token without a Bearer prefix, surrounding quotation marks, spaces, or line breaks. Confirm that it has three dot-separated sections, then run the engine. Read the warning before inspecting the result. The header may identify a declared algorithm and key identifier, but those fields are attacker-controlled until verification succeeds. The payload may show issuer, subject, audience, expiry, roles, or custom claims. Treat these values as untrusted observations. If the engine rejects the token, confirm that each section is non-empty and that the first two sections contain Base64URL data representing valid UTF-8 JSON. Encrypted JWT/JWE forms commonly have five sections and are outside this engine's current three-part contract. After inspection, use the issuer's supported SDK or a reputable JOSE library to verify the signature and enforce the expected algorithm, key source, issuer, audience, time claims, and application rules. Do not paste the decoded payload into a ticket without removing identifiers, email addresses, authorization scopes, session references, and other sensitive claims. Clear the Studio session when finished, particularly on a shared computer. If a real bearer token was exposed outside its intended environment, revoke or rotate it according to the issuing system's incident procedure; local decoding does not undo prior exposure.",
+    "examples": [
+      {
+        "title": "Inspect a minimal unsigned-shaped token",
+        "input": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiLwn5qAIiwiaWF0IjoxfQ.signature",
+        "output": "{\n  \"warning\": \"Decoded only. The signature and token authenticity were not verified.\",\n  \"header\": {\n    \"alg\": \"none\",\n    \"typ\": \"JWT\"\n  },\n  \"payload\": {\n    \"sub\": \"🚀\",\n    \"iat\": 1\n  },\n  \"signature\": \"signature\"\n}",
+        "explanation": "The example demonstrates UTF-8 claim decoding and the mandatory warning. The displayed alg value and signature text are not evidence that the token is valid."
+      }
+    ],
+    "edgeCases": [
+      "Tokens with two sections, five JWE sections, empty sections, or added Bearer prefixes fail the current structural contract.",
+      "A valid Base64URL sequence can still fail when its decoded bytes are not valid JSON for the header or payload.",
+      "Expired, incorrectly issued, forged, or algorithm-confused tokens can decode successfully because decoding is not validation.",
+      "Very large claim sets increase browser memory use and may expose more sensitive information in copied output."
+    ],
+    "faqs": [
+      {
+        "question": "Does a successful decode mean the JWT is authentic?",
+        "answer": "No. Anyone can construct Base64URL header and payload sections. Authenticity requires cryptographic signature verification plus issuer, audience, algorithm, time, and application-policy checks."
+      },
+      {
+        "question": "Why does the output show the signature without checking it?",
+        "answer": "The engine preserves the third compact section for inspection, but it has no trusted key or issuer policy with which to perform verification."
+      },
+      {
+        "question": "Can this decode encrypted JWE tokens?",
+        "answer": "No. The current implementation accepts exactly three sections. Compact JWE commonly uses five sections and requires decryption keys and a different processing path."
+      },
+      {
+        "question": "Does the JWT get uploaded during decoding?",
+        "answer": "No working token is submitted to an XFree server or AI provider by this engine. You should still treat the token as a credential and avoid unnecessary copying or sharing."
+      }
+    ]
+  }
+}

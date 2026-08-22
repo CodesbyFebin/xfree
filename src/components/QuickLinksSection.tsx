@@ -82,10 +82,16 @@ export const QuickLinksSection: React.FC<QuickLinksSectionProps> = ({ onSelectTo
         {QUICK_LINK_ITEMS.filter((item) => PUBLIC_TOOLS.some((tool) => tool.slug === item.slug)).map((item) => {
           const IconComp = item.icon;
           return (
-            <div
+            <a
               key={item.slug}
-              onClick={() => onSelectTool(item.slug)}
+              href={`/tools/${item.slug}`}
+              onClick={(event) => {
+                if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
+                event.preventDefault();
+                onSelectTool(item.slug);
+              }}
               className="p-4 rounded-2xl glass-panel-interactive cursor-pointer space-y-2.5 group flex flex-col justify-between"
+              aria-label={`${item.title} — ${item.desc}`}
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -107,7 +113,7 @@ export const QuickLinksSection: React.FC<QuickLinksSectionProps> = ({ onSelectTo
                 <span className="text-[10px] text-slate-400 font-mono">Category: {item.category}</span>
                 <span className="group-hover:translate-x-1 transition-transform">Open Tool →</span>
               </div>
-            </div>
+            </a>
           );
         })}
       </div>

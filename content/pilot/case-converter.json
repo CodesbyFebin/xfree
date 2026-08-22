@@ -1,0 +1,51 @@
+{
+  "name": "Case Converter and Word Counter",
+  "slug": "case-converter",
+  "category": "text-utilities",
+  "pillarSlug": "text-tools",
+  "summary": "Convert pasted text to uppercase, lowercase, or simple title case, or inspect whitespace-delimited word and UTF-16 character counts.",
+  "engine": { "id": "case-converter", "status": "working", "tested": true },
+  "inputParameters": ["Text to transform or count", "Command containing upper, lower, title, or a count-related instruction"],
+  "outputFormats": ["Transformed plain text", "Original text followed by word and character counts"],
+  "useCases": ["Normalize headings or labels to a consistent letter case", "Count whitespace-delimited words before submitting copy", "Inspect how punctuation and Unicode affect simple browser text operations"],
+  "searchIntents": ["convert text case locally", "uppercase lowercase converter without upload", "browser word and character counter", "simple title case JavaScript tool"],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "Title case uses a simple JavaScript word-boundary expression and is not a locale-aware publishing style formatter.",
+      "Character count uses JavaScript string length, which counts UTF-16 code units rather than user-perceived grapheme clusters.",
+      "Word count splits trimmed input on whitespace and does not perform linguistic word segmentation.",
+      "Processing runs on the interface thread, so unusually large input can temporarily reduce responsiveness."
+    ]
+  },
+  "metadata": {
+    "title": "Case Converter and Word Counter | XFree Studio",
+    "description": "Convert text to upper, lower, or simple title case and count whitespace-delimited words locally, with accurate Unicode limitations.",
+    "h1": "Case Converter and Word Counter"
+  },
+  "content": {
+    "directAnswer": "The Case Converter and Word Counter transforms browser text to uppercase, lowercase, or a simple title-case form. Without a transformation command, it reports whitespace-delimited words and JavaScript string length. XFree runs these operations in Local Mode on the browser’s main thread without submitting the working text.",
+    "technicalDetails": "The engine receives two strings: the text input and the command entered in Studio. It lowercases the command only for routing. If the command contains the substring upper, the complete input is passed to JavaScript String.toUpperCase(). If it contains lower, String.toLowerCase() is used. If it contains title, the engine first lowercases the input and then replaces every character matched by the regular expression word-boundary followed by a word character with its uppercase form. The priority is upper, then lower, then title, so a command containing more than one keyword selects the first matching branch rather than combining operations. Any other command returns the original input, two line breaks, and calculated word and character totals. Word count trims the input and splits non-empty text on one or more whitespace characters. Empty or whitespace-only text therefore produces zero words. This is a practical token-like count, not linguistic segmentation: punctuation attached to a token remains part of it, and languages normally written without spaces may be counted as one word. Character count is input.length. JavaScript measures string length in UTF-16 code units, so many emoji and some historic or supplementary-plane characters count as two units. A visible grapheme made from multiple code points can count as several units. Uppercase and lowercase behavior follows the runtime’s Unicode case mappings but does not accept a locale argument. The title transformation is intentionally basic. Its use of word-boundary and word-character syntax is best suited to straightforward Latin-script copy; apostrophes, hyphens, combining marks, acronyms, product names, and non-Latin scripts may not follow editorial expectations. Processing is synchronous browser JavaScript, not a Web Worker. No working input is sent to XFree servers or an AI provider by this engine, but very large pasted text can occupy memory and briefly block interface updates.",
+    "instructions": "Open Case + Word Tools in XFree Studio and paste the exact text you want to inspect. Enter a command containing uppercase or upper to uppercase the full string, lowercase or lower to lowercase it, or title to apply the engine’s simple title transformation. Run the command and review the plain-text result before using it in production copy. For counting, use a command that does not contain any of those three routing keywords, such as count words. The result preserves the input and appends its totals. Interpret those totals according to the implementation: words are whitespace-separated chunks and characters are UTF-16 code units. If you need editorial title case, locale-specific capitalization, grapheme counts, or language-aware segmentation, use a specialist library and specify the target language and style guide. Check names such as iPhone, eBay, JavaScript, O’Connor, and hyphenated compounds manually because a mechanical conversion can change their intended form. Preserve a copy of the original text when case carries meaning, as in passwords, identifiers, URLs, regular expressions, source code, or case-sensitive data. Do not transform those values unless the target format explicitly permits it. For a large document, process a representative sample first and confirm that the browser remains responsive and that line breaks are preserved as expected.",
+    "examples": [
+      { "title": "Convert mixed text to uppercase", "input": "XFree Studio\nLocal Mode", "output": "XFREE STUDIO\nLOCAL MODE", "explanation": "A command containing upper selects String.toUpperCase while preserving the line break between the two input lines." },
+      { "title": "Count whitespace-delimited words", "input": "one  two\nthree", "output": "one  two\nthree\n\nWords: 3 · Characters: 14", "explanation": "Repeated spaces and a newline act as separators for the word total, while every original UTF-16 code unit contributes to character length." }
+    ],
+    "edgeCases": [
+      "An emoji can contribute two UTF-16 code units even when it appears as one visible symbol, and joined emoji sequences can contribute more.",
+      "Simple title case can produce editorially incorrect capitalization for apostrophes, hyphenated terms, acronyms, brands, and scripts not handled well by JavaScript word boundaries.",
+      "A command containing both upper and lower selects uppercase because the uppercase branch is tested first.",
+      "Whitespace-only input has zero words but retains its original code-unit length in the character total."
+    ],
+    "faqs": [
+      { "question": "Does character count equal the number of visible characters?", "answer": "Not always. The engine reports JavaScript UTF-16 code units, so emoji, combining sequences, and supplementary characters can differ from user-perceived grapheme counts." },
+      { "question": "Is the title-case result suitable for every language and style guide?", "answer": "No. It is a simple word-boundary transformation and does not implement locale-aware casing or publication-specific rules for minor words, names, acronyms, and compounds." },
+      { "question": "How does the engine decide what counts as a word?", "answer": "It trims the text and splits it on runs of whitespace. It does not use a dictionary, locale-aware segmenter, or punctuation analysis." },
+      { "question": "Is pasted text uploaded for conversion or counting?", "answer": "No working text is sent to XFree servers or AI providers by this engine. The operation executes synchronously in the current browser page." }
+    ]
+  }
+}

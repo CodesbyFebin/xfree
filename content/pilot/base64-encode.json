@@ -1,0 +1,60 @@
+{
+  "name": "UTF-8 Base64 Encoder",
+  "slug": "base64-encode",
+  "category": "encoding-utilities",
+  "pillarSlug": "base64-tools",
+  "summary": "Encode browser text as UTF-8 bytes and convert those bytes into standard Base64 text in XFree Studio Local Mode.",
+  "engine": { "id": "base64-encode", "status": "working", "tested": true },
+  "inputParameters": ["Unicode text represented by a browser JavaScript string"],
+  "outputFormats": ["Standard padded Base64 text"],
+  "useCases": [
+    "Encode a small UTF-8 text payload for an API field",
+    "Inspect the Base64 representation of Unicode characters",
+    "Prepare non-secret text for a format that requires standard Base64"
+  ],
+  "searchIntents": [
+    "encode UTF-8 text to Base64 locally",
+    "Unicode Base64 encoder browser",
+    "Base64 encode text without upload",
+    "convert emoji to Base64"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The engine encodes text only and does not currently accept binary file input or stream large payloads.",
+      "It emits the standard Base64 alphabet with padding rather than the URL-safe Base64URL alphabet.",
+      "The current implementation expands the byte array into a function call and may hit argument or memory limits for large strings.",
+      "Base64 is reversible representation, not encryption, hashing, compression, authentication, or secret storage."
+    ]
+  },
+  "metadata": {
+    "title": "UTF-8 Text to Base64 Encoder | XFree Studio",
+    "description": "Encode Unicode text into standard padded Base64 locally using browser UTF-8 conversion, with explicit size and security limitations.",
+    "h1": "UTF-8 Base64 Encoder"
+  },
+  "content": {
+    "directAnswer": "The UTF-8 Base64 Encoder converts browser text into UTF-8 bytes and represents those bytes with the standard Base64 alphabet. This correctly handles non-ASCII text such as accented letters and emoji. The encoding runs in XFree Studio Local Mode and returns plain Base64 text.",
+    "technicalDetails": "The engine passes the input string to TextEncoder, which produces a Uint8Array containing the string's UTF-8 byte sequence. It converts each byte into a one-code-unit binary string and supplies that string to the browser btoa function. btoa then groups the bytes into 24-bit blocks and writes four Base64 characters per block, adding equals-sign padding when the final block contains fewer than three bytes. The output uses uppercase and lowercase Latin letters, decimal digits, plus, and slash. It is standard Base64, not Base64URL; URL-safe systems normally replace plus and slash with hyphen and underscore and may omit padding. Because encoding operates on UTF-8 bytes rather than passing Unicode text directly to btoa, characters outside Latin-1 are handled predictably. The implementation is designed for text. It does not read files as ArrayBuffer, identify MIME types, add data-URL prefixes, compress input, wrap lines, or stream chunks. The current conversion spreads all encoded bytes into String.fromCharCode in one call. Browsers impose practical argument-count and memory limits, so large text can fail or cause a pause even before Base64's approximate one-third size expansion is considered. This engine runs on the main browser thread. The working text is not submitted to XFree servers or AI providers. Base64 provides no confidentiality or integrity: anyone can decode the result, and an attacker can modify it without detection unless the surrounding protocol supplies authentication.",
+    "instructions": "Select Base64 Encode and paste the text to represent. Run the engine, then copy or download the returned Base64 string. Preserve whitespace deliberately because spaces and line breaks are bytes and change the result. When comparing with another encoder, confirm both tools use UTF-8 and the same Base64 variant. A Base64URL result can differ through alphabet substitutions and removed padding even when it represents the same bytes. Do not paste passwords, access tokens, private keys, or regulated data merely because encoding runs locally; the output remains reversible and may be exposed through clipboard history, logs, screenshots, analytics in another application, or the destination system. For a data URL, add the correct media-type and charset prefix only when the receiving format requires it; this engine returns the payload without such a prefix. For large text or binary files, use a streaming or file-aware tool rather than forcing the content through this text implementation. Retain the original character encoding when exchanging data across systems, because decoding identical Base64 bytes with a non-UTF-8 character set can produce different displayed text. Use encryption and authenticated protocols when secrecy or tamper resistance is required.",
+    "examples": [
+      { "title": "Encode simple ASCII text", "input": "XFree", "output": "WEZyZWU=", "explanation": "The five ASCII bytes are grouped into Base64 blocks, with one equals sign padding the final partial block." },
+      { "title": "Encode a Unicode check mark", "input": "✓", "output": "4pyT", "explanation": "TextEncoder represents the check mark as three UTF-8 bytes, which produce four Base64 characters without padding." }
+    ],
+    "edgeCases": [
+      "An empty input produces an empty Base64 string rather than an error.",
+      "Whitespace and line endings are preserved as bytes, so visually similar text can produce different output.",
+      "Large strings can exceed browser argument-count or memory limits because the implementation expands the complete byte array at once.",
+      "Consumers expecting Base64URL may reject plus, slash, or equals-sign padding from standard Base64 output."
+    ],
+    "faqs": [
+      { "question": "Is Base64 encoding a form of encryption?", "answer": "No. Base64 is a reversible byte representation and supplies neither confidentiality nor tamper detection. Use appropriate cryptography for those properties." },
+      { "question": "Does this encoder handle emoji and accented characters?", "answer": "Yes. It converts the JavaScript string to UTF-8 bytes with TextEncoder before applying standard Base64 encoding." },
+      { "question": "Does it generate Base64URL output?", "answer": "No. It uses standard Base64 with plus, slash, and padding. Convert deliberately when a JWT or URL-safe protocol requires Base64URL." },
+      { "question": "Is the source text uploaded for encoding?", "answer": "No working text is sent to XFree servers or AI providers by this engine. Encoding executes in the active browser session." }
+    ]
+  }
+}

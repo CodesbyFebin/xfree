@@ -1,0 +1,51 @@
+{
+  "name": "UUID Generator",
+  "slug": "uuid",
+  "category": "developer-utilities",
+  "pillarSlug": "identifier-generation-tools",
+  "summary": "Generate one to one hundred random UUID values with the browser crypto.randomUUID implementation in XFree Studio Local Mode.",
+  "engine": { "id": "uuid", "status": "working", "tested": true },
+  "inputParameters": ["Optional integer count from 1 through 100"],
+  "outputFormats": ["Newline-separated UUID strings"],
+  "useCases": ["Create identifiers for fixtures and development records", "Generate correlation IDs for local testing", "Produce a small batch of random UUID values"],
+  "searchIntents": ["generate UUID locally in browser", "batch UUID generator 100", "crypto randomUUID online without upload", "UUID generator for test data"],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The engine delegates identifier generation to browser crypto.randomUUID and does not expose deterministic seeds or namespace-based UUID versions.",
+      "The requested count is parsed as an integer and clamped to the range from one through one hundred.",
+      "Generated identifiers are not proof of identity, authorization, secrecy, ordering, or database uniqueness constraints.",
+      "Browser support and secure-context requirements depend on the runtime providing crypto.randomUUID."
+    ]
+  },
+  "metadata": {
+    "title": "Local UUID Generator for Batches | XFree Studio",
+    "description": "Generate one to 100 random UUID values locally with browser crypto.randomUUID, including accurate uniqueness and security limitations.",
+    "h1": "UUID Generator"
+  },
+  "content": {
+    "directAnswer": "The UUID Generator creates random universally unique identifier strings by calling the browser's crypto.randomUUID function. An optional integer controls a batch of one through one hundred values. Results are newline separated and generated inside the active XFree Studio Local Mode session.",
+    "technicalDetails": "The engine parses the supplied text with Number.parseInt. Missing, non-numeric, or zero-like input falls back to one. The value is clamped so requests below one generate one identifier and requests above one hundred generate one hundred. For each requested item, the engine calls crypto.randomUUID and joins the returned strings with line feeds. Modern browser implementations produce random UUIDs in the familiar 8-4-4-4-12 hexadecimal layout with version and variant bits set according to the platform implementation. XFree does not substitute Math.random, create a deterministic seed, maintain a server-side sequence, or send a request to an identifier service. Generation runs on the browser main thread and working output is not submitted to XFree servers or AI providers by this engine. UUIDs are designed to make accidental collisions extremely unlikely at ordinary scales, but they do not remove the need for a unique database constraint when uniqueness is operationally required. They do not prove who created a record and should not be treated as passwords, API secrets, unguessable authorization links, signatures, timestamps, or sortable identifiers. Random UUID ordering does not encode creation time. The engine does not produce namespace-based versions, time-ordered UUID variants, ULIDs, GUID byte-order conversions, or application-specific prefixes. Availability depends on a browser runtime that exposes crypto.randomUUID, commonly in a secure context. Results exist in the page and can be copied or downloaded through Studio result actions.",
+    "instructions": "Select UUID Generator and enter the number of identifiers required, such as 10. Leave the field empty to generate one. Run the engine and copy the newline-separated values into a fixture, migration, test payload, or other destination. Review the actual count because decimals are truncated by integer parsing and out-of-range values are clamped. Store identifiers in a database column that matches your framework's UUID representation, and enforce a unique constraint when duplicates would be harmful. Do not use generated UUIDs as bearer credentials or assume they hide resource existence; authorization must be checked independently for every request. If identifiers need chronological sorting, compact encoding, deterministic namespacing, or compatibility with a specific binary layout, select a tool and data type designed for that requirement rather than transforming these strings informally. Avoid hardcoding production identifiers copied from screenshots or documentation. For distributed systems, document whether services expect lowercase text, braces, prefixes, or native UUID types. Treat identifier generation and record persistence as separate operations so failed writes do not create misleading assumptions about which values are in use.",
+    "examples": [
+      { "title": "Generate one identifier", "input": "1", "output": "A newly generated UUID string such as 3f1c2b4a-7605-4cb8-9e3a-62ab53d738bd", "explanation": "The exact value changes on every execution because the browser supplies fresh randomness. The displayed value illustrates format only and must not be reused as a credential." },
+      { "title": "Generate a development batch", "input": "3", "output": "Three independently generated UUID strings separated by line feeds", "explanation": "The count controls how many times crypto.randomUUID is called; it does not derive related or sequential identifiers." }
+    ],
+    "edgeCases": [
+      "Non-numeric and empty input generate one UUID because integer parsing falls back to the default count.",
+      "Decimal text is truncated by parseInt, while counts below one or above one hundred are clamped.",
+      "A UUID collision is improbable but application storage should still enforce uniqueness when correctness depends on it.",
+      "Older or insecure browser contexts without crypto.randomUUID cannot execute this engine successfully."
+    ],
+    "faqs": [
+      { "question": "Are generated UUIDs guaranteed never to collide?", "answer": "No absolute guarantee is claimed. Random UUID collisions are extremely unlikely, but databases should still enforce a unique constraint when duplicates would break correctness." },
+      { "question": "Can I use a UUID as a password or access token?", "answer": "No. Identifiers and secrets have different security purposes. Use a dedicated cryptographic token generator and enforce authorization independently." },
+      { "question": "Does the UUID contain a creation timestamp?", "answer": "No ordering or creation time should be inferred from values produced by crypto.randomUUID. Use an explicit timestamp or time-ordered identifier design when needed." },
+      { "question": "Are generated UUIDs sent to a server?", "answer": "No working values are sent to XFree servers or AI providers by this engine. The browser creates them in the active Studio session." }
+    ]
+  }
+}

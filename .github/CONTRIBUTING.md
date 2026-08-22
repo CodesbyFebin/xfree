@@ -17,6 +17,12 @@ function. We value **honest, evidence-backed** changes over volume.
    ([`src/server/tasks.ts`](../src/server/tasks.ts)) — never accept a
    client-supplied system prompt.
 4. **One capability per tool.** Don't bundle unrelated utilities into one page.
+5. **No combinatorial roadmap entries.** Tool proposals must describe a real
+   user problem and a distinct implementation. Do not create names by combining
+   category, cluster, and modifier keywords.
+6. **Implementation and publication are separate reviews.** A working engine
+   may merge without receiving a public SEO page. Publication requires its own
+   evidence-backed registry and content review.
 
 ## Development setup
 
@@ -30,16 +36,53 @@ npm run dev
 
 `npm run verify` runs typecheck + test + tool audit + build. CI runs the same.
 
-## Adding a tool
+## Adding a dedicated website tool
 
 1. `npm run generate:tool -- --slug=my-tool --title="My Tool" --category=developer-tools --description="..."`
    This creates a `status: "draft"` registry entry and a placeholder component.
 2. Implement the component in `src/components/tools/`.
 3. Wire it into `src/App.tsx` (the `audit:tools` script fails the build if an
    `indexable` tool has no matching `case`).
-4. Only flip `status` to `"indexable"` once it actually works and has a unique
-   title, meta description, canonical, and H1, plus per-page JSON-LD.
-5. Add it to `src/data/toolGuides.ts` if it warrants a guide.
+4. Keep the registry entry at `status: "draft"` and `indexable: false` while
+   implementing and testing it.
+5. A maintainer may promote it to `status: "published"` and `indexable: true`
+   only after the behavior, metadata, canonical, single H1, privacy wording,
+   JSON-LD, and rendered route have been reviewed.
+6. Add it to `src/data/toolGuides.ts` if it warrants a guide.
+
+## Adding a Studio engine
+
+Studio engines are small local functions registered in
+[`src/lib/studio/engines.ts`](../src/lib/studio/engines.ts). Prefer a pure,
+testable implementation in `src/lib/studio/` and keep UI concerns out of the
+engine.
+
+Every new engine must include:
+
+- a globally unique engine ID;
+- a precise input/output contract and honest limitations;
+- unit tests covering valid input, malformed input, and important edge cases;
+- no `innerHTML`, `eval`, remote script, hidden upload, or client-side secret;
+- an explicit warning for inspection-only security utilities (for example,
+  JWT decoding does not verify a signature);
+- Web Worker execution when parsing or processing can block the main thread.
+
+Registering an engine does **not** automatically create or publish an SEO page.
+The generated-content pipeline remains fingerprint-bound and human-reviewed.
+
+## Tool proposal lifecycle
+
+1. Open a Tool proposal issue with a concrete problem, inputs, outputs, edge
+   cases, and proposed execution model.
+2. A maintainer verifies that the capability is distinct and technically
+   feasible before adding labels such as `good first issue`.
+3. Implement the engine/component and tests in a focused PR.
+4. Pass `npm run verify` and attach behavior evidence.
+5. Merge the functional capability independently of publication.
+6. Create and review any dedicated page through the existing publication gate.
+
+The project does not publish placeholder pages, public Cartesian-product
+roadmaps, or generated issue floods.
 
 ## Adding a guide
 

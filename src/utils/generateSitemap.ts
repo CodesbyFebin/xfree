@@ -1,5 +1,6 @@
 import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { GUIDES } from "../data/guides";
+import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
 
 const DEFAULT_BASE_URL = "https://www.xfree.in";
 
@@ -61,7 +62,6 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     { path: "/terms", priority: "0.3", freq: "yearly" },
     { path: "/security", priority: "0.5", freq: "monthly" },
     { path: "/xfree-app", priority: "0.9", freq: "monthly" },
-    { path: "/studio", priority: "0.9", freq: "weekly" },
     { path: "/guides", priority: "0.7", freq: "weekly" },
   ];
 
@@ -100,7 +100,20 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     xml += `  </url>\n`;
   }
 
-  // 5. Guides
+  // 5. Human-approved generated tool pages. The compiler only places
+  // fingerprint-bound, revalidated artifacts in this registry.
+  for (const artifact of Object.values(GENERATED_PUBLISHED_CONTENT)) {
+    if (seenSlugs.has(artifact.slug)) continue;
+    seenSlugs.add(artifact.slug);
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(`${cleanBase}/tools/${artifact.slug}`)}</loc>\n`;
+    xml += `    <lastmod>${artifact.approval.reviewedAt.split("T")[0]}</lastmod>\n`;
+    xml += `    <changefreq>monthly</changefreq>\n`;
+    xml += `    <priority>0.7</priority>\n`;
+    xml += `  </url>\n`;
+  }
+
+  // 6. Guides
   for (const g of GUIDES) {
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(`${cleanBase}/guides/${g.slug}`)}</loc>\n`;
@@ -144,7 +157,7 @@ export function generateRssXml(baseUrl: string = DEFAULT_BASE_URL): string {
     rss += `      <guid isPermaLink="true">${escapeXml(toolUrl)}</guid>\n`;
     rss += `      <pubDate>${pubDate}</pubDate>\n`;
     rss += `      <category>${escapeXml(categoryName)}</category>\n`;
-    rss += `      <description>${escapeXml(`${tool.shortDescription} Pillar Keyword: ${tool.pillarKeyword}. 100% Free browser utility with instant execution.`)}</description>\n`;
+    rss += `      <description>${escapeXml(`${tool.shortDescription} Pillar keyword: ${tool.pillarKeyword}. Published XFree browser utility with disclosed local or cloud processing.`)}</description>\n`;
     rss += `      <content:encoded><![CDATA[`;
     rss += `<h3>${escapeXml(tool.title)}</h3>`;
     rss += `<p><strong>Pillar Keyword:</strong> ${escapeXml(tool.pillarKeyword)}</p>`;

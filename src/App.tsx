@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { PUBLIC_TOOLS, getPublicToolBySlug } from "./data/publicTools";
+import { GENERATED_PUBLISHED_CONTENT } from "./data/generatedPublishedContent";
 import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath } from "./data/routes";
 import { findGuide } from "./data/guides";
 import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
@@ -7,6 +8,7 @@ import { Header } from "./components/Header";
 import { HeroBanner } from "./components/HeroBanner";
 import { QuickLinksSection } from "./components/QuickLinksSection";
 import { PopularAndCategoriesSection } from "./components/PopularAndCategoriesSection";
+import { ResourceHubSection } from "./components/ResourceHubSection";
 import { Footer } from "./components/Footer";
 import { ToolCard } from "./components/ToolCard";
 import { CommandPalette } from "./components/CommandPalette";
@@ -32,6 +34,7 @@ import { XFreeAppPage } from "./components/pages/XFreeAppPage";
 import { GuideIndexPage } from "./components/pages/GuideIndexPage";
 import { GuidePage } from "./components/pages/GuidePage";
 import { StudioPage } from "./components/pages/StudioPage";
+import { GeneratedToolPage } from "./components/pages/GeneratedToolPage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 
 // Import Micro-Tools
@@ -163,6 +166,10 @@ export default function App() {
     // than hydrating a fake "planned utility" page over a 404 shell.
     return getPublicToolBySlug(activeToolSlug) ?? null;
   }, [activeToolSlug]);
+  const activeGeneratedPage = useMemo(
+    () => activeToolSlug && !activeTool ? GENERATED_PUBLISHED_CONTENT[activeToolSlug] ?? null : null,
+    [activeTool, activeToolSlug],
+  );
 
   const activeGuideSlug = guideSlugFromPath(currentPath);
   const activeGuide = useMemo(() => (activeGuideSlug ? findGuide(activeGuideSlug) ?? null : null), [activeGuideSlug]);
@@ -171,14 +178,15 @@ export default function App() {
     if (currentPath === "/") return true;
     if (isKnownStaticRoute(currentPath)) return true;
     if (categorySlugFromPath(currentPath)) return true;
-    if (activeToolSlug) return Boolean(activeTool);
+    if (activeToolSlug) return Boolean(activeTool || activeGeneratedPage);
     if (activeGuideSlug) return Boolean(activeGuide);
     return false;
-  }, [currentPath, activeTool, activeToolSlug, activeGuide, activeGuideSlug]);
+  }, [currentPath, activeTool, activeToolSlug, activeGeneratedPage, activeGuide, activeGuideSlug]);
 
   // Hook for dynamic head meta tag management (SEO pSEO pillar keywords & JSON-LD schemas)
   useMetaTags({
     tool: activeTool,
+    generatedPage: activeGeneratedPage,
     currentPath,
   });
 
@@ -300,7 +308,6 @@ export default function App() {
         onOpenSearch={() => setCommandPaletteOpen(true)}
         onOpenSaved={() => setSavedDrawerOpen(true)}
         onOpenChat={() => setChatDrawerOpen(true)}
-        onGoStudio={() => navigateTo("/studio")}
         activeCategory={activeCategory}
         onSelectCategory={(catId) => {
           setActiveCategory(catId as any);
@@ -326,6 +333,10 @@ export default function App() {
           /* Render Static Page View */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
             {renderStaticPage()}
+          </div>
+        ) : activeGeneratedPage ? (
+          <div className="flex-1 p-4 sm:p-8">
+            <GeneratedToolPage page={activeGeneratedPage} />
           </div>
         ) : activeTool ? (
           /* Tool Detail Screen */
@@ -419,6 +430,8 @@ export default function App() {
                 setActiveView("category-hub");
               }}
             />
+
+            <ResourceHubSection onNavigate={navigateTo} />
           </div>
         )}
       </main>

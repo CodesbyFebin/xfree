@@ -56,8 +56,8 @@ export const SecurityPage: React.FC = () => {
             The ten wired tools (JSON formatter, regex tester, cron generator, base64/JWT decoder, URL
             slug &amp; UTM builder, meta-tag preview, schema markup generator, robots.txt generator,
             XML sitemap generator, bulk URL extractor) execute entirely in your browser. Your input is
-            never transmitted to XFree.in servers for these tools. Nothing is logged, saved, or
-            associated with you.
+            not submitted to XFree.in tool-processing endpoints for these tools. Normal hosting,
+            security, and advertising services may still process operational request data as described in the Privacy Policy.
           </p>
         </section>
 
