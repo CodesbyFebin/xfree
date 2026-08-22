@@ -1,11 +1,13 @@
 name: Apply Final Audit Merge
 
 on:
-  push:
+  pull_request:
     branches:
-      - release/final-audit-2026-08-23
-    paths:
-      - .github/workflows/apply-final-audit.yml
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 permissions:
   contents: write
@@ -16,12 +18,14 @@ concurrency:
 
 jobs:
   apply-verify-commit:
+    if: github.event.pull_request.head.ref == 'release/final-audit-2026-08-23'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Checkout exact staging branch
         uses: actions/checkout@v4
         with:
+          ref: release/final-audit-2026-08-23
           fetch-depth: 0
 
       - name: Reconstruct and verify audited patch
