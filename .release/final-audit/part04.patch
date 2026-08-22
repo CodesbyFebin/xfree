@@ -1,0 +1,134 @@
+@@ -62,18 +62,18 @@ This document provides full technical details, Pillar Keywords, explanations, FA
+   - **Q: Does the tool validate my og:image URL?**
+     A: It checks the format (must be an absolute URL) and displays a preview if the image loads in your browser. It does NOT fetch the image server-side or check dimensions — Twitter and Facebook both cache OG images aggressively, so use their debugger tools (developers.facebook.com/tools/debug, cards-dev.twitter.com) after publish.
+ 
+---- 
++---
+ 
+ ### Schema Markup Generator (JSON-LD Structured Data)
+ - **URL**: https://www.xfree.in/tools/schema-markup-generator
+ - **Category**: SEO & URL Tools
+-- **Pillar Keyword**: Schema Markup Generator
+ - **Description**: Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.
++- **Processing**: Local processing: JSON-LD is generated in your browser and never uploaded.
+ - **Explanation**: Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.
+-- **How to Use**:
++- **How to use**:
+   1. Select Schema type (e.g. WebSite, Organization, FAQPage, Article).
+-  1. Fill in required metadata fields.
+-  1. Copy formatted JSON-LD script tag.
++  2. Fill in required metadata fields.
++  3. Copy formatted JSON-LD script tag.
+ - **Top FAQs**:
+   - **Q: Which schema types can I generate?**
+     A: Organization, WebSite, WebPage, SoftwareApplication, Article, BreadcrumbList, FAQPage, HowTo, and Product. Types that require visible on-page content (FAQPage, HowTo) will fail Google's Rich Results validation if you emit the schema without matching visible content — Google explicitly checks for that.
+@@ -82,18 +82,18 @@ This document provides full technical details, Pillar Keywords, explanations, FA
+   - **Q: Does valid schema guarantee rich results in Google?**
+     A: No. Validation is a prerequisite, not a guarantee. Google decides per-query and per-page whether to show a rich result based on content quality, indexation status, and eligibility signals. Ship correct schema and don't over-optimize.
+ 
+---- 
++---
+ 
+ ### JSON / XML Formatter, Validator & Tree Viewer
+ - **URL**: https://www.xfree.in/tools/json-formatter
+ - **Category**: Developer Tools
+-- **Pillar Keyword**: JSON Formatter and Validator
+ - **Description**: Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.
++- **Processing**: Local processing: your JSON payload stays in the browser and is not sent to XFree.in servers.
+ - **Explanation**: Parses JSON and XML payloads, identifies syntax errors with line/column markers, provides formatting, minification, and visual tree hierarchy.
+-- **How to Use**:
++- **How to use**:
+   1. Paste JSON or XML payload into the input editor.
+-  1. Toggle between Format, Minify, and Interactive Tree modes.
+-  1. Review validation diagnostics or click Auto-Fix for minor syntax repairs.
++  2. Toggle between Format, Minify, and Interactive Tree modes.
++  3. Review validation diagnostics or click Auto-Fix for minor syntax repairs.
+ - **Top FAQs**:
+   - **Q: Does this validate strict JSON or JSON5?**
+     A: Strict JSON per RFC 8259. Trailing commas, unquoted keys, single-quoted strings, and comments are all rejected. If your source is JSON5 or JSONC, use a JSON5-aware parser instead — this tool will flag those as errors.
+@@ -102,18 +102,18 @@ This document provides full technical details, Pillar Keywords, explanations, FA
+   - **Q: Will large numeric IDs lose precision?**
+     A: Yes. JSON numbers are IEEE 754 doubles, so integers larger than 2^53 (9,007,199,254,740,992) silently round. If you're inspecting 64-bit database IDs or Twitter snowflake IDs, send them as strings from your API — the tool shows them exactly as received.
+ 
+---- 
++---
+ 
+ ### Regex Tester & Interactive Match Explainer
+ - **URL**: https://www.xfree.in/tools/regex-tester
+ - **Category**: Developer Tools
+-- **Pillar Keyword**: Regex Tester
+ - **Description**: Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).
++- **Processing**: Local processing: your pattern and test string stay in your browser.
+ - **Explanation**: Evaluates regex patterns against sample text in real-time, showing match groups, indices, and string replacement outputs.
+-- **How to Use**:
++- **How to use**:
+   1. Type regular expression pattern and flags.
+-  1. Enter test string into input box.
+-  1. View highlighted matches and captured group tables.
++  2. Enter test string into input box.
++  3. View highlighted matches and captured group tables.
+ - **Top FAQs**:
+   - **Q: Which regex flavor does this use?**
+     A: JavaScript (ECMAScript) regex, since it runs in your browser. That's close to PCRE but not identical — most notably, lookbehind support and Unicode property escapes (\p{...}) require a modern browser, and JavaScript has no possessive quantifiers or atomic groups.
+@@ -122,19 +122,19 @@ This document provides full technical details, Pillar Keywords, explanations, FA
+   - **Q: What is catastrophic backtracking and does the tool warn me?**
+     A: Nested quantifiers on ambiguous patterns — for example (a+)+ or (.*)* — can take exponential time on adversarial input. The tool aborts execution after a short timeout on your test string, but it doesn't statically detect the problem. Rewrite ambiguous patterns; don't just hope your input stays benign.
+ 
+---- 
++---
+ 
+ ### Bulk URL Extractor & Sitemap Generator
+ - **URL**: https://www.xfree.in/tools/bulk-url-extractor
+ - **Category**: SEO & URL Tools
+-- **Pillar Keyword**: Free Bulk URL Extractor & Sitemap Generator Online
+ - **Description**: Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.
++- **Processing**: Local processing: input text and extracted URLs stay in your browser.
+ - **Explanation**: Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.
+-- **How to Use**:
++- **How to use**:
+   1. Paste any raw text or HTML snippet into the input area.
+-  1. Select domain filter, query parameter removal, and deduplication options.
+-  1. View real-time extracted URL stats.
+-  1. Download generated XML Sitemap file.
++  2. Select domain filter, query parameter removal, and deduplication options.
++  3. View real-time extracted URL stats.
++  4. Download generated XML Sitemap file.
+ - **Top FAQs**:
+   - **Q: Which URL formats does the extractor find?**
+     A: Any string starting with http:// or https://, including URLs with query strings, fragments, and ports. Protocol-relative URLs (starting with //) are optionally normalized to https://. Relative paths without a base URL aren't extracted — regex-based extraction needs a full URL.
+@@ -143,18 +143,18 @@ This document provides full technical details, Pillar Keywords, explanations, FA
+   - **Q: How large an input can it handle?**
+     A: Tested to about 5 MB of pasted text on a mid-range laptop. Above that, the browser tab slows noticeably. For very large log files, split them or use a command-line tool like grep -oE.
+ 
+---- 
++---
+ 
+ ### Cron Expression Generator & Human Translator
+ - **URL**: https://www.xfree.in/tools/cron-expression-generator
+ - **Category**: Generators
+-- **Pillar Keyword**: Cron Expression Generator
+ - **Description**: Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.
++- **Processing**: Local processing: cron parsing and next-run calculations happen in your browser.
+ - **Explanation**: Translates cron syntax into human-readable sentences and calculates exact future execution timestamps.
+-- **How to Use**:
++- **How to use**:
+   1. Configure minute, hour, day of month, month, and day of week options.
+-  1. Review generated 5-part cron expression string.
+-  1. Inspect upcoming execution times list.
++  2. Review generated 5-part cron expression string.
++  3. Inspect upcoming execution times list.
+ - **Top FAQs**:
+   - **Q: Which cron dialect does the tool support?**
+     A: Standard 5-field Unix cron: minute hour day-of-month month day-of-week. AWS EventBridge (6-field with seconds and ? placeholder), Quartz (6-7 fields), and Kubernetes CronJob all differ — the tool won't generate valid expressions for those. Kubernetes CronJob uses 5-field Unix cron, so it's compatible.
+@@ -163,18 +163,18 @@ This document provides full technical details, Pillar Keywords, explanations, FA
+   - **Q: Why do day-of-month and day-of-week seem to combine oddly?**
+     A: In most cron implementations (Vixie cron, Kubernetes, GNU), if BOTH day-of-month and day-of-week are set (not *), the rule is OR — not AND. `0 0 15 * 1` runs at midnight on the 15th OR any Monday, not 'midnight on the 15th if it's a Monday.' Use * for one field when you want AND-like behavior.
+ 
+---- 
++---
+ 
+ ### Base64 Encoder/Decoder & JWT Token Inspector
+ - **URL**: https://www.xfree.in/tools/base64-encoder-decoder
+ - **Category**: Converters & Encoders
+-- **Pillar Keyword**: Base64 & JWT Decoder
+ - **Description**: Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.
