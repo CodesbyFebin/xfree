@@ -32,7 +32,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .release/final-audit/part*.patch > /tmp/xfree-final.patch
+          {
+            head -c 9500 .release/final-audit/part01.patch
+            cat .release/final-audit/part{02..14}.patch
+            cat .release/final-audit/part15.patch; printf '\n'
+            cat .release/final-audit/part16.patch; printf '\n'
+            cat .release/final-audit/part17.patch
+            cat .release/final-audit/part18.patch; printf '\n'
+            cat .release/final-audit/part19.patch; printf '\n'
+            cat .release/final-audit/part20a.patch .release/final-audit/part20b.patch .release/final-audit/part21.patch
+          } > /tmp/xfree-final.patch
           echo 'daeda98d899b2b729f3b745205aef0a7efa6b04f1abcb2e02530a2708df83ce6  /tmp/xfree-final.patch' | sha256sum -c -
           test "$(git merge-base HEAD 260972d010f69f9b6f0de01ca0b08301ff9ea825)" = "260972d010f69f9b6f0de01ca0b08301ff9ea825"
           git apply --check /tmp/xfree-final.patch
