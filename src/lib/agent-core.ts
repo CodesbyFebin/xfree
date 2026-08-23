@@ -1,9 +1,16 @@
 import { LOCAL_ENGINES } from "./studio/engines";
 import type { StudioResult } from "./studio/types";
 
-export type AgentPlanSource = "rules" | "webllm";
+export type AgentPlanSource = "rules" | "webllm" | "recipe";
 export type AgentStepStatus = "queued" | "running" | "completed" | "failed";
-export type AgentTransformId = "lines-to-json-array";
+export type AgentTransformId =
+  | "lines-to-json-array"
+  | "map-lines-url-normalize"
+  | "extract-error-lines"
+  | "extract-first-jwt"
+  | "classify-urls"
+  | "text-summary"
+  | "extract-clipboard-values";
 
 export interface AgentPlanStep {
   id: string;
@@ -29,8 +36,24 @@ export interface AgentExecutionResult {
   result: Omit<StudioResult, "id" | "createdAt" | "processing">;
 }
 
+export interface AllowlistedPlanStep {
+  engineId?: string;
+  transformId?: AgentTransformId;
+  label?: string;
+  passthrough?: boolean;
+}
+
 const MAX_AGENT_STEPS = 6;
 const engineIds = new Set(LOCAL_ENGINES.map((engine) => engine.id));
+const transformIds = new Set<AgentTransformId>([
+  "lines-to-json-array",
+  "map-lines-url-normalize",
+  "extract-error-lines",
+  "extract-first-jwt",
+  "classify-urls",
+  "text-summary",
+  "extract-clipboard-values",
+]);
 
 const ENGINE_RULES: Array<{
   engineId: string;
@@ -77,8 +100,33 @@ function makeEngineStep(index: number, engineId: string, label?: string, passthr
   };
 }
 
-function makeTransformStep(index: number, transformId: AgentTransformId, label: string): AgentPlanStep {
-  return { id: stepId(index), kind: "transform", transformId, label, status: "queued" };
+function makeTransformStep(index: number, transformId: AgentTransformId, label?: string): AgentPlanStep {
+  if (!transformIds.has(transformId)) throw new Error(`Unknown local transform: ${transformId}`);
+  return { id: stepId(index), kind: "transform", transformId, label: label || transformId, status: "queued" };
+}
+
+export function buildAllowlistedAgentPlan(
+  command: string,
+  source: AgentPlanSource,
+  rawSteps: readonly AllowlistedPlanStep[],
+  rationale?: string,
+): LocalAgentPlan {
+  if (!rawSteps.length || rawSteps.length > MAX_AGENT_STEPS) throw new Error(`Agent plan must contain 1–${MAX_AGENT_STEPS} steps.`);
+  const steps = rawSteps.map((step, index): AgentPlanStep => {
+    if (typeof step.engineId === "string") {
+      if (!engineIds.has(step.engineId)) throw new Error(`Agent plan requested unknown engine: ${step.engineId}`);
+      return makeEngineStep(index, step.engineId, step.label, step.passthrough === true);
+    }
+    if (step.transformId && transformIds.has(step.transformId)) return makeTransformStep(index, step.transformId, step.label);
+    throw new Error(`Agent plan step ${index + 1} did not specify an allowed engine or transform.`);
+  });
+  return {
+    id: `agent-plan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    command: command.trim(),
+    source,
+    steps,
+    rationale,
+  };
 }
 
 export function buildRulesAgentPlan(command: string, preferredEngineId?: string): LocalAgentPlan {
@@ -133,34 +181,94 @@ export function validateExternalAgentPlan(command: string, draft: unknown): Loca
   if (!Array.isArray(value.steps) || value.steps.length === 0 || value.steps.length > MAX_AGENT_STEPS) {
     throw new Error(`Local brain plan must contain 1–${MAX_AGENT_STEPS} steps.`);
   }
-
-  const steps = value.steps.map((raw, index): AgentPlanStep => {
+  const rawSteps = value.steps.map((raw, index): AllowlistedPlanStep => {
     if (!raw || typeof raw !== "object") throw new Error(`Local brain step ${index + 1} is invalid.`);
     const step = raw as { engineId?: unknown; transformId?: unknown; label?: unknown; passthrough?: unknown };
-
-    if (typeof step.engineId === "string") {
-      if (!engineIds.has(step.engineId)) throw new Error(`Local brain requested unknown engine: ${step.engineId}`);
-      return makeEngineStep(index, step.engineId, typeof step.label === "string" ? step.label : undefined, step.passthrough === true);
-    }
-
-    if (step.transformId === "lines-to-json-array") {
-      return makeTransformStep(index, "lines-to-json-array", typeof step.label === "string" ? step.label : "Convert lines to JSON array");
-    }
-
+    if (typeof step.engineId === "string") return {
+      engineId: step.engineId,
+      label: typeof step.label === "string" ? step.label : undefined,
+      passthrough: step.passthrough === true,
+    };
+    if (typeof step.transformId === "string" && transformIds.has(step.transformId as AgentTransformId)) return {
+      transformId: step.transformId as AgentTransformId,
+      label: typeof step.label === "string" ? step.label : undefined,
+    };
     throw new Error(`Local brain step ${index + 1} did not specify an allowed engine or transform.`);
   });
-
-  return {
-    id: `agent-plan-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+  return buildAllowlistedAgentPlan(
     command,
-    source: "webllm",
-    steps,
-    rationale: typeof value.rationale === "string" ? value.rationale.slice(0, 500) : "WebLLM proposed a plan that passed the local allowlist validator.",
-  };
+    "webllm",
+    rawSteps,
+    typeof value.rationale === "string" ? value.rationale.slice(0, 500) : "WebLLM proposed a plan that passed the local allowlist validator.",
+  );
+}
+
+function nonEmptyLines(input: string): string[] {
+  return input.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
 }
 
 function transformLinesToJsonArray(input: string) {
-  return JSON.stringify(input.split(/\r?\n/).map((line) => line.trim()).filter(Boolean), null, 2);
+  return JSON.stringify(nonEmptyLines(input), null, 2);
+}
+
+function transformNormalizeUrlLines(input: string) {
+  return nonEmptyLines(input).map((line) => {
+    const url = new URL(line);
+    url.hash = "";
+    url.hostname = url.hostname.toLowerCase();
+    if ((url.protocol === "http:" && url.port === "80") || (url.protocol === "https:" && url.port === "443")) url.port = "";
+    return url.toString();
+  }).join("\n");
+}
+
+function transformErrorLines(input: string) {
+  return nonEmptyLines(input).filter((line) => /\b(error|fatal|exception|failed|failure)\b|\b5\d\d\b/i.test(line)).join("\n");
+}
+
+function transformFirstJwt(input: string) {
+  const match = input.match(/\beyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\b/);
+  if (!match) throw new Error("No three-part JWT-shaped value was found in the supplied text.");
+  return match[0];
+}
+
+function transformClassifyUrls(input: string) {
+  const urls = nonEmptyLines(input).map((line) => new URL(line));
+  if (!urls.length) return JSON.stringify({ baseOrigin: null, internal: [], external: [], counts: { internal: 0, external: 0 } }, null, 2);
+  const baseOrigin = urls[0].origin;
+  const internal = urls.filter((url) => url.origin === baseOrigin).map((url) => url.toString());
+  const external = urls.filter((url) => url.origin !== baseOrigin).map((url) => url.toString());
+  return JSON.stringify({ baseOrigin, internal, external, counts: { internal: internal.length, external: external.length } }, null, 2);
+}
+
+function transformTextSummary(input: string) {
+  const cleanedText = nonEmptyLines(input).join("\n");
+  const words = cleanedText.trim() ? cleanedText.trim().split(/\s+/).length : 0;
+  return JSON.stringify({ cleanedText, lineCount: nonEmptyLines(cleanedText).length, wordCount: words, characterCount: cleanedText.length }, null, 2);
+}
+
+function transformClipboardValues(input: string) {
+  const patterns = [
+    /https?:\/\/[^\s<>'"`]+/gi,
+    /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
+    /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/gi,
+    /\b[a-f0-9]{32,128}\b/gi,
+    /\b[A-Za-z_][A-Za-z0-9_.-]*\s*[:=]\s*[^\s]+/g,
+  ];
+  const values = new Set<string>();
+  for (const pattern of patterns) for (const match of input.match(pattern) ?? []) values.add(match.trim());
+  return values.size ? [...values].join("\n") : nonEmptyLines(input).join("\n");
+}
+
+function runTransform(transformId: AgentTransformId, input: string): Omit<StudioResult, "id" | "createdAt" | "processing"> {
+  switch (transformId) {
+    case "lines-to-json-array": return { engineId: "agent-lines-to-json-array", title: "Agent JSON result", content: transformLinesToJsonArray(input), extension: "json", mimeType: "application/json" };
+    case "map-lines-url-normalize": return { engineId: "agent-map-lines-url-normalize", title: "Normalized URLs", content: transformNormalizeUrlLines(input), extension: "txt", mimeType: "text/plain" };
+    case "extract-error-lines": return { engineId: "agent-extract-error-lines", title: "Error-oriented log lines", content: transformErrorLines(input), extension: "txt", mimeType: "text/plain" };
+    case "extract-first-jwt": return { engineId: "agent-extract-first-jwt", title: "JWT candidate", content: transformFirstJwt(input), extension: "txt", mimeType: "text/plain" };
+    case "classify-urls": return { engineId: "agent-classify-urls", title: "URL classification", content: transformClassifyUrls(input), extension: "json", mimeType: "application/json" };
+    case "text-summary": return { engineId: "agent-text-summary", title: "Cleaned text summary", content: transformTextSummary(input), extension: "json", mimeType: "application/json" };
+    case "extract-clipboard-values": return { engineId: "agent-extract-clipboard-values", title: "Clipboard values", content: transformClipboardValues(input), extension: "txt", mimeType: "text/plain" };
+  }
 }
 
 export async function executeLocalAgentPlan(
@@ -187,15 +295,10 @@ export async function executeLocalAgentPlan(
         const result = await engine.run(current, command);
         finalResult = result;
         if (!step.passthrough) current = result.content;
-      } else if (step.transformId === "lines-to-json-array") {
-        current = transformLinesToJsonArray(current);
-        finalResult = {
-          engineId: "agent-lines-to-json-array",
-          title: "Agent JSON result",
-          content: current,
-          extension: "json",
-          mimeType: "application/json",
-        };
+      } else if (step.transformId) {
+        const result = runTransform(step.transformId, current);
+        finalResult = result;
+        current = result.content;
       }
 
       mutablePlan.steps[index] = { ...mutablePlan.steps[index], status: "completed" };
@@ -217,4 +320,8 @@ export async function executeLocalAgentPlan(
 
 export function getAgentAllowedEngineIds(): string[] {
   return [...engineIds].sort();
+}
+
+export function getAgentAllowedTransformIds(): AgentTransformId[] {
+  return [...transformIds].sort();
 }
