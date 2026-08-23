@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { CheckCircle2, Clipboard, Code2, RotateCcw, ShieldCheck, Sparkles } from "lucide-react";
-import { PUBLIC_TOOLS } from "../data/publicTools";
-import { PILLARS_50, ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
 
 const DEFAULT_INPUT = '{"name":"xfree","type":"micro-tool","local":true}';
 
@@ -33,26 +31,8 @@ export function HomeLivePlayground() {
     window.setTimeout(() => setCopied(false), 1400);
   };
 
-  const metrics = [
-    { value: PUBLIC_TOOLS.length.toLocaleString(), label: "Published tools" },
-    { value: PILLARS_50.length.toLocaleString(), label: "Planning pillars" },
-    { value: ROADMAP_CONCEPT_COUNT.toLocaleString(), label: "Roadmap concepts" },
-    { value: "0", label: "Required signups" },
-  ];
-
   return (
     <section className="overflow-hidden rounded-[2rem] border border-slate-800 bg-[#07070e] text-slate-200 shadow-2xl shadow-indigo-950/10" aria-labelledby="home-playground-heading">
-      <div className="border-b border-slate-800/80 bg-[#0a0a12] px-5 py-4 sm:px-8">
-        <dl className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          {metrics.map((metric) => (
-            <div key={metric.label} className="text-center md:text-left">
-              <dd className="text-2xl font-black text-indigo-400">{metric.value}</dd>
-              <dt className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{metric.label}</dt>
-            </div>
-          ))}
-        </dl>
-      </div>
-
       <div className="relative p-5 sm:p-8 lg:p-10">
         <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-32 -right-20 h-72 w-72 rounded-full bg-violet-500/10 blur-3xl" aria-hidden="true" />
@@ -82,7 +62,7 @@ export function HomeLivePlayground() {
                 <button
                   type="button"
                   onClick={() => setInput(DEFAULT_INPUT)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1 text-[11px] font-semibold text-slate-400 transition hover:border-indigo-500/50 hover:text-indigo-300"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1 text-[11px] font-semibold text-slate-400 transition hover:border-indigo-500/50 hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                 >
                   <RotateCcw className="h-3 w-3" /> Reset
                 </button>
@@ -109,7 +89,7 @@ export function HomeLivePlayground() {
                 type="button"
                 onClick={() => void copyOutput()}
                 disabled={!result.valid}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1 text-[11px] font-semibold text-slate-300 transition hover:border-indigo-500/50 hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1 text-[11px] font-semibold text-slate-300 transition hover:border-indigo-500/50 hover:text-indigo-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Clipboard className="h-3 w-3" /> {copied ? "Copied" : "Copy"}
               </button>
@@ -126,7 +106,7 @@ export function HomeLivePlayground() {
 
         <div className="relative mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-500">
           <span className="inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-emerald-500" /> Browser parser · no upload for this demo</span>
-          <a href="/tools/json-formatter" className="font-semibold text-indigo-300 hover:text-indigo-200">Open the full JSON Formatter →</a>
+          <a href="/tools/json-formatter" className="font-semibold text-indigo-300 hover:text-indigo-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400">Open the full JSON Formatter →</a>
         </div>
       </div>
     </section>
