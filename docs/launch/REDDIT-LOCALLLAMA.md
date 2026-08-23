@@ -1,50 +1,36 @@
-# r/LocalLLaMA technical launch draft — XFree
+# r/LocalLLaMA launch notes — XFree
 
-## Positioning
+> **Internal fact sheet only.** Do not paste this file into Reddit as a finished post. r/LocalLLaMA's 2026 rule updates explicitly target low-effort/undisclosed LLM-written content, and moderators are actively enforcing the self-promotion participation rule. The human submitter should write the final post in their own voice and disclose AI assistance if required by the current rules.
 
-Do not post this as “I launched an AI developer toolbox.” Lead with the engineering problem: making browser automation reproducible and inspectable while keeping LLM planning optional.
+## Technical angle to explain in your own words
 
-Recommended title:
+Lead with the engineering problem: making browser automation reproducible and inspectable while keeping LLM planning optional.
 
-**I built versioned local workflow recipes on top of 100 allowlisted browser engines (optional WebGPU planner)**
+Useful concepts for a human-written title:
 
-Shorter alternative:
+- versioned local workflow recipes;
+- 100 allowlisted browser engines;
+- deterministic execution;
+- optional SmolLM2/WebGPU planning.
 
-**Local browser workflow recipes with deterministic execution + optional SmolLM2 WebGPU planning**
+Avoid generic “AI developer toolbox” wording and promotional superlatives.
 
-## Draft post
+## Facts the human-written post may cover
 
-I have been working on XFree, a browser-based developer-tool project, and the part I wanted to share here is the local workflow architecture rather than the tool directory itself.
+- XFree has 100 allowlisted local engines in Agent Studio.
+- The deterministic Agent Core can chain those engines.
+- An optional WebGPU/WebLLM planner can propose a plan with the pinned SmolLM2 model on supported browsers.
+- Execution remains constrained to the same engine allowlist regardless of how the plan was proposed.
+- Eight versioned v1 recipes can be shared without sharing prompts or arbitrary executable scripts.
+- All eight v1 recipes run in Local Mode and require no model.
+- Example recipe architecture: `http-url-extract → url-normalize (per line) → line-dedupe → line-sort → lines-to-json-array`.
+- The share payload contains recipe ID/version, processing mode, LLM-required flag, allowlisted engine IDs, built-in transform IDs, and a small closed config set.
+- The runner rejects unknown engines, transforms, config keys, non-local v1 recipes, and recipes longer than six steps.
+- The WebGPU planner is a convenience layer, not execution authority.
+- XFree is not described as an entirely client-side platform: Local Mode workflows execute in-browser, while optional separately labeled cloud/API features can send explicitly submitted data to configured providers.
+- The PWA deliberately excludes model downloads, API requests, and ads from service-worker caching.
 
-The current governed release has 100 allowlisted local engines. The deterministic Agent Core can chain those engines, and an optional WebGPU/WebLLM planner can propose a plan using a pinned SmolLM2 model when the browser supports it. Regardless of how the plan is proposed, execution is constrained to the same engine allowlist.
-
-I have now added a versioned recipe layer so useful workflows can be shared without sharing prompts or arbitrary scripts.
-
-Example:
-
-```text
-URL Cleanup Pipeline v1
-http-url-extract
-→ url-normalize (per line)
-→ line-dedupe
-→ line-sort
-→ lines-to-json-array
-```
-
-The share payload contains only:
-
-- recipe ID and version;
-- processing mode;
-- whether an LLM is required;
-- allowlisted engine IDs;
-- built-in transform IDs;
-- a tiny closed set of reviewed config flags.
-
-It deliberately cannot contain arbitrary JavaScript. Before execution, the runner rejects unknown engines, unknown transforms, unsupported configuration keys, non-local v1 recipes, and recipes longer than six steps.
-
-The first eight recipes are URL cleanup, log sanitization, JWT inspection, SEO URL classification, JSON cleanup, text cleanup, CSV normalization, and developer clipboard URL extraction. All eight v1 recipes are deterministic Local Mode workflows and require no model.
-
-The WebGPU planner is therefore an optional convenience layer, not the execution authority. The architecture I am testing is:
+## Architecture diagram to recreate or explain manually
 
 ```text
 natural-language request (optional)
@@ -63,35 +49,43 @@ natural-language request (optional)
           visible execution trace
 ```
 
-A privacy clarification: I do not describe the whole XFree platform as 100% client-side. Local recipes and Local Mode tools execute in the browser, while separate optional cloud/API functionality can send explicitly submitted data to configured providers. The PWA also intentionally excludes model downloads, API requests, and ads from service-worker caching.
+## Questions worth asking the community
 
-I would be interested in feedback from people running local models in-browser:
+Choose only questions the submitter genuinely wants answered and rewrite them naturally:
 
-1. Would you keep LLM planning entirely separate from deterministic recipe execution, or allow recipes to opt into a pinned planner version later?
-2. What would you include in a portable recipe schema beyond engine IDs, versions, and closed configuration?
-3. For WebGPU planning, is a tiny fast model the right tradeoff here, given that the model only proposes a plan and never expands execution permissions?
+- Should LLM planning remain entirely separate from deterministic recipe execution, or should a future recipe be able to pin an optional planner/model version?
+- What belongs in a portable recipe schema beyond engine IDs, versions, and closed configuration?
+- Is a small fast local model the right planning tradeoff when it only proposes a plan and cannot expand execution permissions?
+- What WebGPU/browser compatibility edge cases should be tested before recipe import/export expands?
 
-Runnable recipes: `https://www.xfree.in/recipes`
+## Links to have ready
 
-Source: `https://github.com/CodesbyFebin/xfree`
+- Runnable recipes: `https://www.xfree.in/recipes`
+- Source: `https://github.com/CodesbyFebin/xfree`
+- Recipe registry: `src/data/recipes.ts`
+- Recipe runner: `src/lib/recipe-runner.ts`
+- Agent Core: `src/lib/agent-core.ts`
 
 ## Before posting
 
-- Rewrite the final post in the submitter's own voice. Do not paste a generic promotional AI-written post unchanged.
-- If AI materially assisted the final text, disclose that assistance if the subreddit rules require it at posting time.
-- Check the account's recent r/LocalLLaMA participation. Do not use the subreddit as a drive-by self-promotion channel.
-- Read the current subreddit rules immediately before posting; moderation requirements changed in 2026 and can change again.
-- Prefer implementation details, benchmarkable behavior, source links, screenshots of the execution trace, and concrete limitations over adjectives.
-- Do not claim “100% client-side platform,” “zero tracking,” “unlimited,” or “25,000 live tools.”
-- Be explicit that JWT decoding is not signature verification.
-- Be explicit that the initial recipe layer uses no LLM; WebLLM planning is optional.
+- [ ] Write the final title and post manually in the submitter's own voice; do not paste this fact sheet as submission copy.
+- [ ] Read the current r/LocalLLaMA rules and latest moderator announcements immediately before posting.
+- [ ] Check the account's recent r/LocalLLaMA activity. Current moderator enforcement repeatedly uses the **rough 10% self-promotion / 90% meaningful participation guideline**; do not post until the account genuinely fits the community expectation.
+- [ ] Participation must be meaningful, not filler comments written to satisfy a quota.
+- [ ] If AI materially assisted the final post, follow the current disclosure rule.
+- [ ] Prefer implementation details, source links, execution-trace screenshots, test results, and limitations over promotional language.
+- [ ] Keep the topic genuinely about local models/local inference. Do not make the optional cloud mode the center of the r/LocalLLaMA post.
+- [ ] Do not claim “100% client-side platform,” “zero tracking,” “unlimited,” or “25,000 live tools.”
+- [ ] State that JWT decoding is not signature verification if that recipe is discussed.
+- [ ] State that v1 recipes use no LLM; WebLLM planning is optional.
 
-## Participation / moderation notes
+## Current moderation context
 
-Recent moderator guidance has emphasized meaningful community participation and has become stricter about low-effort self-promotion and undisclosed LLM-written content. Treat the launch as a technical discussion, not an advertisement. If the account is not yet within the community's current self-promotion expectations, participate first and post the project later.
+The April 2026 rule update introduced minimum-karma requirements and stronger Rule 3/Rule 4 wording because of spam, low-effort AI content, and self-promotion. Moderator replies throughout mid/late 2026 continue to enforce meaningful participation and repeatedly describe the 1-in-10 self-promotion ratio as the practical guideline.
 
-Useful launch-day reference:
+Useful launch-day references:
 
-`https://www.reddit.com/r/LocalLLaMA/`
+- `https://www.reddit.com/r/LocalLLaMA/comments/1su3ao4/rlocalllama_rule_updates/`
+- `https://www.reddit.com/r/LocalLLaMA/`
 
-Check the current sidebar/rules and recent moderator announcements immediately before submission rather than relying on this document as a permanent statement of policy.
+Rules can change. Treat this file as planning notes and verify the live subreddit rules on the day of submission.
