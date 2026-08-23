@@ -2,16 +2,18 @@ import type { ToolDefinition } from "../types";
 import { CATEGORIES, TOOLS_REGISTRY } from "./toolsRegistry";
 import { BATCH1_PUBLISHED_TOOLS } from "./publishedBatch1Tools";
 
-/**
- * The only tool catalog that public pages, routes, feeds, APIs, sitemaps, and
- * prerendering may expose. Batch additions must already be publication-gated.
- */
+/** The only tool catalog that public pages, routes, feeds, APIs, sitemaps, and prerendering may expose. */
 const BASE_PUBLISHED_TOOLS = TOOLS_REGISTRY.filter(
   (tool) => tool.status === "published" && tool.indexable === true,
 );
 
+const BATCH1_PUBLIC_TOOLS: ToolDefinition[] = BATCH1_PUBLISHED_TOOLS.map((tool) => ({
+  ...tool,
+  id: `local-${tool.id}`,
+}));
+
 const toolMap = new Map<string, ToolDefinition>();
-for (const tool of [...BASE_PUBLISHED_TOOLS, ...BATCH1_PUBLISHED_TOOLS]) {
+for (const tool of [...BASE_PUBLISHED_TOOLS, ...BATCH1_PUBLIC_TOOLS]) {
   const key = tool.slug || tool.id;
   if (!toolMap.has(key)) toolMap.set(key, tool);
 }
