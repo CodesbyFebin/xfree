@@ -1,33 +1,51 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   body {
-    background-color: #0b0f19;
-    color: #f1f5f9;
+    background-color: #fafaf9;
+    color: #0f172a;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
     overflow-x: hidden;
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  html.dark body {
+    background-color: #0b0f19;
+    color: #f1f5f9;
   }
 }
 
-/* Apple Starry Dark Dune Background */
+/* Shared application canvas. Light mode uses a quiet editorial surface; dark mode
+   adapts the indigo/violet prototype without forcing the Studio palette on content pages. */
 .starry-bg {
-  background-color: #0a0d16;
-  background-image: 
-    radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08), transparent 40%),
-    radial-gradient(circle at 80% 30%, rgba(139, 92, 246, 0.08), transparent 50%),
-    radial-gradient(circle at 20% 70%, rgba(16, 185, 129, 0.05), transparent 40%),
-    radial-gradient(ellipse at 50% 100%, rgba(15, 23, 42, 0.95), #07090e);
-  background-attachment: fixed;
+  background-color: #fafaf9;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08), transparent 32%),
+    linear-gradient(#fafaf9, #fafaf9);
+  background-attachment: scroll;
   position: relative;
 }
 
 .starry-bg::before {
   content: "";
+  display: none;
+}
+
+html.dark .starry-bg {
+  background-color: #0a0d16;
+  background-image:
+    radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(139, 92, 246, 0.08), transparent 50%),
+    radial-gradient(circle at 20% 70%, rgba(16, 185, 129, 0.05), transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(15, 23, 42, 0.95), #07090e);
+  background-attachment: fixed;
+}
+
+html.dark .starry-bg::before {
+  display: block;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   pointer-events: none;
   background-image: radial-gradient(1px 1px at 20px 30px, #ffffff 100%, transparent),
                     radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.8) 100%, transparent),
@@ -36,34 +54,69 @@
                     radial-gradient(1px 1px at 230px 190px, rgba(255, 255, 255, 0.6) 100%, transparent),
                     radial-gradient(1px 1px at 310px 80px, #ffffff 100%, transparent);
   background-size: 350px 350px;
-  opacity: 0.35;
+  opacity: 0.28;
   z-index: 0;
 }
 
-/* Homepage-only editorial canvas adapted from the marketing HTML reference. */
-body.xfree-home-light {
-  background: #fafaf9;
-  color: #0f172a;
-}
-
-body.xfree-home-light .starry-bg {
-  background-color: #fafaf9;
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08), transparent 32%),
-    linear-gradient(#fafaf9, #fafaf9);
-  background-attachment: scroll;
-}
-
-body.xfree-home-light .starry-bg::before {
-  display: none;
-}
-
-body.xfree-home-light ::selection {
+/* Homepage design scope. The same React structure supports the white editorial
+   reference and the dark indigo reference; theme state decides which palette wins. */
+body.xfree-home-marketing ::selection {
   background: #c7d2fe;
   color: #312e81;
 }
 
-/* Studio-only deep canvas adapted from the XFree Studio HTML reference. */
+html.dark body.xfree-home-marketing ::selection {
+  background: rgba(99, 102, 241, 0.38);
+  color: #ffffff;
+}
+
+/* The light-reference components were intentionally authored with explicit utility
+   classes. These scoped overrides let dark mode adapt the whole marketing surface
+   without duplicating every component or leaking into tool workspaces. */
+html.dark body.xfree-home-marketing .bg-white,
+html.dark body.xfree-home-marketing .bg-white\/90 {
+  background-color: rgba(18, 19, 26, 0.94) !important;
+}
+html.dark body.xfree-home-marketing .bg-stone-50,
+html.dark body.xfree-home-marketing .bg-stone-50\/80,
+html.dark body.xfree-home-marketing .bg-stone-50\/90 {
+  background-color: rgba(10, 11, 15, 0.92) !important;
+}
+html.dark body.xfree-home-marketing .bg-indigo-50,
+html.dark body.xfree-home-marketing .bg-indigo-50\/70 {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+}
+html.dark body.xfree-home-marketing .border-slate-100,
+html.dark body.xfree-home-marketing .border-slate-200 {
+  border-color: #2a2b38 !important;
+}
+html.dark body.xfree-home-marketing .border-indigo-100,
+html.dark body.xfree-home-marketing .border-indigo-200 {
+  border-color: rgba(99, 102, 241, 0.28) !important;
+}
+html.dark body.xfree-home-marketing .text-slate-950,
+html.dark body.xfree-home-marketing .text-slate-900,
+html.dark body.xfree-home-marketing .text-slate-800,
+html.dark body.xfree-home-marketing .text-slate-700 {
+  color: #f8fafc !important;
+}
+html.dark body.xfree-home-marketing .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+html.dark body.xfree-home-marketing .text-slate-500 {
+  color: #94a3b8 !important;
+}
+html.dark body.xfree-home-marketing .text-slate-400 {
+  color: #64748b !important;
+}
+html.dark body.xfree-home-marketing .shadow-sm,
+html.dark body.xfree-home-marketing .shadow-md,
+html.dark body.xfree-home-marketing .shadow-lg {
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28) !important;
+}
+
+/* Studio-only deep canvas adapted from the XFree Studio HTML reference. Studio is
+   deliberately operational-dark even if the public-site preference is light. */
 body.xfree-studio-dark,
 body.xfree-studio-dark #root,
 body.xfree-studio-dark #root > div {
@@ -76,7 +129,7 @@ body.xfree-studio-dark ::selection {
   color: #ffffff;
 }
 
-/* Glassmorphism Apple Utility Classes */
+/* Glassmorphism utility classes used by legacy/tool workspaces. */
 .glass-panel {
   background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(16px);
@@ -131,45 +184,35 @@ body.xfree-studio-dark ::selection {
   font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.8);
+  background: #f5f5f4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
-}
-
-body.xfree-home-light ::-webkit-scrollbar-track {
-  background: #f5f5f4;
-}
-
-body.xfree-home-light ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-}
-
-body.xfree-home-light ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
+html.dark ::-webkit-scrollbar-track,
 body.xfree-studio-dark ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.8);
 }
 
+html.dark ::-webkit-scrollbar-thumb,
 body.xfree-studio-dark ::-webkit-scrollbar-thumb {
   background: #2a2b38;
 }
 
+html.dark ::-webkit-scrollbar-thumb:hover,
 body.xfree-studio-dark ::-webkit-scrollbar-thumb:hover {
   background: #3a3b4a;
 }
@@ -177,5 +220,8 @@ body.xfree-studio-dark ::-webkit-scrollbar-thumb:hover {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
