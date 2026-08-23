@@ -19,14 +19,14 @@ Google Publisher Policies do not publish a universal minimum word count. They do
 
 XFree therefore uses a deliberately stricter internal publication floor for every **indexable tool page**:
 
-- at least 350 visible words in the prerendered document;
-- at least 3 FAQ questions represented in the page's FAQ JSON-LD;
+- at least 350 words of real publisher content across the prerendered tool guide plus the FAQ questions/answers visibly hydrated on the same tool page;
+- at least 3 FAQ questions represented in the page's FAQ JSON-LD and visible in the React tool page;
 - a self-canonical URL;
 - `index,follow` only after the tool is actually implemented and reviewed;
 - substantive overview, usage instructions, worked examples, limitations/troubleshooting, and processing disclosure;
 - no planned/roadmap stub enters the tool sitemap.
 
-The 350-word and 3-FAQ values are **XFree rules, not Google numeric requirements**.
+The gate does not count JSON-LD structural boilerplate as content. It counts only FAQ question/answer text because those same FAQ entries are visibly rendered after hydration. The 350-word and 3-FAQ values are **XFree rules, not Google numeric requirements**.
 
 Reference: https://support.google.com/publisherpolicies/answer/11112688
 
@@ -141,7 +141,7 @@ The command runs after prerender in both `npm run build` and `npm run build:verc
 5. `public/ads.txt` matches the assigned publisher ID exactly.
 6. The AdSense account meta tag exists.
 7. CSP contains the required Google ad/consent origins and no blanket COEP header.
-8. Every URL in `sitemap-tools.xml` has at least 350 visible prerendered words and at least 3 FAQ schema questions.
+8. Every URL in `sitemap-tools.xml` has at least 350 publisher-content words across the prerendered page plus the same FAQ text visibly hydrated on that tool page, and at least 3 FAQ questions.
 9. Tool canonicals self-match and the pages are `index,follow`.
 10. The manual ad component is labelled, visible, lazy-loaded, and carries XFree's safe-zone guardrail.
 
