@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowRight, BookOpen, SearchCheck, ShieldCheck, Waypoints } from "lucide-react";
 import { PUBLIC_TOOLS } from "../data/publicTools";
 import { ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
+import { HomeLivePlayground } from "./HomeLivePlayground";
 
 interface HomeAuthoritySectionProps {
   onNavigate: (path: string) => void;
@@ -54,6 +55,8 @@ export const HomeAuthoritySection: React.FC<HomeAuthoritySectionProps> = ({ onNa
         <p className="mt-4 text-sm leading-6 text-slate-500">Roadmap concepts remain planning entries until implementation, editorial, canonical, content and indexing gates pass.</p>
       </aside>
     </div>
+
+    <HomeLivePlayground />
 
     <div className="grid gap-4 md:grid-cols-3">
       {[
