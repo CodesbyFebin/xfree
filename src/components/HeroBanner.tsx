@@ -14,6 +14,15 @@ interface HeroBannerProps {
   onOpenStudio?: () => void;
 }
 
+const POPULAR_TOOLS = [
+  ["JSON Formatter", "/tools/json-formatter"],
+  ["Regex Tester", "/tools/regex-tester"],
+  ["XML Sitemap", "/tools/xml-sitemap-generator"],
+  ["Meta Tags", "/tools/meta-tag-generator"],
+  ["Base64", "/tools/base64-encoder-decoder"],
+  ["Cron", "/tools/cron-expression-generator"],
+] as const;
+
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   searchQuery,
   onSearchChange,
@@ -61,7 +70,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 event.preventDefault();
                 onOpenStudio();
               }}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700 sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200 sm:w-auto"
             >
               Open XFree Studio
               <ArrowRight className="h-4 w-4" />
@@ -69,7 +78,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <button
               type="button"
               onClick={onExploreFreeTools}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 sm:w-auto"
             >
               Browse published tools
               <Sparkles className="h-4 w-4 text-indigo-500" />
@@ -138,6 +147,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             {totalTools} tools
           </span>
         </div>
+        <nav className="mx-auto mt-3 flex max-w-4xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs" aria-label="Popular published tools">
+          <span className="font-semibold text-slate-400">Popular:</span>
+          {POPULAR_TOOLS.map(([label, href]) => (
+            <a key={href} href={href} className="font-semibold text-indigo-600 transition hover:text-indigo-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300">
+              {label}
+            </a>
+          ))}
+        </nav>
       </div>
     </section>
   );
