@@ -32,18 +32,20 @@ Reference: https://support.google.com/publisherpolicies/answer/11112688
 
 ### Ads must not interfere with actions or content
 
-Google prohibits ads that overlay or are immediately adjacent to navigation/action items when that positioning may cause unintended interactions. Google does not publish a universal 150-pixel separation requirement.
+Google prohibits ads that overlay or are immediately adjacent to navigation/action items when that positioning may cause unintended interactions. Google does not publish a universal 150-pixel separation requirement, although its policy guidance gives 150 pixels as an example recommendation around highly interactive controls.
 
-XFree applies a project-specific 160-pixel top separation guardrail for manual `AdSenseUnit` placements and only renders them after substantive educational/tool guidance. Ad units are:
+XFree applies a project-specific **160-pixel separation above and below** every manual `AdSenseUnit` and only renders manual units after substantive educational/tool guidance. Ad units are:
 
 - explicitly labelled `Advertisement`;
 - rendered only when a real approved slot ID is configured;
+- separated by 160 pixels from adjacent tool/navigation action surfaces;
 - not hidden with `display:none` or deceptive CSS;
 - not used as overlays, sticky click targets, or replacements for navigation;
 - not rendered on `/privacy`, `/terms`, or `/contact` by the current page templates.
 
 References:
 - https://support.google.com/publisherpolicies/answer/11035030
+- https://support.google.com/publisherpolicies/answer/11191353
 - https://support.google.com/publisherpolicies/answer/11127388
 
 ### Privacy disclosures
@@ -143,7 +145,7 @@ The command runs after prerender in both `npm run build` and `npm run build:verc
 7. CSP contains the required Google ad/consent origins and no blanket COEP header.
 8. Every URL in `sitemap-tools.xml` has at least 350 publisher-content words across the prerendered page plus the same FAQ text visibly hydrated on that tool page, and at least 3 FAQ questions.
 9. Tool canonicals self-match and the pages are `index,follow`.
-10. The manual ad component is labelled, visible, lazy-loaded, and carries XFree's safe-zone guardrail.
+10. The manual ad component is labelled, visible, lazy-loaded, and has a 160-pixel safe-zone above and below the unit.
 
 ## Before requesting AdSense review
 
