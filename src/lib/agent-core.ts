@@ -44,10 +44,10 @@ const ENGINE_RULES: Array<{
   { engineId: "email-extract", label: "Extract email candidates", patterns: [/(?:extract|find|collect|pull).{0,24}(?:email|emails|addresses)/i] },
   { engineId: "line-dedupe", label: "Remove duplicate lines", patterns: [/\b(?:dedupe|de-duplicate|remove duplicates?|unique lines?)\b/i] },
   { engineId: "line-sort", label: "Sort lines", patterns: [/\b(?:sort|alphabetize).{0,12}(?:lines?|results?|urls?|links?)?\b/i] },
-  { engineId: "json-validate", label: "Validate JSON", patterns: [/\b(?:validate|check).{0,12}json\b/i], passthrough: true },
-  { engineId: "json-format", label: "Format JSON", patterns: [/\b(?:format|pretty|beautify).{0,12}json\b/i] },
-  { engineId: "json-minify", label: "Minify JSON", patterns: [/\b(?:minify|compact).{0,12}json\b/i] },
-  { engineId: "json-sort-keys", label: "Sort JSON keys", patterns: [/\bsort.{0,12}json.{0,12}keys?\b/i] },
+  { engineId: "json-validate", label: "Validate JSON", patterns: [/\b(?:validate|check).{0,12}json\b/i, /\bjson.{0,12}(?:validate|validation|check)\b/i], passthrough: true },
+  { engineId: "json-format", label: "Format JSON", patterns: [/\b(?:format|pretty|beautify).{0,12}json\b/i, /\bjson.{0,18}(?:format|pretty|beautify)\b/i] },
+  { engineId: "json-minify", label: "Minify JSON", patterns: [/\b(?:minify|compact).{0,12}json\b/i, /\bjson.{0,12}(?:minify|compact)\b/i] },
+  { engineId: "json-sort-keys", label: "Sort JSON keys", patterns: [/\bsort.{0,12}json.{0,12}keys?\b/i, /\bjson.{0,12}keys?.{0,12}sort\b/i] },
   { engineId: "base64-encode", label: "Base64 encode", patterns: [/\b(?:base64.{0,8}encode|encode.{0,8}base64)\b/i] },
   { engineId: "base64-decode", label: "Base64 decode", patterns: [/\b(?:base64.{0,8}decode|decode.{0,8}base64)\b/i] },
   { engineId: "sha256", label: "Generate SHA-256 digest", patterns: [/\b(?:sha-?256|hash|digest)\b/i] },
@@ -100,13 +100,15 @@ export function buildRulesAgentPlan(command: string, preferredEngineId?: string)
   }
 
   if (!steps.length) {
+    const lower = normalized.toLowerCase();
     const fallback = LOCAL_ENGINES
-      .map((engine) => ({ engine, score: engine.keywords.filter((keyword) => normalized.toLowerCase().includes(keyword)).length }))
+      .map((engine) => ({ engine, score: engine.keywords.filter((keyword) => lower.includes(keyword.toLowerCase())).length }))
       .sort((a, b) => b.score - a.score)[0];
     if (fallback && fallback.score > 0) steps = [makeEngineStep(0, fallback.engine.id)];
   }
 
-  const asksForJsonFile = /(?:save|export|return|output).{0,18}(?:as|to|in)?\s*json(?:\s*file)?/i.test(normalized);
+  const asksForJsonFile = /(?:save|export|return|output).{0,24}(?:as|to|in)?\s*json(?:\s*file)?/i.test(normalized)
+    || /\bjson(?:\s*file)?.{0,24}(?:save|export|return|output)\b/i.test(normalized);
   const hasListLikeStep = steps.some((step) => ["http-url-extract", "email-extract", "line-dedupe", "line-sort"].includes(step.engineId || ""));
   if (asksForJsonFile && hasListLikeStep && steps.length < MAX_AGENT_STEPS) {
     steps.push(makeTransformStep(steps.length, "lines-to-json-array", "Convert result lines to JSON array"));
@@ -169,7 +171,7 @@ export async function executeLocalAgentPlan(
 ): Promise<AgentExecutionResult> {
   let current = initialInput;
   let finalResult: Omit<StudioResult, "id" | "createdAt" | "processing"> | null = null;
-  let mutablePlan: LocalAgentPlan = { ...plan, steps: plan.steps.map((step) => ({ ...step })) };
+  const mutablePlan: LocalAgentPlan = { ...plan, steps: plan.steps.map((step) => ({ ...step })) };
 
   const publish = () => onPlanUpdate?.({ ...mutablePlan, steps: mutablePlan.steps.map((step) => ({ ...step })) });
 
