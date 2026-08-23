@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowRight, CheckCircle2, Lock, Search, ShieldCheck, Sparkles, Workflow } from "lucide-react";
 import { ToolCategory } from "../types";
 import { ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
@@ -21,6 +21,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   onExploreFreeTools,
   onOpenStudio,
 }) => {
+  useEffect(() => {
+    document.body.classList.add("xfree-home-light");
+    return () => document.body.classList.remove("xfree-home-light");
+  }, []);
+
   return (
     <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm" aria-labelledby="home-hero-heading">
       <div className="relative px-5 py-14 sm:px-10 sm:py-16 lg:px-14 lg:py-20">
