@@ -3,6 +3,7 @@ import { buildRulesAgentPlan, executeLocalAgentPlan } from "../../lib/agent-core
 import type { LocalAgentPlan } from "../../lib/agent-core";
 import { DEFAULT_SOUL, detectLocalAgentCapabilities, planWithLocalBrain } from "../../lib/local-brain";
 import type { LocalBrainProgress } from "../../lib/local-brain";
+import { pickLocalWorkspace } from "../../lib/local-workspace";
 import { LOCAL_ENGINES, resolveLocalEngine } from "../../lib/studio/engines";
 import type { ProcessingMode, StudioFile, StudioMessage, StudioMobileTab, StudioResult } from "../../lib/studio/types";
 import { StudioHeader } from "../studio/StudioHeader";
@@ -43,6 +44,7 @@ export function StudioPage() {
   const [command, setCommand] = useState(deepLinkedEngine ? `Run ${initialEngine.name}` : "");
   const [input, setInput] = useState("");
   const [files, setFiles] = useState<StudioFile[]>([]);
+  const [workspaceLabel, setWorkspaceLabel] = useState<string | null>(null);
   const [results, setResults] = useState<StudioResult[]>([]);
   const [messages, setMessages] = useState<StudioMessage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -68,16 +70,31 @@ export function StudioPage() {
     if (agentMode === "webllm" && !agentCapabilities.webGpu) setAgentMode("rules");
   }, [agentCapabilities.webGpu, agentMode]);
 
+  const addMessage = (message: Omit<StudioMessage, "id">) => setMessages((current) => [...current, { ...message, id: crypto.randomUUID() }]);
+
   const addFiles = async (selected: FileList | File[]) => {
     const accepted = await Promise.all([...selected].slice(0, 10).map(async (file) => ({
       id: crypto.randomUUID(), name: file.name, size: file.size, type: file.type || "text/plain", content: await file.text(),
     })));
+    setWorkspaceLabel(null);
     setFiles((current) => [...current, ...accepted]);
     if (accepted[0]) setInput(accepted[0].content);
     setMobileTab("chat");
   };
 
-  const addMessage = (message: Omit<StudioMessage, "id">) => setMessages((current) => [...current, { ...message, id: crypto.randomUUID() }]);
+  const openLocalFolder = async () => {
+    try {
+      const snapshot = await pickLocalWorkspace();
+      setWorkspaceLabel(snapshot.directoryName);
+      setFiles(snapshot.files);
+      if (snapshot.files[0]) setInput(snapshot.files[0].content);
+      addMessage({ role: "assistant", provider: "Local", content: `Read-only workspace “${snapshot.directoryName}” opened locally: ${snapshot.files.length} text file${snapshot.files.length === 1 ? "" : "s"} available to Studio${snapshot.skippedFiles ? `; ${snapshot.skippedFiles} unsupported or oversized entries skipped` : ""}. No folder contents were uploaded.` });
+      setMobileTab("chat");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      addMessage({ role: "assistant", provider: "Local", content: error instanceof Error ? error.message : "Could not open the local folder." });
+    }
+  };
 
   const runLocalAgent = async (prompt: string) => {
     setBrainProgress(null);
@@ -135,7 +152,17 @@ export function StudioPage() {
   };
 
   const selectEngine = (id: string, name: string) => { setEngineId(id); setCommand(`Run ${name}`); setAgentPlan(null); setMobileTab("chat"); };
-  const sideProps = { files, engineId, onFiles: (list: FileList) => { void addFiles(list); }, onClear: () => setFiles([]), onSelectFile: (file: StudioFile) => { setInput(file.content); setMobileTab("chat"); }, onSelectEngine: selectEngine };
+  const sideProps = {
+    files,
+    engineId,
+    onFiles: (list: FileList) => { void addFiles(list); },
+    onClear: () => { setFiles([]); setWorkspaceLabel(null); },
+    onSelectFile: (file: StudioFile) => { setInput(file.content); setMobileTab("chat"); },
+    onSelectEngine: selectEngine,
+    onOpenFolder: () => { void openLocalFolder(); },
+    folderSupported: agentCapabilities.fileSystemAccess,
+    workspaceLabel,
+  };
   const resultProps = { cloud, model, results, onModel: setModel, onClear: () => setResults([]), onDownload: download, onChain: chain };
 
   return <div className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[#F8F7F4] text-stone-900">
