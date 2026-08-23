@@ -1,6 +1,9 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
+import {RecipeApp} from './components/RecipeApp.tsx';
+import {getRecipeBySlug} from './data/recipes.ts';
+import {recipeSlugFromPath} from './data/routes.ts';
 import './index.css';
 
 // The prerender shell gives crawlers meaningful HTML before JavaScript runs.
@@ -8,9 +11,13 @@ import './index.css';
 // document heading and no duplicate structured content.
 document.getElementById('prerender-shell')?.remove();
 
+const pathname = window.location.pathname.replace(/\/$/, '') || '/';
+const recipeSlug = recipeSlugFromPath(pathname);
+const isRecipeRoute = pathname === '/recipes' || Boolean(recipeSlug && getRecipeBySlug(recipeSlug));
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    {isRecipeRoute ? <RecipeApp /> : <App />}
   </StrictMode>,
 );
 
