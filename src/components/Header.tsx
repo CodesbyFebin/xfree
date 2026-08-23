@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Sparkles, Bookmark, PanelsTopLeft } from "lucide-react";
+import { Bookmark, Search, Sparkles } from "lucide-react";
 
 interface HeaderProps {
   totalTools: number;
@@ -26,152 +26,112 @@ export const Header: React.FC<HeaderProps> = ({
   onGoHome,
   activeView,
 }) => {
-  return (
-    <nav className="h-16 glass-header sticky top-0 z-40 flex items-center justify-between px-4 sm:px-8">
-      <div className="flex items-center gap-4 md:gap-8">
-        {/* Brand logo */}
-        <a
-          href="/"
-          className="text-xl sm:text-2xl font-black tracking-tight flex items-center cursor-pointer select-none group"
-          onClick={(event) => {
-            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-            event.preventDefault();
-            onGoHome();
-          }}
-        >
-          <span className="bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 px-2.5 py-0.5 rounded-lg font-black shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-            X
-          </span>
-          <span className="ml-2 text-white font-black tracking-tight group-hover:text-cyan-300 transition-colors">
-            Free<span className="text-cyan-400 font-mono text-sm">.in</span>
-          </span>
-        </a>
+  const savedCount = favoritesCount + historyCount;
 
-        {/* View & Category Navigation Links */}
-        <div className="hidden xl:flex gap-2 text-xs font-semibold tracking-wide items-center">
+  return (
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 text-slate-900 shadow-sm backdrop-blur-xl" role="banner">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-8" aria-label="Primary navigation">
+        <div className="flex min-w-0 items-center gap-5 lg:gap-8">
           <a
             href="/"
+            aria-label="XFree home"
             onClick={(event) => {
               if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
               event.preventDefault();
               onGoHome();
             }}
-            className={`px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
-              activeView === "tools"
-                ? "glass-pill-active font-bold"
-                : "glass-pill text-slate-300 hover:text-white"
-            }`}
+            className="flex shrink-0 items-center gap-2.5"
           >
-            Tools ({totalTools})
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-black text-white shadow-lg shadow-indigo-500/20">X</span>
+            <span className="text-lg font-black tracking-tight text-slate-950">XFree</span>
+            <span className="hidden rounded-full border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 sm:inline">{totalTools} tools</span>
           </a>
 
-          <a
-            href="/"
-            onClick={(event) => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-              event.preventDefault();
-              onSelectCategory("all");
-            }}
-            className={`px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-              activeCategory === "all" && activeView === "tools"
-                ? "text-cyan-400 font-bold"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
+          <div className="hidden items-center gap-6 text-sm font-semibold text-slate-600 lg:flex">
+            <a
+              href="/"
+              onClick={(event) => {
+                if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+                event.preventDefault();
+                onGoHome();
+              }}
+              className={activeView === "tools" ? "text-indigo-600" : "transition hover:text-indigo-600"}
+            >
+              Tools
+            </a>
+            <a href="/how-it-works" className="transition hover:text-indigo-600">How It Works</a>
+            <a href="/use-cases" className="transition hover:text-indigo-600">Use Cases</a>
+            <a href="/docs" className="transition hover:text-indigo-600">Docs</a>
+            <a href="/faq" className="transition hover:text-indigo-600">FAQ</a>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            className="hidden h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 md:flex"
+            aria-label="Search XFree tools"
           >
-            All
-          </a>
-          <a
-            href="/category/seo-tools"
-            onClick={(event) => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-              event.preventDefault();
-              onSelectCategory("seo-tools");
-            }}
-            className={`px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-              activeCategory === "seo-tools"
-                ? "text-cyan-400 font-bold"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
+            <Search className="h-4 w-4" />
+            <span>Search</span>
+            <kbd className="rounded border border-slate-200 bg-stone-50 px-1.5 py-0.5 text-[10px] text-slate-400">⌘K</kbd>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenChat}
+            className="hidden h-9 items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 text-xs font-bold text-violet-700 transition hover:bg-violet-100 sm:flex"
+            title="Open optional AI assistant"
           >
-            SEO
-          </a>
-          <a
-            href="/category/developer-tools"
-            onClick={(event) => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-              event.preventDefault();
-              onSelectCategory("developer-tools");
-            }}
-            className={`px-2.5 py-1 text-xs transition-colors cursor-pointer ${
-              activeCategory === "developer-tools"
-                ? "text-cyan-400 font-bold"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
+            <Sparkles className="h-4 w-4" />
+            AI
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenSaved}
+            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-indigo-200 hover:text-indigo-600"
+            aria-label="Open saved items and history"
           >
-            Dev
+            <Bookmark className="h-4 w-4" />
+            {savedCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 min-w-4 rounded-full bg-indigo-600 px-1 text-center text-[9px] font-bold leading-4 text-white">{savedCount}</span>
+            )}
+          </button>
+
+          <a
+            href="https://app.xfree.in/"
+            className="inline-flex h-9 items-center gap-2 rounded-xl bg-indigo-600 px-3.5 text-xs font-bold text-white shadow-md shadow-indigo-600/20 transition hover:bg-indigo-700 sm:px-4"
+          >
+            <span className="hidden sm:inline">Open Studio</span>
+            <span className="sm:hidden">Studio</span>
           </a>
         </div>
-      </div>
+      </nav>
 
-      {/* Global Search & Actions */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        <a
-          href="https://app.xfree.in/"
-          className="h-9 px-3.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-200 font-semibold text-xs flex items-center gap-2 transition-all"
-          title="Open XFree Studio"
-          aria-label="Open XFree Studio application"
-        >
-          <PanelsTopLeft className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Studio</span>
-        </a>
-        {/* Gemini Chatbot Drawer Trigger */}
-        <button
-          onClick={onOpenChat}
-          className="h-9 px-3.5 rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 text-cyan-300 font-semibold text-xs flex items-center gap-2 transition-all shadow-lg shadow-cyan-500/10 cursor-pointer"
-          title="Open Gemini AI Chatbot"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="hidden sm:inline">Gemini Chat</span>
-        </button>
-
-        {/* Search Bar Trigger */}
-        <button
-          onClick={onOpenSearch}
-          className="hidden md:flex items-center justify-between gap-3 px-3.5 py-1.5 rounded-xl glass-panel-interactive text-slate-300 text-xs font-medium cursor-pointer"
-        >
-          <div className="flex items-center gap-2">
-            <Search className="w-3.5 h-3.5 text-slate-400" />
-            <span>Search tools...</span>
+      {activeView === "category-hub" && (
+        <div className="border-t border-slate-100 bg-stone-50/90 px-4 py-2 lg:hidden">
+          <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto text-xs font-semibold">
+            {[
+              ["all", "All"],
+              ["developer-tools", "Developer"],
+              ["seo-tools", "SEO"],
+              ["text-tools", "Text"],
+              ["converters", "Converters"],
+            ].map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => onSelectCategory(id)}
+                className={`whitespace-nowrap rounded-full px-3 py-1.5 ${activeCategory === id ? "bg-indigo-600 text-white" : "border border-slate-200 bg-white text-slate-600"}`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <span className="mono text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700">
-            ⌘K
-          </span>
-        </button>
-
-        {/* Mobile Search Icon */}
-        <button
-          onClick={onOpenSearch}
-          className="md:hidden p-2 rounded-xl glass-panel text-slate-200"
-          title="Search Tools"
-        >
-          <Search className="w-4 h-4" />
-        </button>
-
-        {/* Saved Drawer Trigger Button */}
-        <button
-          onClick={onOpenSaved}
-          className="h-9 px-3.5 rounded-xl glass-panel-interactive text-amber-300 hover:text-amber-200 font-medium text-xs flex items-center gap-2 cursor-pointer"
-          title="Saved Items & History"
-        >
-          <Bookmark className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20" />
-          <span className="hidden sm:inline">Saved</span>
-          {favoritesCount + historyCount > 0 && (
-            <span className="mono text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30">
-              {favoritesCount + historyCount}
-            </span>
-          )}
-        </button>
-      </div>
-    </nav>
+        </div>
+      )}
+    </header>
   );
 };
