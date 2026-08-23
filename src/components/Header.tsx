@@ -59,6 +59,8 @@ export const Header: React.FC<HeaderProps> = ({
             >
               Tools
             </a>
+            {/* Recipes mount a dedicated route shell in main.tsx, so this must remain a full-page anchor rather than an in-app router transition. */}
+            <a href="/recipes" className="transition hover:text-indigo-600">Recipes</a>
             <a href="/how-it-works" className="transition hover:text-indigo-600">How It Works</a>
             <a href="/use-cases" className="transition hover:text-indigo-600">Use Cases</a>
             <a href="/docs" className="transition hover:text-indigo-600">Docs</a>
@@ -67,6 +69,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
+          <a href="/recipes" className="hidden h-9 items-center rounded-xl border border-indigo-100 bg-indigo-50 px-3 text-xs font-bold text-indigo-700 transition hover:bg-indigo-100 md:flex lg:hidden">
+            Recipes
+          </a>
+
           <button
             type="button"
             onClick={onOpenSearch}
