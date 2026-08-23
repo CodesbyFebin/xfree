@@ -226,7 +226,11 @@ function transformErrorLines(input: string) {
 }
 
 function transformFirstJwt(input: string) {
-  const match = input.match(/\beyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\b/);
+  // JWT signatures can be empty for unsecured/alg:none-shaped tokens. Do not
+  // require a trailing word boundary after the third segment; stop at common
+  // token delimiters instead. This extracts only — signature verification is
+  // intentionally handled nowhere in this inspection workflow.
+  const match = input.match(/\beyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*(?=$|[\s,;])/);
   if (!match) throw new Error("No three-part JWT-shaped value was found in the supplied text.");
   return match[0];
 }
