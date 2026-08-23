@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Cloud, LockKeyhole, Settings } from "lucide-react";
 import type { ProcessingMode } from "../../lib/studio/types";
 
 export function StudioHeader({ mode, onModeChange }: { mode: ProcessingMode; onModeChange: (mode: ProcessingMode) => void }) {
+  useEffect(() => {
+    document.body.classList.add("xfree-studio-dark");
+    return () => document.body.classList.remove("xfree-studio-dark");
+  }, []);
+
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-white/5 bg-[#12131a]/90 px-4 text-slate-100 backdrop-blur-xl lg:px-5">
       <a href="https://www.xfree.in/" className="flex items-center gap-3" aria-label="XFree homepage">
