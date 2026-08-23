@@ -1,3 +1,5 @@
+import { WORKFLOW_RECIPES } from "./recipes";
+
 export const STATIC_ROUTES = [
   "/",
   "/how-it-works",
@@ -14,6 +16,7 @@ export const STATIC_ROUTES = [
   "/studio",
   "/guides",
   "/recipes",
+  ...WORKFLOW_RECIPES.map((recipe) => `/recipes/${recipe.slug}`),
   "/pillars",
   "/roadmap",
   "/contribute",
