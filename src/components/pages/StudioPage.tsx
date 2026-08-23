@@ -4,6 +4,9 @@ import type { LocalAgentPlan } from "../../lib/agent-core";
 import { DEFAULT_SOUL, detectLocalAgentCapabilities, planWithLocalBrain } from "../../lib/local-brain";
 import type { LocalBrainProgress } from "../../lib/local-brain";
 import { pickLocalWorkspace } from "../../lib/local-workspace";
+import { executeRecipe } from "../../lib/recipe-runner";
+import { getRecipeBySlug } from "../../data/recipes";
+import type { RecipeDefinition } from "../../data/recipes";
 import { LOCAL_ENGINES, resolveLocalEngine } from "../../lib/studio/engines";
 import type { ProcessingMode, StudioFile, StudioMessage, StudioMobileTab, StudioResult } from "../../lib/studio/types";
 import { StudioHeader } from "../studio/StudioHeader";
@@ -36,13 +39,20 @@ function readStoredSoul(): string {
 }
 
 export function StudioPage() {
-  const deepLinkedEngine = useMemo(() => new URLSearchParams(window.location.search).get("tool") ?? undefined, []);
-  const initialEngine = resolveLocalEngine("", deepLinkedEngine);
+  const query = useMemo(() => new URLSearchParams(window.location.search), []);
+  const deepLinkedEngine = query.get("tool") ?? undefined;
+  const deepLinkedRecipe = useMemo(() => {
+    const slug = query.get("recipe");
+    return slug ? getRecipeBySlug(slug) : undefined;
+  }, [query]);
+  const preferredRecipeEngine = deepLinkedRecipe?.steps.find((item) => item.kind === "engine")?.engineId;
+  const initialEngine = resolveLocalEngine("", deepLinkedEngine ?? preferredRecipeEngine);
+  const [activeRecipe, setActiveRecipe] = useState<RecipeDefinition | undefined>(deepLinkedRecipe);
   const [mode, setMode] = useState<ProcessingMode>("local");
   const [model, setModel] = useState("auto");
   const [engineId, setEngineId] = useState(initialEngine.id);
-  const [command, setCommand] = useState(deepLinkedEngine ? `Run ${initialEngine.name}` : "");
-  const [input, setInput] = useState("");
+  const [command, setCommand] = useState(deepLinkedRecipe ? `Run recipe: ${deepLinkedRecipe.title}` : deepLinkedEngine ? `Run ${initialEngine.name}` : "");
+  const [input, setInput] = useState(deepLinkedRecipe?.sampleInput ?? "");
   const [files, setFiles] = useState<StudioFile[]>([]);
   const [workspaceLabel, setWorkspaceLabel] = useState<string | null>(null);
   const [results, setResults] = useState<StudioResult[]>([]);
@@ -69,6 +79,18 @@ export function StudioPage() {
   useEffect(() => {
     if (agentMode === "webllm" && !agentCapabilities.webGpu) setAgentMode("rules");
   }, [agentCapabilities.webGpu, agentMode]);
+
+  useEffect(() => {
+    if (!deepLinkedRecipe) return;
+    setMode("local");
+    setAgentMode("rules");
+    setMessages((current) => current.length ? current : [{
+      id: crypto.randomUUID(),
+      role: "assistant",
+      provider: "Local",
+      content: `Loaded shared recipe “${deepLinkedRecipe.title}” v${deepLinkedRecipe.version}. The recipe is deterministic, requires no LLM, and will execute only allowlisted local engines and safe built-in transforms.`,
+    }]);
+  }, [deepLinkedRecipe]);
 
   const addMessage = (message: Omit<StudioMessage, "id">) => setMessages((current) => [...current, { ...message, id: crypto.randomUUID() }]);
 
@@ -98,6 +120,20 @@ export function StudioPage() {
 
   const runLocalAgent = async (prompt: string) => {
     setBrainProgress(null);
+
+    if (activeRecipe) {
+      const executed = await executeRecipe(activeRecipe, input, setAgentPlan);
+      setAgentPlan(executed.plan);
+      const result: StudioResult = { ...executed.result, id: crypto.randomUUID(), createdAt: Date.now(), processing: "Local" };
+      setResults((current) => [result, ...current]);
+      addMessage({
+        role: "assistant",
+        provider: "Local",
+        content: `${executed.plan.steps.length} recipe step${executed.plan.steps.length === 1 ? "" : "s"} completed from ${activeRecipe.id} v${activeRecipe.version}. No LLM or cloud API was required.`,
+      });
+      return;
+    }
+
     const plan = agentMode === "webllm"
       ? await planWithLocalBrain(prompt || `Run ${activeEngine.name}`, input, soul, setBrainProgress)
       : buildRulesAgentPlan(prompt || `Run ${activeEngine.name}`, activeEngine.id);
@@ -113,7 +149,8 @@ export function StudioPage() {
   const submit = async () => {
     const prompt = command.trim();
     if (loading || (!prompt && !input.trim())) return;
-    const userMessage: StudioMessage = { id: crypto.randomUUID(), role: "user", content: prompt || `Run ${activeEngine.name}`, provider: cloud ? "NVIDIA" : "Local" };
+    const fallbackPrompt = activeRecipe ? `Run recipe: ${activeRecipe.title}` : `Run ${activeEngine.name}`;
+    const userMessage: StudioMessage = { id: crypto.randomUUID(), role: "user", content: prompt || fallbackPrompt, provider: cloud ? "NVIDIA" : "Local" };
     setMessages((current) => [...current, userMessage]);
     setLoading(true);
 
@@ -147,11 +184,18 @@ export function StudioPage() {
     setCommand("Transform the previous result");
     setMode("local");
     setAgentMode("rules");
+    setActiveRecipe(undefined);
     setMobileTab("chat");
     document.getElementById("studio-command")?.focus();
   };
 
-  const selectEngine = (id: string, name: string) => { setEngineId(id); setCommand(`Run ${name}`); setAgentPlan(null); setMobileTab("chat"); };
+  const selectEngine = (id: string, name: string) => {
+    setEngineId(id);
+    setCommand(`Run ${name}`);
+    setActiveRecipe(undefined);
+    setAgentPlan(null);
+    setMobileTab("chat");
+  };
   const sideProps = {
     files,
     engineId,
@@ -170,7 +214,7 @@ export function StudioPage() {
     <main className="flex min-h-0 flex-1 overflow-hidden">
       <StudioSidebar {...sideProps} />
       <div className={`${mobileTab === "chat" ? "flex" : "hidden"} min-w-0 flex-1 lg:flex`}>
-        <StudioCenterPanel cloud={cloud} engine={activeEngine} input={input} command={command} messages={messages} loading={loading} agentMode={agentMode} agentCapabilities={agentCapabilities} agentPlan={agentPlan} brainProgress={brainProgress} soul={soul} onInput={setInput} onCommand={setCommand} onSubmit={() => { void submit(); }} onAttach={() => fileInputRef.current?.click()} onSuggestion={(value) => { setCommand(value); setAgentPlan(null); }} onAgentMode={setAgentMode} onSoul={setSoul} />
+        <StudioCenterPanel cloud={cloud} engine={activeEngine} input={input} command={command} messages={messages} loading={loading} agentMode={agentMode} agentCapabilities={agentCapabilities} agentPlan={agentPlan} brainProgress={brainProgress} soul={soul} onInput={setInput} onCommand={setCommand} onSubmit={() => { void submit(); }} onAttach={() => fileInputRef.current?.click()} onSuggestion={(value) => { setCommand(value); setActiveRecipe(undefined); setAgentPlan(null); }} onAgentMode={(nextMode) => { setActiveRecipe(undefined); setAgentMode(nextMode); }} onSoul={setSoul} />
       </div>
       <StudioResultsPanel {...resultProps} />
       {mobileTab === "files" ? <div className="w-full overflow-y-auto p-4 lg:hidden"><StudioSidebar {...sideProps} compact /></div> : null}

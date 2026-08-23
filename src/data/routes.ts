@@ -1,4 +1,6 @@
-export const STATIC_ROUTES = [
+import { RECIPES } from "./recipes";
+
+const BASE_STATIC_ROUTES = [
   "/",
   "/how-it-works",
   "/use-cases",
@@ -13,9 +15,15 @@ export const STATIC_ROUTES = [
   "/xfree-app",
   "/studio",
   "/guides",
+  "/recipes",
   "/pillars",
   "/roadmap",
   "/contribute",
+] as const;
+
+export const STATIC_ROUTES = [
+  ...BASE_STATIC_ROUTES,
+  ...RECIPES.map((recipe) => `/recipes/${recipe.slug}`),
 ] as const;
 
 export const SOLVE_ROUTES = [
@@ -58,6 +66,11 @@ export function toolSlugFromPath(pathname: string): string | null {
 
 export function guideSlugFromPath(pathname: string): string | null {
   const m = pathname.match(/^\/guides\/([^/]+)\/?$/);
+  return m ? m[1] : null;
+}
+
+export function recipeSlugFromPath(pathname: string): string | null {
+  const m = pathname.match(/^\/recipes\/([^/]+)\/?$/);
   return m ? m[1] : null;
 }
 
