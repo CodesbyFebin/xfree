@@ -1,5 +1,5 @@
 import React from "react";
-import { Github, Mail } from "lucide-react";
+import { Github, Mail, ShieldCheck } from "lucide-react";
 import { RouterLink } from "./RouterLink";
 import { PUBLIC_CATEGORIES, getPopularTools } from "../data/publicTools";
 
@@ -9,204 +9,62 @@ interface FooterProps {
   onNavigatePage: (path: string) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({
-  onNavigatePage,
-}) => {
-  return (
-    <footer className="mt-20 border-t border-slate-800 bg-slate-950 text-slate-400 text-xs py-16 px-4 sm:px-8">
-      <div className="max-w-7xl mx-auto space-y-12">
-        {/* Main 5 Column Footer Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-          {/* Col 1: Brand & Social */}
-          <div className="space-y-4 sm:col-span-2 lg:col-span-1">
-            <RouterLink
-              href="/"
-              onNavigate={onNavigatePage}
-              className="text-xl font-black tracking-tight flex items-center cursor-pointer select-none group"
-            >
-              <span className="bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-500 text-slate-950 px-2 py-0.5 rounded-lg font-black shadow-lg shadow-cyan-500/20">
-                X
-              </span>
-              <span className="ml-2 text-white font-black tracking-tight group-hover:text-cyan-300 transition-colors">
-                Free<span className="text-emerald-400 font-mono text-xs">.in</span>
-              </span>
-            </RouterLink>
-
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Fast, privacy-first browser micro-tools for developers, SEO professionals, creators, and AI builders.
-            </p>
-
-            <div className="flex items-center space-x-3 pt-2">
-              <a
-                href="https://github.com/CodesbyFebin/xfree"
-                target="_blank"
-                rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 transition-colors"
-                title="GitHub Repository"
-              >
-                <Github className="w-4 h-4" />
-              </a>
-              <RouterLink
-                href="/contact"
-                onNavigate={onNavigatePage}
-                className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:border-slate-700 transition-colors cursor-pointer"
-                title="Contact Support"
-                aria-label="Contact XFree.in support"
-              >
-                <Mail className="w-4 h-4" />
-              </RouterLink>
-            </div>
+export const Footer: React.FC<FooterProps> = ({ onNavigatePage }) => (
+  <footer className="mt-20 border-t border-slate-800 bg-slate-950 px-4 py-16 text-xs text-slate-400 sm:px-8" role="contentinfo">
+    <div className="mx-auto max-w-7xl space-y-12">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        <div className="space-y-4 sm:col-span-2 lg:col-span-1">
+          <RouterLink href="/" onNavigate={onNavigatePage} className="inline-flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-black text-white shadow-lg shadow-indigo-500/20">X</span>
+            <span className="text-lg font-black tracking-tight text-white">XFree</span>
+          </RouterLink>
+          <p className="max-w-sm text-sm leading-6 text-slate-400">Focused browser utilities for developers, technical SEO workflows and data transformation, with processing mode disclosed per feature.</p>
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-900/70 bg-emerald-950/40 px-3 py-1.5 text-[10px] font-bold text-emerald-300">
+            <ShieldCheck className="h-3.5 w-3.5" /> Published routes pass build gates
           </div>
-
-          {/* Col 2: Categories */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold text-sm tracking-wide uppercase font-mono">
-              Categories
-            </h4>
-            <ul className="space-y-2 text-xs">
-              {PUBLIC_CATEGORIES.map((category) => (
-                <li key={category.id}>
-                  <RouterLink
-                    href={`/category/${category.id}`}
-                    onNavigate={onNavigatePage}
-                    className="hover:text-cyan-400 transition-colors"
-                  >
-                    {category.label}
-                  </RouterLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Col 3: Popular Tools */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold text-sm tracking-wide uppercase font-mono">
-              Popular Tools
-            </h4>
-            <ul className="space-y-2 text-xs">
-              {getPopularTools(7).map((tool) => (
-                <li key={tool.id}>
-                  <RouterLink
-                    href={`/tools/${tool.slug}`}
-                    onNavigate={onNavigatePage}
-                    className="hover:text-cyan-400 transition-colors"
-                  >
-                    {tool.title}
-                  </RouterLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Col 4: Resources & Docs */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold text-sm tracking-wide uppercase font-mono">
-              Resources & Docs
-            </h4>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <RouterLink href="/how-it-works" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>How It Works</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/use-cases" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>Use Cases &amp; Examples</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/docs" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>Documentation Hub</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/guides" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>Guides</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/blog" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>Blog</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/pillars" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>Tool Pillars</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/roadmap" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>25K Concept Roadmap</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/contribute" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>Contribute a Tool</span>
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/faq" onNavigate={onNavigatePage} className="hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1">
-                  <span>FAQ</span>
-                </RouterLink>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 5: Company & Legal */}
-          <div className="space-y-3">
-            <h4 className="text-white font-bold text-sm tracking-wide uppercase font-mono">
-              Company &amp; Legal
-            </h4>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <RouterLink href="/about" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
-                  About
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/contact" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
-                  Contact
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/privacy" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
-                  Privacy Policy
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/terms" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
-                  Terms of Service
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink href="/security" onNavigate={onNavigatePage} className="hover:text-slate-200 transition-colors cursor-pointer">
-                  Security
-                </RouterLink>
-              </li>
-            </ul>
+          <div className="flex items-center gap-3 pt-1">
+            <a href="https://github.com/CodesbyFebin/xfree" target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 transition hover:border-indigo-500/40 hover:text-indigo-300" aria-label="XFree GitHub repository"><Github className="h-4 w-4" /></a>
+            <RouterLink href="/contact" onNavigate={onNavigatePage} className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 transition hover:border-indigo-500/40 hover:text-indigo-300" aria-label="Contact XFree"><Mail className="h-4 w-4" /></RouterLink>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
-          <div>
-            © 2026 XFree.in • Published tools disclose whether processing stays local or uses an optional cloud provider. Advertising, consent, and cloud-processing details are documented in our Privacy Policy.
-          </div>
-          <div className="flex items-center space-x-4">
-            <RouterLink href="/privacy" onNavigate={onNavigatePage} className="hover:text-slate-400 cursor-pointer">
-              Privacy
-            </RouterLink>
-            <span aria-hidden="true">•</span>
-            <RouterLink href="/terms" onNavigate={onNavigatePage} className="hover:text-slate-400 cursor-pointer">
-              Terms
-            </RouterLink>
-            <span aria-hidden="true">•</span>
-            <RouterLink href="/security" onNavigate={onNavigatePage} className="hover:text-slate-400 cursor-pointer">
-              Security
-            </RouterLink>
-          </div>
+        <div>
+          <h3 className="mb-4 text-sm font-bold text-white">Categories</h3>
+          <ul className="space-y-2.5">
+            {PUBLIC_CATEGORIES.slice(0, 8).map((category) => <li key={category.id}><RouterLink href={`/category/${category.id}`} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{category.label}</RouterLink></li>)}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="mb-4 text-sm font-bold text-white">Popular Tools</h3>
+          <ul className="space-y-2.5">
+            {getPopularTools(7).map((tool) => <li key={tool.id}><RouterLink href={`/tools/${tool.slug}`} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{tool.title}</RouterLink></li>)}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="mb-4 text-sm font-bold text-white">Resources</h3>
+          <ul className="space-y-2.5">
+            {[["/how-it-works","How It Works"],["/use-cases","Use Cases"],["/docs","Documentation"],["/guides","Guides"],["/pillars","Tool Pillars"],["/roadmap","25K Roadmap"],["/contribute","Contribute"],["/faq","FAQ"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="mb-4 text-sm font-bold text-white">Company & Legal</h3>
+          <ul className="space-y-2.5">
+            {[["/about","About"],["/contact","Contact"],["/privacy","Privacy Policy"],["/terms","Terms of Service"],["/security","Security"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}
+          </ul>
         </div>
       </div>
-    </footer>
-  );
-};
+
+      <div className="flex flex-col gap-4 border-t border-slate-900 pt-8 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <p>© 2026 XFree.in · Published tools disclose whether processing stays local or uses an optional cloud provider.</p>
+        <div className="flex items-center gap-4">
+          <RouterLink href="/privacy" onNavigate={onNavigatePage} className="hover:text-slate-300">Privacy</RouterLink>
+          <RouterLink href="/terms" onNavigate={onNavigatePage} className="hover:text-slate-300">Terms</RouterLink>
+          <RouterLink href="/security" onNavigate={onNavigatePage} className="hover:text-slate-300">Security</RouterLink>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
