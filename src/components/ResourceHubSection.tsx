@@ -9,93 +9,39 @@ interface ResourceHubSectionProps {
 }
 
 const resources = [
-  {
-    href: "/how-it-works",
-    eyebrow: "Architecture",
-    title: "How It Works",
-    description: "Follow the complete path from selecting a verified tool to browser processing, result review, export, and optional Studio handoff.",
-    detail: "Understand which operations run as browser JavaScript, which use Web Workers, and where current limits apply.",
-    icon: Workflow,
-    className: "md:col-span-2",
-  },
-  {
-    href: "/use-cases",
-    eyebrow: "Practical workflows",
-    title: "Use Cases & Examples",
-    description: "See real workflows for technical SEO, API payload debugging, scheduled jobs, metadata review, and safe text transformation.",
-    detail: "Each workflow links only to published tools that users can open now.",
-    icon: Layers3,
-    className: "",
-  },
-  {
-    href: "/docs",
-    eyebrow: "Reference",
-    title: "Documentation Hub",
-    description: "Find input formats, output behavior, worked examples, constraints, privacy notes, and links to deeper technical guides.",
-    detail: `${PUBLIC_TOOLS.length} published tool${PUBLIC_TOOLS.length === 1 ? "" : "s"} in the verified public directory.`,
-    icon: BookOpen,
-    className: "",
-  },
-  {
-    href: "/blog",
-    eyebrow: "Editorial",
-    title: "Blog & Pillars",
-    description: "Browse reviewed evergreen guides now and follow future pillar articles only after each receives a permanent URL and unique metadata.",
-    detail: `${GUIDES.length} reviewed guide${GUIDES.length === 1 ? "" : "s"} currently published.`,
-    icon: FileText,
-    className: "",
-  },
-  {
-    href: "/faq",
-    eyebrow: "Help",
-    title: "FAQ & Guidance",
-    description: "Get clear answers about Local Mode, cloud features, browser limits, accounts, sensitive data, and choosing the right utility.",
-    detail: "Claims are scoped to the actual processing mode of each feature.",
-    icon: CircleHelp,
-    className: "md:col-span-2",
-  },
+  { href: "/how-it-works", eyebrow: "Architecture", title: "How It Works", description: "Follow the path from choosing a verified tool to processing, reviewing and exporting the result.", detail: "See where browser JavaScript, Web Workers and current limits apply.", icon: Workflow },
+  { href: "/use-cases", eyebrow: "Practical workflows", title: "Use Cases & Examples", description: "See developer, SEO and data-cleanup workflows built only from tools users can open now.", detail: "Examples link to published production routes.", icon: Layers3 },
+  { href: "/docs", eyebrow: "Reference", title: "Documentation Hub", description: "Find inputs, outputs, worked examples, limitations, privacy notes and deeper references.", detail: `${PUBLIC_TOOLS.length} published tools in the verified public directory.`, icon: BookOpen },
+  { href: "/guides", eyebrow: "Editorial", title: "Reviewed Guides", description: "Read evergreen explanations linked back to real tools and production behavior.", detail: `${GUIDES.length} reviewed guides currently published.`, icon: FileText },
+  { href: "/faq", eyebrow: "Help", title: "FAQ & Guidance", description: "Get clear answers about Local Mode, optional cloud features, browser limits and choosing the right utility.", detail: "Claims are scoped to actual processing mode.", icon: CircleHelp },
 ] as const;
 
 export function ResourceHubSection({ onNavigate }: ResourceHubSectionProps) {
   return (
     <section aria-labelledby="resource-hub-title" className="space-y-8">
-      <header className="max-w-3xl space-y-3">
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-400">Learn before you run</p>
-        <h2 id="resource-hub-title" className="text-3xl font-black tracking-tight text-white sm:text-4xl">
-          Documentation built around real tool behavior
-        </h2>
-        <p className="text-sm leading-7 text-slate-300 sm:text-base">
-          XFree combines focused utilities with practical reference material. Learn what a tool accepts, how it processes data,
-          what its output means, and which limitations to check before using the result in production.
-        </p>
+      <header className="mx-auto max-w-3xl text-center">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-600">Learn before you run</p>
+        <h2 id="resource-hub-title" className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Documentation built around real tool behavior</h2>
+        <p className="mt-3 text-base leading-7 text-slate-600">Understand what a tool accepts, how it processes input, what its output means and which limitations to check before using the result in production.</p>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {resources.map((resource) => {
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {resources.map((resource, index) => {
           const Icon = resource.icon;
           return (
-            <article key={resource.href} className={`${resource.className} group rounded-3xl border border-slate-800 bg-slate-900/70 p-6 transition-colors hover:border-emerald-500/40`}>
+            <article key={resource.href} className={`group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg ${index === 0 ? "md:col-span-2 lg:col-span-1" : ""}`}>
               <div className="flex h-full flex-col justify-between gap-7">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300">{resource.eyebrow}</span>
-                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-700 bg-slate-950 text-emerald-400">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </span>
+                <div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-black uppercase tracking-[0.18em] text-indigo-600">{resource.eyebrow}</span>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-600"><Icon className="h-5 w-5" /></span>
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-white">{resource.title}</h3>
-                    <p className="text-sm leading-6 text-slate-300">{resource.description}</p>
-                    <p className="text-xs leading-5 text-slate-500">{resource.detail}</p>
-                  </div>
+                  <h3 className="mt-4 text-xl font-extrabold text-slate-950">{resource.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{resource.description}</p>
+                  <p className="mt-3 text-xs leading-5 text-slate-400">{resource.detail}</p>
                 </div>
-                <RouterLink
-                  href={resource.href}
-                  onNavigate={onNavigate}
-                  className="inline-flex items-center gap-2 text-sm font-bold text-emerald-400 transition-colors hover:text-emerald-300"
-                >
-                  Explore {resource.title}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                <RouterLink href={resource.href} onNavigate={onNavigate} className="inline-flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-700">
+                  Explore {resource.title}<ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                 </RouterLink>
               </div>
             </article>
