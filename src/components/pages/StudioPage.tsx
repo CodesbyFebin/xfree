@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { buildRulesAgentPlan, executeLocalAgentPlan } from "../../lib/agent-core";
 import type { LocalAgentPlan } from "../../lib/agent-core";
+import { buildRecipeAgentPlan } from "../../lib/recipe-runtime";
+import { getRecipeBySlug } from "../../data/recipes";
 import { DEFAULT_SOUL, detectLocalAgentCapabilities, planWithLocalBrain } from "../../lib/local-brain";
 import type { LocalBrainProgress } from "../../lib/local-brain";
 import { pickLocalWorkspace } from "../../lib/local-workspace";
@@ -36,17 +38,22 @@ function readStoredSoul(): string {
 }
 
 export function StudioPage() {
-  const deepLinkedEngine = useMemo(() => new URLSearchParams(window.location.search).get("tool") ?? undefined, []);
-  const initialEngine = resolveLocalEngine("", deepLinkedEngine);
+  const query = useMemo(() => new URLSearchParams(window.location.search), []);
+  const deepLinkedEngine = query.get("tool") ?? undefined;
+  const deepLinkedRecipeSlug = query.get("recipe") ?? undefined;
+  const deepLinkedRecipe = useMemo(() => deepLinkedRecipeSlug ? getRecipeBySlug(deepLinkedRecipeSlug) : undefined, [deepLinkedRecipeSlug]);
+  const recipeFirstEngine = deepLinkedRecipe?.steps.find((step) => step.kind === "engine")?.engineId;
+  const initialEngine = resolveLocalEngine("", recipeFirstEngine || deepLinkedEngine);
   const [mode, setMode] = useState<ProcessingMode>("local");
   const [model, setModel] = useState("auto");
   const [engineId, setEngineId] = useState(initialEngine.id);
-  const [command, setCommand] = useState(deepLinkedEngine ? `Run ${initialEngine.name}` : "");
-  const [input, setInput] = useState("");
+  const [command, setCommand] = useState(deepLinkedRecipe ? `Run shared recipe: ${deepLinkedRecipe.title} v${deepLinkedRecipe.version}` : deepLinkedEngine ? `Run ${initialEngine.name}` : "");
+  const [input, setInput] = useState(deepLinkedRecipe?.exampleInput || "");
+  const [activeRecipeSlug, setActiveRecipeSlug] = useState<string | undefined>(deepLinkedRecipe?.slug);
   const [files, setFiles] = useState<StudioFile[]>([]);
   const [workspaceLabel, setWorkspaceLabel] = useState<string | null>(null);
   const [results, setResults] = useState<StudioResult[]>([]);
-  const [messages, setMessages] = useState<StudioMessage[]>([]);
+  const [messages, setMessages] = useState<StudioMessage[]>(() => deepLinkedRecipe ? [{ id: crypto.randomUUID(), role: "assistant", provider: "Local", content: `Loaded ${deepLinkedRecipe.title} v${deepLinkedRecipe.version}. The example input is ready. Studio will reconstruct and validate the exact shared recipe plan before local execution.` }] : []);
   const [loading, setLoading] = useState(false);
   const [mobileTab, setMobileTab] = useState<StudioMobileTab>("chat");
   const [agentMode, setAgentMode] = useState<AgentMode>(readStoredAgentMode);
@@ -57,6 +64,7 @@ export function StudioPage() {
   const agentCapabilities = useMemo(() => detectLocalAgentCapabilities(), []);
   const cloud = mode === "cloud";
   const activeEngine = LOCAL_ENGINES.find((engine) => engine.id === engineId) ?? LOCAL_ENGINES[0];
+  const activeRecipe = activeRecipeSlug ? getRecipeBySlug(activeRecipeSlug) : undefined;
 
   useEffect(() => {
     try { localStorage.setItem("xfree_agent_mode", agentMode); } catch { /* Storage can be disabled. */ }
@@ -73,9 +81,7 @@ export function StudioPage() {
   const addMessage = (message: Omit<StudioMessage, "id">) => setMessages((current) => [...current, { ...message, id: crypto.randomUUID() }]);
 
   const addFiles = async (selected: FileList | File[]) => {
-    const accepted = await Promise.all([...selected].slice(0, 10).map(async (file) => ({
-      id: crypto.randomUUID(), name: file.name, size: file.size, type: file.type || "text/plain", content: await file.text(),
-    })));
+    const accepted = await Promise.all([...selected].slice(0, 10).map(async (file) => ({ id: crypto.randomUUID(), name: file.name, size: file.size, type: file.type || "text/plain", content: await file.text() })));
     setWorkspaceLabel(null);
     setFiles((current) => [...current, ...accepted]);
     if (accepted[0]) setInput(accepted[0].content);
@@ -98,15 +104,17 @@ export function StudioPage() {
 
   const runLocalAgent = async (prompt: string) => {
     setBrainProgress(null);
-    const plan = agentMode === "webllm"
-      ? await planWithLocalBrain(prompt || `Run ${activeEngine.name}`, input, soul, setBrainProgress)
-      : buildRulesAgentPlan(prompt || `Run ${activeEngine.name}`, activeEngine.id);
+    const plan = activeRecipe
+      ? buildRecipeAgentPlan(activeRecipe)
+      : agentMode === "webllm"
+        ? await planWithLocalBrain(prompt || `Run ${activeEngine.name}`, input, soul, setBrainProgress)
+        : buildRulesAgentPlan(prompt || `Run ${activeEngine.name}`, activeEngine.id);
     setAgentPlan(plan);
 
     const executed = await executeLocalAgentPlan(plan, input, prompt, setAgentPlan);
     const result: StudioResult = { ...executed.result, id: crypto.randomUUID(), createdAt: Date.now(), processing: "Local" };
     setResults((current) => [result, ...current]);
-    addMessage({ role: "assistant", provider: "Local", content: `${executed.plan.steps.length} local step${executed.plan.steps.length === 1 ? "" : "s"} completed. Final engine: ${executed.result.engineId}.` });
+    addMessage({ role: "assistant", provider: "Local", content: `${executed.plan.steps.length} local step${executed.plan.steps.length === 1 ? "" : "s"} completed${activeRecipe ? ` from ${activeRecipe.title} v${activeRecipe.version}` : ""}. Final engine: ${executed.result.engineId}.` });
     setBrainProgress(null);
   };
 
@@ -121,6 +129,7 @@ export function StudioPage() {
       if (!cloud) {
         await runLocalAgent(prompt);
       } else {
+        setActiveRecipeSlug(undefined);
         setAgentPlan(null);
         setBrainProgress(null);
         const history = [...messages.filter((message) => message.provider === "NVIDIA"), userMessage].map(({ role, content }) => ({ role, content }));
@@ -145,13 +154,21 @@ export function StudioPage() {
   const chain = (result: StudioResult) => {
     setInput(result.content);
     setCommand("Transform the previous result");
+    setActiveRecipeSlug(undefined);
     setMode("local");
     setAgentMode("rules");
     setMobileTab("chat");
     document.getElementById("studio-command")?.focus();
   };
 
-  const selectEngine = (id: string, name: string) => { setEngineId(id); setCommand(`Run ${name}`); setAgentPlan(null); setMobileTab("chat"); };
+  const selectEngine = (id: string, name: string) => {
+    setEngineId(id);
+    setCommand(`Run ${name}`);
+    setActiveRecipeSlug(undefined);
+    setAgentPlan(null);
+    setMobileTab("chat");
+  };
+
   const sideProps = {
     files,
     engineId,
@@ -165,12 +182,12 @@ export function StudioPage() {
   };
   const resultProps = { cloud, model, results, onModel: setModel, onClear: () => setResults([]), onDownload: download, onChain: chain };
 
-  return <div className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[#F8F7F4] text-stone-900">
-    <StudioHeader mode={mode} onModeChange={(nextMode) => { setMode(nextMode); if (nextMode === "local") setModel("auto"); }} />
+  return <div className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[#0a0b0f] text-slate-100">
+    <StudioHeader mode={mode} onModeChange={(nextMode) => { setMode(nextMode); if (nextMode === "local") setModel("auto"); else setActiveRecipeSlug(undefined); }} />
     <main className="flex min-h-0 flex-1 overflow-hidden">
       <StudioSidebar {...sideProps} />
       <div className={`${mobileTab === "chat" ? "flex" : "hidden"} min-w-0 flex-1 lg:flex`}>
-        <StudioCenterPanel cloud={cloud} engine={activeEngine} input={input} command={command} messages={messages} loading={loading} agentMode={agentMode} agentCapabilities={agentCapabilities} agentPlan={agentPlan} brainProgress={brainProgress} soul={soul} onInput={setInput} onCommand={setCommand} onSubmit={() => { void submit(); }} onAttach={() => fileInputRef.current?.click()} onSuggestion={(value) => { setCommand(value); setAgentPlan(null); }} onAgentMode={setAgentMode} onSoul={setSoul} />
+        <StudioCenterPanel cloud={cloud} engine={activeEngine} input={input} command={command} messages={messages} loading={loading} agentMode={agentMode} agentCapabilities={agentCapabilities} agentPlan={agentPlan} brainProgress={brainProgress} soul={soul} onInput={setInput} onCommand={setCommand} onSubmit={() => { void submit(); }} onAttach={() => fileInputRef.current?.click()} onSuggestion={(value) => { setCommand(value); setActiveRecipeSlug(undefined); setAgentPlan(null); }} onAgentMode={setAgentMode} onSoul={setSoul} />
       </div>
       <StudioResultsPanel {...resultProps} />
       {mobileTab === "files" ? <div className="w-full overflow-y-auto p-4 lg:hidden"><StudioSidebar {...sideProps} compact /></div> : null}
