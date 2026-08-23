@@ -18,7 +18,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigatePage }) => (
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-sm font-black text-white shadow-lg shadow-indigo-500/20">X</span>
             <span className="text-lg font-black tracking-tight text-white">XFree</span>
           </RouterLink>
-          <p className="max-w-sm text-sm leading-6 text-slate-400">Focused browser utilities for developers, technical SEO workflows and data transformation, with processing mode disclosed per feature.</p>
+          <p className="max-w-sm text-sm leading-6 text-slate-400">Focused browser utilities, technical SEO tools, and inspectable local workflow recipes, with optional cloud processing disclosed per feature.</p>
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-900/70 bg-emerald-950/40 px-3 py-1.5 text-[10px] font-bold text-emerald-300">
             <ShieldCheck className="h-3.5 w-3.5" /> Published routes pass build gates
           </div>
@@ -30,35 +30,29 @@ export const Footer: React.FC<FooterProps> = ({ onNavigatePage }) => (
 
         <div>
           <h3 className="mb-4 text-sm font-bold text-white">Categories</h3>
-          <ul className="space-y-2.5">
-            {PUBLIC_CATEGORIES.slice(0, 8).map((category) => <li key={category.id}><RouterLink href={`/category/${category.id}`} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{category.label}</RouterLink></li>)}
-          </ul>
+          <ul className="space-y-2.5">{PUBLIC_CATEGORIES.slice(0, 8).map((category) => <li key={category.id}><RouterLink href={`/category/${category.id}`} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{category.label}</RouterLink></li>)}</ul>
         </div>
 
         <div>
           <h3 className="mb-4 text-sm font-bold text-white">Popular Tools</h3>
-          <ul className="space-y-2.5">
-            {getPopularTools(7).map((tool) => <li key={tool.id}><RouterLink href={`/tools/${tool.slug}`} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{tool.title}</RouterLink></li>)}
-          </ul>
+          <ul className="space-y-2.5">{getPopularTools(7).map((tool) => <li key={tool.id}><RouterLink href={`/tools/${tool.slug}`} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{tool.title}</RouterLink></li>)}</ul>
         </div>
 
         <div>
           <h3 className="mb-4 text-sm font-bold text-white">Resources</h3>
           <ul className="space-y-2.5">
-            {[["/how-it-works","How It Works"],["/use-cases","Use Cases"],["/docs","Documentation"],["/guides","Guides"],["/pillars","Tool Pillars"],["/roadmap","25K Roadmap"],["/contribute","Contribute"],["/faq","FAQ"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}
+            {[["/recipes","Workflow Recipes"],["/how-it-works","How It Works"],["/use-cases","Use Cases"],["/docs","Documentation"],["/guides","Guides"],["/pillars","Tool Pillars"],["/roadmap","25K Roadmap"],["/contribute","Contribute"],["/faq","FAQ"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}
           </ul>
         </div>
 
         <div>
           <h3 className="mb-4 text-sm font-bold text-white">Company & Legal</h3>
-          <ul className="space-y-2.5">
-            {[["/about","About"],["/contact","Contact"],["/privacy","Privacy Policy"],["/terms","Terms of Service"],["/security","Security"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}
-          </ul>
+          <ul className="space-y-2.5">{[["/about","About"],["/contact","Contact"],["/privacy","Privacy Policy"],["/terms","Terms of Service"],["/security","Security"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}</ul>
         </div>
       </div>
 
       <div className="flex flex-col gap-4 border-t border-slate-900 pt-8 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-        <p>© 2026 XFree.in · Published tools disclose whether processing stays local or uses an optional cloud provider.</p>
+        <p>© 2026 XFree.in · Published tools disclose processing mode; starter workflow recipes execute locally through allowlisted steps.</p>
         <div className="flex items-center gap-4">
           <RouterLink href="/privacy" onNavigate={onNavigatePage} className="hover:text-slate-300">Privacy</RouterLink>
           <RouterLink href="/terms" onNavigate={onNavigatePage} className="hover:text-slate-300">Terms</RouterLink>
