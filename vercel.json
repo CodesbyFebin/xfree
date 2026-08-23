@@ -5,6 +5,18 @@
   "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
+  "git": {
+    "deploymentEnabled": {
+      "feat/*": false,
+      "fix/*": false,
+      "perf/*": false,
+      "docs/*": false,
+      "test/*": false,
+      "chore/*": false,
+      "dependabot/*": false,
+      "main": true
+    }
+  },
   "functions": {
     "api/index.js": {
       "maxDuration": 60,
