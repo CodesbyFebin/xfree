@@ -1,6 +1,6 @@
 import React from "react";
+import { ArrowUpRight, ShieldCheck, Sparkles, Star, Zap } from "lucide-react";
 import { ToolDefinition } from "../types";
-import { Star, ArrowUpRight, Sparkles, Zap, Shield, Code2 } from "lucide-react";
 
 interface ToolCardProps {
   tool: ToolDefinition;
@@ -15,84 +15,64 @@ export const ToolCard: React.FC<ToolCardProps> = ({
   onToggleFavorite,
   onSelectTool,
 }) => {
-  const getBadgeStyle = () => {
-    if (tool.isFlagship) {
-      return "bg-cyan-500/20 text-cyan-300 border-cyan-500/40";
-    }
-    if (tool.isAi) {
-      return "bg-purple-500/20 text-purple-300 border-purple-500/40";
-    }
-    if (tool.category === "seo-tools" || tool.category === "seo-url") {
-      return "bg-blue-500/20 text-blue-300 border-blue-500/40";
-    }
-    if (tool.category === "developer-tools" || tool.category === "developer") {
-      return "bg-indigo-500/20 text-indigo-300 border-indigo-500/40";
-    }
-    return "bg-slate-700/50 text-slate-300 border-slate-600/50";
-  };
+  const badgeClass = tool.isFlagship
+    ? "border-amber-200 bg-amber-50 text-amber-700"
+    : tool.isAi
+      ? "border-violet-200 bg-violet-50 text-violet-700"
+      : tool.execution === "local"
+        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+        : "border-slate-200 bg-stone-50 text-slate-600";
 
   const href = `/tools/${tool.slug}`;
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Real <a href> gives Googlebot a crawlable link. In the browser we
-    // hijack for SPA navigation, but middle-click and cmd-click still open
-    // the URL naturally.
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
-    e.preventDefault();
-    onSelectTool(tool.id);
-  };
-
   return (
-    <article className="glass-panel-interactive relative overflow-hidden rounded-2xl">
+    <article className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/10">
       <a
         href={href}
-        onClick={handleClick}
-        className="group flex h-full cursor-pointer select-none flex-col justify-between p-5 text-inherit no-underline"
+        onClick={(event) => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
+          event.preventDefault();
+          onSelectTool(tool.id);
+        }}
+        className="flex h-full min-h-[250px] flex-col justify-between p-5 text-inherit no-underline"
         aria-label={`${tool.title} — ${tool.shortDescription}`}
       >
-      <div>
-        <div className="flex justify-between items-center mb-3">
-          <span className={`px-2.5 py-0.5 text-[10px] font-semibold tracking-wide rounded-full border ${getBadgeStyle()} flex items-center gap-1`}>
-            {tool.isAi && <Sparkles className="w-3 h-3 text-purple-400" />}
-            {tool.isFlagship && <Zap className="w-3 h-3 text-cyan-400" />}
-            <span>{tool.isFlagship ? "Flagship Tool" : tool.isAi ? "AI Powered" : tool.categoryLabel || tool.category}</span>
-          </span>
-
-          <span className="h-7 w-7" aria-hidden="true" />
-        </div>
-
-        <h4 className="font-bold text-base text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between gap-1 leading-snug">
-          <span>{tool.title}</span>
-          <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
-        </h4>
-
-        <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
-          {tool.shortDescription}
-        </p>
-      </div>
-
-      <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 overflow-hidden">
-          {tool.tags.slice(0, 2).map((tag) => (
-            <span key={tag} className="mono text-[10px] text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-700/60">
-              #{tag}
+        <div>
+          <div className="mb-4 flex items-start justify-between gap-3 pr-8">
+            <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${badgeClass}`}>
+              {tool.isFlagship ? <Zap className="h-3 w-3" /> : tool.isAi ? <Sparkles className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
+              {tool.isFlagship ? "Flagship" : tool.isAi ? "AI" : tool.execution === "local" ? "Local" : tool.categoryLabel || tool.category}
             </span>
-          ))}
+          </div>
+
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-lg font-extrabold leading-snug text-slate-950 transition group-hover:text-indigo-600">{tool.title}</h3>
+            <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-indigo-500" />
+          </div>
+
+          <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{tool.shortDescription}</p>
         </div>
 
-        <span className="text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-          <span>Launch</span>
-          <span aria-hidden="true">→</span>
-        </span>
-      </div>
+        <div className="mt-6 border-t border-slate-100 pt-4">
+          <div className="flex flex-wrap gap-1.5">
+            {tool.tags.slice(0, 3).map((tag) => (
+              <span key={tag} className="rounded-md bg-stone-100 px-2 py-1 text-[10px] font-semibold text-slate-500">{tag}</span>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center justify-between text-xs font-bold">
+            <span className="text-slate-400">{tool.categoryLabel || tool.category}</span>
+            <span className="text-indigo-600">Open tool →</span>
+          </div>
+        </div>
       </a>
+
       <button
         type="button"
         onClick={() => onToggleFavorite(tool.id)}
-        className="absolute right-5 top-5 z-10 rounded-lg p-1.5 transition-colors hover:bg-white/10"
+        className="absolute right-4 top-4 z-10 rounded-lg border border-slate-200 bg-white p-2 text-slate-400 shadow-sm transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-500"
         aria-label={isFavorite ? `Remove ${tool.title} from favorites` : `Save ${tool.title} to favorites`}
       >
-        <Star className={`h-4 w-4 ${isFavorite ? "fill-amber-400 text-amber-400" : "text-slate-500 hover:text-slate-300"}`} />
+        <Star className={`h-4 w-4 ${isFavorite ? "fill-amber-400 text-amber-400" : ""}`} />
       </button>
     </article>
   );
