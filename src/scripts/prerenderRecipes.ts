@@ -11,6 +11,11 @@ function escapeHtml(value: string) {
 
 function cleanTemplate(template: string) {
   return template
+    // The normal prerender step has already converted dist/index.html into the
+    // homepage document. Reuse its Vite asset references, but remove all
+    // homepage-specific crawl content before writing a recipe route.
+    .replace(/<div id=["']prerender-shell["'][\s\S]*?(?=<div id=["']root["']><\/div>)/i, "")
+    .replace(/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi, "")
     .replace(/<title>[^<]*<\/title>\s*/gi, "")
     .replace(/<meta\s+name=[\"']description[\"'][^>]*>\s*/gi, "")
     .replace(/<meta\s+name=[\"']robots[\"'][^>]*>\s*/gi, "")
