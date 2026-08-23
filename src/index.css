@@ -40,7 +40,7 @@
   z-index: 0;
 }
 
-/* Homepage-only editorial canvas adapted from the HTML design reference. */
+/* Homepage-only editorial canvas adapted from the marketing HTML reference. */
 body.xfree-home-light {
   background: #fafaf9;
   color: #0f172a;
@@ -61,6 +61,19 @@ body.xfree-home-light .starry-bg::before {
 body.xfree-home-light ::selection {
   background: #c7d2fe;
   color: #312e81;
+}
+
+/* Studio-only deep canvas adapted from the XFree Studio HTML reference. */
+body.xfree-studio-dark,
+body.xfree-studio-dark #root,
+body.xfree-studio-dark #root > div {
+  background: #0a0b0f !important;
+  color: #e8e9ed !important;
+}
+
+body.xfree-studio-dark ::selection {
+  background: rgba(99, 102, 241, 0.35);
+  color: #ffffff;
 }
 
 /* Glassmorphism Apple Utility Classes */
@@ -147,6 +160,18 @@ body.xfree-home-light ::-webkit-scrollbar-thumb {
 
 body.xfree-home-light ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+body.xfree-studio-dark ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body.xfree-studio-dark ::-webkit-scrollbar-thumb {
+  background: #2a2b38;
+}
+
+body.xfree-studio-dark ::-webkit-scrollbar-thumb:hover {
+  background: #3a3b4a;
 }
 
 @media (prefers-reduced-motion: reduce) {
