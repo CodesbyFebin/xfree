@@ -65,17 +65,16 @@ export function AdSenseUnit({ slot, className = "" }: AdSenseUnitProps) {
   }, [slot]);
 
   // Never render a fake or placeholder unit. The slot must come from the
-  // approved AdSense ad-unit configuration exposed at build time. XFree also
-  // uses a project-level 160px top separation guardrail around ad units. That
-  // spacing is intentionally stricter than Google's qualitative requirement
-  // to avoid ads immediately adjacent to interactive/action elements.
+  // approved AdSense ad-unit configuration exposed at build time. XFree uses
+  // a project-level 160px separation guardrail above and below manual ad units
+  // so ads are not immediately adjacent to interactive/action elements.
   if (!slot) return null;
 
   return (
     <aside
       aria-label="Advertisement"
       data-ad-safe-zone="true"
-      style={{ marginBlock: "10rem 4rem" }}
+      style={{ marginBlock: "10rem" }}
       className={`rounded-2xl border border-white/10 bg-slate-900/40 p-4 ${className}`}
     >
       <p className="mb-2 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">Advertisement</p>
