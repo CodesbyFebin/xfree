@@ -29,7 +29,7 @@ if (LOCAL_BRAIN_MODEL_ID !== "SmolLM2-360M-Instruct-q4f32_1-MLC") fail(`Unexpect
 
 const localBrain = read("src/lib/local-brain.ts");
 expectIncludes(localBrain, "validateExternalAgentPlan(command, draft)", "WebLLM planner");
-expectIncludes(localBrain, "do not upload", "SOUL policy");
+expectIncludes(localBrain.toLowerCase(), "do not upload", "SOUL policy");
 expectNotIncludes(localBrain, "/api/", "WebLLM planner");
 
 const studioPage = read("src/components/pages/StudioPage.tsx");
