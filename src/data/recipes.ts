@@ -84,7 +84,7 @@ export const WORKFLOW_RECIPES: readonly WorkflowRecipe[] = [
       { kind: "engine", engineId: "jwt-decode", label: "Decode JWT without signature verification" },
       { kind: "engine", engineId: "json-format", label: "Format decoded JSON" },
     ],
-    exampleInput: "Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJkZXYtdXNlciIsInJvbGUiOiJyZWFkZXIifQ.",
+    exampleInput: "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXYtdXNlciIsInJvbGUiOiJyZWFkZXIifQ.c2ln",
     exampleOutputDescription: "Formatted JSON showing the decoded JWT sections with an explicit unverified-signature warning from the engine.",
     safeConfiguration: { maxSteps: 6, signatureVerification: false, networkAccess: false },
   },
