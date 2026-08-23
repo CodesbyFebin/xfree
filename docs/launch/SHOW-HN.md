@@ -1,14 +1,17 @@
-# Show HN launch draft — XFree workflow recipes
+# Show HN launch notes — XFree workflow recipes
 
-## Recommended title
+> **Do not paste text from this file into Hacker News.** Current HN guidance (updated March 2026) explicitly asks submitters to write Show HN text by hand and not use an LLM to generate or edit it. This document is an internal fact sheet, demo plan, and accuracy checklist only. The human submitter must write the title and explanatory text from scratch in their own voice on launch day.
 
-**Show HN: XFree – local browser tools with inspectable workflow recipes**
+## Launch angle to explain in your own words
 
-Alternative, if the WebGPU planner is central to the demo on launch day:
+Center the submission on the thing a reader can immediately try:
 
-**Show HN: XFree – local browser tools with optional WebGPU workflow planning**
+- local browser developer tools;
+- inspectable, versioned workflow recipes;
+- deterministic execution over allowlisted engines;
+- optional WebGPU planning as a secondary capability, not the headline promise.
 
-Prefer the first title. The reproducible recipe system is the distinctive, immediately testable artifact; WebGPU planning is optional and should not make the project sound like another generic AI wrapper.
+Avoid leading with “AI developer toolbox.” The recipe system is the more concrete and technically differentiated artifact.
 
 ## Submission URL
 
@@ -16,31 +19,33 @@ Use the runnable recipe directory directly:
 
 `https://www.xfree.in/recipes`
 
-Do not point the Show HN submission at a marketing article, waitlist, or signup flow.
+Do not point the Show HN submission at a marketing article, waitlist, signup flow, or this document.
 
-## Suggested first comment
+## Facts the human-written explanation may cover
 
-I built XFree because many small developer tasks do not need a SaaS backend or an opaque agent loop.
+Write these ideas in your own words rather than copying the bullets verbatim:
 
-The current governed release has 60 published tools, 50 tools in the new local-tool batch, and 100 allowlisted local engines. I have now added a small recipe layer on top: eight versioned workflows that expose the exact execution steps and can be opened directly in Agent Studio.
+- XFree was built around the observation that many small developer tasks do not require a SaaS backend or opaque agent loop.
+- The governed release contains 60 published/indexable tools, including 50 tools in the new governed local batch.
+- Agent Studio has 100 allowlisted local engines.
+- Eight v1 workflow recipes expose exact steps and can be opened directly in Agent Studio.
+- Example architecture to inspect in the UI: URL extraction → URL normalization → line deduplication → line sorting → JSON-array transform.
+- A shared recipe is structured data, not arbitrary code.
+- Recipe payloads contain a recipe ID, version, allowlisted engine IDs, built-in transform IDs, and a closed set of reviewed configuration flags.
+- The runner rejects unknown engines, transforms, configuration keys, non-local v1 recipes, and recipes over six steps.
+- Deterministic planning/execution is the default for shared v1 recipes.
+- A pinned SmolLM2 WebGPU/WebLLM planner is optional; it proposes plans but does not expand execution permissions.
+- XFree is not an entirely client-side platform. Local Mode recipes/tools run in-browser; separately labeled optional cloud/API surfaces can transmit explicitly submitted data.
+- The PWA caches same-origin application assets while model downloads, API requests, and ads are excluded from service-worker caching.
 
-For example, the URL Cleanup Pipeline is:
+## Questions worth asking the HN community
 
-`http-url-extract → url-normalize → line-dedupe → line-sort → lines-to-json-array`
+Choose only questions the submitter genuinely wants feedback on, and rewrite them naturally:
 
-The important implementation constraint is that a shared recipe is data, not code. Its payload contains a recipe ID, version, allowlisted engine IDs, built-in transform IDs, and a very small set of reviewed configuration flags. The runner rejects unknown engines, transforms, config keys, non-local v1 recipes, and plans over six steps. A recipe link therefore cannot introduce arbitrary JavaScript or expand the browser app's execution authority.
-
-The default workflow planner is deterministic. There is also an optional local WebGPU/WebLLM planner using the pinned SmolLM2 model, but the individual execution steps are still visible and validated against the same engine allowlist before they run.
-
-I also want to be precise about the privacy claim: XFree is not an entirely client-side platform. The initial workflow recipes and published Local Mode tools run in the browser, while separately labeled optional cloud/API features can transmit explicitly submitted data to configured providers. The PWA caches same-origin application assets; model downloads, API requests, and ads are excluded from the service-worker cache.
-
-I would particularly value feedback on three things:
-
-1. Is the recipe schema small enough to be auditable but expressive enough to be useful?
-2. Is the execution trace clear enough to debug and trust compared with prompt-only automation?
-3. Which deterministic developer workflow would be the best ninth recipe?
-
-Source: `https://github.com/CodesbyFebin/xfree`
+- Is the recipe schema small enough to audit while still useful?
+- Is the visible execution trace easier to trust/debug than prompt-only automation?
+- Which deterministic developer workflow would make a useful next recipe?
+- Should recipe compatibility be tied to engine-version constraints or capability declarations?
 
 ## What to demo in the first 30 seconds
 
@@ -71,18 +76,20 @@ Do not replace these with roadmap numbers. The 25,000-concept roadmap is a plann
 - [ ] `/recipes/url-cleanup-pipeline` is directly runnable and its Studio deep link works.
 - [ ] GitHub `main` matches the production release being shown.
 - [ ] CI, security scanning, SEO/canonical checks, and production deployment are green.
-- [ ] The submitter account is currently eligible to post a Show HN and has genuine community participation.
-- [ ] The title describes what users can actually try; it does not use superlatives such as “ultimate,” “revolutionary,” or “best.”
+- [ ] The submitter checks `showlim` and is currently eligible to post a Show HN.
+- [ ] The submitter has genuine HN community participation rather than creating/using an account only for launch promotion.
+- [ ] **The title and explanatory text are written manually by the human submitter without LLM generation or editing.**
+- [ ] The title describes what users can actually try and avoids marketing superlatives.
 - [ ] No request for upvotes, coordinated voting, or cross-post voting.
-- [ ] Be available after posting to answer implementation questions and accept criticism.
-- [ ] Link directly to source when discussing the allowlist, recipe schema, WebLLM planner, or service-worker policy.
+- [ ] The submitter is available after posting to answer implementation questions and accept criticism.
+- [ ] Source links are available for the allowlist, recipe schema, WebLLM planner, and service-worker policy.
 
 ## Community guidance references
 
-Before launch, re-check the current versions of:
+Re-check these immediately before launch:
 
 - `https://news.ycombinator.com/showhn.html` — official Show HN guidelines.
-- `https://news.ycombinator.com/showlim` — current Show HN account/submission restrictions.
-- `https://news.ycombinator.com/item?id=22336638` — HN guidance on presenting Show HN projects with technical clarity rather than marketing copy.
+- `https://news.ycombinator.com/showlim` — current temporary Show HN account/submission restrictions.
+- `https://news.ycombinator.com/item?id=22336638` — HN guidance on presenting Show HN projects; the March 2026 update specifically says not to use LLM-generated or LLM-edited submission text.
 
-Rules and restrictions can change; treat these links as launch-day checks, not permanent assumptions.
+Rules and restrictions can change. This file is not a substitute for reading the live HN guidance on launch day.
