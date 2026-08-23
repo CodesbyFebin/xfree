@@ -1,4 +1,6 @@
-export const STATIC_ROUTES = [
+import { RECIPES } from "./recipes";
+
+const BASE_STATIC_ROUTES = [
   "/",
   "/how-it-works",
   "/use-cases",
@@ -17,6 +19,11 @@ export const STATIC_ROUTES = [
   "/pillars",
   "/roadmap",
   "/contribute",
+] as const;
+
+export const STATIC_ROUTES = [
+  ...BASE_STATIC_ROUTES,
+  ...RECIPES.map((recipe) => `/recipes/${recipe.slug}`),
 ] as const;
 
 export const SOLVE_ROUTES = [
