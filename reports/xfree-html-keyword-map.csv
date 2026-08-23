@@ -1,0 +1,144 @@
+tier,cluster,keyword_or_query,intent,target_route,recommended_placement,status
+0,Brand / entity,XFree,Navigational,/,Title H1 body anchors,approved
+0,Brand / entity,X Free,Navigational,/,Body supporting copy,approved
+0,Brand / entity,XFree.in,Navigational,/,Entity references,approved
+0,Brand / entity,XFree app,Navigational,/,Title body FAQ,approved
+0,Brand / entity,XFree tools,Navigational,/,H1 H2 body anchors,approved
+0,Brand / entity,XFree online tools,Navigational,/,Body anchors,approved
+0,Brand / entity,XFree developer tools,Navigational,/,Title H1 body anchors,approved
+0,Brand / entity,XFree SEO tools,Navigational,/,Body category anchors,approved
+0,Brand / entity,XFree AI tools,Navigational,/,Body category anchors,approved
+0,Brand / entity,XFree privacy-first tools,Navigational,/,Body FAQ,scoped
+0,Brand / entity,XFree micro tools suite,Navigational,/,Body supporting copy,approved
+0,Brand / entity,XFree Studio,Navigational,https://app.xfree.in/,CTA anchors,approved
+0,Brand / entity,XFree free tools no signup,Navigational,/,Body FAQ,approved
+1,Homepage core,free developer tools,Commercial discovery,/,Title H1 lead,approved
+1,Homepage core,free SEO tools,Commercial discovery,/,Lead category section,approved
+1,Homepage core,browser-based developer tools,Commercial discovery,/,Lead H2 body,approved
+1,Homepage core,privacy-first developer tools,Commercial discovery,/,Body trust section,scoped
+1,Homepage core,no signup developer tools,Commercial discovery,/,Title lead FAQ,approved
+1,Homepage core,browser tools for developers,Commercial discovery,/,Lead body,approved
+1,Homepage core,Local Mode developer tools,Commercial discovery,/,Trust section,approved
+1,Homepage core,open-source developer utilities,Commercial discovery,/,Body footer,approved
+1,Homepage core,developer micro-tools,Commercial discovery,/,Body,approved
+1,Homepage core,SEO micro-tools,Commercial discovery,/,Body,approved
+1,Homepage core,free browser utilities,Commercial discovery,/,Body,approved
+2,Access modifier,free,Modifier,tool/category dependent,Title body FAQ,approved
+2,Access modifier,no signup,Modifier,tool/category dependent,Title body FAQ,approved
+2,Access modifier,no login,Modifier,tool/category dependent,Body FAQ,approved
+2,Access modifier,no account,Modifier,tool/category dependent,Body trust copy,approved
+2,Access modifier,online,Modifier,tool/category dependent,Body only when useful,approved
+2,Execution modifier,browser-based,Modifier,tool/category dependent,Title body FAQ,approved
+2,Execution modifier,in-browser,Modifier,tool/category dependent,Body FAQ,approved
+2,Execution modifier,Local Mode,Modifier,tool/category dependent,Trust badge body,approved
+2,Execution modifier,client-side,Modifier,tool/category dependent,Tool copy only when proven,scoped
+2,Execution modifier,privacy-first,Modifier,tool/category dependent,Body trust copy,scoped
+2,Execution modifier,open source,Modifier,tool/category dependent,Body footer,approved
+2,Action intent,formatter,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,validator,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,tester,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,generator,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,converter,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,decoder,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,encoder,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,checker,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,analyzer,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,builder,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,minifier,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,beautifier,Transactional,/tools/:slug,Tool title H1,approved
+2,Action intent,inspector,Transactional,/tools/:slug,Tool title H1,approved
+3,JSON Formatter,XFree JSON Formatter,Transactional,/tools/json-formatter,Title H1 anchors,approved
+3,JSON Formatter,JSON formatter online free,Transactional,/tools/json-formatter,Body FAQ,approved
+3,JSON Formatter,format JSON online,Transactional,/tools/json-formatter,Body examples,approved
+3,JSON Formatter,JSON validator,Transactional,/tools/json-formatter,Body H2,approved
+3,JSON Formatter,JSON beautifier,Transactional,/tools/json-formatter,Body H2,approved
+3,JSON Formatter,JSON minifier,Transactional,/tools/json-formatter,Body feature copy,approved
+3,JSON Formatter,JSON repair tool,Transactional,/tools/json-formatter,Body feature copy,approved
+3,JSON Formatter,JSON tree inspector,Transactional,/tools/json-formatter,Body feature copy,approved
+3,Regex Tester,XFree Regex Tester,Transactional,/tools/regex-tester,Title H1 anchors,approved
+3,Regex Tester,regex tester no login,Transactional,/tools/regex-tester,Body FAQ,approved
+3,Regex Tester,JavaScript regex tester,Transactional,/tools/regex-tester,Body H2,approved
+3,Regex Tester,regex match group tester,Transactional,/tools/regex-tester,Body examples,approved
+3,Regex Tester,regex replacement tester,Transactional,/tools/regex-tester,Body examples,approved
+3,XML Sitemap,XFree Sitemap Generator,Transactional,/tools/xml-sitemap-generator,Title H1 anchors,approved
+3,XML Sitemap,XML sitemap generator,Transactional,/tools/xml-sitemap-generator,Title body,approved
+3,XML Sitemap,Google XML sitemap generator,Transactional,/tools/xml-sitemap-generator,Body FAQ,approved
+3,XML Sitemap,HTML link extractor,Transactional,/tools/xml-sitemap-generator,Body feature copy,approved
+3,XML Sitemap,SEO sitemap generator,Transactional,/tools/xml-sitemap-generator,Body category copy,approved
+3,Meta Tags,XFree Meta Tag Generator,Transactional,/tools/meta-tag-generator,Title H1 anchors,approved
+3,Meta Tags,meta title generator,Transactional,/tools/meta-tag-generator,Body H2,approved
+3,Meta Tags,meta description generator,Transactional,/tools/meta-tag-generator,Body H2,approved
+3,Meta Tags,Open Graph generator,Transactional,/tools/meta-tag-generator,Body H2,approved
+3,Meta Tags,social card preview,Transactional,/tools/meta-tag-generator,Body feature copy,approved
+3,JWT Decoder,XFree JWT Decoder,Transactional,/tools/jwt-decoder,Title H1 anchors,approved
+3,JWT Decoder,JWT decoder client-side,Transactional,/tools/jwt-decoder,Body FAQ,scoped
+3,JWT Decoder,JSON Web Token decoder,Transactional,/tools/jwt-decoder,Body H2,approved
+3,JWT Decoder,decode OAuth JWT,Transactional,/tools/jwt-decoder,Body examples,approved
+3,JWT Decoder,JWT payload inspector,Transactional,/tools/jwt-decoder,Body feature copy,approved
+3,Cron Generator,XFree Cron Generator,Transactional,registry canonical slug,Title H1 anchors,approved
+3,Cron Generator,cron expression generator,Transactional,registry canonical slug,Body H2,approved
+3,Cron Generator,human-readable cron generator,Transactional,registry canonical slug,Body feature copy,approved
+3,Cron Generator,DevOps cron generator,Transactional,registry canonical slug,Body category copy,approved
+3,Additional tool,XFree HTML minifier,Transactional,publish only if canonical exists,Tool page only,conditional
+3,Additional tool,XFree Hash Generator,Transactional,publish only if canonical exists,Tool page only,conditional
+3,Additional tool,Base64 encoder decoder,Transactional,publish only if canonical exists,Tool page only,conditional
+3,Additional tool,UUID generator,Transactional,publish only if canonical exists,Tool page only,conditional
+3,Additional tool,password generator,Transactional,publish only if canonical exists,Tool page only,conditional
+4,Category,XFree Developer Tools,Category discovery,/category/developer-tools,Category title H1 anchors,approved
+4,Category,XFree SEO Tools,Category discovery,/category/seo-tools,Category title H1 anchors,approved
+4,Category,XFree AI Tools,Category discovery,/category/ai-tools,Category title H1 anchors,approved
+4,Category,XFree Text Tools,Category discovery,/category/text-tools,Category title H1 anchors,approved
+4,Category,XFree Converters,Category discovery,/category/converters,Category title H1 anchors,approved
+4,Category,XFree Generators,Category discovery,/category/generators,Category title H1 anchors,approved
+4,Category,XFree Validators,Category discovery,/category/validators,Category title H1 anchors,approved
+4,Category,XFree Security Tools,Category discovery,/category/security-tools,Category title H1 anchors,approved
+5,Pillar,XFree Frontend Development Tools,Topical authority,/pillar/frontend-development,Pillar title H1 body,index by policy
+5,Pillar,XFree Backend Development Tools,Topical authority,/pillar/backend-development,Pillar title H1 body,index by policy
+5,Pillar,XFree DevOps & CI/CD Tools,Topical authority,/pillar/devops-cicd,Pillar title H1 body,index by policy
+5,Pillar,XFree Cybersecurity & Privacy Tools,Topical authority,/pillar/cybersecurity-privacy,Pillar title H1 body,index by policy
+5,Pillar,XFree Technical SEO Tools,Topical authority,/pillar/technical-seo,Pillar title H1 body,index by policy
+5,Pillar,XFree Content & Copywriting Tools,Topical authority,/pillar/content-copywriting,Pillar title H1 body,index by policy
+5,Pillar,XFree Data Engineering Tools,Topical authority,/pillar/data-engineering,Pillar title H1 body,index by policy
+5,Pillar,XFree AI & Machine Learning Tools,Topical authority,/pillar/ai-machine-learning,Pillar title H1 body,index by policy
+5,Pillar,XFree Database Management Tools,Topical authority,/pillar/database-management,Pillar title H1 body,index by policy
+5,Pillar,XFree API Development Tools,Topical authority,/pillar/api-development,Pillar title H1 body,index by policy
+5,Pillar,XFree Cloud Infrastructure Tools,Topical authority,/pillar/cloud-infrastructure,Pillar title H1 body,index by policy
+5,Pillar,XFree Mobile Development Tools,Topical authority,/pillar/mobile-development,Pillar title H1 body,index by policy
+6,FAQ,What is XFree app?,Informational,/faq or /,Visible FAQ schema if truthful,approved
+6,FAQ,Is XFree really free with no signup?,Informational,/faq or /,Visible FAQ schema if truthful,approved
+6,FAQ,How does XFree ensure privacy?,Informational,/faq or /,Visible FAQ schema if truthful,approved
+6,FAQ,What tools does XFree offer?,Informational,/faq or /,Visible FAQ schema if truthful,approved
+6,FAQ,Can I use XFree offline?,Informational,/faq or /,Visible FAQ with scoped answer,rewrite
+6,FAQ,Is XFree open source?,Informational,/faq or /,Visible FAQ schema if truthful,approved
+6,FAQ,What is XFree alternative to CodeBeautify?,Informational,/faq or comparison content,Only evidence-backed answer,rewrite
+6,FAQ,How many tools are on XFree?,Informational,/faq or /,Use registry-derived count,approved
+7,Roadmap,50 XFree Pillar Hubs,Navigational,/pillars,Internal anchors,approved
+7,Roadmap,2,500 topic clusters,Planning,/roadmap,Body only,approved
+7,Roadmap,25,000 roadmap concepts,Planning,/roadmap,Body metrics,approved
+7,Roadmap,XFree Roadmap,Navigational,/roadmap,Header footer anchors,approved
+7,Resource,How XFree Works,Navigational,/how-it-works,Header footer anchors,approved
+7,Resource,XFree Use Cases,Navigational,/use-cases,Header footer anchors,approved
+7,Resource,XFree Documentation,Navigational,/docs,Header footer anchors,approved
+7,Resource,XFree Blog,Navigational,/blog,Footer anchors,approved
+7,Trust,About XFree,Navigational,/about,Footer anchors,approved
+7,Trust,Contact XFree,Navigational,/contact,Footer anchors,approved
+7,Trust,XFree Privacy Policy,Navigational,/privacy,Footer anchors,approved
+7,Trust,XFree Terms of Service,Navigational,/terms,Footer anchors,approved
+7,Trust,XFree Security,Navigational,/security,Footer anchors,approved
+8,Audience,developers,Audience qualifier,contextual,Use cases body,supporting
+8,Audience,SEO professionals,Audience qualifier,contextual,Use cases body,supporting
+8,Audience,digital marketers,Audience qualifier,contextual,Use cases body,supporting
+8,Audience,creators,Audience qualifier,contextual,Use cases body,supporting
+8,Audience,AI builders,Audience qualifier,contextual,Use cases body,supporting
+8,Audience,security professionals,Audience qualifier,contextual,Use cases body,supporting
+8,Audience,DevOps engineers,Audience qualifier,contextual,Use cases body,supporting
+9,Reject / rewrite,25,000+ live tools,Do not target,none,Roadmap count is not live inventory,reject
+9,Reject / rewrite,500 tools per pillar,Do not target,none,Planning arithmetic is not published inventory,reject
+9,Reject / rewrite,100% client-side site-wide,Do not target,none,Scope to verified Local Mode tools,reject
+9,Reject / rewrite,no data leaves your device,Do not target,none,Scope to a specific Local Mode execution path,rewrite
+9,Reject / rewrite,zero tracking,Do not target,none,Ads consent and network services exist,reject
+9,Reject / rewrite,zero telemetry,Do not target,none,Use only if technically proven across all surfaces,reject
+9,Reject / rewrite,works completely offline,Do not target,none,Use only for verified PWA or cached surfaces,rewrite
+9,Reject / rewrite,no usage limits,Do not target,none,Use only if technically enforced,rewrite
+9,Reject / rewrite,blazing fast / zero network latency,Do not target,none,Avoid universal performance guarantees,reject
+9,Reject / rewrite,ultimate / most comprehensive,Do not target,none,Avoid unsupported superlatives,reject
