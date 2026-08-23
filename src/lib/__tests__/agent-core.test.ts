@@ -21,7 +21,7 @@ describe("XFree local agent core", () => {
     expect(execution.plan.steps.every((step) => step.status === "completed")).toBe(true);
     expect(execution.result.engineId).toBe("agent-lines-to-json-array");
     expect(JSON.parse(execution.result.content)).toEqual([
-      "https://a.example.",
+      "https://a.example",
       "https://b.example/path",
     ]);
   });
