@@ -1,349 +1,146 @@
 import React from "react";
-import { PUBLIC_TOOLS } from "../data/publicTools";
 import {
-  Globe,
-  Code2,
-  Sparkles,
-  FileText,
-  ArrowLeftRight,
-  Shield,
-  Calculator,
-  Lock,
-  Zap,
-  UserCheck,
-  ArrowRight,
-  Search,
-  Code,
-  QrCode,
-  Hash,
-  Clock,
-  Layout,
-  Layers,
-  Image as ImageIcon
+  ArrowLeftRight, ArrowRight, BookOpen, CheckCircle2, Code2, FileText, Globe,
+  Image as ImageIcon, Layers3, Lock, SearchCheck, ShieldCheck, Smartphone, Sparkles,
+  Workflow, Zap,
 } from "lucide-react";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 
 interface PopularAndCategoriesProps {
   onSelectTool: (slug: string) => void;
   onSelectCategory: (catId: string) => void;
 }
 
-export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = ({
-  onSelectTool,
-  onSelectCategory,
-}) => {
-  const popularTools = [
-    {
-      slug: "bulk-url-extractor",
-      title: "Bulk URL Extractor",
-      description: "Extract all URLs from text content instantly.",
-      icon: Globe,
-      color: "text-cyan-400",
-    },
-    {
-      slug: "json-formatter",
-      title: "JSON Formatter",
-      description: "Format, validate, and beautify JSON data.",
-      icon: Code2,
-      color: "text-indigo-400",
-    },
-    {
-      slug: "regex-tester",
-      title: "Regex Tester",
-      description: "Test and validate regular expressions in real-time.",
-      icon: Code,
-      color: "text-blue-400",
-    },
-    {
-      slug: "cron-expression-generator",
-      title: "Cron Generator",
-      description: "Generate cron expressions the easy way.",
-      icon: Clock,
-      color: "text-amber-400",
-    },
-    {
-      slug: "xml-sitemap-generator",
-      title: "Sitemap Generator",
-      description: "Generate XML sitemaps for your website.",
-      icon: Layers,
-      color: "text-emerald-400",
-    },
-    {
-      slug: "meta-tag-generator",
-      title: "Meta Tag Preview",
-      description: "Preview how your page looks in search results.",
-      icon: Layout,
-      color: "text-purple-400",
-    },
-    {
-      slug: "qr-code-generator",
-      title: "QR Code Generator",
-      description: "Create QR codes for URLs and text.",
-      icon: QrCode,
-      color: "text-teal-400",
-    },
-    {
-      slug: "base64-encoder-decoder",
-      title: "Base64 & JWT Decoder",
-      description: "Encode Base64 and inspect JWT payloads locally.",
-      icon: Hash,
-      color: "text-rose-400",
-    },
-  ].filter((tool) => PUBLIC_TOOLS.some((published) => published.slug === tool.slug));
+const categories = [
+  { id: "seo-tools", title: "SEO Tools", description: "Sitemaps, metadata, schema, robots and crawl-preparation utilities.", icon: Globe, tone: "text-emerald-700 bg-emerald-50 border-emerald-100" },
+  { id: "developer-tools", title: "Developer Tools", description: "Formatting, validation, encoding and debugging utilities for daily development.", icon: Code2, tone: "text-indigo-700 bg-indigo-50 border-indigo-100" },
+  { id: "text-tools", title: "Text Tools", description: "Transform, normalize, inspect, compare and clean text directly in your browser.", icon: FileText, tone: "text-violet-700 bg-violet-50 border-violet-100" },
+  { id: "converters", title: "Data Converters", description: "Convert common structured and text formats with visible local-processing behavior.", icon: ArrowLeftRight, tone: "text-blue-700 bg-blue-50 border-blue-100" },
+  { id: "image-tools", title: "Image Tools", description: "Browser-side image and media helpers where the published implementation supports them.", icon: ImageIcon, tone: "text-rose-700 bg-rose-50 border-rose-100" },
+  { id: "ai-tools", title: "AI Tools", description: "Clearly disclosed AI-assisted utilities separated from the Local Mode tool layer.", icon: Sparkles, tone: "text-purple-700 bg-purple-50 border-purple-100" },
+] as const;
 
-  const categories = [
-    {
-      id: "seo-tools",
-      title: "SEO Tools",
-      description: "Optimize, analyze, and improve your SEO.",
-      icon: Globe,
-      color: "text-cyan-400",
-    },
-    {
-      id: "developer-tools",
-      title: "Developer Tools",
-      description: "Utilities for developers and coders.",
-      icon: Code2,
-      color: "text-indigo-400",
-    },
-    {
-      id: "ai-tools",
-      title: "AI Tools",
-      description: "Smart AI-powered tools to boost productivity.",
-      icon: Sparkles,
-      color: "text-purple-400",
-    },
-    {
-      id: "text-tools",
-      title: "Text Tools",
-      description: "Transform, edit, and analyze your text.",
-      icon: FileText,
-      color: "text-emerald-400",
-    },
-    {
-      id: "converters",
-      title: "Data Converters",
-      description: "Convert data between different formats.",
-      icon: ArrowLeftRight,
-      color: "text-blue-400",
-    },
-    {
-      id: "image-tools",
-      title: "Image Tools",
-      description: "Edit, convert, and optimize images online.",
-      icon: ImageIcon,
-      color: "text-amber-400",
-    },
-    {
-      id: "security-tools",
-      title: "Security Tools",
-      description: "Check, scan, and secure your data.",
-      icon: Shield,
-      color: "text-rose-400",
-    },
-    {
-      id: "calculators",
-      title: "Calculators",
-      description: "Simple and advanced calculators.",
-      icon: Calculator,
-      color: "text-teal-400",
-    },
-  ].filter((category) => PUBLIC_TOOLS.some((tool) => tool.category === category.id));
+const features = [
+  { title: "Local Mode by default", description: "Published local utilities process their working input in the browser instead of posting it to an XFree processing endpoint.", icon: ShieldCheck, tone: "text-emerald-700 bg-emerald-50" },
+  { title: "Agent Studio workflows", description: "Use the Studio command surface to plan bounded workflows across approved local engines with visible execution steps.", icon: Workflow, tone: "text-indigo-700 bg-indigo-50" },
+  { title: "Installable PWA", description: "Studio includes a progressive web app shell for cached same-origin assets and supported offline workflows after they have been loaded.", icon: Smartphone, tone: "text-cyan-700 bg-cyan-50" },
+  { title: "Fast focused utilities", description: "Each published tool solves one concrete task instead of forcing users through a general-purpose dashboard first.", icon: Zap, tone: "text-amber-700 bg-amber-50" },
+  { title: "Open-source review", description: "The public repository exposes implementation, publication gates and security changes for community inspection and contribution.", icon: Code2, tone: "text-violet-700 bg-violet-50" },
+  { title: "Governed publishing", description: "Tool routes enter the sitemap only after implementation, content, canonical, AdSense and indexability validation pass.", icon: CheckCircle2, tone: "text-blue-700 bg-blue-50" },
+] as const;
+
+export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = ({ onSelectCategory }) => {
+  const visibleCategories = categories.filter((category) => PUBLIC_TOOLS.some((tool) => tool.category === category.id));
 
   return (
     <div className="space-y-20 py-8">
-      {/* 1. Popular Tools Grid */}
-      <section className="space-y-8">
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Popular Tools
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            Popular tools in the directory.
-          </p>
+      <section className="space-y-8" aria-labelledby="tool-categories-heading">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Tool directory</p>
+          <h2 id="tool-categories-heading" className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Find the right utility by workflow</h2>
+          <p className="mt-3 text-base leading-7 text-slate-600">Browse only categories that currently contain published tools; empty roadmap categories stay out of the public directory.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {popularTools.map((tool) => {
-            const Icon = tool.icon;
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleCategories.map((category) => {
+            const Icon = category.icon;
+            const count = PUBLIC_TOOLS.filter((tool) => tool.category === category.id).length;
             return (
               <a
-                key={tool.slug}
-                href={`/tools/${tool.slug}`}
+                key={category.id}
+                href={`/category/${category.id}`}
                 onClick={(event) => {
                   if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
                   event.preventDefault();
-                  onSelectTool(tool.slug);
+                  onSelectCategory(category.id);
                 }}
-                className="group p-5 rounded-2xl bg-slate-900/70 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 hover:shadow-xl hover:shadow-emerald-500/5"
-                aria-label={`${tool.title} — ${tool.description}`}
+                className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
               >
-                <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Icon className={`w-5 h-5 ${tool.color}`} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-white text-base group-hover:text-emerald-400 transition-colors">
-                      {tool.title}
-                    </h3>
-                    <p className="text-slate-400 text-xs mt-1 leading-relaxed">
-                      {tool.description}
-                    </p>
-                  </div>
+                <div className="flex items-start justify-between gap-4">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-xl border ${category.tone}`}><Icon className="h-5 w-5" /></span>
+                  <span className="rounded-full bg-stone-100 px-2.5 py-1 text-[10px] font-bold text-slate-500">{count} published</span>
                 </div>
-              </a>
-            );
-          })}
-        </div>
-
-        <div className="text-center pt-2">
-          <a
-            href="/"
-            onClick={(event) => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-              event.preventDefault();
-              onSelectCategory("all");
-            }}
-            className="inline-flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 font-semibold text-sm group cursor-pointer"
-          >
-            <span>Browse all tools</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
-        </div>
-      </section>
-
-      {/* 2. Tool Categories Section */}
-      <section className="space-y-8">
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Tool Categories
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            Find the right tool in the right category.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <a
-                key={cat.id}
-                href={`/category/${cat.id}`}
-                onClick={(event) => {
-                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
-                  event.preventDefault();
-                  onSelectCategory(cat.id);
-                }}
-                className="group p-5 rounded-2xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition-all duration-200 cursor-pointer flex flex-col space-y-3"
-                aria-label={`${cat.title} — ${cat.description}`}
-              >
-                <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Icon className={`w-5 h-5 ${cat.color}`} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-white text-base group-hover:text-cyan-400 transition-colors">
-                    {cat.title}
-                  </h3>
-                  <p className="text-slate-400 text-xs mt-1 leading-relaxed">
-                    {cat.description}
-                  </p>
-                </div>
+                <h3 className="mt-4 text-lg font-extrabold text-slate-950 group-hover:text-indigo-600">{category.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{category.description}</p>
+                <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-indigo-600">Browse category <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
               </a>
             );
           })}
         </div>
       </section>
 
-      {/* 3. Privacy-First. Always. Section */}
-      <section className="rounded-3xl bg-slate-900/80 border border-slate-800 p-8 sm:p-12 relative overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Shield Graphic Left */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-48 h-48 sm:w-64 sm:h-64 flex items-center justify-center">
-              <div className="absolute inset-0 bg-emerald-500/10 rounded-full blur-2xl" />
-              <div className="w-40 h-40 sm:w-52 sm:h-52 rounded-3xl bg-slate-950 border border-emerald-500/40 flex items-center justify-center relative shadow-2xl">
-                <Shield className="w-20 h-20 sm:w-28 sm:h-28 text-emerald-400 stroke-[1.2]" />
-                <Lock className="w-8 h-8 text-emerald-400 absolute fill-emerald-950" />
-              </div>
-            </div>
-          </div>
-
-          {/* Copy & Features Right */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-                Local-First Processing
-              </h2>
-              <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                Local tools process your input in the browser. Optional cloud features are labeled before any input is transmitted.
-              </p>
-            </div>
-
-            <div className="space-y-4 pt-2">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 mt-0.5">
-                  <Code2 className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-white text-sm sm:text-base">Local Mode by Default</h4>
-                  <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                    Published local utilities run in your browser without uploading tool input to XFree.in.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 mt-0.5">
-                  <Zap className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-white text-sm sm:text-base">Blazing Fast</h4>
-                  <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                    No uploads, no waits. Get instant results, every time.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0 mt-0.5">
-                  <UserCheck className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-white text-sm sm:text-base">Zero Registration</h4>
-                  <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                    No signup required.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <section id="features" className="rounded-[2rem] border border-slate-200 bg-stone-50 p-6 sm:p-10" aria-labelledby="features-heading">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Why XFree</p>
+          <h2 id="features-heading" className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">A browser utility platform built around verifiable behavior</h2>
+          <p className="mt-3 text-base leading-7 text-slate-600">The design is simple on the surface, but publication, privacy and workflow behavior remain explicit underneath.</p>
+        </div>
+        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <article key={feature.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${feature.tone}`}><Icon className="h-5 w-5" /></span>
+                <h3 className="mt-4 text-lg font-extrabold text-slate-950">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
+              </article>
+            );
+          })}
         </div>
       </section>
 
-      {/* 4. One Problem. One Focused Tool Banner */}
-      <section className="rounded-3xl bg-slate-900/90 border border-slate-800 p-8 sm:p-12 text-center space-y-6">
-        <div className="max-w-2xl mx-auto space-y-3">
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            One problem. One focused tool.
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            No clutter. No complexity. Just the right tool to get X done.
-          </p>
+      <section id="how-it-works" className="space-y-10" aria-labelledby="how-it-works-heading">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">How it works</p>
+          <h2 id="how-it-works-heading" className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">From input to result in four visible steps</h2>
+          <p className="mt-3 text-base leading-7 text-slate-600">No account setup is required. Choose a published tool directly or use Studio to chain approved local engines.</p>
         </div>
+        <div className="grid gap-4 md:grid-cols-4">
+          {[
+            ["1", "Choose a tool", "Open a published route or select an approved local engine in Studio."],
+            ["2", "Add working input", "Paste text or select a supported local file/folder with explicit browser permission."],
+            ["3", "Run visibly", "Local tools process in-browser; optional cloud modes are labeled before network transmission."],
+            ["4", "Review and export", "Copy, download or chain the result into the next approved step when the workflow supports it."],
+          ].map(([number, title, description]) => (
+            <article key={number} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white">{number}</span>
+              <h3 className="mt-4 font-extrabold text-slate-950">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-        <div>
-          <a
-            href="/"
-            onClick={(event) => {
-              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-              event.preventDefault();
-              onSelectCategory("all");
-            }}
-            className="px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm sm:text-base rounded-xl shadow-lg shadow-emerald-500/20 inline-flex items-center space-x-2 transition-all cursor-pointer hover:scale-105"
-          >
-            <span>Find Your Tool</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-          </a>
+      <section id="use-cases" className="rounded-[2rem] border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-violet-50 p-6 sm:p-10" aria-labelledby="use-cases-heading">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">Use cases</p>
+          <h2 id="use-cases-heading" className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Built for practical developer and web workflows</h2>
+        </div>
+        <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          {[
+            { title: "Developers & API work", text: "Format JSON, transform text, inspect tokens, encode payloads and prepare structured data without changing tools or accounts.", icon: Code2 },
+            { title: "Technical SEO", text: "Prepare metadata, sitemaps, robots directives, URLs and schema inputs with separate reviewed guides and crawl-aware pages.", icon: SearchCheck },
+            { title: "Content & data cleanup", text: "Normalize lines, convert cases, count words, deduplicate lists and move between common text/data representations.", icon: Layers3 },
+          ].map((useCase) => {
+            const Icon = useCase.icon;
+            return (
+              <article key={useCase.title} className="rounded-2xl border border-white bg-white/90 p-6 shadow-sm">
+                <Icon className="h-6 w-6 text-indigo-600" />
+                <h3 className="mt-4 text-lg font-extrabold text-slate-950">{useCase.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{useCase.text}</p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 p-8 text-center text-white shadow-xl sm:p-12">
+        <BookOpen className="mx-auto h-7 w-7 text-white/80" />
+        <h2 className="mx-auto mt-4 max-w-3xl text-3xl font-black tracking-tight sm:text-4xl">Use a focused tool, or chain approved local engines in Studio</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-indigo-100 sm:text-base">The public directory stays simple and crawlable; Studio adds command-driven workflows without changing the underlying execution disclosures.</p>
+        <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+          <button type="button" onClick={() => onSelectCategory("all")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-indigo-700 shadow-lg">Browse all tools <ArrowRight className="h-4 w-4" /></button>
+          <a href="https://app.xfree.in/" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur">Open Studio <Workflow className="h-4 w-4" /></a>
         </div>
       </section>
     </div>
