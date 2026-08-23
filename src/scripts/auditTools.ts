@@ -40,15 +40,31 @@ function audit(): Finding[] {
   }
 
   const appPath = path.join(process.cwd(), "src", "App.tsx");
+  const runtimeRouterPath = path.join(process.cwd(), "src", "components", "tools", "AiMicroToolComponent.tsx");
   if (fs.existsSync(appPath)) {
     const app = fs.readFileSync(appPath, "utf-8");
+    const runtimeRouter = fs.existsSync(runtimeRouterPath) ? fs.readFileSync(runtimeRouterPath, "utf-8") : "";
+
     for (const t of PUBLIC_TOOLS) {
+      const isGovernedLocalEngine = t.execution === "local" && Boolean(t.toolComponent?.startsWith("local-engine:"));
+      if (isGovernedLocalEngine) {
+        if (!runtimeRouter.includes('startsWith("local-engine:")') || !runtimeRouter.includes("LocalEngineToolComponent")) {
+          findings.push({
+            slug: t.slug,
+            id: t.id,
+            severity: "error",
+            message: "PUBLIC local-engine tool exists but the App fallback runtime router is not wired to LocalEngineToolComponent",
+          });
+        }
+        continue;
+      }
+
       if (!app.includes(`case "${t.id}"`)) {
         findings.push({
           slug: t.slug,
           id: t.id,
           severity: "error",
-            message: `PUBLIC but no case "${t.id}" in App.tsx renderToolComponent — page would fall through to AI fallback`,
+          message: `PUBLIC tool has neither a dedicated App.tsx case nor a governed local-engine runtime marker`,
         });
       }
     }
