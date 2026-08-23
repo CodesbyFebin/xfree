@@ -20,9 +20,16 @@ for (const tool of [...BASE_PUBLISHED_TOOLS, ...BATCH1_PUBLIC_TOOLS]) {
 
 export const PUBLIC_TOOLS: ToolDefinition[] = Array.from(toolMap.values());
 
+const PUBLIC_CATEGORY_DESCRIPTION_OVERRIDES: Record<string, string> = {
+  validators: "Validate JSON, XML, sitemaps, Schema.org markup, robots.txt rules, and structured data with focused browser-based checks.",
+};
+
 export const PUBLIC_CATEGORIES = CATEGORIES.filter((category) =>
   PUBLIC_TOOLS.some((tool) => tool.category === category.id),
-);
+).map((category) => ({
+  ...category,
+  description: PUBLIC_CATEGORY_DESCRIPTION_OVERRIDES[category.id] || category.description,
+}));
 
 export const PUBLIC_TOOL_SLUGS = new Set(PUBLIC_TOOLS.map((tool) => tool.slug));
 
