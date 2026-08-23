@@ -37,12 +37,30 @@ expectIncludes(studioPage, "executeLocalAgentPlan", "Studio local execution");
 expectIncludes(studioPage, "pickLocalWorkspace", "Studio folder sandbox");
 expectIncludes(studioPage, "xfree_agent_soul", "SOUL persistence");
 
+const requiredAgentCspTokens = [
+  "'wasm-unsafe-eval'",
+  "https://cdn.jsdelivr.net",
+  "https://huggingface.co",
+  "https://raw.githubusercontent.com",
+  "worker-src 'self' blob:",
+];
+
 const securityHeaders = read("src/middleware/security-headers.ts");
-for (const required of ["'wasm-unsafe-eval'", "https://cdn.jsdelivr.net", "https://huggingface.co", "https://raw.githubusercontent.com", "worker-src 'self' blob:"]) {
-  expectIncludes(securityHeaders, required, "Agent CSP");
-}
-expectNotIncludes(securityHeaders, "'unsafe-eval'", "Agent CSP");
-expectNotIncludes(securityHeaders, "Cross-Origin-Embedder-Policy", "Agent CSP");
+for (const required of requiredAgentCspTokens) expectIncludes(securityHeaders, required, "Express Agent CSP");
+expectNotIncludes(securityHeaders, "'unsafe-eval'", "Express Agent CSP");
+expectNotIncludes(securityHeaders, "Cross-Origin-Embedder-Policy", "Express Agent CSP");
+
+const vercelConfig = JSON.parse(read("vercel.json")) as {
+  headers?: Array<{ headers?: Array<{ key?: string; value?: string }> }>;
+};
+const vercelCsp = vercelConfig.headers
+  ?.flatMap((rule) => rule.headers ?? [])
+  .find((header) => header.key === "Content-Security-Policy")
+  ?.value ?? "";
+if (!vercelCsp) fail("Vercel Content-Security-Policy header is missing.");
+for (const required of requiredAgentCspTokens) expectIncludes(vercelCsp, required, "Vercel Agent CSP");
+expectNotIncludes(vercelCsp, "'unsafe-eval'", "Vercel Agent CSP");
+if (vercelCsp.includes("Cross-Origin-Embedder-Policy")) fail("Vercel CSP must not contain a COEP header token.");
 
 const serviceWorker = read("public/sw.js");
 expectIncludes(serviceWorker, "url.pathname.startsWith(\"/api/\")", "PWA cache policy");
@@ -64,5 +82,6 @@ if (errors.length) {
 console.log(`[agent] PASS — ${engineIds.length} local engines allowlisted`);
 console.log(`[agent] deterministic plan: ${urlPlanIds.join(" → ")}`);
 console.log(`[agent] WebLLM: ${WEBLLM_VERSION} / ${LOCAL_BRAIN_MODEL_ID} (opt-in WebGPU planner only)`);
+console.log("[agent] CSP: Express + Vercel policies include scoped WebLLM/WebGPU allowances");
 console.log("[agent] workspace: read-only explicit directory picker");
 console.log("[agent] PWA: same-origin local assets only; API/ads/model downloads excluded from SW cache");
