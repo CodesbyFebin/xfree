@@ -21,79 +21,61 @@ const RouterAnchor: React.FC<React.PropsWithChildren<{ href: string; className?:
   </a>
 );
 
-export const HomeAuthoritySection: React.FC<HomeAuthoritySectionProps> = ({ onNavigate }) => {
-  return (
-    <section className="space-y-6" aria-labelledby="xfree-direct-answer">
-      <div className="grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
-        <article className="rounded-3xl border border-cyan-500/20 bg-cyan-500/5 p-6 sm:p-8">
-          <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-cyan-300">
-            <SearchCheck className="h-4 w-4" />
-            Direct answer
+export const HomeAuthoritySection: React.FC<HomeAuthoritySectionProps> = ({ onNavigate }) => (
+  <section className="space-y-6" aria-labelledby="xfree-direct-answer">
+    <div className="grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
+      <article className="rounded-[2rem] border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-6 shadow-sm sm:p-8">
+        <div className="mb-4 flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-indigo-600">
+          <SearchCheck className="h-4 w-4" /> Direct answer
+        </div>
+        <h2 id="xfree-direct-answer" className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">What is XFree?</h2>
+        <p className="mt-3 max-w-3xl leading-7 text-slate-600">
+          XFree is a free browser-tool platform for developer and technical SEO workflows. It publishes utilities only after they have a working implementation and an indexable production route; Local Mode tools run in the browser, while optional cloud features are labeled before submitted content leaves the device.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+          <RouterAnchor href="/how-it-works" onNavigate={onNavigate} className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-600 hover:text-indigo-700">How XFree works <ArrowRight className="h-4 w-4" /></RouterAnchor>
+          <RouterAnchor href="/security" onNavigate={onNavigate} className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:text-emerald-800">Security disclosures <ArrowRight className="h-4 w-4" /></RouterAnchor>
+          <RouterAnchor href="/contribute" onNavigate={onNavigate} className="inline-flex items-center gap-1.5 text-sm font-bold text-violet-700 hover:text-violet-800">Contribute a tool <ArrowRight className="h-4 w-4" /></RouterAnchor>
+        </div>
+      </article>
+
+      <aside className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8" aria-label="Published XFree scope">
+        <h2 className="text-xl font-black text-slate-950">Published first, roadmap second</h2>
+        <dl className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+            <dt className="text-xs font-semibold text-emerald-700">Published tools</dt>
+            <dd className="mt-1 text-3xl font-black text-emerald-700">{PUBLIC_TOOLS.length}</dd>
           </div>
-          <h2 id="xfree-direct-answer" className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-            What is XFree?
-          </h2>
-          <p className="mt-3 max-w-3xl leading-7 text-slate-300">
-            XFree is a free browser-tool platform for developers and technical SEO workflows. It publishes only utilities that have a real implementation and an indexable production route; Local Mode tools run in the browser, while any cloud-powered feature is labeled before submitted content leaves the device.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <RouterAnchor href="/how-it-works" onNavigate={onNavigate} className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-300 hover:text-cyan-200">
-              How XFree works <ArrowRight className="h-4 w-4" />
-            </RouterAnchor>
-            <RouterAnchor href="/security" onNavigate={onNavigate} className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-300 hover:text-emerald-200">
-              Security &amp; processing disclosures <ArrowRight className="h-4 w-4" />
-            </RouterAnchor>
-            <RouterAnchor href="/contribute" onNavigate={onNavigate} className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-indigo-200">
-              Contribute a tool <ArrowRight className="h-4 w-4" />
-            </RouterAnchor>
+          <div className="rounded-2xl border border-violet-100 bg-violet-50 p-4">
+            <dt className="text-xs font-semibold text-violet-700">Roadmap concepts</dt>
+            <dd className="mt-1 text-3xl font-black text-violet-700">{ROADMAP_CONCEPT_COUNT.toLocaleString()}</dd>
           </div>
-        </article>
+        </dl>
+        <p className="mt-4 text-sm leading-6 text-slate-500">Roadmap concepts remain planning entries until implementation, editorial, canonical, content and indexing gates pass.</p>
+      </aside>
+    </div>
 
-        <aside className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 sm:p-8" aria-label="Published XFree scope">
-          <h2 className="text-xl font-bold text-white">Published first, roadmap second</h2>
-          <dl className="mt-5 grid grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-              <dt className="text-xs text-slate-400">Published tools</dt>
-              <dd className="mt-1 text-3xl font-black text-emerald-300">{PUBLIC_TOOLS.length}</dd>
-            </div>
-            <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-4">
-              <dt className="text-xs text-slate-400">Roadmap concepts</dt>
-              <dd className="mt-1 text-3xl font-black text-indigo-300">{ROADMAP_CONCEPT_COUNT.toLocaleString()}</dd>
-            </div>
-          </dl>
-          <p className="mt-4 text-sm leading-6 text-slate-400">
-            The roadmap count is a planning taxonomy, not a claim that every concept is already a live tool. Draft concepts stay out of the public sitemap until they pass implementation, content, and indexing gates.
-          </p>
-        </aside>
-      </div>
+    <div className="grid gap-4 md:grid-cols-3">
+      {[
+        { href: "/category/seo-tools", title: "SEO & webmaster utilities", text: "Sitemaps, robots.txt, metadata, schema, URLs and crawl-preparation utilities.", icon: SearchCheck, tone: "text-indigo-600" },
+        { href: "/pillars", title: "Developer-tool pillars", text: "Browse the 50-pillar taxonomy and see which areas already contain published tools.", icon: Waypoints, tone: "text-violet-600" },
+        { href: "/guides", title: "Reviewed practical guides", text: "Read worked examples, limitations and explanations linked back to real tools.", icon: BookOpen, tone: "text-emerald-600" },
+      ].map((item) => {
+        const Icon = item.icon;
+        return (
+          <RouterAnchor key={item.href} href={item.href} onNavigate={onNavigate} className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-lg">
+            <Icon className={`h-5 w-5 ${item.tone}`} />
+            <h3 className="mt-3 text-lg font-extrabold text-slate-950">{item.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{item.text}</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-indigo-600">Explore <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+          </RouterAnchor>
+        );
+      })}
+    </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <RouterAnchor href="/category/seo-tools" onNavigate={onNavigate} className="group rounded-2xl border border-white/10 bg-slate-900/60 p-5 transition hover:border-cyan-500/40">
-          <SearchCheck className="h-5 w-5 text-cyan-300" />
-          <h2 className="mt-3 text-lg font-bold text-white">Explore XFree SEO &amp; webmaster utilities</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">Use published sitemap, robots.txt, metadata, schema, URL and crawl-preparation utilities.</p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-cyan-300">Browse SEO tools <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
-        </RouterAnchor>
-
-        <RouterAnchor href="/pillars" onNavigate={onNavigate} className="group rounded-2xl border border-white/10 bg-slate-900/60 p-5 transition hover:border-indigo-500/40">
-          <Waypoints className="h-5 w-5 text-indigo-300" />
-          <h2 className="mt-3 text-lg font-bold text-white">Browse the XFree developer-tool pillars</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">Explore the 50-pillar taxonomy and see which areas already contain published tools.</p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-300">Open pillar directory <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
-        </RouterAnchor>
-
-        <RouterAnchor href="/guides" onNavigate={onNavigate} className="group rounded-2xl border border-white/10 bg-slate-900/60 p-5 transition hover:border-emerald-500/40">
-          <BookOpen className="h-5 w-5 text-emerald-300" />
-          <h2 className="mt-3 text-lg font-bold text-white">Learn with reviewed XFree guides</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">Read practical explanations, worked examples, limitations and links back to real tools.</p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-emerald-300">Read guides <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
-        </RouterAnchor>
-      </div>
-
-      <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 text-sm leading-6 text-slate-300">
-        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
-        <p><strong className="text-white">White-hat indexing policy:</strong> no doorway pages, no fake review signals, no fabricated usage counts, and no mass-indexing of unbuilt concepts. XFree submits only canonical pages that are intended to be useful on their own.</p>
-      </div>
-    </section>
-  );
-};
+    <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-5 text-sm leading-6 text-emerald-950">
+      <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+      <p><strong>White-hat indexing policy:</strong> no doorway pages, fake review signals, fabricated usage counts, or mass-indexing of unbuilt concepts. XFree submits canonical pages intended to be useful on their own.</p>
+    </div>
+  </section>
+);
