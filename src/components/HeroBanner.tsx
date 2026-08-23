@@ -31,8 +31,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   onOpenStudio,
 }) => {
   useEffect(() => {
-    document.body.classList.add("xfree-home-light");
-    return () => document.body.classList.remove("xfree-home-light");
+    document.body.classList.add("xfree-home-marketing");
+    return () => document.body.classList.remove("xfree-home-marketing");
   }, []);
 
   return (
@@ -59,7 +59,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           </h1>
 
           <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
-            XFree brings focused developer utilities, data converters, technical SEO helpers, validators and workflow tools into one fast workspace. Published Local Mode tools process working input in your browser; optional cloud features are labeled before transmission.
+            XFree brings focused developer utilities, data converters, technical SEO helpers, validators and inspectable workflow tools into one fast workspace. Published Local Mode tools process working input in your browser; optional cloud features are labeled before transmission.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -83,6 +83,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               Browse published tools
               <Sparkles className="h-4 w-4 text-indigo-500" />
             </button>
+            <a
+              href="/recipes"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-100 sm:w-auto"
+            >
+              Run workflow recipes
+              <Workflow className="h-4 w-4 text-violet-500" />
+            </a>
           </div>
 
           <div className="mt-10 grid gap-4 text-left sm:grid-cols-3">
@@ -96,16 +103,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
               <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
                 <Workflow className="h-4 w-4 text-indigo-600" />
-                Tool chaining in Studio
+                Inspectable workflow recipes
               </div>
-              <p className="mt-2 text-xs leading-5 text-slate-500">The Studio command surface can route requests across approved local engines and visible workflow steps.</p>
+              <p className="mt-2 text-xs leading-5 text-slate-500">Versioned recipes show every allowlisted engine and bounded transform before local execution.</p>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
               <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
                 <Lock className="h-4 w-4 text-violet-600" />
                 No account required
               </div>
-              <p className="mt-2 text-xs leading-5 text-slate-500">Open published utilities directly without creating an XFree account or profile.</p>
+              <p className="mt-2 text-xs leading-5 text-slate-500">Open published utilities and local workflow recipes without creating an XFree account or profile.</p>
             </div>
           </div>
         </div>
