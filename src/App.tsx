@@ -45,6 +45,9 @@ import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 import { getPillarBySlug } from "./data/masterBlueprint";
 import { isPillarIndexable } from "./data/pillarPublishing";
 
+const isStudioHost = () => window.location.hostname.toLowerCase() === "app.xfree.in";
+const readApplicationPath = () => (isStudioHost() && window.location.pathname === "/" ? "/studio" : window.location.pathname);
+
 // Import Micro-Tools
 import { BulkUrlExtractorSitemap } from "./components/tools/BulkUrlExtractorSitemap";
 import { RobotsTxtGenerator } from "./components/tools/RobotsTxtGenerator";
@@ -60,11 +63,11 @@ import { TextDiffChecker } from "./components/tools/TextDiffChecker";
 import { AiMicroToolComponent } from "./components/tools/AiMicroToolComponent";
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-  const initialCategory = categorySlugFromPath(window.location.pathname) as ToolCategory | null;
+  const [currentPath, setCurrentPath] = useState(readApplicationPath);
+  const initialCategory = categorySlugFromPath(readApplicationPath()) as ToolCategory | null;
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">(initialCategory || "all");
   const [activeView, setActiveView] = useState<"tools" | "category-hub" | "page">(
-    initialCategory ? "category-hub" : isKnownStaticRoute(window.location.pathname) ? "page" : "tools",
+    initialCategory ? "category-hub" : isKnownStaticRoute(readApplicationPath()) ? "page" : "tools",
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
@@ -99,7 +102,7 @@ export default function App() {
   // Handle browser popstate / back / forward navigation
   useEffect(() => {
     const handleLocationChange = () => {
-      const nextPath = window.location.pathname;
+      const nextPath = readApplicationPath();
       const nextCategory = categorySlugFromPath(nextPath);
       setCurrentPath(nextPath);
       setActiveCategory((nextCategory as ToolCategory | null) || "all");
@@ -281,9 +284,9 @@ export default function App() {
   const renderStaticPage = () => {
     switch (currentPath) {
       case "/how-it-works":
-        return <HowItWorksPage onGoHome={() => navigateTo("/")} onSelectCategory={(cat) => { setActiveCategory(cat as any); navigateTo("/"); }} />;
+        return <HowItWorksPage onGoHome={() => navigateTo("/")} onSelectCategory={(cat) => { setActiveCategory(cat as any); navigateTo(cat === "all" ? "/" : `/category/${cat}`); }} />;
       case "/use-cases":
-        return <UseCasesPage onGoHome={() => navigateTo("/")} onSelectCategory={(cat) => { setActiveCategory(cat as any); navigateTo("/"); }} onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />;
+        return <UseCasesPage onGoHome={() => navigateTo("/")} onSelectCategory={(cat) => { setActiveCategory(cat as any); navigateTo(cat === "all" ? "/" : `/category/${cat}`); }} onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />;
       case "/docs":
         return <DocsHubPage onGoHome={() => navigateTo("/")} onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />;
       case "/blog":
@@ -328,6 +331,10 @@ export default function App() {
   };
 
   const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/guides", "/pillars", "/roadmap", "/contribute"].includes(currentPath) || activeGuideSlug !== null;
+
+  if (isStudioHost() && currentPath === "/studio") {
+    return <StudioPage />;
+  }
 
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
@@ -444,7 +451,7 @@ export default function App() {
             <QuickLinksSection onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />
 
             {/* Micro-Tools Grid */}
-            <div className="space-y-4">
+            <div id="published-tools" className="scroll-mt-24 space-y-4">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-400 tracking-wide">
                 <span>
                   Showing {filteredTools.length} {activeCategory !== "all" ? activeCategory : ""} Tools
@@ -488,8 +495,8 @@ export default function App() {
               onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
               onSelectCategory={(catId) => {
                 setActiveCategory(catId as any);
-                setActiveView("category-hub");
-                navigateTo(`/category/${catId}`);
+                setActiveView(catId === "all" ? "tools" : "category-hub");
+                navigateTo(catId === "all" ? "/" : `/category/${catId}`);
               }}
             />
 
@@ -504,8 +511,8 @@ export default function App() {
       <Footer
         onSelectCategory={(catId) => {
           setActiveCategory(catId as any);
-          setActiveView("category-hub");
-          navigateTo(`/category/${catId}`);
+          setActiveView(catId === "all" ? "tools" : "category-hub");
+          navigateTo(catId === "all" ? "/" : `/category/${catId}`);
         }}
         onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
         onNavigatePage={navigateTo}

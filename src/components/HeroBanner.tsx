@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { ArrowRight, CheckCircle2, Lock, Search, ShieldCheck, Sparkles, Workflow } from "lucide-react";
 import { ToolCategory } from "../types";
-import { ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
+import { GUIDES } from "../data/guides";
+import { LOCAL_ENGINES } from "../lib/studio/engines";
 
 interface HeroBannerProps {
   searchQuery: string;
@@ -75,14 +76,19 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               Open XFree Studio
               <ArrowRight className="h-4 w-4" />
             </a>
-            <button
-              type="button"
-              onClick={onExploreFreeTools}
+            <a
+              href="#published-tools"
+              onClick={(event) => {
+                if (!onExploreFreeTools) return;
+                event.preventDefault();
+                onExploreFreeTools();
+                document.getElementById("published-tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-7 py-3.5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-100 sm:w-auto"
             >
               Browse published tools
               <Sparkles className="h-4 w-4 text-indigo-500" />
-            </button>
+            </a>
           </div>
 
           <div className="mt-10 grid gap-4 text-left sm:grid-cols-3">
@@ -122,12 +128,12 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <dd className="mt-1 text-3xl font-black text-indigo-600">None</dd>
           </div>
           <div className="text-center">
-            <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Public roadmap</dt>
-            <dd className="mt-1 text-3xl font-black text-indigo-600">{ROADMAP_CONCEPT_COUNT.toLocaleString()}</dd>
+            <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Studio engines</dt>
+            <dd className="mt-1 text-3xl font-black text-indigo-600">{LOCAL_ENGINES.length}</dd>
           </div>
           <div className="text-center">
-            <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Indexing policy</dt>
-            <dd className="mt-1 flex items-center justify-center gap-1 text-lg font-black text-emerald-600"><CheckCircle2 className="h-5 w-5" /> Verified</dd>
+            <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Reviewed guides</dt>
+            <dd className="mt-1 flex items-center justify-center gap-1 text-3xl font-black text-indigo-600"><CheckCircle2 className="h-5 w-5 text-emerald-600" /> {GUIDES.length}</dd>
           </div>
         </dl>
       </div>

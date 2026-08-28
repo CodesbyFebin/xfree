@@ -42,15 +42,26 @@
       "permanent": true
     },
     {
-      "source": "/",
+      "source": "/studio",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.xfree.in"
+        }
+      ],
+      "destination": "https://app.xfree.in/",
+      "permanent": true
+    },
+    {
+      "source": "/studio",
       "has": [
         {
           "type": "host",
           "value": "app.xfree.in"
         }
       ],
-      "destination": "/studio",
-      "permanent": false
+      "destination": "https://app.xfree.in/",
+      "permanent": true
     }
   ],
   "headers": [
