@@ -6352,6 +6352,39 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
       { question: "Does the URL leave the browser?", answer: "No. Slug generation and UTM append are pure string operations in your browser tab. The site loads Google AdSense which sets cookies (see the Privacy page), but the URLs you build here are never sent anywhere." }
     ],
     relatedToolIds: ["bulk-url-sitemap", "base64-encoder-decoder"]
+  },
+  {
+    id: "sip-emi-calculator",
+    slug: "sip-emi-calculator",
+    title: "SIP & EMI Calculator \u2014 Mutual Fund & Loan EMI",
+    pillarKeyword: "SIP and EMI Calculator",
+    shortDescription: "Calculate SIP mutual fund maturity value with a year-by-year growth breakdown, and EMI loan repayment with a full amortization schedule.",
+    category: "generators",
+    categoryLabel: "Generators",
+    iconName: "Calculator",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-08-29",
+    tags: ["sip calculator", "emi calculator", "mutual fund calculator", "loan amortization", "home loan emi", "systematic investment plan"],
+    exampleInput: "SIP: \u20B95,000/month at 12% expected annual return for 10 years. EMI: \u20B925,00,000 loan at 8.5% annual interest for 20 years.",
+    explanation: "Computes SIP (Systematic Investment Plan) maturity value using the standard future-value-of-annuity-due formula banks and AMCs use, with a year-by-year invested-vs-value breakdown. Computes EMI using the standard reducing-balance formula, with a full month-by-month principal/interest amortization schedule.",
+    howToUse: [
+      "Switch between the SIP and EMI tabs.",
+      "SIP: enter monthly investment, expected annual return rate, and investment duration in years.",
+      "EMI: enter loan amount, annual interest rate, and loan tenure in years.",
+      "Read the computed result and expand the year-by-year (SIP) or month-by-month (EMI) breakdown table."
+    ],
+    privacyNotice: "Local processing: all calculations run in your browser using plain arithmetic. No amount, rate, or tenure you enter is sent to XFree.in servers.",
+    faqs: [
+      { question: "What formula does the SIP calculator use?", answer: "The standard future value of an annuity due: M = P \xD7 [(((1+i)^n \u2212 1) / i) \xD7 (1+i)], where P is the monthly investment, i is the monthly rate (annual rate \xF7 12 \xF7 100), and n is the number of months. This is the same formula used by AMFI-registered mutual fund calculators and most bank SIP tools. It assumes a constant monthly return, which real markets don't deliver \u2014 actual returns will vary." },
+      { question: "What formula does the EMI calculator use?", answer: "The standard reducing-balance EMI formula: EMI = P \xD7 r \xD7 (1+r)^n / ((1+r)^n \u2212 1), where P is the principal, r is the monthly interest rate, and n is the number of monthly installments. This matches how Indian banks and NBFCs calculate home, personal, and vehicle loan EMIs under the reducing-balance method." },
+      { question: "Does the expected SIP return rate account for inflation or taxes?", answer: "No. The entered rate is a nominal annual return assumption you provide \u2014 the calculator doesn't adjust for inflation, expense ratios, exit loads, or capital gains tax (LTCG/STCG on equity mutual funds in India). Treat the output as a pre-tax, pre-inflation estimate, not a guaranteed maturity figure." },
+      { question: "Does the EMI figure include processing fees or insurance?", answer: "No. It calculates principal and interest only, exactly as the reducing-balance formula defines. Banks often add a processing fee (typically 0.5\u20132% of the loan amount) and may bundle loan insurance \u2014 check your actual loan sanction letter for the all-in cost, not just the EMI." },
+      { question: "Why does my bank's EMI differ slightly from this calculator?", answer: "Small differences usually come from day-count conventions (some lenders compute the first partial month differently), rounding rules, or a fractional rate your bank applies that wasn't entered here. For a formal repayment schedule, use your lender's official statement \u2014 this tool is for planning and comparison, not a substitute for your loan agreement." },
+      { question: "Does my financial data leave the browser?", answer: "No. Every calculation \u2014 SIP maturity, EMI, and both breakdown tables \u2014 runs as plain JavaScript arithmetic in your browser tab. The site loads Google AdSense which sets advertising cookies (see the Privacy page), but the amounts, rates, and tenures you enter are never sent to XFree.in or any external service." }
+    ],
+    relatedToolIds: ["cron-expression-generator", "url-slug-utm-builder"]
   }
 ];
 var toolMap = /* @__PURE__ */ new Map();

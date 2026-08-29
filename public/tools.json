@@ -188,6 +188,24 @@
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/sip-emi-calculator",
+      "name": "SIP & EMI Calculator — Mutual Fund & Loan EMI",
+      "description": "Calculate SIP mutual fund maturity value with a year-by-year growth breakdown, and EMI loan repayment with a full amortization schedule.",
+      "applicationCategory": "Generators",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/sip-emi-calculator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
       "@id": "https://www.xfree.in/tools/json-to-csv-converter",
       "name": "JSON to CSV Converter",
       "description": "Convert JSON arrays or objects into consistently quoted CSV for spreadsheets, data review, imports, and local pipeline preparation.",

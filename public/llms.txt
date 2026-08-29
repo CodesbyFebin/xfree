@@ -42,6 +42,7 @@
 - [Cron Expression Generator & Human Translator](https://www.xfree.in/tools/cron-expression-generator): Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.
 - [Base64 Encoder/Decoder & JWT Token Inspector](https://www.xfree.in/tools/base64-encoder-decoder): Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.
 - [URL Slug Generator & Campaign UTM Parameter Builder](https://www.xfree.in/tools/url-slug-utm-builder): Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).
+- [SIP & EMI Calculator — Mutual Fund & Loan EMI](https://www.xfree.in/tools/sip-emi-calculator): Calculate SIP mutual fund maturity value with a year-by-year growth breakdown, and EMI loan repayment with a full amortization schedule.
 - [JSON to CSV Converter](https://www.xfree.in/tools/json-to-csv-converter): Convert JSON arrays or objects into consistently quoted CSV for spreadsheets, data review, imports, and local pipeline preparation.
 - [CSV to JSON Converter](https://www.xfree.in/tools/csv-to-json-converter): Parse quoted CSV with a header row into structured JSON objects for APIs, fixtures, analysis, and browser-side data cleanup.
 - [Base64 Text Encoder](https://www.xfree.in/tools/base64-text-encoder): Encode Unicode text into standard Base64 using UTF-8 bytes for transport, test fixtures, configuration, and payload inspection.

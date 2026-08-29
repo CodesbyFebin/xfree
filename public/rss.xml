@@ -5,7 +5,7 @@
     <link>https://www.xfree.in/</link>
     <description>Published browser-based developer, SEO, AI, and converter micro-tools with clear processing disclosures.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 23 Aug 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 29 Aug 2026 00:00:00 GMT</lastBuildDate>
     <atom:link href="https://www.xfree.in/rss.xml" rel="self" type="application/rss+xml"/>
     <item>
       <title>XML Sitemap Generator &amp; Validator</title>
@@ -96,6 +96,15 @@
       <category>Generators</category>
       <description>Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).</description>
       <content:encoded><![CDATA[<h3>URL Slug Generator &amp; Campaign UTM Parameter Builder</h3><p>Converts strings into lowercase, hyphen-separated clean URL slugs while stripping special characters. Appends validated Google Analytics UTM parameters to base URLs.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>SIP &amp; EMI Calculator — Mutual Fund &amp; Loan EMI</title>
+      <link>https://www.xfree.in/tools/sip-emi-calculator</link>
+      <guid isPermaLink="true">https://www.xfree.in/tools/sip-emi-calculator</guid>
+      <pubDate>Sat, 29 Aug 2026 00:00:00 GMT</pubDate>
+      <category>Generators</category>
+      <description>Calculate SIP mutual fund maturity value with a year-by-year growth breakdown, and EMI loan repayment with a full amortization schedule.</description>
+      <content:encoded><![CDATA[<h3>SIP &amp; EMI Calculator — Mutual Fund &amp; Loan EMI</h3><p>Computes SIP (Systematic Investment Plan) maturity value using the standard future-value-of-annuity-due formula banks and AMCs use, with a year-by-year invested-vs-value breakdown. Computes EMI using the standard reducing-balance formula, with a full month-by-month principal/interest amortization schedule.</p>]]></content:encoded>
     </item>
     <item>
       <title>JSON to CSV Converter</title>

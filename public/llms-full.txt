@@ -205,6 +205,27 @@ This file documents only tools in the public published/indexable registry. Draft
 
 ---
 
+### SIP & EMI Calculator — Mutual Fund & Loan EMI
+- **URL**: https://www.xfree.in/tools/sip-emi-calculator
+- **Category**: Generators
+- **Description**: Calculate SIP mutual fund maturity value with a year-by-year growth breakdown, and EMI loan repayment with a full amortization schedule.
+- **Processing**: Local processing: all calculations run in your browser using plain arithmetic. No amount, rate, or tenure you enter is sent to XFree.in servers.
+- **Explanation**: Computes SIP (Systematic Investment Plan) maturity value using the standard future-value-of-annuity-due formula banks and AMCs use, with a year-by-year invested-vs-value breakdown. Computes EMI using the standard reducing-balance formula, with a full month-by-month principal/interest amortization schedule.
+- **How to use**:
+  1. Switch between the SIP and EMI tabs.
+  2. SIP: enter monthly investment, expected annual return rate, and investment duration in years.
+  3. EMI: enter loan amount, annual interest rate, and loan tenure in years.
+  4. Read the computed result and expand the year-by-year (SIP) or month-by-month (EMI) breakdown table.
+- **Top FAQs**:
+  - **Q: What formula does the SIP calculator use?**
+    A: The standard future value of an annuity due: M = P × [(((1+i)^n − 1) / i) × (1+i)], where P is the monthly investment, i is the monthly rate (annual rate ÷ 12 ÷ 100), and n is the number of months. This is the same formula used by AMFI-registered mutual fund calculators and most bank SIP tools. It assumes a constant monthly return, which real markets don't deliver — actual returns will vary.
+  - **Q: What formula does the EMI calculator use?**
+    A: The standard reducing-balance EMI formula: EMI = P × r × (1+r)^n / ((1+r)^n − 1), where P is the principal, r is the monthly interest rate, and n is the number of monthly installments. This matches how Indian banks and NBFCs calculate home, personal, and vehicle loan EMIs under the reducing-balance method.
+  - **Q: Does the expected SIP return rate account for inflation or taxes?**
+    A: No. The entered rate is a nominal annual return assumption you provide — the calculator doesn't adjust for inflation, expense ratios, exit loads, or capital gains tax (LTCG/STCG on equity mutual funds in India). Treat the output as a pre-tax, pre-inflation estimate, not a guaranteed maturity figure.
+
+---
+
 ### JSON to CSV Converter
 - **URL**: https://www.xfree.in/tools/json-to-csv-converter
 - **Category**: Converters & Encoders

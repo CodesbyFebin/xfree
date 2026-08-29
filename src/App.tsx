@@ -55,6 +55,7 @@ import { UrlSlugUtmBuilder } from "./components/tools/UrlSlugUtmBuilder";
 import { JsonFormatterValidatorDiff } from "./components/tools/JsonFormatterValidatorDiff";
 import { RegexTesterExplainer } from "./components/tools/RegexTesterExplainer";
 import { CronExpressionGenerator } from "./components/tools/CronExpressionGenerator";
+import { SipEmiCalculator } from "./components/tools/SipEmiCalculator";
 import { Base64JwtDecoder } from "./components/tools/Base64JwtDecoder";
 import { TimestampColorConverter } from "./components/tools/TimestampColorConverter";
 import { TextDiffChecker } from "./components/tools/TextDiffChecker";
@@ -267,6 +268,8 @@ export default function App() {
         return <RegexTesterExplainer tool={tool} onSaveHistory={saveHist} />;
       case "cron-expression-generator":
         return <CronExpressionGenerator tool={tool} onSaveHistory={saveHist} />;
+      case "sip-emi-calculator":
+        return <SipEmiCalculator tool={tool} onSaveHistory={saveHist} />;
       case "base64-encoder-decoder":
         return <Base64JwtDecoder tool={tool} onSaveHistory={saveHist} />;
       case "timestamp-color-converter":
