@@ -594,12 +594,13 @@ var CSP_DIRECTIVES = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://adservice.google.com https://tpc.googlesyndication.com https://www.googletagservices.com https://fundingchoicesmessages.google.com",
-  "script-src-elem 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://adservice.google.com https://tpc.googlesyndication.com https://www.googletagservices.com https://fundingchoicesmessages.google.com",
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://pagead2.googlesyndication.com https://adservice.google.com https://tpc.googlesyndication.com https://www.googletagservices.com https://fundingchoicesmessages.google.com",
+  "script-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://pagead2.googlesyndication.com https://adservice.google.com https://tpc.googlesyndication.com https://www.googletagservices.com https://fundingchoicesmessages.google.com",
+  "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https: https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ad.doubleclick.net https://adservice.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com",
+  "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://*.xethub.hf.co https://raw.githubusercontent.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ad.doubleclick.net https://adservice.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com",
   "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com",
   "upgrade-insecure-requests"
 ];
@@ -6365,13 +6366,163 @@ var ROADMAP_TOOLS = TOOLS_REGISTRY.filter(
   (tool) => tool.status === "roadmap" || tool.status === "draft"
 );
 
+// src/data/publishedBatch1Tools.ts
+var REVIEW_DATE = "2026-08-23";
+function buildFaqs(spec) {
+  return [
+    {
+      question: `What does the ${spec.title} do?`,
+      answer: `${spec.description} ${spec.inputGuide} The transformation is deliberately narrow: it performs the named operation and returns the result without inventing extra fields or contacting an XFree processing API. This makes the tool useful for debugging, repeatable data cleanup, documentation examples, and small production-preparation tasks where you want to inspect exactly what changed before copying the output elsewhere.`
+    },
+    {
+      question: `Does ${spec.title} upload my input?`,
+      answer: `No. The core transformation for ${spec.title} is mapped to the XFree Studio local engine \u201C${spec.engineId}\u201D and runs in the browser. XFree may still load normal site assets and disclosed advertising resources, but the text you submit to this tool is not sent to an XFree tool-processing endpoint. For sensitive material, still review the page privacy notice and your browser extensions before pasting secrets.`
+    },
+    {
+      question: `What input should I use with ${spec.title}?`,
+      answer: `${spec.inputGuide} Start with a small representative sample when you are unsure of the source format, then compare the result against the original before processing a larger block. The tool does not silently repair unrelated syntax or infer missing business rules. If the input violates the engine's documented format, it returns an error so you can correct the source instead of receiving a misleading partial conversion.`
+    },
+    {
+      question: `How should I verify output from ${spec.title}?`,
+      answer: `${spec.outputGuide} After running the transformation, inspect delimiters, escaping, ordering, and any values that are significant to the target system. Copy or download only after the result matches your intended format. ${spec.caveat} XFree treats browser utilities as review aids, not as a substitute for target-system validation, automated tests, schema validation, or a production deployment check.`
+    },
+    {
+      question: `What is an important limitation of ${spec.title}?`,
+      answer: `${spec.caveat} The utility intentionally avoids network lookups and hidden server-side enrichment, so it cannot know requirements that exist only in an external API, database, style guide, locale, or application runtime. That constraint is useful for privacy and determinism, but it also means you should validate the generated result in the environment where it will actually be consumed.`
+    }
+  ];
+}
+function buildTool(spec) {
+  const relatedToolIds = BATCH1_SPECS.filter((candidate) => candidate.engineId !== spec.engineId && candidate.category === spec.category).slice(0, 3).map((candidate) => candidate.engineId);
+  return {
+    id: spec.engineId,
+    slug: spec.slug,
+    title: spec.title,
+    pillarKeyword: spec.title,
+    shortDescription: spec.description,
+    category: spec.category,
+    categoryLabel: spec.categoryLabel,
+    iconName: spec.iconName,
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: REVIEW_DATE,
+    toolComponent: `local-engine:${spec.engineId}`,
+    tags: [spec.engineId, spec.title.toLowerCase(), spec.category, "browser tool", "local processing"],
+    exampleInput: spec.exampleInput,
+    explanation: `${spec.description} ${spec.inputGuide} ${spec.outputGuide} XFree exposes this operation as a focused browser utility rather than a remote service. The implementation reuses the same tested local engine available in XFree Agent Studio, so the standalone route and Studio workflow share one transformation contract. That reduces duplicated logic and makes failures easier to reproduce. The page is designed for developers, analysts, technical writers, and SEO practitioners who need a quick result they can inspect before moving it into another system. No account is required for the core operation, and the working input remains in browser memory during normal execution. ${spec.caveat} The safest workflow is to keep the original source, run a representative sample, inspect the transformed output, and then validate it against the rules of the application that will consume it.`,
+    howToUse: [
+      `Paste or type the source value into the input editor. ${spec.inputGuide}`,
+      `Run the local \u201C${spec.engineId}\u201D engine. Processing happens in the current browser session and does not require an XFree tool API call.`,
+      `${spec.outputGuide} Compare the result with the source and pay particular attention to escaping, separators, ordering, and data types that matter to your destination.`,
+      `Use the copy button or Ctrl+Shift+C after reviewing the result. Keep the original input available until the transformed output has been tested in its real target environment.`
+    ],
+    keyFeatures: [
+      `Uses the verified XFree Studio local engine: ${spec.engineId}.`,
+      "Runs the core transformation in the browser with no tool-processing server round-trip.",
+      "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+      "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+      "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+    ],
+    benefits: [
+      `Focused workflow: ${spec.description}`,
+      "Local-first handling keeps working input out of an XFree processing endpoint during the transformation.",
+      "Shared Studio engine logic reduces behavioral drift between standalone tools and chained Agent Studio workflows.",
+      "Human-readable limitations encourage verification rather than presenting generated output as automatically production-safe."
+    ],
+    useCases: [
+      "Debug a small payload before sending it to another application.",
+      "Normalize or inspect text while preparing documentation, tests, fixtures, or configuration.",
+      "Create a reproducible browser-side transformation for a larger local workflow."
+    ],
+    privacyNotice: "Local processing: the core transformation runs in your browser and the submitted working input is not sent to an XFree tool-processing endpoint.",
+    faqs: buildFaqs(spec),
+    relatedToolIds,
+    limitations: [spec.caveat, "Practical input size depends on browser memory and the complexity of the transformation.", "External schemas, APIs, and target-system business rules are not fetched automatically."],
+    securityReview: {
+      passed: true,
+      reviewedAt: REVIEW_DATE,
+      notes: "Published only through an allow-listed XFree Studio local engine; no core network execution path."
+    }
+  };
+}
+var BATCH1_SPECS = [
+  { engineId: "json-to-csv", slug: "json-to-csv-converter", title: "JSON to CSV Converter", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Convert JSON arrays or objects into consistently quoted CSV for spreadsheets, data review, imports, and local pipeline preparation.", inputGuide: "Paste a JSON array of objects or a single object; compatible field names produce the clearest tabular columns.", outputGuide: "The tool emits quoted CSV text with a header row derived from object keys.", caveat: "Nested objects are serialized rather than automatically flattened, so review nested values before importing the CSV.", exampleInput: '[{"name":"Ada","role":"Engineer"},{"name":"Linus","role":"Maintainer"}]' },
+  { engineId: "csv-to-json", slug: "csv-to-json-converter", title: "CSV to JSON Converter", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Parse quoted CSV with a header row into structured JSON objects for APIs, fixtures, analysis, and browser-side data cleanup.", inputGuide: "Paste CSV whose first row contains column names; quoted fields and embedded commas are supported by the local parser.", outputGuide: "The result is a formatted JSON array whose object keys come from the CSV header cells.", caveat: "Malformed quoting or inconsistent row shapes can make tabular data ambiguous, so review every column before downstream use.", exampleInput: "name,role\nAda,Engineer\nLinus,Maintainer" },
+  { engineId: "base64-encode", slug: "base64-text-encoder", title: "Base64 Text Encoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Encode Unicode text into standard Base64 using UTF-8 bytes for transport, test fixtures, configuration, and payload inspection.", inputGuide: "Paste ordinary text, code, configuration, or Unicode content that you need represented as Base64 text.", outputGuide: "The browser converts the UTF-8 bytes into a standard Base64 string.", caveat: "Base64 is an encoding rather than encryption, so anyone who receives the output can decode it.", exampleInput: "XFree \u2713 UTF-8" },
+  { engineId: "base64-decode", slug: "base64-text-decoder", title: "Base64 Text Decoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Decode standard Base64 into UTF-8 text locally for inspecting payloads, configuration values, tokens, and encoded snippets.", inputGuide: "Paste a valid Base64 string produced from UTF-8 bytes and remove surrounding prose or unrelated prefixes first.", outputGuide: "The result is decoded UTF-8 text rendered directly in the browser.", caveat: "Invalid Base64 or bytes that are not meaningful UTF-8 can fail or produce unreadable text; decoding is not integrity verification.", exampleInput: "WEZyZWUuaW4=" },
+  { engineId: "url-encode", slug: "url-component-encoder", title: "URL Component Encoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Percent-encode text as a URL component so reserved characters can safely appear inside query values, fragments, or generated links.", inputGuide: "Paste only the component you want encoded, such as a query value, rather than a complete URL unless that is intentional.", outputGuide: "The result uses browser-standard percent encoding appropriate for a single URL component.", caveat: "Encoding a full URL as one component also escapes separators such as colon and slash, which is usually not desired.", exampleInput: "hello world & xfree" },
+  { engineId: "url-decode", slug: "url-component-decoder", title: "URL Component Decoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Decode percent-encoded URL component text to inspect human-readable query values, slugs, redirect parameters, and tracking data.", inputGuide: "Paste a percent-encoded component such as search%20term%3Dxfree with valid percent escape sequences.", outputGuide: "The result is the decoded Unicode text represented by the component.", caveat: "A decoded value can contain reserved characters and should be re-encoded before being inserted back into a URL component.", exampleInput: "search%20term%3Dxfree" },
+  { engineId: "hex-encode", slug: "utf8-hex-encoder", title: "UTF-8 Hex Encoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Encode Unicode text into lowercase UTF-8 hexadecimal byte pairs for debugging protocol payloads, storage formats, and byte boundaries.", inputGuide: "Paste text containing ASCII or Unicode characters; the browser first encodes the string as UTF-8 bytes.", outputGuide: "The output is a compact hexadecimal representation of every UTF-8 byte in order.", caveat: "Hex output represents bytes rather than visible characters, so one Unicode character can require several byte pairs.", exampleInput: "\u0928\u092E\u0938\u094D\u0924\u0947 XFree" },
+  { engineId: "hex-decode", slug: "utf8-hex-decoder", title: "UTF-8 Hex Decoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Decode hexadecimal byte pairs as strict UTF-8 text for inspecting encoded payloads, serialized values, and protocol samples.", inputGuide: "Paste an even-length sequence of hexadecimal byte pairs that represents UTF-8 data.", outputGuide: "The tool validates byte pairs and decodes them through the browser UTF-8 decoder.", caveat: "Arbitrary binary data is not necessarily valid UTF-8, so use a binary viewer when the bytes represent images or executables.", exampleInput: "58467265652e696e" },
+  { engineId: "html-encode", slug: "html-entity-encoder", title: "HTML Entity Encoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Escape HTML-significant characters so text can be displayed literally instead of being interpreted as markup by an HTML parser.", inputGuide: "Paste text containing ampersands, angle brackets, quotes, or apostrophes that need to appear as literal HTML text.", outputGuide: "The output replaces core HTML-significant characters with their entity forms.", caveat: "Entity encoding is context-specific and does not automatically make arbitrary data safe in JavaScript, CSS, or URL contexts.", exampleInput: "<strong>XFree & tools</strong>" },
+  { engineId: "html-decode", slug: "html-entity-decoder", title: "HTML Entity Decoder", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Decode common named and numeric HTML entities into readable Unicode text without evaluating the decoded result as executable markup.", inputGuide: "Paste entity-encoded text such as &amp; or numeric references; the utility treats the decoded result as text.", outputGuide: "The output is plain decoded Unicode text.", caveat: "Decoded text can contain angle brackets or script-like strings, so keep it as text unless it has been intentionally sanitized for HTML.", exampleInput: "XFree &amp; browser tools" },
+  { engineId: "json-format", slug: "json-pretty-printer", title: "JSON Pretty Printer", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Parse valid JSON and pretty-print it with consistent indentation for debugging, code review, documentation, and version-control friendly diffs.", inputGuide: "Paste a complete valid JSON value including its outer object, array, string, number, boolean, or null.", outputGuide: "The browser returns normalized JSON with two-space indentation while preserving array order and value types.", caveat: "Formatting cannot recover invalid syntax and is not a byte-for-byte canonicalization scheme for cryptographic signing.", exampleInput: '{"name":"xfree","local":true,"count":50}' },
+  { engineId: "json-minify", slug: "json-minifier", title: "JSON Minifier", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Remove insignificant JSON whitespace by parsing and reserializing valid JSON for compact transport, fixtures, and embedded configuration.", inputGuide: "Paste valid JSON that you have already reviewed; comments and trailing commas are not part of standard JSON.", outputGuide: "The result is a compact JSON serialization with no formatting whitespace between tokens.", caveat: "Minification changes formatting but is not compression and does not protect or encrypt sensitive values.", exampleInput: '{\n  "name": "xfree",\n  "local": true\n}' },
+  { engineId: "json-sort-keys", slug: "json-key-sorter", title: "JSON Key Sorter", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Sort JSON object keys recursively while preserving array order to make configuration snapshots, reviews, and structural diffs easier to compare.", inputGuide: "Paste valid JSON containing objects whose key order you want normalized for human comparison.", outputGuide: "The output recursively sorts object keys and keeps array element order unchanged.", caveat: "Key sorting is a presentation convention and is not identical to a formal canonical JSON standard used for signing.", exampleInput: '{"z":1,"a":{"y":2,"b":3}}' },
+  { engineId: "json-validate", slug: "json-syntax-validator", title: "JSON Syntax Validator", category: "validators", categoryLabel: "Validators", iconName: "CheckCircle2", description: "Validate whether input is syntactically correct JSON with an immediate browser-side pass result or parser error for malformed documents.", inputGuide: "Paste the exact JSON payload you want checked, including its outer object, array, or primitive value.", outputGuide: "Valid input returns a clear success result while invalid syntax surfaces the browser parser error.", caveat: "Syntax validity does not prove required business fields, JSON Schema constraints, or API-specific rules are satisfied.", exampleInput: '{"valid":true,"items":[1,2,3]}' },
+  { engineId: "json-value-type", slug: "json-value-type-inspector", title: "JSON Value Type Inspector", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Identify the top-level JSON value type to distinguish objects, arrays, strings, numbers, booleans, and null during payload inspection.", inputGuide: "Paste one complete valid JSON value rather than JavaScript object syntax or an incomplete fragment.", outputGuide: "The result reports the top-level JSON type with arrays and null handled distinctly.", caveat: "Only the top level is reported; nested values can contain many different types that require separate inspection.", exampleInput: "[1,2,3]" },
+  { engineId: "json-object-keys", slug: "json-object-key-extractor", title: "JSON Object Key Extractor", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "List the top-level keys of a JSON object for schema discovery, payload auditing, fixture review, and quick field inventory checks.", inputGuide: "Paste a valid JSON object at the top level; arrays and primitive values are rejected because they do not expose object keys.", outputGuide: "The output is a JSON array containing each own top-level key.", caveat: "Only top-level keys are returned; nested object keys require selecting the nested object first.", exampleInput: '{"id":1,"name":"XFree","local":true}' },
+  { engineId: "json-array-length", slug: "json-array-length-counter", title: "JSON Array Length Counter", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Count entries in a top-level JSON array without manually scanning a collection or uploading the payload to a remote processing service.", inputGuide: "Paste a valid JSON array as the top-level value.", outputGuide: "The result is the exact number of top-level array elements including nulls and repeated values.", caveat: "Nested arrays count as one top-level element each; the tool does not recursively total every descendant.", exampleInput: '["a","b",null,{"x":1}]' },
+  { engineId: "json-pointer-get", slug: "json-pointer-resolver", title: "JSON Pointer Resolver", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Resolve an RFC 6901-style JSON Pointer against a JSON document to inspect a precise nested value in the browser without server code.", inputGuide: "Put the JSON Pointer on the first line and the JSON document on the following lines.", outputGuide: "The selected value is returned as formatted JSON when the pointer exists.", caveat: "Pointer tokens use ~0 for a literal tilde and ~1 for a slash; missing segments produce an explicit error.", exampleInput: '/users/0/name\n{"users":[{"name":"Ada"}]}' },
+  { engineId: "json-array-dedupe", slug: "json-array-deduplicator", title: "JSON Array Deduplicator", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Remove repeated values from a top-level JSON array by comparing their serialized representation for deterministic browser-side cleanup.", inputGuide: "Paste a valid JSON array containing strings, numbers, booleans, nulls, objects, or arrays that you want deduplicated.", outputGuide: "The result keeps the first serialized occurrence of each value and returns formatted JSON.", caveat: "Objects with the same fields in different key orders can serialize differently, so this is not deep semantic equivalence.", exampleInput: '[1,1,"1",{"a":1},{"a":1}]' },
+  { engineId: "json-array-sort", slug: "json-array-sorter", title: "JSON Array Sorter", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Sort a homogeneous top-level JSON array of strings or numbers for predictable review, fixtures, comparisons, and local data preparation.", inputGuide: "Paste an array containing only strings or only finite numbers.", outputGuide: "The output is a sorted JSON array using numeric order for numbers and locale-aware order for strings.", caveat: "Mixed types are rejected because JavaScript coercion can create surprising and non-portable ordering.", exampleInput: "[9,3,12,1]" },
+  { engineId: "json-string-escape", slug: "json-string-escaper", title: "JSON String Escaper", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Serialize arbitrary text as one valid JSON string literal with quotes, line breaks, controls, and backslashes escaped correctly.", inputGuide: "Paste the raw text that should become a JSON string value.", outputGuide: "The result is a complete JSON string literal that can be embedded inside a larger JSON document.", caveat: "The output includes surrounding quotes, so adding another pair will create an unintended nested string representation.", exampleInput: 'Line 1\n"quoted" \\ path' },
+  { engineId: "json-string-unescape", slug: "json-string-unescaper", title: "JSON String Unescaper", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Parse one valid JSON string literal and recover the underlying Unicode text for debugging escaped API values and serialized configuration.", inputGuide: "Paste exactly one quoted JSON string literal including the outer double quotes.", outputGuide: "The tool parses escape sequences such as newline, Unicode escapes, quotes, and backslashes into text.", caveat: "An unquoted value is not a JSON string literal and will be rejected even if it looks like ordinary text.", exampleInput: '"XFree\\nlocal\\u0020tools"' },
+  { engineId: "json-lines-to-array", slug: "jsonl-to-json-array", title: "JSON Lines to Array Converter", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Convert newline-delimited JSON records into one standard JSON array for APIs, analysis, fixtures, and spreadsheet conversion workflows.", inputGuide: "Paste one valid JSON value per non-empty line.", outputGuide: "The output parses each line independently and wraps the resulting values in a formatted JSON array.", caveat: "A single malformed line stops the conversion so you can fix the source instead of silently dropping data.", exampleInput: '{"id":1}\n{"id":2}' },
+  { engineId: "json-array-to-lines", slug: "json-array-to-jsonl", title: "JSON Array to JSON Lines Converter", category: "converters", categoryLabel: "Converters & Encoders", iconName: "ArrowLeftRight", description: "Serialize each element of a top-level JSON array as one JSON Lines record for streaming, logs, import pipelines, and line-oriented tooling.", inputGuide: "Paste one valid top-level JSON array.", outputGuide: "The output emits one compact JSON value per line using the JSONL or NDJSON convention.", caveat: "JSON Lines MIME types and file extensions vary across ecosystems, so confirm the format expected by your destination.", exampleInput: '[{"id":1},{"id":2}]' },
+  { engineId: "json-depth", slug: "json-nesting-depth-calculator", title: "JSON Nesting Depth Calculator", category: "developer-tools", categoryLabel: "Developer Tools", iconName: "Code2", description: "Calculate the nesting depth of JSON objects and arrays to spot deeply nested payloads that can be difficult to inspect, transform, or validate.", inputGuide: "Paste a complete valid JSON value.", outputGuide: "The result reports container nesting depth while primitive leaves contribute no additional container level.", caveat: "Depth alone is not a full complexity metric because very wide shallow objects can still be expensive to process.", exampleInput: '{"a":{"b":[{"c":1}]}}' },
+  { engineId: "case-converter", slug: "text-case-converter", title: "Text Case Converter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Convert text to upper, lower, or title-style case and inspect basic word and character counts with one local browser utility.", inputGuide: "Paste the text to transform and choose the intended case operation from the tool controls.", outputGuide: "The result is transformed text or a concise count summary depending on the selected action.", caveat: "Title-case conventions vary by language and editorial style, so review proper nouns, acronyms, and small words manually.", exampleInput: "xFree local browser tools" },
+  { engineId: "slugify", slug: "text-to-url-slug-generator", title: "Text to URL Slug Generator", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Turn titles and labels into lowercase ASCII hyphenated slugs for clean paths, filenames, anchors, and stable content identifiers.", inputGuide: "Paste a human-readable title or phrase.", outputGuide: "The tool normalizes casing, strips unsupported characters, collapses separators, and returns a hyphenated slug.", caveat: "Transliteration of non-Latin scripts is lossy, so choose a deliberate native-language or ASCII slug when meaning matters.", exampleInput: "Free Developer & SEO Tools 2026" },
+  { engineId: "line-dedupe", slug: "duplicate-line-remover", title: "Duplicate Line Remover", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Remove exact duplicate lines while preserving first occurrence order for lists, exports, keyword sets, logs, and configuration fragments.", inputGuide: "Paste one logical item per line.", outputGuide: "The output keeps the first occurrence of every exact line and removes later duplicates.", caveat: "Comparison is exact, so differences in case or surrounding whitespace remain distinct unless you normalize them first.", exampleInput: "alpha\nbeta\nalpha\nBeta" },
+  { engineId: "line-sort", slug: "alphabetical-line-sorter", title: "Alphabetical Line Sorter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Sort newline-separated text with the browser locale comparator for cleaner lists, reports, configuration files, and review workflows.", inputGuide: "Paste one item per line.", outputGuide: "The result reorders complete lines while leaving the characters inside each line unchanged.", caveat: "Locale-aware sorting can differ across browsers and languages, so use a specified collation rule when build output must be identical everywhere.", exampleInput: "zeta\nalpha\nGamma\nbeta" },
+  { engineId: "whitespace-normalize", slug: "whitespace-normalizer", title: "Whitespace Normalizer", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Trim text and collapse runs of spaces, tabs, and line breaks into single spaces for compact comparison, cleanup, and normalization tasks.", inputGuide: "Paste text that contains inconsistent whitespace.", outputGuide: "The result is one normalized text stream with repeated whitespace collapsed.", caveat: "This intentionally removes paragraph and line-break structure, so use a line-specific tool when those boundaries carry meaning.", exampleInput: "XFree   tools\n\nrun	locally" },
+  { engineId: "empty-line-remove", slug: "empty-line-remover", title: "Empty Line Remover", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Remove blank and whitespace-only lines while preserving the content and order of every non-empty line in the source text.", inputGuide: "Paste multiline text containing intentional content mixed with unwanted blank rows.", outputGuide: "The output retains only lines that contain non-whitespace characters.", caveat: "If blank lines separate semantic sections, removing them flattens that visual structure even though non-empty text remains.", exampleInput: "alpha\n\n \nbeta\n\ncharlie" },
+  { engineId: "line-reverse", slug: "line-order-reverser", title: "Line Order Reverser", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Reverse the order of lines without reversing characters inside each line for lists, chronological notes, logs, and stack-like data.", inputGuide: "Paste one or more lines in their current order.", outputGuide: "The last input line becomes first while every line's internal text remains unchanged.", caveat: "This is not a character reverser; use the dedicated Unicode text reverser when characters inside a string must be reversed.", exampleInput: "first\nsecond\nthird" },
+  { engineId: "character-count", slug: "unicode-character-counter", title: "Unicode Character Counter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Count UTF-16 code units and Unicode code points to understand how browsers and Unicode-aware systems measure a text string.", inputGuide: "Paste any Unicode text including emoji, symbols, combining characters, or ordinary prose.", outputGuide: "The result reports JavaScript UTF-16 length and iterated Unicode code-point count.", caveat: "Neither count equals user-perceived grapheme count for every emoji or combining sequence; use Grapheme Counter for that.", exampleInput: "A\u{1F600}\xE9" },
+  { engineId: "code-point-count", slug: "unicode-code-point-counter", title: "Unicode Code Point Counter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Count Unicode code points without confusing supplementary characters with two UTF-16 code units during browser-side text inspection.", inputGuide: "Paste Unicode text containing letters, symbols, emoji, or combining marks.", outputGuide: "The output is the number of iterated Unicode code points in the string.", caveat: "A visible grapheme can contain multiple code points, including emoji sequences or a base letter plus combining marks.", exampleInput: "\u{1F469}\u200D\u{1F4BB} XFree" },
+  { engineId: "grapheme-count", slug: "grapheme-cluster-counter", title: "Grapheme Cluster Counter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Count user-perceived grapheme clusters with Intl.Segmenter for realistic text limits involving international characters and emoji sequences.", inputGuide: "Paste text exactly as users see it, including emoji and combining marks.", outputGuide: "The browser segments the string into grapheme clusters and reports their count.", caveat: "Segmentation follows the browser's Unicode data and may differ on very old engines, so document browser support requirements.", exampleInput: "\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466} caf\xE9" },
+  { engineId: "word-count", slug: "unicode-word-counter", title: "Unicode Word Counter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Count practical Unicode word tokens for drafts, documentation, snippets, and content checks without uploading the working text.", inputGuide: "Paste the text whose word count you need.", outputGuide: "The result tokenizes common Unicode letters and numbers and returns the total count.", caveat: "Word boundaries differ across languages and editorial rules, so this is a practical counter rather than a linguistic parser.", exampleInput: "XFree builds privacy-first browser utilities." },
+  { engineId: "sentence-count", slug: "sentence-counter", title: "Sentence Counter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Estimate sentence count from terminal punctuation for quick draft checks, documentation review, and lightweight readability workflows.", inputGuide: "Paste prose containing ordinary sentence punctuation.", outputGuide: "The tool estimates sentence boundaries using punctuation and whitespace patterns.", caveat: "Abbreviations, decimals, headings, and languages with different punctuation can make heuristic sentence counting imperfect.", exampleInput: "XFree is local-first. It runs in your browser! Ready?" },
+  { engineId: "paragraph-count", slug: "paragraph-counter", title: "Paragraph Counter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Count text blocks separated by blank lines to inspect document structure, drafts, notes, and content without sending it to a server.", inputGuide: "Paste plain text where blank lines represent paragraph boundaries.", outputGuide: "The result counts non-empty blocks separated by one or more blank lines.", caveat: "Markdown lists or hard-wrapped prose can use blank lines differently, so interpret the number according to the source format.", exampleInput: "First paragraph.\n\nSecond paragraph.\nStill second." },
+  { engineId: "character-frequency", slug: "character-frequency-analyzer", title: "Character Frequency Analyzer", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Count occurrences of each Unicode code point to inspect symbol distribution, separators, repeated characters, and unusual text patterns.", inputGuide: "Paste the text you want analyzed.", outputGuide: "The output is a JSON object mapping each Unicode code point to its occurrence count.", caveat: "Visually identical graphemes can have different Unicode normalization forms and therefore appear as different code-point keys.", exampleInput: "banana \u{1F34C}" },
+  { engineId: "word-frequency", slug: "word-frequency-analyzer", title: "Word Frequency Analyzer", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Count normalized practical word tokens to reveal repeated terminology, dominant vocabulary, and simple text distribution patterns locally.", inputGuide: "Paste prose, notes, logs, documentation, or other word-oriented text.", outputGuide: "The output is a JSON object mapping lowercase word tokens to their counts.", caveat: "Frequency is not a measure of SEO quality or semantic importance and should not be used for keyword stuffing.", exampleInput: "XFree tools are free. XFree tools run locally." },
+  { engineId: "reverse-text", slug: "unicode-text-reverser", title: "Unicode Text Reverser", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Reverse text by Unicode code point for transformation testing, puzzles, fixtures, and string-processing experiments in the browser.", inputGuide: "Paste the exact string you want reversed.", outputGuide: "The result reverses Unicode code-point order across the entire input.", caveat: "Complex grapheme clusters can still split because code-point reversal is not grapheme-aware; do not treat it as typography-safe.", exampleInput: "XFree \u{1F600}" },
+  { engineId: "reverse-words", slug: "word-order-reverser", title: "Word Order Reverser", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Reverse whitespace-delimited word order while preserving characters inside each token for quick text transformation and test preparation.", inputGuide: "Paste words or prose separated by whitespace.", outputGuide: "The output places the final token first and joins all tokens with single spaces.", caveat: "Original spacing, line breaks, and punctuation attachment are not preserved because the engine operates on whitespace-delimited tokens.", exampleInput: "privacy first local tools" },
+  { engineId: "trim-lines", slug: "line-whitespace-trimmer", title: "Line Whitespace Trimmer", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Remove leading and trailing whitespace from every line while preserving line order and internal spacing for controlled text cleanup.", inputGuide: "Paste multiline text whose line edges contain unwanted spaces or tabs.", outputGuide: "The output trims each line independently and keeps the same line order.", caveat: "Indentation can be meaningful in Python, YAML, Markdown, and configuration files, so do not trim code where leading spaces carry syntax.", exampleInput: "  alpha  \n	beta	\n gamma" },
+  { engineId: "prefix-lines", slug: "line-prefix-adder", title: "Line Prefix Adder", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Add one shared prefix to every line for comments, bullets, log labels, generated configuration, and batch text preparation workflows.", inputGuide: "Put the desired prefix on the first line and the body text on all following lines.", outputGuide: "The tool prepends the prefix exactly to each body line.", caveat: "The first line is configuration rather than content, and existing prefixes are not detected or automatically deduplicated.", exampleInput: "- \nalpha\nbeta\ngamma" },
+  { engineId: "suffix-lines", slug: "line-suffix-adder", title: "Line Suffix Adder", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Append one shared suffix to every line for delimiters, annotations, generated code fragments, and repetitive batch editing workflows.", inputGuide: "Put the desired suffix on the first line and the body text on following lines.", outputGuide: "The tool appends the suffix exactly to every body line.", caveat: "The first line configures the suffix and repeated runs can add the same suffix multiple times if you do not reset the input.", exampleInput: ";\nconst a = 1\nconst b = 2" },
+  { engineId: "number-lines", slug: "line-numbering-tool", title: "Line Numbering Tool", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Prefix each line with a one-based number for reviews, checklists, snippets, transcripts, instructions, and manual reference workflows.", inputGuide: "Paste the lines in the order they should be numbered.", outputGuide: "The output adds 1., 2., 3. and subsequent one-based numbers before each line.", caveat: "Existing numbering is not removed automatically, so normalize a previously numbered list before applying fresh numbers.", exampleInput: "alpha\nbeta\ngamma" },
+  { engineId: "filter-lines", slug: "line-include-filter", title: "Line Include Filter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Keep only lines containing an exact substring for quick log triage, keyword filtering, exports, lists, and configuration cleanup.", inputGuide: "Put the substring to match on the first line and the candidate lines underneath it.", outputGuide: "The output retains only body lines whose text includes the query exactly.", caveat: "Matching is case-sensitive and literal; use Regex Tester when you need case-insensitive, anchored, or pattern-based filtering.", exampleInput: "ERROR\nINFO started\nERROR timeout\nWARN retry" },
+  { engineId: "remove-matching-lines", slug: "matching-line-remover", title: "Matching Line Remover", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Remove lines containing an exact substring while preserving every non-matching line in its original order for controlled cleanup.", inputGuide: "Put the substring to remove on the first line and the source lines underneath it.", outputGuide: "The result excludes matching body lines and keeps all other lines unchanged.", caveat: "Matching is literal and case-sensitive, so use a regex workflow when case variants or structured patterns must be removed.", exampleInput: "DEBUG\nINFO ready\nDEBUG cache miss\nERROR failed" },
+  { engineId: "tabs-to-spaces", slug: "tabs-to-spaces-converter", title: "Tabs to Spaces Converter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Replace tab characters with a configurable number of spaces for code review, data cleanup, indentation checks, and formatting normalization.", inputGuide: "Put the desired tab width on the first line and the text to transform on following lines.", outputGuide: "Every tab character becomes the requested number of ordinary spaces.", caveat: "The engine uses fixed-width replacement rather than calculating visual tab stops from the current column position.", exampleInput: "4\n	const x = 1;\n		return x;" },
+  { engineId: "spaces-to-tabs", slug: "leading-spaces-to-tabs", title: "Leading Spaces to Tabs Converter", category: "text-tools", categoryLabel: "Text & Diff Tools", iconName: "FileText", description: "Convert groups of leading spaces into tab characters using a chosen indentation width while leaving internal spacing untouched.", inputGuide: "Put the indentation width on the first line and the indented text on following lines.", outputGuide: "Leading groups that match the width are replaced by tab characters.", caveat: "Partial leading groups remain spaces and converting indentation can conflict with project style rules, linters, or language conventions.", exampleInput: "2\n  alpha\n    beta" }
+];
+var BATCH1_PUBLISHED_TOOLS = BATCH1_SPECS.map(buildTool);
+
 // src/data/publicTools.ts
-var PUBLIC_TOOLS = TOOLS_REGISTRY.filter(
+var BASE_PUBLISHED_TOOLS = TOOLS_REGISTRY.filter(
   (tool) => tool.status === "published" && tool.indexable === true
 );
+var BATCH1_PUBLIC_TOOLS = BATCH1_PUBLISHED_TOOLS.map((tool) => ({
+  ...tool,
+  id: `local-${tool.id}`
+}));
+var toolMap2 = /* @__PURE__ */ new Map();
+for (const tool of [...BASE_PUBLISHED_TOOLS, ...BATCH1_PUBLIC_TOOLS]) {
+  const key = tool.slug || tool.id;
+  if (!toolMap2.has(key)) toolMap2.set(key, tool);
+}
+var PUBLIC_TOOLS = Array.from(toolMap2.values());
+var PUBLIC_CATEGORY_DESCRIPTION_OVERRIDES = {
+  validators: "Validate JSON, XML, sitemaps, Schema.org markup, robots.txt rules, and structured data with focused browser-based checks."
+};
 var PUBLIC_CATEGORIES = CATEGORIES.filter(
   (category) => PUBLIC_TOOLS.some((tool) => tool.category === category.id)
-);
+).map((category) => ({
+  ...category,
+  description: PUBLIC_CATEGORY_DESCRIPTION_OVERRIDES[category.id] || category.description
+}));
 var PUBLIC_TOOL_SLUGS = new Set(PUBLIC_TOOLS.map((tool) => tool.slug));
 function getPublicToolBySlug(slug) {
   return PUBLIC_TOOLS.find((tool) => tool.slug === slug || tool.id === slug);
@@ -6866,7 +7017,8 @@ var STATIC_PAGE_ENTRIES = [
   { path: "/security", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/xfree-app", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/pillars", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD }
+  { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/instaserver", lastmod: SITE_CONTENT_LASTMOD }
 ];
 function getPageSitemapEntries() {
   return [
@@ -7027,6 +7179,8 @@ function generateLlmsTxt(baseUrl = DEFAULT_BASE_URL) {
 `;
   text += `- [Contribute](${cleanBase}/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.
 `;
+  text += `- [InstaServer](${cleanBase}/instaserver): Free, open-source MCP server that deploys app containers on your own machine \u2014 no account, no rate limit.
+`;
   text += `- [OpenAPI](${cleanBase}/openapi.json): Machine-readable description of the public XFree API surface.
 
 `;
@@ -7081,8 +7235,8 @@ function generateLlmsFullTxt(baseUrl = DEFAULT_BASE_URL) {
     if (tool.howToUse?.length) {
       text += `- **How to use**:
 `;
-      tool.howToUse.forEach((step, index) => {
-        text += `  ${index + 1}. ${step}
+      tool.howToUse.forEach((step2, index) => {
+        text += `  ${index + 1}. ${step2}
 `;
       });
     }
@@ -7580,13 +7734,13 @@ async function solveProblem(problem, context) {
   const plan = buildExecutionPlan(intent);
   const results = [];
   let currentOutput = void 0;
-  for (const step of plan.steps) {
+  for (const step2 of plan.steps) {
     const input = currentOutput || { problem, intent: intent.intent };
     const result = await executeTool({
-      toolId: step.toolId,
+      toolId: step2.toolId,
       input,
       context,
-      options: { verify: step.verify }
+      options: { verify: step2.verify }
     });
     results.push(result);
     if (!result.success) {
@@ -7596,7 +7750,7 @@ async function solveProblem(problem, context) {
             toolId: fallbackId,
             input,
             context,
-            options: { verify: step.verify }
+            options: { verify: step2.verify }
           });
           results.push(fallbackResult);
           if (fallbackResult.success) {
@@ -7620,8 +7774,235 @@ async function solveProblem(problem, context) {
   };
 }
 
+// src/data/recipes.ts
+var step = (id, engineId, label, options = {}) => ({ id, kind: "engine", engineId, label, ...options });
+var transform = (id, transformId, label) => ({
+  id,
+  kind: "transform",
+  transformId,
+  label
+});
+var RECIPES = [
+  {
+    id: "recipe-url-cleanup-v1",
+    slug: "url-cleanup-pipeline",
+    version: 1,
+    title: "URL Cleanup Pipeline",
+    summary: "Extract HTTP(S) URLs, normalize each URL, remove duplicates, sort the list, and export a JSON array.",
+    description: "Use this recipe when links are buried inside copied documents, logs, tickets, crawl output, or chat transcripts. The recipe first extracts HTTP and HTTPS candidates, then runs the audited URL normalizer independently across each line. It removes exact duplicates, sorts the surviving URLs, and serializes the final list as JSON. No LLM is required and no arbitrary JavaScript is accepted from the recipe payload.",
+    inputLabel: "Mixed text containing URLs",
+    inputHint: "Paste any text containing http:// or https:// links.",
+    sampleInput: "Docs: https://www.xfree.in/docs#start\nHome: https://www.xfree.in/\nDuplicate: https://www.xfree.in/docs#start\nExternal: https://example.com:443/a#fragment",
+    outputLabel: "Normalized URL JSON array",
+    outputExtension: "json",
+    outputMimeType: "application/json",
+    mode: "local",
+    llmRequired: false,
+    tags: ["url", "dedupe", "normalize", "json", "seo"],
+    steps: [
+      step("extract", "http-url-extract", "Extract HTTP and HTTPS URLs"),
+      step("normalize", "url-normalize", "Normalize each extracted URL", { config: { mapLines: true } }),
+      step("dedupe", "line-dedupe", "Remove duplicate URLs"),
+      step("sort", "line-sort", "Sort URLs"),
+      transform("json", "lines-to-json-array", "Convert URL lines to a JSON array")
+    ],
+    notes: [
+      "URL normalization removes fragments, lowercases hostnames, and removes default ports where the engine supports it.",
+      "The workflow intentionally does not fetch remote URLs or test their HTTP status."
+    ]
+  },
+  {
+    id: "recipe-log-sanitizer-v1",
+    slug: "log-sanitizer",
+    version: 1,
+    title: "Log Sanitizer",
+    summary: "Trim log lines, keep ERROR lines, deduplicate repeated errors, sort them, and emit structured JSON.",
+    description: "This recipe is a deterministic first-pass error triage workflow for pasted application or server logs. It trims leading and trailing whitespace, filters for the fixed repository-owned token ERROR, deduplicates repeated lines, sorts the remaining entries, and emits a JSON array. The filter token is part of the reviewed recipe definition rather than executable user code, so shared recipe URLs cannot redefine the filter implementation or inject scripts.",
+    inputLabel: "Application or server log text",
+    inputHint: "Paste logs. Version 1 keeps lines containing the exact text ERROR.",
+    sampleInput: "INFO boot complete\n ERROR database timeout \nWARN retrying\nERROR database timeout\nERROR cache unavailable",
+    outputLabel: "Deduplicated ERROR lines",
+    outputExtension: "json",
+    outputMimeType: "application/json",
+    mode: "local",
+    llmRequired: false,
+    tags: ["logs", "errors", "cleanup", "dedupe", "json"],
+    steps: [
+      step("trim", "trim-lines", "Trim each log line"),
+      step("errors", "filter-lines", "Keep lines containing ERROR", { config: { prependLine: "ERROR" } }),
+      step("dedupe", "line-dedupe", "Remove repeated error lines"),
+      step("sort", "line-sort", "Sort unique error lines"),
+      transform("json", "lines-to-json-array", "Convert error lines to a JSON array")
+    ],
+    notes: [
+      "Version 1 uses a literal ERROR filter. It does not infer severity or semantics with an LLM.",
+      "Secrets already present in a log are not automatically redacted; review input before sharing output."
+    ]
+  },
+  {
+    id: "recipe-jwt-inspection-v1",
+    slug: "jwt-inspection-workflow",
+    version: 1,
+    title: "JWT Inspection Workflow",
+    summary: "Decode a JWT without verifying its signature, format the decoded JSON, and sort object keys for inspection.",
+    description: "This workflow is designed for local inspection of JWT structure and claims. It uses the existing unverified JWT decoder, then formats the resulting JSON and sorts keys recursively to make comparison easier. The recipe does not claim that a token is authentic, valid, or trusted: decoding is not signature verification. Keep production secrets and live bearer tokens out of screenshots, issue reports, and public recipe examples.",
+    inputLabel: "JWT token",
+    inputHint: "Paste a three-part JWT. The signature is not verified.",
+    sampleInput: "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJ4ZnJlZS1kZW1vIiwicm9sZSI6ImRldmVsb3BlciJ9.",
+    outputLabel: "Formatted decoded JWT",
+    outputExtension: "json",
+    outputMimeType: "application/json",
+    mode: "local",
+    llmRequired: false,
+    tags: ["jwt", "security", "json", "decode"],
+    steps: [
+      step("decode", "jwt-decode", "Decode JWT sections without signature verification"),
+      step("format", "json-format", "Format decoded JSON"),
+      step("sort", "json-sort-keys", "Sort JSON keys for inspection")
+    ],
+    notes: [
+      "Decoding a JWT does not establish authenticity or authorization.",
+      "Do not paste sensitive production tokens into public bug reports or shared screenshots."
+    ]
+  },
+  {
+    id: "recipe-seo-url-audit-v1",
+    slug: "seo-url-audit",
+    version: 1,
+    title: "SEO URL Audit",
+    summary: "Extract and normalize links, deduplicate them, then classify URLs by the origin of the first extracted URL.",
+    description: "Use this recipe for a quick local classification pass over URLs copied from crawl output, page source, reports, or content inventories. After extraction and normalization, the workflow removes duplicates and classifies each URL as internal or external. Version 1 deliberately uses the origin of the first extracted URL as the internal baseline so the shared recipe needs no arbitrary hostname expression or executable configuration. Put a representative site URL first when using this workflow.",
+    inputLabel: "Text containing site and external links",
+    inputHint: "Put a representative site URL first; its origin becomes the internal baseline.",
+    sampleInput: "https://www.xfree.in/\nDocs https://www.xfree.in/docs#intro\nReference https://example.com/reference\nDuplicate https://www.xfree.in/docs#intro",
+    outputLabel: "Internal/external URL classification",
+    outputExtension: "json",
+    outputMimeType: "application/json",
+    mode: "local",
+    llmRequired: false,
+    tags: ["seo", "url", "internal links", "external links", "audit"],
+    steps: [
+      step("extract", "http-url-extract", "Extract HTTP and HTTPS URLs"),
+      step("normalize", "url-normalize", "Normalize each URL", { config: { mapLines: true } }),
+      step("dedupe", "line-dedupe", "Remove duplicate URLs"),
+      transform("classify", "classify-urls-by-first-origin", "Classify URLs against the first URL origin")
+    ],
+    notes: [
+      "The first extracted URL defines the internal origin in version 1.",
+      "This is a structural classification pass; it does not crawl pages or measure indexability."
+    ]
+  },
+  {
+    id: "recipe-json-api-cleanup-v1",
+    slug: "json-api-cleanup",
+    version: 1,
+    title: "JSON API Cleanup",
+    summary: "Validate JSON, format it, and recursively sort object keys into a stable review-friendly representation.",
+    description: "This recipe turns pasted API JSON into a deterministic, readable representation without sending the payload to a model. Validation runs first as a passthrough gate: if parsing fails, later steps never execute. Valid JSON is then pretty-formatted and object keys are sorted recursively while array order is preserved. The output is useful for code review, fixtures, diff preparation, and debugging where stable key order makes changes easier to inspect.",
+    inputLabel: "JSON API payload",
+    inputHint: "Paste a valid JSON object or array.",
+    sampleInput: '{"z":3,"user":{"name":"Ada","id":7},"items":[2,1]}',
+    outputLabel: "Validated, formatted, key-sorted JSON",
+    outputExtension: "json",
+    outputMimeType: "application/json",
+    mode: "local",
+    llmRequired: false,
+    tags: ["json", "api", "validate", "format", "developer"],
+    steps: [
+      step("validate", "json-validate", "Validate JSON syntax", { passthrough: true }),
+      step("format", "json-format", "Pretty-format JSON"),
+      step("sort", "json-sort-keys", "Sort object keys recursively")
+    ],
+    notes: [
+      "Array order is preserved; only object keys are sorted.",
+      "Version 1 does not flatten nested JSON because no flatten engine is currently part of the allowlisted production engine set."
+    ]
+  },
+  {
+    id: "recipe-text-cleanup-v1",
+    slug: "text-cleanup-pipeline",
+    version: 1,
+    title: "Text Cleanup Pipeline",
+    summary: "Trim lines, remove blanks, deduplicate repeated lines, sort the result, and count words without changing final text.",
+    description: "Use this recipe to clean pasted lists, notes, exported labels, or line-oriented text before reuse. It trims each line, removes empty lines, deduplicates exact repeats, and sorts the remaining content. A final word-count engine runs in passthrough mode so the execution trace records a useful metric while the recipe output remains the cleaned text rather than replacing it with the numeric count.",
+    inputLabel: "Messy multiline text",
+    inputHint: "Paste line-oriented text containing whitespace, blanks, or duplicates.",
+    sampleInput: "  beta  \n\nalpha\nbeta\n gamma\nalpha ",
+    outputLabel: "Cleaned sorted text",
+    outputExtension: "txt",
+    outputMimeType: "text/plain",
+    mode: "local",
+    llmRequired: false,
+    tags: ["text", "cleanup", "dedupe", "sort", "count"],
+    steps: [
+      step("trim", "trim-lines", "Trim line whitespace"),
+      step("blank", "empty-line-remove", "Remove blank lines"),
+      step("dedupe", "line-dedupe", "Remove duplicate lines"),
+      step("sort", "line-sort", "Sort cleaned lines"),
+      step("count", "word-count", "Count words for the execution trace", { passthrough: true })
+    ],
+    notes: [
+      "Deduplication is exact after trimming; it is not fuzzy or semantic.",
+      "The word-count step is informational and does not replace the cleaned output."
+    ]
+  },
+  {
+    id: "recipe-csv-preparation-v1",
+    slug: "csv-preparation",
+    version: 1,
+    title: "CSV Preparation",
+    summary: "Parse CSV into structured JSON, then serialize it back into consistently quoted CSV for a deterministic cleanup pass.",
+    description: "This recipe uses XFree's local CSV parser and serializer as a round-trip validation and normalization workflow. The CSV-to-JSON engine parses the header row and quoted fields; malformed quoted input fails instead of being silently guessed. The structured result is then sent to the JSON-to-CSV engine, which produces consistently quoted CSV output. It is useful before importing data into tools that are sensitive to inconsistent quoting or delimiter edge cases.",
+    inputLabel: "CSV with a header row",
+    inputHint: "Paste comma-delimited CSV. Quoted commas are supported by the production parser.",
+    sampleInput: 'name,role\nAda,Engineer\n"Grace Hopper","Compiler, Navy"',
+    outputLabel: "Normalized CSV",
+    outputExtension: "csv",
+    outputMimeType: "text/csv",
+    mode: "local",
+    llmRequired: false,
+    tags: ["csv", "data", "normalize", "validate", "export"],
+    steps: [
+      step("parse", "csv-to-json", "Parse CSV into structured JSON"),
+      step("serialize", "json-to-csv", "Serialize structured rows as normalized CSV")
+    ],
+    notes: [
+      "Version 1 is comma-delimited and does not auto-detect arbitrary delimiter formats.",
+      "Review inferred types after import: the CSV parser represents cells as text."
+    ]
+  },
+  {
+    id: "recipe-developer-clipboard-v1",
+    slug: "developer-clipboard-cleanup",
+    version: 1,
+    title: "Developer Clipboard Cleanup",
+    summary: "Pull URL-shaped values out of noisy terminal or CI output, deduplicate and sort them, then export JSON.",
+    description: "Developer clipboard content often mixes prompts, timestamps, status messages, stack output, and useful URLs. Version 1 of this recipe intentionally solves one auditable slice of that problem: it extracts HTTP and HTTPS values, removes duplicates, sorts the list, and returns JSON. It does not use an LLM to decide what is important, so the behavior is predictable and reproducible across runs.",
+    inputLabel: "Mixed terminal or CI output",
+    inputHint: "Paste terminal output containing URLs you want to collect.",
+    sampleInput: "$ deploy\nPreview: https://preview.example.dev/build/42\nDocs https://docs.example.dev/runbook\nRetrying...\nPreview: https://preview.example.dev/build/42",
+    outputLabel: "Useful URL values as JSON",
+    outputExtension: "json",
+    outputMimeType: "application/json",
+    mode: "local",
+    llmRequired: false,
+    tags: ["clipboard", "terminal", "urls", "developer", "json"],
+    steps: [
+      step("extract", "http-url-extract", "Extract URL-shaped values"),
+      step("dedupe", "line-dedupe", "Remove duplicate values"),
+      step("sort", "line-sort", "Sort useful values"),
+      transform("json", "lines-to-json-array", "Convert values to a JSON array")
+    ],
+    notes: [
+      "Version 1 extracts HTTP(S) URLs only; it does not infer arbitrary secret, hash, or identifier types.",
+      "Do not publish clipboard output that contains private deployment URLs or credentials."
+    ]
+  }
+];
+var RECIPE_SLUGS = new Set(RECIPES.map((recipe) => recipe.slug));
+
 // src/data/routes.ts
-var STATIC_ROUTES = [
+var BASE_STATIC_ROUTES = [
   "/",
   "/how-it-works",
   "/use-cases",
@@ -7635,10 +8016,16 @@ var STATIC_ROUTES = [
   "/security",
   "/xfree-app",
   "/studio",
+  "/instaserver",
   "/guides",
+  "/recipes",
   "/pillars",
   "/roadmap",
   "/contribute"
+];
+var STATIC_ROUTES = [
+  ...BASE_STATIC_ROUTES,
+  ...RECIPES.map((recipe) => `/recipes/${recipe.slug}`)
 ];
 var CATEGORY_SLUGS = [
   "seo-tools",

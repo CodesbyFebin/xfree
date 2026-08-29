@@ -10,14 +10,17 @@
 - [Pillars](https://www.xfree.in/pillars): 50 developer and SEO topic pillars; only pillars backed by published tools enter the sitemap.
 - [Roadmap](https://www.xfree.in/roadmap): 25,000 planned concepts on a noindex discovery page; this is not a count of live tools.
 - [Contribute](https://www.xfree.in/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.
+- [InstaServer](https://www.xfree.in/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.
 - [OpenAPI](https://www.xfree.in/openapi.json): Machine-readable description of the public XFree API surface.
 
 ## Categories
 
 - [SEO & URL Tools](https://www.xfree.in/category/seo-tools): Bulk extraction, XML sitemaps, Meta OpenGraph previews, Robots.txt, and Schema markup
 - [Developer Tools](https://www.xfree.in/category/developer-tools): Format, validate, diff, and convert JSON, XML, YAML, Regex, Cron, JWT, and SQL
+- [Text & Diff Tools](https://www.xfree.in/category/text-tools): Text diffing, line sorting, word count, slugifier, and regex replacements
 - [Converters & Encoders](https://www.xfree.in/category/converters): Base64, URL encoding, Unix Timestamps, Color space conversion, and CSS units
 - [Generators](https://www.xfree.in/category/generators): UUID v4, Cron schedules, Hash generation (SHA-256/MD5), and UTM campaign links
+- [Validators](https://www.xfree.in/category/validators): Validate JSON, XML, sitemaps, Schema.org markup, robots.txt rules, and structured data with focused browser-based checks.
 
 ## Published Pillars
 
@@ -39,3 +42,65 @@
 - [Cron Expression Generator & Human Translator](https://www.xfree.in/tools/cron-expression-generator): Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.
 - [Base64 Encoder/Decoder & JWT Token Inspector](https://www.xfree.in/tools/base64-encoder-decoder): Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.
 - [URL Slug Generator & Campaign UTM Parameter Builder](https://www.xfree.in/tools/url-slug-utm-builder): Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).
+- [JSON to CSV Converter](https://www.xfree.in/tools/json-to-csv-converter): Convert JSON arrays or objects into consistently quoted CSV for spreadsheets, data review, imports, and local pipeline preparation.
+- [CSV to JSON Converter](https://www.xfree.in/tools/csv-to-json-converter): Parse quoted CSV with a header row into structured JSON objects for APIs, fixtures, analysis, and browser-side data cleanup.
+- [Base64 Text Encoder](https://www.xfree.in/tools/base64-text-encoder): Encode Unicode text into standard Base64 using UTF-8 bytes for transport, test fixtures, configuration, and payload inspection.
+- [Base64 Text Decoder](https://www.xfree.in/tools/base64-text-decoder): Decode standard Base64 into UTF-8 text locally for inspecting payloads, configuration values, tokens, and encoded snippets.
+- [URL Component Encoder](https://www.xfree.in/tools/url-component-encoder): Percent-encode text as a URL component so reserved characters can safely appear inside query values, fragments, or generated links.
+- [URL Component Decoder](https://www.xfree.in/tools/url-component-decoder): Decode percent-encoded URL component text to inspect human-readable query values, slugs, redirect parameters, and tracking data.
+- [UTF-8 Hex Encoder](https://www.xfree.in/tools/utf8-hex-encoder): Encode Unicode text into lowercase UTF-8 hexadecimal byte pairs for debugging protocol payloads, storage formats, and byte boundaries.
+- [UTF-8 Hex Decoder](https://www.xfree.in/tools/utf8-hex-decoder): Decode hexadecimal byte pairs as strict UTF-8 text for inspecting encoded payloads, serialized values, and protocol samples.
+- [HTML Entity Encoder](https://www.xfree.in/tools/html-entity-encoder): Escape HTML-significant characters so text can be displayed literally instead of being interpreted as markup by an HTML parser.
+- [HTML Entity Decoder](https://www.xfree.in/tools/html-entity-decoder): Decode common named and numeric HTML entities into readable Unicode text without evaluating the decoded result as executable markup.
+- [JSON Pretty Printer](https://www.xfree.in/tools/json-pretty-printer): Parse valid JSON and pretty-print it with consistent indentation for debugging, code review, documentation, and version-control friendly diffs.
+- [JSON Minifier](https://www.xfree.in/tools/json-minifier): Remove insignificant JSON whitespace by parsing and reserializing valid JSON for compact transport, fixtures, and embedded configuration.
+- [JSON Key Sorter](https://www.xfree.in/tools/json-key-sorter): Sort JSON object keys recursively while preserving array order to make configuration snapshots, reviews, and structural diffs easier to compare.
+- [JSON Syntax Validator](https://www.xfree.in/tools/json-syntax-validator): Validate whether input is syntactically correct JSON with an immediate browser-side pass result or parser error for malformed documents.
+- [JSON Value Type Inspector](https://www.xfree.in/tools/json-value-type-inspector): Identify the top-level JSON value type to distinguish objects, arrays, strings, numbers, booleans, and null during payload inspection.
+- [JSON Object Key Extractor](https://www.xfree.in/tools/json-object-key-extractor): List the top-level keys of a JSON object for schema discovery, payload auditing, fixture review, and quick field inventory checks.
+- [JSON Array Length Counter](https://www.xfree.in/tools/json-array-length-counter): Count entries in a top-level JSON array without manually scanning a collection or uploading the payload to a remote processing service.
+- [JSON Pointer Resolver](https://www.xfree.in/tools/json-pointer-resolver): Resolve an RFC 6901-style JSON Pointer against a JSON document to inspect a precise nested value in the browser without server code.
+- [JSON Array Deduplicator](https://www.xfree.in/tools/json-array-deduplicator): Remove repeated values from a top-level JSON array by comparing their serialized representation for deterministic browser-side cleanup.
+- [JSON Array Sorter](https://www.xfree.in/tools/json-array-sorter): Sort a homogeneous top-level JSON array of strings or numbers for predictable review, fixtures, comparisons, and local data preparation.
+- [JSON String Escaper](https://www.xfree.in/tools/json-string-escaper): Serialize arbitrary text as one valid JSON string literal with quotes, line breaks, controls, and backslashes escaped correctly.
+- [JSON String Unescaper](https://www.xfree.in/tools/json-string-unescaper): Parse one valid JSON string literal and recover the underlying Unicode text for debugging escaped API values and serialized configuration.
+- [JSON Lines to Array Converter](https://www.xfree.in/tools/jsonl-to-json-array): Convert newline-delimited JSON records into one standard JSON array for APIs, analysis, fixtures, and spreadsheet conversion workflows.
+- [JSON Array to JSON Lines Converter](https://www.xfree.in/tools/json-array-to-jsonl): Serialize each element of a top-level JSON array as one JSON Lines record for streaming, logs, import pipelines, and line-oriented tooling.
+- [JSON Nesting Depth Calculator](https://www.xfree.in/tools/json-nesting-depth-calculator): Calculate the nesting depth of JSON objects and arrays to spot deeply nested payloads that can be difficult to inspect, transform, or validate.
+- [Text Case Converter](https://www.xfree.in/tools/text-case-converter): Convert text to upper, lower, or title-style case and inspect basic word and character counts with one local browser utility.
+- [Text to URL Slug Generator](https://www.xfree.in/tools/text-to-url-slug-generator): Turn titles and labels into lowercase ASCII hyphenated slugs for clean paths, filenames, anchors, and stable content identifiers.
+- [Duplicate Line Remover](https://www.xfree.in/tools/duplicate-line-remover): Remove exact duplicate lines while preserving first occurrence order for lists, exports, keyword sets, logs, and configuration fragments.
+- [Alphabetical Line Sorter](https://www.xfree.in/tools/alphabetical-line-sorter): Sort newline-separated text with the browser locale comparator for cleaner lists, reports, configuration files, and review workflows.
+- [Whitespace Normalizer](https://www.xfree.in/tools/whitespace-normalizer): Trim text and collapse runs of spaces, tabs, and line breaks into single spaces for compact comparison, cleanup, and normalization tasks.
+- [Empty Line Remover](https://www.xfree.in/tools/empty-line-remover): Remove blank and whitespace-only lines while preserving the content and order of every non-empty line in the source text.
+- [Line Order Reverser](https://www.xfree.in/tools/line-order-reverser): Reverse the order of lines without reversing characters inside each line for lists, chronological notes, logs, and stack-like data.
+- [Unicode Character Counter](https://www.xfree.in/tools/unicode-character-counter): Count UTF-16 code units and Unicode code points to understand how browsers and Unicode-aware systems measure a text string.
+- [Unicode Code Point Counter](https://www.xfree.in/tools/unicode-code-point-counter): Count Unicode code points without confusing supplementary characters with two UTF-16 code units during browser-side text inspection.
+- [Grapheme Cluster Counter](https://www.xfree.in/tools/grapheme-cluster-counter): Count user-perceived grapheme clusters with Intl.Segmenter for realistic text limits involving international characters and emoji sequences.
+- [Unicode Word Counter](https://www.xfree.in/tools/unicode-word-counter): Count practical Unicode word tokens for drafts, documentation, snippets, and content checks without uploading the working text.
+- [Sentence Counter](https://www.xfree.in/tools/sentence-counter): Estimate sentence count from terminal punctuation for quick draft checks, documentation review, and lightweight readability workflows.
+- [Paragraph Counter](https://www.xfree.in/tools/paragraph-counter): Count text blocks separated by blank lines to inspect document structure, drafts, notes, and content without sending it to a server.
+- [Character Frequency Analyzer](https://www.xfree.in/tools/character-frequency-analyzer): Count occurrences of each Unicode code point to inspect symbol distribution, separators, repeated characters, and unusual text patterns.
+- [Word Frequency Analyzer](https://www.xfree.in/tools/word-frequency-analyzer): Count normalized practical word tokens to reveal repeated terminology, dominant vocabulary, and simple text distribution patterns locally.
+- [Unicode Text Reverser](https://www.xfree.in/tools/unicode-text-reverser): Reverse text by Unicode code point for transformation testing, puzzles, fixtures, and string-processing experiments in the browser.
+- [Word Order Reverser](https://www.xfree.in/tools/word-order-reverser): Reverse whitespace-delimited word order while preserving characters inside each token for quick text transformation and test preparation.
+- [Line Whitespace Trimmer](https://www.xfree.in/tools/line-whitespace-trimmer): Remove leading and trailing whitespace from every line while preserving line order and internal spacing for controlled text cleanup.
+- [Line Prefix Adder](https://www.xfree.in/tools/line-prefix-adder): Add one shared prefix to every line for comments, bullets, log labels, generated configuration, and batch text preparation workflows.
+- [Line Suffix Adder](https://www.xfree.in/tools/line-suffix-adder): Append one shared suffix to every line for delimiters, annotations, generated code fragments, and repetitive batch editing workflows.
+- [Line Numbering Tool](https://www.xfree.in/tools/line-numbering-tool): Prefix each line with a one-based number for reviews, checklists, snippets, transcripts, instructions, and manual reference workflows.
+- [Line Include Filter](https://www.xfree.in/tools/line-include-filter): Keep only lines containing an exact substring for quick log triage, keyword filtering, exports, lists, and configuration cleanup.
+- [Matching Line Remover](https://www.xfree.in/tools/matching-line-remover): Remove lines containing an exact substring while preserving every non-matching line in its original order for controlled cleanup.
+- [Tabs to Spaces Converter](https://www.xfree.in/tools/tabs-to-spaces-converter): Replace tab characters with a configurable number of spaces for code review, data cleanup, indentation checks, and formatting normalization.
+- [Leading Spaces to Tabs Converter](https://www.xfree.in/tools/leading-spaces-to-tabs): Convert groups of leading spaces into tab characters using a chosen indentation width while leaving internal spacing untouched.
+
+## Workflow Recipes
+
+- [Workflow Recipes](https://www.xfree.in/recipes): Versioned, deterministic local workflows composed from allowlisted XFree engines.
+- [URL Cleanup Pipeline](https://www.xfree.in/recipes/url-cleanup-pipeline): Extract HTTP(S) URLs, normalize each URL, remove duplicates, sort the list, and export a JSON array.
+- [Log Sanitizer](https://www.xfree.in/recipes/log-sanitizer): Trim log lines, keep ERROR lines, deduplicate repeated errors, sort them, and emit structured JSON.
+- [JWT Inspection Workflow](https://www.xfree.in/recipes/jwt-inspection-workflow): Decode a JWT without verifying its signature, format the decoded JSON, and sort object keys for inspection.
+- [SEO URL Audit](https://www.xfree.in/recipes/seo-url-audit): Extract and normalize links, deduplicate them, then classify URLs by the origin of the first extracted URL.
+- [JSON API Cleanup](https://www.xfree.in/recipes/json-api-cleanup): Validate JSON, format it, and recursively sort object keys into a stable review-friendly representation.
+- [Text Cleanup Pipeline](https://www.xfree.in/recipes/text-cleanup-pipeline): Trim lines, remove blanks, deduplicate repeated lines, sort the result, and count words without changing final text.
+- [CSV Preparation](https://www.xfree.in/recipes/csv-preparation): Parse CSV into structured JSON, then serialize it back into consistently quoted CSV for a deterministic cleanup pass.
+- [Developer Clipboard Cleanup](https://www.xfree.in/recipes/developer-clipboard-cleanup): Pull URL-shaped values out of noisy terminal or CI output, deduplicate and sort them, then export JSON.

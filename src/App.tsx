@@ -41,6 +41,7 @@ import { PillarHubsPage } from "./components/pages/PillarHubsPage";
 import { PillarDetailPage } from "./components/pages/PillarDetailPage";
 import { RoadmapPage } from "./components/pages/RoadmapPage";
 import { ContributePage } from "./components/pages/ContributePage";
+import { InstaServerPage } from "./components/pages/InstaServerPage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 import { getPillarBySlug } from "./data/masterBlueprint";
 import { isPillarIndexable } from "./data/pillarPublishing";
@@ -304,6 +305,8 @@ export default function App() {
         return <XFreeAppPage onGoHome={() => navigateTo("/")} onOpenTools={() => navigateTo("/")} />;
       case "/studio":
         return <StudioPage />;
+      case "/instaserver":
+        return <InstaServerPage onGoHome={() => navigateTo("/")} />;
       case "/guides":
         return <GuideIndexPage onSelectGuide={(slug) => navigateTo(`/guides/${slug}`)} />;
       case "/pillars":
@@ -327,7 +330,7 @@ export default function App() {
     }
   };
 
-  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/guides", "/pillars", "/roadmap", "/contribute"].includes(currentPath) || activeGuideSlug !== null;
+  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/instaserver", "/guides", "/pillars", "/roadmap", "/contribute"].includes(currentPath) || activeGuideSlug !== null;
 
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">

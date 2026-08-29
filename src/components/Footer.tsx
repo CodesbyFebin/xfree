@@ -45,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigatePage }) => (
         <div>
           <h3 className="mb-4 text-sm font-bold text-white">Resources</h3>
           <ul className="space-y-2.5">
-            {[["/how-it-works","How It Works"],["/use-cases","Use Cases"],["/docs","Documentation"],["/guides","Guides"],["/pillars","Tool Pillars"],["/roadmap","25K Roadmap"],["/contribute","Contribute"],["/faq","FAQ"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}
+            {[["/how-it-works","How It Works"],["/use-cases","Use Cases"],["/docs","Documentation"],["/guides","Guides"],["/pillars","Tool Pillars"],["/roadmap","25K Roadmap"],["/contribute","Contribute"],["/instaserver","InstaServer"],["/faq","FAQ"]].map(([href,label]) => <li key={href}><RouterLink href={href} onNavigate={onNavigatePage} className="transition hover:text-indigo-300">{label}</RouterLink></li>)}
           </ul>
         </div>
 

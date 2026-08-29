@@ -69,6 +69,7 @@ const STATIC_PAGE_ENTRIES: SitemapEntry[] = [
   { path: "/xfree-app", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/pillars", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/instaserver", lastmod: SITE_CONTENT_LASTMOD },
 ];
 
 export function getPageSitemapEntries(): SitemapEntry[] {
@@ -209,6 +210,7 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   text += `- [Pillars](${cleanBase}/pillars): 50 developer and SEO topic pillars; only pillars backed by published tools enter the sitemap.\n`;
   text += `- [Roadmap](${cleanBase}/roadmap): ${ROADMAP_CONCEPT_COUNT.toLocaleString()} planned concepts on a noindex discovery page; this is not a count of live tools.\n`;
   text += `- [Contribute](${cleanBase}/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.\n`;
+  text += `- [InstaServer](${cleanBase}/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.\n`;
   text += `- [OpenAPI](${cleanBase}/openapi.json): Machine-readable description of the public XFree API surface.\n\n`;
 
   text += `## Categories\n\n`;

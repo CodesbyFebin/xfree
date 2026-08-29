@@ -1,7 +1,7 @@
 # XFree.in AI/agent discovery note
 # This is an informational, non-standard file. robots.txt remains the crawl-control source.
 Canonical: https://www.xfree.in/
-Published tools: 10
+Published tools: 60
 Roadmap concepts: 25000 (planning taxonomy; not a live-tool count)
 LLM summary: https://www.xfree.in/llms.txt
 Full published-tool reference: https://www.xfree.in/llms-full.txt
