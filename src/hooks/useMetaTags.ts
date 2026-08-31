@@ -59,7 +59,7 @@ export function useMetaTags({
       const slug = category?.id || label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
       title = `${label} — XFree.in`;
       description = category?.description || `Explore published ${label} utilities with clear local or cloud processing disclosures.`;
-      canonicalUrl = `${baseUrl}/category/${slug}`;
+      canonicalUrl = `${baseUrl}/${slug}`;
     } else if (guide) {
       title = `${guide.title} — XFree.in`;
       description = guide.description;
@@ -212,7 +212,7 @@ export function useMetaTags({
         "@type": "ListItem",
         position: 2,
         name: tool.categoryLabel || tool.category,
-        item: `${baseUrl}/category/${tool.category}`,
+        item: `${baseUrl}/${tool.category}`,
       });
       breadcrumbs.push({
         "@type": "ListItem",
@@ -227,7 +227,7 @@ export function useMetaTags({
         "@type": "ListItem",
         position: 2,
         name: label,
-        item: `${baseUrl}/category/${slug}`,
+        item: `${baseUrl}/${slug}`,
       });
     } else if (pillar) {
       breadcrumbs.push({

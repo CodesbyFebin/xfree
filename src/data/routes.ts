@@ -15,6 +15,7 @@ const BASE_STATIC_ROUTES = [
   "/xfree-app",
   "/studio",
   "/instaserver",
+  "/json-tools",
   "/guides",
   "/recipes",
   "/pillars",
@@ -50,9 +51,13 @@ export function isStaticRoute(pathname: string): boolean {
 }
 
 export function categorySlugFromPath(pathname: string): string | null {
-  const m = pathname.match(/^\/category\/([^/]+)\/?$/);
-  if (!m) return null;
-  return (CATEGORY_SLUGS as readonly string[]).includes(m[1]) ? m[1] : null;
+  // Canonical form is a top-level path (/developer-tools). /category/:slug is
+  // kept recognizable here only so legacy links still resolve client-side;
+  // the production redirect in vercel.json handles the actual 301.
+  const legacy = pathname.match(/^\/category\/([^/]+)\/?$/);
+  const slug = legacy ? legacy[1] : pathname.match(/^\/([^/]+)\/?$/)?.[1];
+  if (!slug) return null;
+  return (CATEGORY_SLUGS as readonly string[]).includes(slug) ? slug : null;
 }
 
 export function solveProblemFromPath(pathname: string): string | null {

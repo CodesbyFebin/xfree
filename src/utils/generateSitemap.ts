@@ -70,13 +70,14 @@ const STATIC_PAGE_ENTRIES: SitemapEntry[] = [
   { path: "/pillars", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/instaserver", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/json-tools", lastmod: SITE_CONTENT_LASTMOD },
 ];
 
 export function getPageSitemapEntries(): SitemapEntry[] {
   return [
     ...STATIC_PAGE_ENTRIES,
     ...PUBLIC_CATEGORIES.map((category) => ({
-      path: `/category/${category.id}`,
+      path: `/${category.id}`,
       lastmod: SITE_CONTENT_LASTMOD,
     })),
     ...INDEXABLE_PILLARS.map((pillar) => ({
@@ -211,11 +212,12 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   text += `- [Roadmap](${cleanBase}/roadmap): ${ROADMAP_CONCEPT_COUNT.toLocaleString()} planned concepts on a noindex discovery page; this is not a count of live tools.\n`;
   text += `- [Contribute](${cleanBase}/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.\n`;
   text += `- [InstaServer](${cleanBase}/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.\n`;
+  text += `- [JSON Tools](${cleanBase}/json-tools): Hub of 18 free browser-based JSON tools — format, validate, minify, convert, sort, and inspect.\n`;
   text += `- [OpenAPI](${cleanBase}/openapi.json): Machine-readable description of the public XFree API surface.\n\n`;
 
   text += `## Categories\n\n`;
   for (const cat of PUBLIC_CATEGORIES) {
-    text += `- [${cat.label}](${cleanBase}/category/${cat.id}): ${cat.description}\n`;
+    text += `- [${cat.label}](${cleanBase}/${cat.id}): ${cat.description}\n`;
   }
 
   text += `\n## Published Pillars\n\n`;

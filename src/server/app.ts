@@ -447,7 +447,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
   });
 
   const staticRouteSet = new Set<string>(STATIC_ROUTES);
-  const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/category/${s}`));
+  const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/${s}`));
   const guideSlugSet = new Set<string>(GUIDES.map((g) => g.slug));
   const generatedToolSlugSet = new Set<string>(Object.keys(GENERATED_PUBLISHED_CONTENT));
   const pillarSlugSet = new Set<string>(PILLARS_50.map((pillar) => pillar.slug));

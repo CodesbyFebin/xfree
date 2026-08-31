@@ -42,6 +42,7 @@ import { PillarDetailPage } from "./components/pages/PillarDetailPage";
 import { RoadmapPage } from "./components/pages/RoadmapPage";
 import { ContributePage } from "./components/pages/ContributePage";
 import { InstaServerPage } from "./components/pages/InstaServerPage";
+import { JsonToolsPage } from "./components/pages/JsonToolsPage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 import { getPillarBySlug } from "./data/masterBlueprint";
 import { isPillarIndexable } from "./data/pillarPublishing";
@@ -244,6 +245,18 @@ export default function App() {
     });
   }, [activeCategory, searchQuery]);
 
+  // Homepage-default state (no category filter, no search) shows a flagship
+  // subset rather than the entire catalog — the full directory lives one click
+  // away via category hubs and /json-tools. Any active filter or search still
+  // shows its full matching set.
+  const isHomeDefaultBrowse = activeCategory === "all" && !searchQuery.trim();
+  const homeDisplayTools = useMemo(() => {
+    if (!isHomeDefaultBrowse) return filteredTools;
+    const flagship = filteredTools.filter((tool) => tool.isFlagship);
+    const rest = filteredTools.filter((tool) => !tool.isFlagship);
+    return [...flagship, ...rest].slice(0, 12);
+  }, [isHomeDefaultBrowse, filteredTools]);
+
   // Render micro-tool component based on ID or fallback
   const renderToolComponent = (tool: ToolDefinition) => {
     const saveHist = (inSnip: string, outSnip: string) => {
@@ -310,6 +323,8 @@ export default function App() {
         return <StudioPage />;
       case "/instaserver":
         return <InstaServerPage onGoHome={() => navigateTo("/")} />;
+      case "/json-tools":
+        return <JsonToolsPage onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />;
       case "/guides":
         return <GuideIndexPage onSelectGuide={(slug) => navigateTo(`/guides/${slug}`)} />;
       case "/pillars":
@@ -333,7 +348,7 @@ export default function App() {
     }
   };
 
-  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/instaserver", "/guides", "/pillars", "/roadmap", "/contribute"].includes(currentPath) || activeGuideSlug !== null;
+  const isStaticRoute = ["/how-it-works", "/use-cases", "/docs", "/blog", "/faq", "/about", "/contact", "/privacy", "/terms", "/security", "/xfree-app", "/studio", "/instaserver", "/json-tools", "/guides", "/pillars", "/roadmap", "/contribute"].includes(currentPath) || activeGuideSlug !== null;
 
   return (
     <div className="min-h-screen starry-bg text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
@@ -360,7 +375,7 @@ export default function App() {
           }
           setActiveCategory(catId as any);
           setActiveView("category-hub");
-          navigateTo(`/category/${catId}`);
+          navigateTo(`/${catId}`);
         }}
         favoritesCount={favoriteIds.length}
         historyCount={savedHistory.length}
@@ -389,7 +404,7 @@ export default function App() {
               onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
               onNavigateToCategory={(catSlug) => {
                 setActiveCategory(catSlug as any);
-                navigateTo(`/category/${catSlug}`);
+                navigateTo(`/${catSlug}`);
               }}
               onToggleFavorite={toggleFavorite}
               favoriteIds={favoriteIds}
@@ -453,7 +468,9 @@ export default function App() {
             <div className="space-y-4">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-400 tracking-wide">
                 <span>
-                  Showing {filteredTools.length} {activeCategory !== "all" ? activeCategory : ""} Tools
+                  {isHomeDefaultBrowse
+                    ? `Flagship tools — ${homeDisplayTools.length} of ${PUBLIC_TOOLS.length}. Browse the full catalog by category below.`
+                    : `Showing ${filteredTools.length} ${activeCategory !== "all" ? activeCategory : ""} Tools`}
                 </span>
                 {searchQuery && (
                   <button
@@ -465,7 +482,7 @@ export default function App() {
                 )}
               </div>
 
-              {filteredTools.length === 0 ? (
+              {homeDisplayTools.length === 0 ? (
                 <div className="p-12 text-center glass-panel rounded-3xl space-y-2">
                   <div className="text-white font-bold text-base">
                     No micro-tools found matching "{searchQuery}"
@@ -476,7 +493,7 @@ export default function App() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredTools.map((tool) => (
+                  {homeDisplayTools.map((tool) => (
                     <ToolCard
                       key={tool.id}
                       tool={tool}
@@ -495,7 +512,7 @@ export default function App() {
               onSelectCategory={(catId) => {
                 setActiveCategory(catId as any);
                 setActiveView("category-hub");
-                navigateTo(`/category/${catId}`);
+                navigateTo(`/${catId}`);
               }}
             />
 
@@ -511,7 +528,7 @@ export default function App() {
         onSelectCategory={(catId) => {
           setActiveCategory(catId as any);
           setActiveView("category-hub");
-          navigateTo(`/category/${catId}`);
+          navigateTo(`/${catId}`);
         }}
         onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
         onNavigatePage={navigateTo}

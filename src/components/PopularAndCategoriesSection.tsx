@@ -48,7 +48,7 @@ export const PopularAndCategoriesSection: React.FC<PopularAndCategoriesProps> = 
             return (
               <a
                 key={category.id}
-                href={`/category/${category.id}`}
+                href={`/${category.id}`}
                 onClick={(event) => {
                   if (event.metaKey || event.ctrlKey || event.shiftKey || event.button === 1) return;
                   event.preventDefault();

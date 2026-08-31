@@ -222,12 +222,13 @@ const STATIC_META: Record<string, { title: string; description: string; h1: stri
   "/roadmap": { title: "XFree 25,000-Concept Tool Roadmap — Planned Developer Utilities", description: "Explore XFree's 25,000-concept planning matrix. This roadmap is not a claim that 25,000 tools are live; concepts remain noindex until built, tested, and approved.", h1: "XFree 25,000-Concept Tool Roadmap", intro: `The ${ROADMAP_CONCEPT_COUNT.toLocaleString()}-concept matrix is a transparent planning taxonomy, not a count of live tools. Published tools are listed separately and planned concepts do not receive indexable stub URLs.` },
   "/contribute": { title: "Contribute to XFree — Build Free Developer & SEO Tools", description: "Build and contribute real XFree developer and SEO tools through the public roadmap, automated quality gates, security review, and governed publication pipeline.", h1: "Contribute to XFree — Build Free Developer & SEO Tools", intro: "Choose a roadmap concept, build a real implementation, pass automated and human quality gates, and only then request publication and indexability." },
   "/instaserver": { title: "InstaServer — Free Open-Source Alternative to InstaPods & Vercel", description: "InstaServer is a free, open-source MCP server that deploys app containers on your own machine via Docker, with free public URLs. No account, no rate limit.", h1: "InstaServer — a free, open-source alternative to InstaPods and Vercel", intro: "InstaServer gives an AI agent InstaPods-style deploy tools — deploy_pod, exec_command, get_logs, file read/write — except every pod is a real Docker container on your own machine, with a public URL from a free Cloudflare quick tunnel. No account, no signup, no platform-imposed rate limit." },
+  "/json-tools": { title: "Free JSON Tools — Formatter, Validator & Converter", description: "18 free browser-based JSON tools: format, validate, minify, convert to/from CSV and JSON Lines, sort keys, and inspect arrays. No signup.", h1: "Free JSON Tools — Formatter, Validator, Converter & Inspector", intro: "18 browser-local JSON utilities in one place: format and validate a payload, convert it to or from CSV and JSON Lines, sort or deduplicate arrays, resolve a JSON Pointer, or escape a string for embedding. Every tool runs in your browser — no JSON you paste is sent to XFree.in servers." },
 };
 
 
 function renderHomeDirectoryLinks(): string {
   const categories = PUBLIC_CATEGORIES.map((category) =>
-    `<li><a href="/category/${escapeHtml(category.id)}">${escapeHtml(category.label)}</a> — ${escapeHtml(category.description)}</li>`,
+    `<li><a href="/${escapeHtml(category.id)}">${escapeHtml(category.label)}</a> — ${escapeHtml(category.description)}</li>`,
   ).join("");
   const tools = PUBLIC_TOOLS.slice(0, 10).map((tool) =>
     `<li><a href="/tools/${escapeHtml(tool.slug)}">${escapeHtml(tool.title)}</a> — ${escapeHtml(tool.shortDescription)}</li>`,
@@ -242,6 +243,20 @@ function renderContributeBody(): string {
 function renderInstaServerBody(): string {
   const repo = "https://github.com/CodesbyFebin/instaserver";
   return `<section><h2>Why this exists</h2><p>Centralized platforms are convenient until their free tier throttles you. A burst of pushes in an hour can trip a build-rate limit and silently freeze production deploys for days. InstaServer trades platform convenience for owning the whole stack: your machine, your Docker engine, your uptime, no ceiling.</p></section><section><h2>Runtime presets</h2><ul><li><strong>static</strong> — nginx:alpine, serves uploaded files as-is.</li><li><strong>nodejs</strong> — node:20-alpine, npm install then node &lt;entry&gt;.</li><li><strong>python</strong> — python:3.12-alpine, pip install then python &lt;entry&gt;.</li></ul></section><section><h2>MCP tool surface</h2><ul><li>deploy_pod — create-if-missing, upload, install deps, restart, open a public URL, verify it answers</li><li>list_pods / get_pod / manage_pod / delete_pod</li><li>exec_command / get_logs</li><li>list_files / read_file / write_file</li></ul></section><section><h2>Limitations, stated honestly</h2><ul><li>Your machine needs to be on for pods to be reachable.</li><li>Free Cloudflare quick tunnels are best-effort, not an SLA.</li><li>No custom domains, no multi-region, no built-in TLS beyond the tunnel.</li></ul><p><a href="${repo}" target="_blank" rel="noopener noreferrer">View source on GitHub</a></p></section>`;
+}
+
+const JSON_TOOL_SLUGS = [
+  "json-formatter", "json-pretty-printer", "json-minifier", "json-syntax-validator", "json-key-sorter",
+  "json-to-csv-converter", "csv-to-json-converter", "jsonl-to-json-array", "json-array-to-jsonl",
+  "json-value-type-inspector", "json-object-key-extractor", "json-array-length-counter",
+  "json-pointer-resolver", "json-nesting-depth-calculator", "json-array-deduplicator", "json-array-sorter",
+  "json-string-escaper", "json-string-unescaper",
+];
+
+function renderJsonToolsBody(): string {
+  const tools = PUBLIC_TOOLS.filter((tool) => JSON_TOOL_SLUGS.includes(tool.slug));
+  const items = tools.map((tool) => `<li><a href="/tools/${escapeHtml(tool.slug)}">${escapeHtml(tool.title)}</a> — ${escapeHtml(tool.shortDescription)}</li>`).join("");
+  return `<section><h2>${tools.length} JSON tools</h2><ul>${items}</ul></section><section><h2>Does any of this leave the browser?</h2><p>No. Every JSON tool here runs as browser JavaScript. The JSON payloads you paste are never uploaded to XFree.in or any AI backend.</p></section>`;
 }
 
 function renderCategoryToolLinks(categoryId: string): string {
@@ -269,12 +284,12 @@ function main() {
       : route === "/roadmap"
         ? { route, ...m, jsonLd: [], robots: "noindex,follow" }
         : { route, ...m, jsonLd };
-    writeRoute(route, injectMeta(template, routeMeta, route === "/" ? renderHomeDirectoryLinks() : route === "/contribute" ? renderContributeBody() : route === "/instaserver" ? renderInstaServerBody() : ""));
+    writeRoute(route, injectMeta(template, routeMeta, route === "/" ? renderHomeDirectoryLinks() : route === "/contribute" ? renderContributeBody() : route === "/instaserver" ? renderInstaServerBody() : route === "/json-tools" ? renderJsonToolsBody() : ""));
     count++;
   }
 
   for (const cat of PUBLIC_CATEGORIES) {
-    const route = `/category/${cat.id}`;
+    const route = `/${cat.id}`;
     const title = `${cat.label} — XFree.in`;
     const description = cat.description;
     writeRoute(route, injectMeta(template, {
@@ -327,7 +342,7 @@ function main() {
       organizationJsonLd(), siteJsonLd(),
       breadcrumbs([
         { name: "Home", url: `${BASE}/` },
-        { name: tool.categoryLabel || tool.category, url: `${BASE}/category/${tool.category}` },
+        { name: tool.categoryLabel || tool.category, url: `${BASE}/${tool.category}` },
         { name: tool.title, url: `${BASE}${route}` },
       ]),
       {
@@ -379,7 +394,7 @@ function main() {
       });
     }
 
-    const toolLinks = `<p><a href="/category/${escapeHtml(tool.category)}">Browse ${escapeHtml(tool.categoryLabel || tool.category)}</a>${guide ? ` · <a href="/guides">Browse reviewed guides</a>` : ""}</p>`;
+    const toolLinks = `<p><a href="/${escapeHtml(tool.category)}">Browse ${escapeHtml(tool.categoryLabel || tool.category)}</a>${guide ? ` · <a href="/guides">Browse reviewed guides</a>` : ""}</p>`;
     writeRoute(route, injectMeta(template, { route, title, description, h1: tool.title, intro, jsonLd, guide }, toolLinks));
     count++;
   }

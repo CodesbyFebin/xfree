@@ -51,6 +51,11 @@
       ],
       "destination": "/studio",
       "permanent": false
+    },
+    {
+      "source": "/category/:slug",
+      "destination": "/:slug",
+      "permanent": true
     }
   ],
   "headers": [

@@ -11,16 +11,17 @@
 - [Roadmap](https://www.xfree.in/roadmap): 25,000 planned concepts on a noindex discovery page; this is not a count of live tools.
 - [Contribute](https://www.xfree.in/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.
 - [InstaServer](https://www.xfree.in/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.
+- [JSON Tools](https://www.xfree.in/json-tools): Hub of 18 free browser-based JSON tools — format, validate, minify, convert, sort, and inspect.
 - [OpenAPI](https://www.xfree.in/openapi.json): Machine-readable description of the public XFree API surface.
 
 ## Categories
 
-- [SEO & URL Tools](https://www.xfree.in/category/seo-tools): Bulk extraction, XML sitemaps, Meta OpenGraph previews, Robots.txt, and Schema markup
-- [Developer Tools](https://www.xfree.in/category/developer-tools): Format, validate, diff, and convert JSON, XML, YAML, Regex, Cron, JWT, and SQL
-- [Text & Diff Tools](https://www.xfree.in/category/text-tools): Text diffing, line sorting, word count, slugifier, and regex replacements
-- [Converters & Encoders](https://www.xfree.in/category/converters): Base64, URL encoding, Unix Timestamps, Color space conversion, and CSS units
-- [Generators](https://www.xfree.in/category/generators): UUID v4, Cron schedules, Hash generation (SHA-256/MD5), and UTM campaign links
-- [Validators](https://www.xfree.in/category/validators): Validate JSON, XML, sitemaps, Schema.org markup, robots.txt rules, and structured data with focused browser-based checks.
+- [SEO & URL Tools](https://www.xfree.in/seo-tools): Bulk extraction, XML sitemaps, Meta OpenGraph previews, Robots.txt, and Schema markup
+- [Developer Tools](https://www.xfree.in/developer-tools): Format, validate, diff, and convert JSON, XML, YAML, Regex, Cron, JWT, and SQL
+- [Text & Diff Tools](https://www.xfree.in/text-tools): Text diffing, line sorting, word count, slugifier, and regex replacements
+- [Converters & Encoders](https://www.xfree.in/converters): Base64, URL encoding, Unix Timestamps, Color space conversion, and CSS units
+- [Generators](https://www.xfree.in/generators): UUID v4, Cron schedules, Hash generation (SHA-256/MD5), and UTM campaign links
+- [Validators](https://www.xfree.in/validators): Validate JSON, XML, sitemaps, Schema.org markup, robots.txt rules, and structured data with focused browser-based checks.
 
 ## Published Pillars
 

@@ -79,7 +79,7 @@ export function CategoryHubView({
           {PUBLIC_CATEGORIES.map((cat) => (
           <a
             key={cat.id}
-            href={`/category/${cat.id}`}
+            href={`/${cat.id}`}
             onClick={(event) => {
               if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
               event.preventDefault();

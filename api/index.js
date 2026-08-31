@@ -7051,13 +7051,14 @@ var STATIC_PAGE_ENTRIES = [
   { path: "/xfree-app", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/pillars", lastmod: SITE_CONTENT_LASTMOD },
   { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/instaserver", lastmod: SITE_CONTENT_LASTMOD }
+  { path: "/instaserver", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/json-tools", lastmod: SITE_CONTENT_LASTMOD }
 ];
 function getPageSitemapEntries() {
   return [
     ...STATIC_PAGE_ENTRIES,
     ...PUBLIC_CATEGORIES.map((category) => ({
-      path: `/category/${category.id}`,
+      path: `/${category.id}`,
       lastmod: SITE_CONTENT_LASTMOD
     })),
     ...INDEXABLE_PILLARS.map((pillar) => ({
@@ -7214,6 +7215,8 @@ function generateLlmsTxt(baseUrl = DEFAULT_BASE_URL) {
 `;
   text += `- [InstaServer](${cleanBase}/instaserver): Free, open-source MCP server that deploys app containers on your own machine \u2014 no account, no rate limit.
 `;
+  text += `- [JSON Tools](${cleanBase}/json-tools): Hub of 18 free browser-based JSON tools \u2014 format, validate, minify, convert, sort, and inspect.
+`;
   text += `- [OpenAPI](${cleanBase}/openapi.json): Machine-readable description of the public XFree API surface.
 
 `;
@@ -7221,7 +7224,7 @@ function generateLlmsTxt(baseUrl = DEFAULT_BASE_URL) {
 
 `;
   for (const cat of PUBLIC_CATEGORIES) {
-    text += `- [${cat.label}](${cleanBase}/category/${cat.id}): ${cat.description}
+    text += `- [${cat.label}](${cleanBase}/${cat.id}): ${cat.description}
 `;
   }
   text += `
@@ -8050,6 +8053,7 @@ var BASE_STATIC_ROUTES = [
   "/xfree-app",
   "/studio",
   "/instaserver",
+  "/json-tools",
   "/guides",
   "/recipes",
   "/pillars",
@@ -8472,7 +8476,7 @@ Path: ${parsed.data.path || "n/a"}`,
     res.status(404).json({ error: "not_found" });
   });
   const staticRouteSet = new Set(STATIC_ROUTES);
-  const categoryRouteSet = new Set(CATEGORY_SLUGS.map((s) => `/category/${s}`));
+  const categoryRouteSet = new Set(CATEGORY_SLUGS.map((s) => `/${s}`));
   const guideSlugSet = new Set(GUIDES.map((g) => g.slug));
   const generatedToolSlugSet = new Set(Object.keys(GENERATED_PUBLISHED_CONTENT));
   const pillarSlugSet = new Set(PILLARS_50.map((pillar) => pillar.slug));
