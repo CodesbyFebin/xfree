@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { PUBLIC_TOOLS, getPublicToolBySlug } from "./data/publicTools";
 import { GENERATED_PUBLISHED_CONTENT } from "./data/generatedPublishedContent";
 import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath, pillarSlugFromPath } from "./data/routes";
+import { resolveEffectivePathForHost } from "./lib/studioHost";
 import { findGuide } from "./data/guides";
 import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
 import { Header } from "./components/Header";
@@ -62,13 +63,7 @@ import { TimestampColorConverter } from "./components/tools/TimestampColorConver
 import { TextDiffChecker } from "./components/tools/TextDiffChecker";
 import { AiMicroToolComponent } from "./components/tools/AiMicroToolComponent";
 
-// app.xfree.in is a dedicated Studio host: its root ("/") is the canonical
-// Studio URL, not the marketing homepage. This resolves the effective SPA
-// path so routing, static-route detection, and useMetaTags' canonical logic
-// (which already treats "/studio" as canonical https://app.xfree.in/) all
-// agree — without bypassing the shared Header/Footer chrome.
-const isStudioHost = () => window.location.hostname.toLowerCase() === "app.xfree.in";
-const resolveEffectivePath = (pathname: string) => (isStudioHost() && pathname === "/" ? "/studio" : pathname);
+const resolveEffectivePath = (pathname: string) => resolveEffectivePathForHost(window.location.hostname, pathname);
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(() => resolveEffectivePath(window.location.pathname));
