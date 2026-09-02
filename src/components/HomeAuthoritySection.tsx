@@ -60,15 +60,15 @@ export const HomeAuthoritySection: React.FC<HomeAuthoritySectionProps> = ({ onNa
 
     <div className="grid gap-4 md:grid-cols-3">
       {[
-        { href: "/category/seo-tools", title: "SEO & webmaster utilities", text: "Sitemaps, robots.txt, metadata, schema, URLs and crawl-preparation utilities.", icon: SearchCheck, tone: "text-indigo-600" },
-        { href: "/pillars", title: "Developer-tool pillars", text: "Browse the 50-pillar taxonomy and see which areas already contain published tools.", icon: Waypoints, tone: "text-violet-600" },
-        { href: "/guides", title: "Reviewed practical guides", text: "Read worked examples, limitations and explanations linked back to real tools.", icon: BookOpen, tone: "text-emerald-600" },
+        { href: "/category/seo-tools", title: "Explore XFree SEO & webmaster utilities", text: "Sitemaps, robots.txt, metadata, schema, URLs and crawl-preparation utilities.", icon: SearchCheck, tone: "text-indigo-600" },
+        { href: "/pillars", title: "Browse the XFree developer-tool pillars", text: "Browse the 50-pillar taxonomy and see which areas already contain published tools.", icon: Waypoints, tone: "text-violet-600" },
+        { href: "/guides", title: "Learn with reviewed XFree guides", text: "Read worked examples, limitations and explanations linked back to real tools.", icon: BookOpen, tone: "text-emerald-600" },
       ].map((item) => {
         const Icon = item.icon;
         return (
           <RouterAnchor key={item.href} href={item.href} onNavigate={onNavigate} className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-lg">
             <Icon className={`h-5 w-5 ${item.tone}`} />
-            <h3 className="mt-3 text-lg font-extrabold text-slate-950">{item.title}</h3>
+            <h2 className="mt-3 text-lg font-extrabold text-slate-950">{item.title}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">{item.text}</p>
             <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-indigo-600">Explore <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
           </RouterAnchor>
