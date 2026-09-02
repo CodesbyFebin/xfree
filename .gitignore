@@ -1,0 +1,15 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.xfree-build-cache.json
+.xfree-build-cache.json.tmp
+.xfree-review-queue/
+.env*
+!.env.example
+# api/index.js is checked in — it's the Vercel function bundle produced by
+# `npm run build:function` from api/_handler.ts. Vercel's build pipeline
+# proved too opinionated to reliably regenerate it during deploy, so we
+# commit the artifact and regenerate before every push that touches src/.

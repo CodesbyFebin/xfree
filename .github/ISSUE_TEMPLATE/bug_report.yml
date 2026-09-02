@@ -1,0 +1,66 @@
+name: Bug report
+description: Report a defect in XFree.in (a tool, page, or API endpoint)
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. XFree.in is a Vite + React client with an Express server.
+        Please provide reproducible detail — we cannot fix what we cannot reproduce.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Specific tool (e.g. JSON Formatter)
+        - Static page (home, docs, guides, about)
+        - AI endpoint (/api/ai)
+        - Contact / feedback / lead form
+        - SEO / structured data / sitemap
+        - Build / deploy
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL or endpoint
+      description: The exact page or API path where the problem occurs.
+      placeholder: https://www.xfree.in/tools/json-formatter
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, with sample input if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: privacy
+    attributes:
+      label: Does it involve data you pasted into a tool?
+      options:
+        - "No"
+        - "Yes, but it is local-only (should never leave the browser)"
+        - "Yes, it went to the AI endpoint"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Environment
+      description: Browser, OS, device, screen size, network.

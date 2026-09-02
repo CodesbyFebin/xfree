@@ -1,0 +1,92 @@
+[
+  {
+    "name": "UTF-8 HEX Encoder", "slug": "hex-encode", "category": "encoding-utilities", "pillarSlug": "encoding-tools",
+    "summary": "Encode Unicode text into contiguous lowercase hexadecimal pairs representing its exact UTF-8 bytes.",
+    "engine": { "id": "hex-encode", "status": "working", "tested": true },
+    "inputParameters": ["Unicode text encoded by the browser TextEncoder"], "outputFormats": ["Lowercase hexadecimal with two digits per UTF-8 byte"],
+    "useCases": ["Inspect the UTF-8 bytes behind a short string", "Prepare a byte-level text fixture for debugging"],
+    "searchIntents": ["UTF-8 text to HEX locally", "Unicode HEX encoder browser", "encode string as hexadecimal bytes"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["The result represents UTF-8 bytes, not UTF-16 code units or an integer value.", "No separators or 0x prefixes are emitted.", "The engine accepts text rather than original binary file bytes."] }
+  },
+  {
+    "name": "Strict UTF-8 HEX Decoder", "slug": "hex-decode", "category": "encoding-utilities", "pillarSlug": "encoding-tools",
+    "summary": "Decode complete hexadecimal byte pairs into text only when the resulting byte sequence is valid UTF-8.",
+    "engine": { "id": "hex-decode", "status": "working", "tested": true },
+    "inputParameters": ["Even-length hexadecimal byte pairs with optional whitespace"], "outputFormats": ["Strictly decoded UTF-8 text"],
+    "useCases": ["Recover text from a UTF-8 HEX fixture", "Detect invalid UTF-8 byte sequences during debugging"],
+    "searchIntents": ["HEX to UTF-8 decoder locally", "strict hexadecimal text decoder", "decode HEX bytes browser"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["Odd-length input and non-hexadecimal characters are rejected.", "Byte sequences invalid under strict UTF-8 decoding are rejected rather than replaced.", "The engine is not a general binary file viewer."] }
+  },
+  {
+    "name": "Unicode Code Point Inspector", "slug": "unicode-code-points", "category": "text-utilities", "pillarSlug": "unicode-tools",
+    "summary": "List each iterated Unicode code point with hexadecimal notation, decimal value, and UTF-16 unit length.",
+    "engine": { "id": "unicode-code-points", "status": "working", "tested": true },
+    "inputParameters": ["Unicode text iterated by JavaScript string code points"], "outputFormats": ["JSON array of character and code-point records"],
+    "useCases": ["Distinguish supplementary characters from single UTF-16 units", "Inspect invisible or unfamiliar characters in copied text"],
+    "searchIntents": ["Unicode code point inspector", "character to U plus code locally", "UTF-16 unit checker browser"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["Indexes count iterated code points rather than UTF-16 offsets.", "Combining sequences and joined emoji can span multiple records despite appearing as one grapheme.", "The engine does not resolve Unicode names, scripts, normalization forms, or confusable characters."] }
+  },
+  {
+    "name": "ROT13 Text Transformer", "slug": "rot13", "category": "text-utilities", "pillarSlug": "text-tools",
+    "summary": "Apply the self-inverse ROT13 substitution to ASCII letters while leaving all other characters unchanged.",
+    "engine": { "id": "rot13", "status": "working", "tested": true },
+    "inputParameters": ["Text containing optional ASCII letters"], "outputFormats": ["Text with A-Z and a-z rotated by thirteen positions"],
+    "useCases": ["Decode legacy ROT13 discussion text", "Demonstrate a reversible substitution transform"],
+    "searchIntents": ["ROT13 encoder decoder locally", "ROT13 text transformer browser", "apply ROT13 without upload"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["Only ASCII letters are transformed.", "ROT13 provides no confidentiality, authentication, or modern cryptographic protection.", "Applying the engine twice restores the original ASCII letters."] }
+  },
+  {
+    "name": "Whitespace Normalizer", "slug": "whitespace-normalize", "category": "text-utilities", "pillarSlug": "text-cleanup-tools",
+    "summary": "Trim surrounding whitespace and collapse every internal whitespace run into one ordinary space character.",
+    "engine": { "id": "whitespace-normalize", "status": "working", "tested": true },
+    "inputParameters": ["Text containing spaces, tabs, newlines, or other JavaScript whitespace"], "outputFormats": ["Single-line text with normalized spaces"],
+    "useCases": ["Clean copied prose for a one-line field", "Normalize whitespace before an exact text comparison"],
+    "searchIntents": ["normalize whitespace locally", "collapse spaces and newlines browser", "remove repeated whitespace text"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["All line boundaries are destroyed.", "Whitespace inside code, quoted data, or significant formatting is also collapsed.", "The engine does not apply language-aware punctuation spacing."] }
+  },
+  {
+    "name": "Empty Line Remover", "slug": "empty-line-remove", "category": "text-utilities", "pillarSlug": "text-cleanup-tools",
+    "summary": "Remove blank and whitespace-only lines while preserving the exact content of every remaining line.",
+    "engine": { "id": "empty-line-remove", "status": "working", "tested": true },
+    "inputParameters": ["Multiline text using LF, CRLF, or CR line endings"], "outputFormats": ["Non-empty lines joined with LF characters"],
+    "useCases": ["Clean spacing from a pasted identifier list", "Remove blank rows from a simple text export"],
+    "searchIntents": ["remove empty lines locally", "delete blank lines browser", "clean whitespace only lines"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["Whitespace on retained lines is not trimmed.", "All output line endings become LF.", "Removing blank lines can change meaning in code, Markdown, configuration, and paragraph-oriented text."] }
+  },
+  {
+    "name": "Line Order Reverser", "slug": "line-reverse", "category": "text-utilities", "pillarSlug": "list-tools",
+    "summary": "Reverse the order of normalized text lines without reversing characters inside the individual lines.",
+    "engine": { "id": "line-reverse", "status": "working", "tested": true },
+    "inputParameters": ["Multiline text using LF, CRLF, or CR line endings"], "outputFormats": ["Lines in reverse order joined with LF characters"],
+    "useCases": ["Flip a chronological line list", "Inspect a log excerpt from last line to first"],
+    "searchIntents": ["reverse line order locally", "flip text lines browser", "reverse multiline list"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["Characters inside lines remain unchanged.", "Output line endings are normalized to LF.", "Leading or trailing empty lines participate in the reversal."] }
+  },
+  {
+    "name": "Email Candidate Extractor", "slug": "email-extract", "category": "extraction-utilities", "pillarSlug": "text-extraction-tools",
+    "summary": "Extract unique email-shaped strings using a practical case-sensitive pattern intended for text discovery rather than validation.",
+    "engine": { "id": "email-extract", "status": "working", "tested": true },
+    "inputParameters": ["Text potentially containing conventional email-shaped strings"], "outputFormats": ["Unique candidates in first-seen order, one per line"],
+    "useCases": ["Find contact candidates in an authorized document", "Review email-shaped values in a test fixture"],
+    "searchIntents": ["extract email addresses locally", "email candidate finder browser", "find emails in text without upload"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["A regex match does not prove mailbox existence or full standards validity.", "Deduplication is case-sensitive.", "Internationalized domains, quoted local parts, comments, and uncommon valid address forms may not match."] }
+  },
+  {
+    "name": "HTTP URL Candidate Extractor", "slug": "http-url-extract", "category": "extraction-utilities", "pillarSlug": "url-tools",
+    "summary": "Extract unique HTTP and HTTPS URL-shaped strings and trim selected punctuation commonly attached in prose.",
+    "engine": { "id": "http-url-extract", "status": "working", "tested": true },
+    "inputParameters": ["Text containing absolute HTTP or HTTPS URL candidates"], "outputFormats": ["Unique URL candidates in first-seen order, one per line"],
+    "useCases": ["Collect links from an authorized text export", "Inspect HTTP references embedded in logs or notes"],
+    "searchIntents": ["extract HTTP URLs locally", "find HTTPS links in text browser", "URL candidate extractor without upload"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["Only absolute HTTP and HTTPS candidates are considered.", "Extraction does not fetch, resolve, validate, or classify the URLs.", "Heuristic trailing-punctuation removal can be imperfect when punctuation is legitimately part of a URL."] }
+  },
+  {
+    "name": "Arbitrary-Precision Integer Base Converter", "slug": "integer-base-convert", "category": "number-utilities", "pillarSlug": "number-conversion-tools",
+    "summary": "Convert signed whole numbers between bases 2 and 36 using JavaScript BigInt without floating-point precision loss.",
+    "engine": { "id": "integer-base-convert", "status": "working", "tested": true },
+    "inputParameters": ["Integer digits, source base, and target base separated by whitespace"], "outputFormats": ["Uppercase target-base integer text"],
+    "useCases": ["Convert binary or hexadecimal identifiers to decimal", "Check large integer representations without Number precision loss"],
+    "searchIntents": ["integer base converter locally", "binary decimal HEX BigInt converter", "base 2 to 36 calculator browser"],
+    "processing": { "mode": "local", "implementation": "browser-js", "workingInputSentToServer": false, "providers": [], "verifiedAt": "2026-08-22", "limitations": ["Only signed integers are accepted; fractional values and scientific notation are rejected.", "Bases are limited to integers from 2 through 36.", "Output letters use uppercase and no radix prefix is added."] }
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "name": "Base64 to UTF-8 Decoder",
+  "slug": "base64-decode",
+  "category": "encoding-utilities",
+  "pillarSlug": "base64-tools",
+  "summary": "Decode standard Base64 into bytes and interpret those bytes as UTF-8 text with browser-native APIs in XFree Studio Local Mode.",
+  "engine": { "id": "base64-decode", "status": "working", "tested": true },
+  "inputParameters": ["Standard Base64 text representing UTF-8 bytes"],
+  "outputFormats": ["Decoded Unicode text"],
+  "useCases": [
+    "Inspect a small Base64-encoded UTF-8 API value",
+    "Recover readable Unicode text from a standard Base64 payload",
+    "Confirm whether encoded text round-trips through the XFree encoder"
+  ],
+  "searchIntents": [
+    "decode Base64 to UTF-8 locally",
+    "Base64 decoder Unicode browser",
+    "decode Base64 text without upload",
+    "invalid Base64 string checker"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The engine expects standard Base64 text and does not automatically translate the Base64URL alphabet.",
+      "Decoded bytes are interpreted as UTF-8 text rather than returned as a binary file.",
+      "TextDecoder uses its default replacement behavior for malformed UTF-8 instead of failing fatally.",
+      "Large payloads are decoded in memory on the main browser thread and can affect responsiveness."
+    ]
+  },
+  "metadata": {
+    "title": "Base64 to UTF-8 Text Decoder | XFree Studio",
+    "description": "Decode standard Base64 into UTF-8 browser text locally, with clear distinctions between Base64URL, binary data, and malformed UTF-8.",
+    "h1": "Base64 to UTF-8 Decoder"
+  },
+  "content": {
+    "directAnswer": "The Base64 to UTF-8 Decoder converts standard Base64 characters into their original bytes and interprets those bytes as UTF-8 text. It supports ordinary Unicode text encoded with the matching UTF-8 process. XFree performs the operation in Local Mode and returns readable browser text.",
+    "technicalDetails": "The engine trims whitespace from the beginning and end of the submitted value and passes the remaining string to the browser atob function. atob decodes the standard Base64 alphabet into a binary string whose code units represent bytes. The engine converts those code units into a Uint8Array and passes the byte array to TextDecoder. TextDecoder interprets the sequence as UTF-8 and returns a JavaScript string. This pairing reverses the XFree UTF-8 encoder for valid standard Base64 payloads. The function is not a generic binary extractor. An image, archive, executable, encrypted blob, or text in another character set can decode into bytes successfully but display as replacement characters or unreadable text when interpreted as UTF-8. TextDecoder is used without fatal mode, so malformed UTF-8 bytes can be replaced by the Unicode replacement character rather than causing an exception. The Base64 stage can still reject invalid alphabet, padding, or length. The engine does not automatically convert Base64URL hyphens and underscores, add missing protocol-specific padding, strip data-URL prefixes, detect MIME types, or write a file. It runs in browser JavaScript on the main thread. Working Base64 text and decoded content are not submitted to XFree servers or AI providers by this engine. Decoding does not authenticate the source, prove integrity, remove malware, or make content safe. Treat decoded text as untrusted, especially before inserting it into HTML, commands, queries, templates, or logs.",
+    "instructions": "Select Base64 Decode and paste the standard Base64 payload without explanatory text or a data-URL prefix. Run the engine and inspect the returned text. If input begins with data:text/plain;base64, remove the prefix and pass only the payload. When decoding data from a JWT or URL parameter, determine whether it uses Base64URL; this engine expects the standard alphabet and does not silently substitute characters. If decoding fails, check for truncation, unsupported characters, misplaced padding, or a copied prefix. If decoding succeeds but displays replacement symbols, the bytes may not be valid UTF-8 or may represent binary data. Use a binary-aware decoder and the correct character encoding rather than assuming every Base64 payload is UTF-8 text. Never execute decoded scripts, commands, macros, or markup merely because the Base64 syntax was valid. Base64 can conceal malicious or sensitive content without protecting it. Avoid sharing decoded credentials and personal data through tickets, chat, screenshots, or clipboard-synchronization services. For large input, use a streaming decoder to avoid holding the encoded string, byte array, and decoded output in memory simultaneously. Compare critical output with a second trusted implementation before using it in a migration or incident response.",
+    "examples": [
+      { "title": "Decode an ASCII word", "input": "WEZyZWU=", "output": "XFree", "explanation": "The standard Base64 payload decodes into five UTF-8 bytes representing the displayed ASCII characters." },
+      { "title": "Decode a Unicode check mark", "input": "4pyT", "output": "✓", "explanation": "The payload yields the three-byte UTF-8 sequence for the check-mark character, which TextDecoder converts into Unicode text." }
+    ],
+    "edgeCases": [
+      "An empty or whitespace-only value decodes to an empty string after trimming.",
+      "Base64URL data containing hyphens or underscores is not normalized by this engine and may be rejected.",
+      "Binary or non-UTF-8 bytes can display replacement characters because the result is always interpreted as UTF-8 text.",
+      "A syntactically valid payload can still contain untrusted, sensitive, or malicious content."
+    ],
+    "faqs": [
+      { "question": "Can this decoder recover images or files?", "answer": "Not as files. It interprets decoded bytes as UTF-8 text. Use a binary-aware tool that preserves bytes and validates the expected media type." },
+      { "question": "Why do I see replacement characters in the output?", "answer": "The decoded bytes are not valid UTF-8 text or use another encoding. TextDecoder replaces malformed sequences under the current non-fatal behavior." },
+      { "question": "Does it accept JWT Base64URL sections?", "answer": "Not automatically. Use the dedicated JWT decoder or explicitly normalize Base64URL alphabet and padding according to that protocol." },
+      { "question": "Is the Base64 value uploaded for decoding?", "answer": "No working input is sent to XFree servers or AI providers by this engine. Decoding runs in the active browser session." }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "SHA-256 Text Hash Generator",
+  "slug": "sha256",
+  "category": "cryptography-utilities",
+  "pillarSlug": "hashing-tools",
+  "summary": "Generate a lowercase SHA-256 hexadecimal digest from UTF-8 text in a browser Web Worker using the Web Crypto API.",
+  "engine": { "id": "sha256", "status": "working", "tested": true },
+  "inputParameters": ["Unicode text to encode as UTF-8 before hashing"],
+  "outputFormats": ["64-character lowercase hexadecimal SHA-256 digest"],
+  "useCases": ["Compare the integrity of two text values", "Create a reproducible digest for a small UTF-8 message", "Inspect how whitespace changes a SHA-256 result"],
+  "searchIntents": ["SHA-256 text hash locally", "generate SHA256 in browser without upload", "UTF-8 SHA-256 calculator", "compare text hash whitespace"],
+  "processing": {
+    "mode": "local",
+    "implementation": "web-worker",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The engine hashes pasted text after UTF-8 encoding and does not currently stream files or expose raw binary input.",
+      "Text normalization is not applied, so visually similar Unicode sequences can produce different digests.",
+      "SHA-256 hashing is not encryption, authentication, password storage, or proof that downloaded content is trustworthy.",
+      "Practical input size depends on browser memory and the worker client's thirty-second timeout."
+    ]
+  },
+  "metadata": {
+    "title": "SHA-256 Text Hash Generator | XFree Studio",
+    "description": "Generate a 64-character SHA-256 digest from UTF-8 text in a browser Web Worker, with accurate integrity and security limitations.",
+    "h1": "SHA-256 Text Hash Generator"
+  },
+  "content": {
+    "directAnswer": "The SHA-256 Text Hash Generator converts browser text into UTF-8 bytes and computes a 256-bit digest with the Web Crypto API. It returns 32 digest bytes as 64 lowercase hexadecimal characters. XFree performs the calculation in a browser Web Worker in Local Mode.",
+    "technicalDetails": "The Studio sends the input string to a same-origin worker. Inside the worker, TextEncoder converts the JavaScript string into UTF-8 bytes. crypto.subtle.digest processes those bytes with SHA-256 and returns an ArrayBuffer containing 32 bytes. Each byte is converted to a two-character lowercase hexadecimal value and concatenated, producing a fixed-length 64-character result. The same byte sequence produces the same digest, while even a one-byte change normally produces a very different value. Exact bytes matter. A trailing line feed, carriage-return difference, leading space, Unicode normalization difference, or copied invisible character changes the digest. The engine does not trim or normalize input. It hashes text, not a file's original bytes, so copying file contents through a text editor can change encoding and line endings. Processing occurs in a dedicated Web Worker, which keeps digest work away from the interface thread. The working text is not submitted to XFree servers or AI providers. Browser memory and the worker-client timeout limit unusually large values. SHA-256 provides a compact fingerprint but no source authenticity by itself. An attacker who can replace a download can also replace an untrusted hash displayed beside it. Verification requires obtaining the expected digest through a trusted channel. SHA-256 is also unsuitable for direct password storage because fast hashes enable guessing; password systems require a salted, deliberately expensive password-hashing function such as Argon2id, scrypt, or an appropriately configured PBKDF2 implementation.",
+    "instructions": "Select SHA-256 Hash in XFree Studio and paste the exact text to hash. Preserve intended spaces and line endings. Run the engine and copy the 64-character hexadecimal result. When comparing against another system, confirm that both sides use UTF-8, SHA-256, identical newline conventions, and the same text normalization. Do not compare a pasted-text digest with a published file checksum unless you hashed the file's original bytes using a file-aware utility. A visual match is insufficient because invisible characters can differ. Compare complete digests rather than a short prefix for integrity-sensitive work. Obtain expected hashes from an authenticated release page, signed manifest, trusted repository, or another protected channel. Do not use this output as a password database value, digital signature, message authentication code, or encryption key without a protocol designed for that purpose. If the worker times out on a large payload, use a streaming command-line or file-hashing tool. Retain evidence of the algorithm, input encoding, source, and expected digest when documenting an integrity check.",
+    "examples": [
+      { "title": "Hash a simple ASCII value", "input": "abc", "output": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "explanation": "This well-known SHA-256 vector demonstrates the exact lowercase hexadecimal format returned by the worker." },
+      { "title": "Observe newline sensitivity", "input": "abc\n", "output": "edeaaff3f1774ad2888673770c6d64097e391bc362d7d6fb34982ddf0efd18cb", "explanation": "Adding one line-feed byte changes the complete digest, even though some interfaces make the extra newline difficult to see." }
+    ],
+    "edgeCases": [
+      "Empty text has a valid SHA-256 digest and should not be confused with a missing calculation.",
+      "Unicode text can have canonically equivalent but byte-distinct forms because the engine performs no normalization.",
+      "Text copied from a file may not preserve the file's original byte encoding or newline convention.",
+      "A matching digest proves byte equality to the compared value, not that the source or expected digest is trustworthy."
+    ],
+    "faqs": [
+      { "question": "Is SHA-256 encryption?", "answer": "No. Hashing is one-way fingerprinting and does not provide a mechanism for recovering plaintext or keeping it confidential." },
+      { "question": "Can I use this output to store passwords?", "answer": "No. Password storage requires a unique salt and a deliberately expensive password-hashing construction designed to resist guessing attacks." },
+      { "question": "Why does another tool show a different digest?", "answer": "Check input encoding, whitespace, line endings, normalization, algorithm selection, and whether the other tool hashes original file bytes rather than pasted text." },
+      { "question": "Is the text uploaded while hashing?", "answer": "No working text is sent to XFree servers or AI providers by this engine. UTF-8 encoding and SHA-256 calculation run in a browser Web Worker." }
+    ]
+  }
+}

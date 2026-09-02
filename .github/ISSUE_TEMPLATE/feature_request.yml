@@ -1,0 +1,74 @@
+name: Tool or feature proposal
+description: Propose one distinct, implementable capability for XFree.in
+title: "[proposal]: "
+labels: ["triage"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One-line description of the proposed capability.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - SEO & URL Tools
+        - Developer Tools
+        - Single-Purpose AI Tools
+        - Text & Diff Tools
+        - Converters & Encoders
+        - Generators
+        - Validators
+        - Other / cross-cutting
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem it solves
+      description: What user intent or pain point does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: How should it work? Is it local (browser) or AI-backed?
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Input and output contract
+      description: Give concrete example inputs, expected outputs, validation behavior, and important edge cases.
+    validations:
+      required: true
+  - type: dropdown
+    id: execution
+    attributes:
+      label: Execution model
+      options:
+        - "Local (runs in browser, no upload)"
+        - "Cloud AI (proxied through an approved server-side provider)"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to specs, similar tools, or standards.
+  - type: checkboxes
+    id: integrity
+    attributes:
+      label: Proposal integrity
+      options:
+        - label: This represents a distinct working capability, not a keyword variation of another tool.
+          required: true
+        - label: I understand that an accepted implementation does not automatically receive an indexable page.
+          required: true
+        - label: I have not included fabricated benchmarks, privacy guarantees, popularity metrics, or user testimonials.
+          required: true

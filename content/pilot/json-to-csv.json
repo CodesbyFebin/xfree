@@ -1,0 +1,90 @@
+{
+  "name": "JSON to CSV Converter",
+  "slug": "json-to-csv",
+  "category": "data-conversion",
+  "pillarSlug": "json-data-tools",
+  "summary": "Convert a JSON object or an array of objects into consistently quoted CSV in a browser Web Worker.",
+  "engine": {
+    "id": "json-to-csv",
+    "status": "working",
+    "tested": true
+  },
+  "inputParameters": [
+    "A valid JSON object or an array of JSON objects"
+  ],
+  "outputFormats": [
+    "CSV"
+  ],
+  "useCases": [
+    "Prepare API response records for spreadsheet review",
+    "Export structured JSON records for CSV-based data workflows",
+    "Inspect nested values as escaped JSON inside CSV cells"
+  ],
+  "searchIntents": [
+    "convert JSON to CSV in browser without upload",
+    "JSON array of objects to CSV online",
+    "how to preserve commas and quotes when converting JSON to CSV",
+    "local JSON to CSV converter for sensitive data"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "web-worker",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The current engine accepts an object or an array whose members are objects.",
+      "Nested objects and arrays are serialized as JSON text inside individual CSV cells.",
+      "The practical input size depends on memory available to the active browser tab.",
+      "The generated CSV uses a comma delimiter and does not currently expose a delimiter setting."
+    ]
+  },
+  "metadata": {
+    "title": "JSON to CSV Converter in Local Mode | XFree Studio",
+    "description": "Convert JSON objects or record arrays to escaped CSV in a browser Web Worker. Review the output locally, then copy or download the CSV file.",
+    "h1": "JSON to CSV Converter"
+  },
+  "content": {
+    "directAnswer": "The JSON to CSV Converter transforms one JSON object or an array of objects into comma-separated rows. It discovers every top-level key, creates a combined header, escapes each cell, and serializes nested values. XFree runs this conversion in a browser Web Worker in Local Mode.",
+    "technicalDetails": "The engine first parses the supplied text with the browser's JSON parser. A single object is wrapped as one record, while an array is processed as a record collection. Every member must be a non-null object and cannot itself be an array. The converter builds the header by collecting the top-level keys found across all records, so a property that appears only in a later record still receives a column. Missing values become empty strings. Every header and value is quoted. Embedded double quotes are doubled according to common CSV escaping rules, which prevents commas, quotes, and line breaks inside a value from being interpreted as new columns. Primitive values are converted to text. Nested objects and arrays are serialized with JSON.stringify before they are placed in a cell; the engine does not flatten nested paths. Processing runs in a dedicated Web Worker, keeping parsing and row construction away from the main interface thread. The working JSON input is posted from the page to that same-origin worker and is not submitted to an XFree server. Browser memory, the worker's thirty-second client timeout, and the cost of parsing and duplicating large strings establish practical limits. No fixed maximum file size is claimed because available memory varies by device and browser.",
+    "instructions": "Open the JSON to CSV engine in XFree Studio and paste either one JSON object or an array of similarly shaped objects into the input area. Confirm that property names and string values use valid JSON double quotes; JavaScript object literal syntax, comments, trailing commas, and undefined values are not valid inputs. Run the conversion. The worker parses the document and constructs a union of the top-level keys in encounter order. Inspect the CSV preview before downloading it, especially when records have different fields or contain nested data. A blank cell means the corresponding key was absent or its parsed JSON value was null. Quoted CSV output is intentional: it protects commas and line breaks contained in strings and makes embedded quote escaping visible. Download the result as a CSV file or copy it into a compatible spreadsheet or data-processing workflow. If the input represents deeply nested data that needs separate columns such as user.address.city, flatten the object structure before using this engine; the current converter preserves that nested object as JSON text in one cell. For very large payloads, begin with a representative subset, verify column behavior, and then process the full data on a device with sufficient browser memory. Do not close or reload the tab while the worker is running because Local Mode state belongs to the current browser session.",
+    "examples": [
+      {
+        "title": "Convert two records with different fields",
+        "input": "[{\"id\":1,\"name\":\"Ada\"},{\"id\":2,\"name\":\"Lin\",\"active\":true}]",
+        "output": "\"id\",\"name\",\"active\"\n\"1\",\"Ada\",\"\"\n\"2\",\"Lin\",\"true\"",
+        "explanation": "The header is the union of keys from both records. Because the first record has no active property, its cell in that column is empty. Numeric and Boolean values are represented as quoted text in the CSV output."
+      },
+      {
+        "title": "Preserve commas, quotes, and nested data",
+        "input": "{\"name\":\"Doe, Jane\",\"note\":\"She said \\\"yes\\\"\",\"tags\":[\"api\",\"csv\"]}",
+        "output": "\"name\",\"note\",\"tags\"\n\"Doe, Jane\",\"She said \"\"yes\"\"\",\"[\"\"api\"\",\"\"csv\"\"]\"",
+        "explanation": "The comma remains inside one quoted field, embedded quotes are doubled, and the tags array is serialized as JSON text rather than expanded into multiple columns. This behavior preserves the nested value without pretending that the engine performs schema flattening."
+      }
+    ],
+    "edgeCases": [
+      "An empty array produces a CSV string without discovered columns because there are no records from which to build a header.",
+      "A top-level primitive or an array containing primitives is rejected because the engine requires records represented by objects.",
+      "Objects with inconsistent keys are supported, but missing properties produce empty cells and should be reviewed before import.",
+      "Large documents can exceed available tab memory or the local processing timeout even though no upload is involved."
+    ],
+    "faqs": [
+      {
+        "question": "How do I convert a JSON array of objects to CSV without uploading it?",
+        "answer": "Select the JSON to CSV engine, paste the valid array, and run it in Local Mode. The conversion executes in a browser Web Worker. The working input is not sent to an XFree server by this engine."
+      },
+      {
+        "question": "Why does malformed JSON or a trailing comma fail?",
+        "answer": "The engine uses JSON.parse, which requires valid JSON syntax. Remove comments, trailing commas, undefined values, and single-quoted property names, then run the conversion again. A JSON validator can help locate the syntax position first."
+      },
+      {
+        "question": "Does the converter flatten nested JSON objects into separate columns?",
+        "answer": "No. Nested objects and arrays are serialized into JSON text and stored in one quoted CSV cell. Use a dedicated flattening step first when downstream software requires dot-path columns or a relational table shape."
+      },
+      {
+        "question": "How are commas and double quotes preserved in CSV values?",
+        "answer": "Every value is enclosed in double quotes, and any double quote already inside the value is doubled. This prevents a comma inside text from becoming a separator and follows the escaping convention understood by common CSV readers."
+      }
+    ]
+  }
+}

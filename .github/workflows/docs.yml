@@ -1,0 +1,38 @@
+name: Docs
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "docs/**"
+      - "README.md"
+      - ".github/**"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "docs/**"
+      - "README.md"
+      - ".github/**"
+
+jobs:
+  docs-check:
+    name: Documentation Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Verify docs links resolve (basic)
+        run: |
+          for f in docs/*.md README.md; do
+            echo "Checking $f"
+            test -s "$f" || (echo "Empty doc: $f" && exit 1)
+          done
+      - name: Markdown link check
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: "yes"
+          config-file: ".github/markdown-link-check.json"

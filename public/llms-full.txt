@@ -1,0 +1,205 @@
+# XFree.in Full System Specification & Indexable Micro-Tools Knowledge Base
+
+This document provides full technical details, Pillar Keywords, explanations, FAQs, and usage rules for indexable production micro-tools on XFree.in.
+
+--- 
+
+### XML Sitemap Generator & Validator
+- **URL**: https://www.xfree.in/tools/xml-sitemap-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: XML Sitemap Generator
+- **Description**: Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets.
+- **Explanation**: Converts lists of web URLs into schema-compliant XML sitemaps with proper XML escaping and sitemap index generation.
+- **How to Use**:
+  1. Enter list of URLs line by line.
+  1. Adjust priority and change frequency settings.
+  1. Click generate and download sitemap.xml.
+- **Top FAQs**:
+  - **Q: What's the URL limit per sitemap file?**
+    A: 50,000 URLs or 50 MB uncompressed, per the sitemaps.org protocol. The tool auto-splits into multiple files and emits a sitemapindex.xml when you exceed either limit.
+  - **Q: Do Google and Bing actually use <priority> and <changefreq>?**
+    A: Google largely ignores both. Bing still reads changefreq as a hint. The tool sets sensible defaults but neither field affects rankings — the URLs themselves and their <lastmod> matter more.
+  - **Q: Does it auto-generate lastmod dates?**
+    A: Only if you paste them. Fabricating lastmod (e.g., setting every URL to today) is a known anti-pattern that trains crawlers to ignore your dates entirely. The tool leaves lastmod blank when no date is provided.
+
+--- 
+
+### Robots.txt Generator & User-Agent Rule Tester
+- **URL**: https://www.xfree.in/tools/robots-txt-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Robots.txt Generator
+- **Description**: Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps.
+- **Explanation**: Builds RFC 9309 compliant robots.txt files with Allow/Disallow rule groups, crawl-delay directives, and sitemap references.
+- **How to Use**:
+  1. Add user-agent rules (e.g. Googlebot, Bingbot, *).
+  1. Specify allowed and disallowed path rules.
+  1. Test URL path against current rules to verify crawler permissions.
+- **Top FAQs**:
+  - **Q: Does the tool support wildcards and end-of-line anchors?**
+    A: Yes. * matches any sequence of characters within a path, and $ anchors to the end of the URL. `Disallow: /*.pdf$` blocks everything ending in .pdf. Both are RFC 9309-compliant and understood by Google, Bing, and most modern crawlers.
+  - **Q: How do multiple user-agent groups behave?**
+    A: The most specific matching user-agent wins per bot. `User-agent: Googlebot-Image` takes precedence over `User-agent: Googlebot` for Googlebot-Image; `User-agent: Googlebot` beats `User-agent: *` for Googlebot. Rules do NOT combine across groups — the winning group applies alone.
+  - **Q: Is robots.txt a security mechanism?**
+    A: No. It's a request, not enforcement. Well-behaved crawlers respect it; hostile ones ignore it. Never rely on Disallow to protect sensitive URLs — use HTTP auth, IP allow-lists, or moving the content off a discoverable path. Robots.txt entries can even help attackers find your admin paths.
+
+--- 
+
+### Meta Tag & Open Graph Social Card Preview
+- **URL**: https://www.xfree.in/tools/meta-tag-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Meta Tag Generator
+- **Description**: Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.
+- **Explanation**: Constructs HTML meta tags for title, description, canonical URL, og:title, og:image, and twitter:card with length character count validation.
+- **How to Use**:
+  1. Fill in page title, description, canonical URL, and OG image link.
+  1. Inspect live Google search result snippet and Twitter/Facebook preview card.
+  1. Copy generated HTML code snippet.
+- **Top FAQs**:
+  - **Q: What length limits does it warn about?**
+    A: Title over 60 characters (Google truncates) and description over 160 characters (Google may rewrite). These are guidelines, not hard limits — Google renders titles pixel-based, not character-based, so a title with lots of narrow letters can fit more, and vice versa.
+  - **Q: Why does Google sometimes show a different title in search results than the one I set?**
+    A: Google may rewrite titles when it thinks it can better match user intent — using your H1, anchor text pointing at your page, or metadata. Keep your <title> concise, put the primary keyword first, and match on-page content — Google is more likely to keep it.
+  - **Q: Does the tool validate my og:image URL?**
+    A: It checks the format (must be an absolute URL) and displays a preview if the image loads in your browser. It does NOT fetch the image server-side or check dimensions — Twitter and Facebook both cache OG images aggressively, so use their debugger tools (developers.facebook.com/tools/debug, cards-dev.twitter.com) after publish.
+
+--- 
+
+### Schema Markup Generator (JSON-LD Structured Data)
+- **URL**: https://www.xfree.in/tools/schema-markup-generator
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Schema Markup Generator
+- **Description**: Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.
+- **Explanation**: Generates rich snippet structured data in valid JSON-LD format with form validation and Google Rich Results compliance checks.
+- **How to Use**:
+  1. Select Schema type (e.g. WebSite, Organization, FAQPage, Article).
+  1. Fill in required metadata fields.
+  1. Copy formatted JSON-LD script tag.
+- **Top FAQs**:
+  - **Q: Which schema types can I generate?**
+    A: Organization, WebSite, WebPage, SoftwareApplication, Article, BreadcrumbList, FAQPage, HowTo, and Product. Types that require visible on-page content (FAQPage, HowTo) will fail Google's Rich Results validation if you emit the schema without matching visible content — Google explicitly checks for that.
+  - **Q: Can I combine multiple schemas on one page?**
+    A: Yes. Wrap them in a single script with an @graph array, and give each node a stable @id. That's more compact than multiple <script type="application/ld+json"> tags and lets you cross-reference nodes (e.g., an Article publisher pointing at your Organization @id).
+  - **Q: Does valid schema guarantee rich results in Google?**
+    A: No. Validation is a prerequisite, not a guarantee. Google decides per-query and per-page whether to show a rich result based on content quality, indexation status, and eligibility signals. Ship correct schema and don't over-optimize.
+
+--- 
+
+### JSON / XML Formatter, Validator & Tree Viewer
+- **URL**: https://www.xfree.in/tools/json-formatter
+- **Category**: Developer Tools
+- **Pillar Keyword**: JSON Formatter and Validator
+- **Description**: Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.
+- **Explanation**: Parses JSON and XML payloads, identifies syntax errors with line/column markers, provides formatting, minification, and visual tree hierarchy.
+- **How to Use**:
+  1. Paste JSON or XML payload into the input editor.
+  1. Toggle between Format, Minify, and Interactive Tree modes.
+  1. Review validation diagnostics or click Auto-Fix for minor syntax repairs.
+- **Top FAQs**:
+  - **Q: Does this validate strict JSON or JSON5?**
+    A: Strict JSON per RFC 8259. Trailing commas, unquoted keys, single-quoted strings, and comments are all rejected. If your source is JSON5 or JSONC, use a JSON5-aware parser instead — this tool will flag those as errors.
+  - **Q: What's the largest payload I can paste in?**
+    A: The tool is tested up to about 10 MB of formatted JSON. Above that, browsers slow down noticeably and Chrome tabs can be killed by the OS for memory pressure. For anything larger, use jq on the command line.
+  - **Q: Will large numeric IDs lose precision?**
+    A: Yes. JSON numbers are IEEE 754 doubles, so integers larger than 2^53 (9,007,199,254,740,992) silently round. If you're inspecting 64-bit database IDs or Twitter snowflake IDs, send them as strings from your API — the tool shows them exactly as received.
+
+--- 
+
+### Regex Tester & Interactive Match Explainer
+- **URL**: https://www.xfree.in/tools/regex-tester
+- **Category**: Developer Tools
+- **Pillar Keyword**: Regex Tester
+- **Description**: Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).
+- **Explanation**: Evaluates regex patterns against sample text in real-time, showing match groups, indices, and string replacement outputs.
+- **How to Use**:
+  1. Type regular expression pattern and flags.
+  1. Enter test string into input box.
+  1. View highlighted matches and captured group tables.
+- **Top FAQs**:
+  - **Q: Which regex flavor does this use?**
+    A: JavaScript (ECMAScript) regex, since it runs in your browser. That's close to PCRE but not identical — most notably, lookbehind support and Unicode property escapes (\p{...}) require a modern browser, and JavaScript has no possessive quantifiers or atomic groups.
+  - **Q: Does the pattern work the same in Python or Go?**
+    A: Usually mostly, but not always. Named-group syntax differs (?P<name> in Python re, ?<name> in JavaScript/Go). Character-class shorthand behavior around Unicode varies. Test in the target runtime before shipping — don't assume portability.
+  - **Q: What is catastrophic backtracking and does the tool warn me?**
+    A: Nested quantifiers on ambiguous patterns — for example (a+)+ or (.*)* — can take exponential time on adversarial input. The tool aborts execution after a short timeout on your test string, but it doesn't statically detect the problem. Rewrite ambiguous patterns; don't just hope your input stays benign.
+
+--- 
+
+### Bulk URL Extractor & Sitemap Generator
+- **URL**: https://www.xfree.in/tools/bulk-url-extractor
+- **Category**: SEO & URL Tools
+- **Pillar Keyword**: Free Bulk URL Extractor & Sitemap Generator Online
+- **Description**: Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.
+- **Explanation**: Parses raw text, HTML, or logs to isolate HTTP/HTTPS URLs, deduplicate them, filter by domain, and export Google-compliant XML Sitemaps.
+- **How to Use**:
+  1. Paste any raw text or HTML snippet into the input area.
+  1. Select domain filter, query parameter removal, and deduplication options.
+  1. View real-time extracted URL stats.
+  1. Download generated XML Sitemap file.
+- **Top FAQs**:
+  - **Q: Which URL formats does the extractor find?**
+    A: Any string starting with http:// or https://, including URLs with query strings, fragments, and ports. Protocol-relative URLs (starting with //) are optionally normalized to https://. Relative paths without a base URL aren't extracted — regex-based extraction needs a full URL.
+  - **Q: Does it deduplicate and strip query parameters?**
+    A: Yes to dedup (default on). Query-string stripping is optional — enable it before generating a sitemap, since tracking params (utm_source, fbclid) create URL variants Google treats as duplicates of the canonical page.
+  - **Q: How large an input can it handle?**
+    A: Tested to about 5 MB of pasted text on a mid-range laptop. Above that, the browser tab slows noticeably. For very large log files, split them or use a command-line tool like grep -oE.
+
+--- 
+
+### Cron Expression Generator & Human Translator
+- **URL**: https://www.xfree.in/tools/cron-expression-generator
+- **Category**: Generators
+- **Pillar Keyword**: Cron Expression Generator
+- **Description**: Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.
+- **Explanation**: Translates cron syntax into human-readable sentences and calculates exact future execution timestamps.
+- **How to Use**:
+  1. Configure minute, hour, day of month, month, and day of week options.
+  1. Review generated 5-part cron expression string.
+  1. Inspect upcoming execution times list.
+- **Top FAQs**:
+  - **Q: Which cron dialect does the tool support?**
+    A: Standard 5-field Unix cron: minute hour day-of-month month day-of-week. AWS EventBridge (6-field with seconds and ? placeholder), Quartz (6-7 fields), and Kubernetes CronJob all differ — the tool won't generate valid expressions for those. Kubernetes CronJob uses 5-field Unix cron, so it's compatible.
+  - **Q: How does it handle DST and time zones?**
+    A: The tool computes next-run times in your browser's local time zone. If your server runs in UTC, subtract accordingly. In DST-observing zones, 2am–3am either doesn't exist (spring) or exists twice (fall) — schedule at 1am or 4am to sidestep the ambiguity, or run cron in UTC.
+  - **Q: Why do day-of-month and day-of-week seem to combine oddly?**
+    A: In most cron implementations (Vixie cron, Kubernetes, GNU), if BOTH day-of-month and day-of-week are set (not *), the rule is OR — not AND. `0 0 15 * 1` runs at midnight on the 15th OR any Monday, not 'midnight on the 15th if it's a Monday.' Use * for one field when you want AND-like behavior.
+
+--- 
+
+### Base64 Encoder/Decoder & JWT Token Inspector
+- **URL**: https://www.xfree.in/tools/base64-encoder-decoder
+- **Category**: Converters & Encoders
+- **Pillar Keyword**: Base64 & JWT Decoder
+- **Description**: Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.
+- **Explanation**: Decodes JWT headers and payload claims without transmitting tokens to external servers. Supports UTF-8 safe Base64 and Base64URL encoding/decoding.
+- **How to Use**:
+  1. Select JWT, Base64, or URL mode.
+  1. Paste token or text input.
+  1. View decoded header, payload claims, and expiration date.
+- **Top FAQs**:
+  - **Q: Is Base64 encryption?**
+    A: No. Base64 is an encoding, not encryption. A Base64 string is trivially reversible with a decoder — anyone can read what's inside. Don't use it to protect secrets, credentials, or anything you'd hesitate to publish in plaintext.
+  - **Q: What's the difference between Base64 and Base64URL?**
+    A: Standard Base64 uses +, /, and = padding, which are all reserved characters in URL paths and query strings. Base64URL replaces + with -, / with _, and drops the padding. Use Base64URL for anything going into a URL or a JWT — the tool converts both directions.
+  - **Q: Does it verify JWT signatures?**
+    A: No. Signature verification requires the signing secret (HS256) or the public key (RS256/ES256) — neither should ever be pasted into a browser tool. The decoder shows the signature bytes as unverified and clearly labels it. If you need to verify, use jwt.io locally (offline) or your language's JWT library server-side.
+
+--- 
+
+### URL Slug Generator & Campaign UTM Parameter Builder
+- **URL**: https://www.xfree.in/tools/url-slug-utm-builder
+- **Category**: Generators
+- **Pillar Keyword**: URL Slug Generator
+- **Description**: Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).
+- **Explanation**: Converts strings into lowercase, hyphen-separated clean URL slugs while stripping special characters. Appends validated Google Analytics UTM parameters to base URLs.
+- **How to Use**:
+  1. Type title string to generate clean URL slug.
+  1. Enter destination URL and campaign UTM details.
+  1. Copy final clean tracking URL.
+- **Top FAQs**:
+  - **Q: How does it handle non-ASCII characters in slugs?**
+    A: By default it strips non-ASCII. Enable transliteration to map accented characters to their ASCII equivalents (é → e, ñ → n, ç → c). For non-Latin scripts (中文, العربية, हिन्दी) transliteration is lossy — for those, choose a slug in the target language you own.
+  - **Q: Which UTM parameters does the builder support?**
+    A: The five Google Analytics standard params: utm_source, utm_medium, utm_campaign, utm_term, utm_content. Non-standard params (utm_id, custom keys) can be added manually to the query string but won't show in GA4's default reports.
+  - **Q: What if my destination URL already has a query string?**
+    A: The builder merges. Existing keys are preserved unless a UTM param has the same name (unlikely). The output uses & separators throughout — no double ? bugs.
+

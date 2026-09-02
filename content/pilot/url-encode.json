@@ -1,0 +1,82 @@
+{
+  "name": "URL Component Encoder",
+  "slug": "url-encode",
+  "category": "developer-utilities",
+  "pillarSlug": "url-encoding-tools",
+  "summary": "Percent-encode text as one URL component with the browser encodeURIComponent implementation in XFree Studio Local Mode.",
+  "engine": { "id": "url-encode", "status": "working", "tested": true },
+  "inputParameters": ["Plain Unicode text intended for one URL component"],
+  "outputFormats": ["Percent-encoded text"],
+  "useCases": [
+    "Encode a query parameter value before constructing a request URL",
+    "Prepare path-segment data containing spaces, ampersands, slashes, or Unicode characters",
+    "Inspect the exact UTF-8 percent encoding produced by a modern browser"
+  ],
+  "searchIntents": [
+    "encode URL component without uploading text",
+    "percent encode query parameter online",
+    "encode spaces ampersands and Unicode for URL",
+    "encodeURIComponent browser tool"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The engine applies encodeURIComponent semantics rather than encoding an already assembled full URL.",
+      "Characters used as URL structure, including slashes and question marks, are encoded when they occur in the input.",
+      "The engine returns text only and does not validate whether the result is appropriate for a particular server framework.",
+      "Very large strings consume memory in the active browser tab because processing runs on the main JavaScript thread."
+    ]
+  },
+  "metadata": {
+    "title": "URL Component Encoder in Local Mode | XFree Studio",
+    "description": "Percent-encode query values, path data, spaces, symbols, and Unicode locally with browser encodeURIComponent behavior and no working-input upload.",
+    "h1": "URL Component Encoder"
+  },
+  "content": {
+    "directAnswer": "The URL Component Encoder converts plain Unicode text into percent-encoded output suitable for insertion as one URL component. It uses the browser's encodeURIComponent function, so spaces, separators, reserved punctuation, and UTF-8 bytes are represented predictably. The conversion runs in XFree Studio Local Mode.",
+    "technicalDetails": "This engine accepts a JavaScript string and passes it directly to encodeURIComponent. The browser first represents non-ASCII characters as UTF-8 bytes and then writes bytes that require escaping as a percent sign followed by two hexadecimal digits. A space becomes %20, an ampersand becomes %26, a slash becomes %2F, and the check-mark character becomes the three-byte sequence %E2%9C%93. Letters, decimal digits, hyphens, underscores, periods, exclamation marks, tildes, asterisks, apostrophes, and parentheses remain unescaped under encodeURIComponent semantics. This is deliberately different from encoding a complete URL. If the input is https://example.com/search?q=test, structural characters such as the colon, slashes, question mark, and equals sign are encoded because the engine treats the entire input as one value. Encode individual parameter values before joining them to a URL, or encode individual dynamic path segments before inserting them into a route. The implementation is a pure browser JavaScript operation. The working text is passed between the Studio interface and the local function in the same browser session; this engine does not submit it to an XFree server or an AI provider. The result is returned as plain text for copying or downloading. It does not normalize hostnames, resolve relative paths, detect double encoding, build query strings, or decide whether a remote application expects form encoding where spaces may be represented with plus signs. Browser memory and main-thread responsiveness are the practical limits for unusually large inputs.",
+    "instructions": "Open XFree Studio with the URL Encode engine selected. Paste only the value or path segment that needs escaping, not an assembled URL whose separators must stay functional. For a query such as ?name=Doe%2C%20Jane, enter Doe, Jane as the input and run the engine; add the encoded result to the query parameter afterward. Review the output for existing percent sequences. The engine does not attempt to infer whether %20 in the source was already encoded, so encoding a percent sign produces %25 and can turn %20 into %2520. This is correct for literal percent text but indicates double encoding when the source was already escaped. Copy the result into the destination URL and test it with the receiving application, because servers and frameworks differ in how they parse paths and form submissions. For application/x-www-form-urlencoded forms, consult the target framework: that encoding convention commonly represents spaces with plus signs, while this engine produces %20. Unicode input is supported through the browser's UTF-8 conversion. Lone UTF-16 surrogate code units are invalid for encodeURIComponent and can cause an exception; replace malformed text before retrying. Keep credentials, tokens, and personal values out of screenshots or shared debugging logs even though this particular transformation runs locally. Use the separate URL Decode engine when checking what an encoded component represents; do not repeatedly alternate encode and decode on production values without retaining the original input for comparison.",
+    "examples": [
+      {
+        "title": "Encode a query parameter value",
+        "input": "Doe, Jane & Sons",
+        "output": "Doe%2C%20Jane%20%26%20Sons",
+        "explanation": "The comma, spaces, and ampersand are escaped so the ampersand cannot be misread as the boundary between two query parameters."
+      },
+      {
+        "title": "Encode Unicode and a slash",
+        "input": "docs/✓",
+        "output": "docs%2F%E2%9C%93",
+        "explanation": "The slash is treated as data rather than route structure, while the check mark is converted to its three UTF-8 bytes and percent encoded."
+      }
+    ],
+    "edgeCases": [
+      "Existing percent escapes are encoded again because the percent sign is treated as literal input, which can expose accidental double encoding.",
+      "Encoding a complete URL escapes structural delimiters and normally produces a value rather than a directly navigable URL.",
+      "Form encoding and encodeURIComponent differ for spaces, so the receiving protocol must determine whether %20 or plus notation is expected.",
+      "Malformed lone surrogate code units may be rejected by the browser rather than converted into UTF-8 output."
+    ],
+    "faqs": [
+      {
+        "question": "Should I encode an entire URL with this engine?",
+        "answer": "Usually no. Encode the dynamic query value or path segment separately so colons, slashes, question marks, equals signs, and parameter separators retain their structural meaning."
+      },
+      {
+        "question": "Why did an existing %20 become %2520?",
+        "answer": "The percent sign itself was encoded as %25. That is expected for literal input but usually means an already encoded value was encoded a second time."
+      },
+      {
+        "question": "Does this use plus signs for spaces?",
+        "answer": "No. encodeURIComponent represents spaces as %20. HTML form encoding may use plus signs, so follow the exact requirements of the receiving endpoint."
+      },
+      {
+        "question": "Does the text leave the browser during encoding?",
+        "answer": "No working input is sent to an XFree server or AI provider by this engine. The transformation executes in the active browser session using built-in JavaScript."
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "HEX Color Converter",
+  "slug": "color-converter",
+  "category": "design-utilities",
+  "pillarSlug": "color-format-tools",
+  "summary": "Convert three- or six-digit HEX colors into normalized HEX, integer RGB, and rounded HSL representations in XFree Studio Local Mode.",
+  "engine": { "id": "color-converter", "status": "working", "tested": true },
+  "inputParameters": ["A three- or six-digit hexadecimal color with an optional leading hash"],
+  "outputFormats": ["JSON containing HEX, RGB, and HSL strings"],
+  "useCases": [
+    "Translate a CSS HEX token into RGB for design-system documentation",
+    "Compare a color's HSL hue, saturation, and lightness values",
+    "Normalize shorthand HEX notation into a six-digit uppercase value"
+  ],
+  "searchIntents": [
+    "convert hex to rgb and hsl locally",
+    "three digit hex color converter",
+    "hex color to CSS rgb browser tool",
+    "normalize hex color code"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The engine accepts only three- or six-digit hexadecimal RGB colors and does not currently accept alpha channels.",
+      "HSL values are rounded to whole-number hue, saturation, and lightness percentages.",
+      "The converter does not calculate color contrast, perceptual difference, gamut mapping, or accessibility compliance.",
+      "Named CSS colors, rgb() strings, hsl() strings, eight-digit HEX, and wide-gamut color spaces are rejected."
+    ]
+  },
+  "metadata": {
+    "title": "HEX to RGB and HSL Color Converter | XFree Studio",
+    "description": "Convert #RGB and #RRGGBB colors locally into normalized HEX, integer RGB, and rounded CSS HSL values with explicit format limitations.",
+    "h1": "HEX Color Converter"
+  },
+  "content": {
+    "directAnswer": "The HEX Color Converter accepts a three- or six-digit hexadecimal RGB color and returns normalized six-digit HEX, integer RGB, and rounded HSL strings. Three-digit input expands by repeating each digit. XFree calculates the conversion with browser JavaScript in Local Mode and returns a JSON result.",
+    "technicalDetails": "The engine trims surrounding whitespace, removes one optional leading hash, and validates that the remaining value contains exactly three or six hexadecimal digits. Shorthand input such as #0af expands to #00AAFF by repeating each digit. The red, green, and blue pairs are parsed as integers from zero through 255. Normalized HEX output is rebuilt as six uppercase digits. RGB output uses the CSS-style string rgb(red, green, blue). To calculate HSL, each channel is divided by 255, then the maximum and minimum normalized channels determine lightness and chroma. When all channels are equal, saturation is zero and hue is reported as zero because achromatic colors do not have a meaningful hue direction. Otherwise, saturation follows the standard HSL relationship for the calculated lightness, and hue is selected from the dominant channel before conversion to degrees. Hue, saturation, and lightness are rounded to whole numbers for compact display. As a result, converting the rounded HSL string back to RGB can differ slightly from the original channel values. The function runs on the main browser thread and does not submit the working color to XFree servers or AI providers. It returns JSON so the three representations remain clearly labeled. This implementation covers sRGB-style numeric conversion only. It does not parse alpha, CSS Color Level 4 syntax, display-p3, Lab, LCH, OKLab, OKLCH, color profiles, or device-dependent rendering. It also does not decide whether a foreground/background combination satisfies WCAG contrast requirements; that requires two colors, relative-luminance calculation, and the applicable text-size criterion.",
+    "instructions": "Select HEX Color Converter and enter a value such as #0ea5e9, 0ea5e9, #fff, or fff. Run the engine and read the labeled JSON output. Use the normalized HEX value when a six-digit token is required, RGB when an API or stylesheet expects integer channels, and HSL when adjusting hue, saturation, or lightness conceptually. Remember that the HSL values are rounded. Retain the normalized HEX or RGB value when exact channel preservation matters. If the engine rejects the input, check for an unsupported alpha pair, a CSS function such as rgb(), a named color, non-hexadecimal letters, or the wrong number of digits. Do not delete an alpha channel silently: #RRGGBBAA carries transparency information that this converter cannot represent. Use a separate alpha-aware conversion path instead. Color format conversion does not evaluate accessibility. Test foreground and background pairs with a contrast calculator and consider focus, hover, disabled, and dark-mode states. Visual appearance can also vary across displays and color-management pipelines even when numeric values match. Keep design tokens in one authoritative source to avoid drift between copied HEX, RGB, and HSL representations.",
+    "examples": [
+      { "title": "Convert a six-digit blue", "input": "#0ea5e9", "output": "{\n  \"hex\": \"#0EA5E9\",\n  \"rgb\": \"rgb(14, 165, 233)\",\n  \"hsl\": \"hsl(199, 89%, 48%)\"\n}", "explanation": "The HEX channels are parsed exactly, while the corresponding HSL values are rounded to whole-number display values." },
+      { "title": "Expand shorthand white", "input": "#fff", "output": "{\n  \"hex\": \"#FFFFFF\",\n  \"rgb\": \"rgb(255, 255, 255)\",\n  \"hsl\": \"hsl(0, 0%, 100%)\"\n}", "explanation": "Each shorthand digit is repeated. White is achromatic, so saturation is zero and hue is represented as zero." }
+    ],
+    "edgeCases": [
+      "Achromatic colors have no meaningful hue direction, but the output uses zero degrees for a stable HSL string.",
+      "Rounded HSL output may not reproduce the exact original RGB channels when converted back with another tool.",
+      "Four- and eight-digit HEX values include alpha and are rejected rather than losing transparency information.",
+      "A numerically correct conversion does not establish WCAG contrast or consistent appearance across color-managed displays."
+    ],
+    "faqs": [
+      { "question": "Does the converter support three-digit HEX?", "answer": "Yes. It expands each digit, so #0af becomes #00AAFF before calculating RGB and HSL output." },
+      { "question": "Why is the HSL result rounded?", "answer": "The current engine reports whole-number degrees and percentages for readability. Preserve HEX or RGB when exact original channel values are required." },
+      { "question": "Can it convert HEX colors with transparency?", "answer": "No. Four- and eight-digit HEX include alpha and are rejected so transparency is not silently discarded." },
+      { "question": "Does conversion prove the color is accessible?", "answer": "No. Accessibility contrast requires both foreground and background colors plus relative-luminance testing under the applicable WCAG criterion." }
+    ]
+  }
+}

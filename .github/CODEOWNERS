@@ -1,0 +1,20 @@
+# CODEOWNERS
+
+# Default ownership — core maintainers
+*                       @CodesbyFebin
+
+# Application source
+/src/                   @CodesbyFebin
+/server.ts              @CodesbyFebin
+/api/                   @CodesbyFebin
+
+# Tool registry and data
+/src/data/              @CodesbyFebin
+
+# CI / security / release
+/.github/               @CodesbyFebin
+/vercel.json            @CodesbyFebin
+
+# Documentation
+/docs/                  @CodesbyFebin
+/README.md              @CodesbyFebin

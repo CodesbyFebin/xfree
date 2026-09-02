@@ -1,0 +1,70 @@
+{
+  "name": "URL Component Decoder",
+  "slug": "url-decode",
+  "category": "developer-utilities",
+  "pillarSlug": "url-encoding-tools",
+  "summary": "Decode percent-encoded URL component text with browser decodeURIComponent behavior in XFree Studio Local Mode.",
+  "engine": { "id": "url-decode", "status": "working", "tested": true },
+  "inputParameters": ["Percent-encoded text representing one URL component"],
+  "outputFormats": ["Decoded Unicode text"],
+  "useCases": [
+    "Inspect an encoded query parameter value during request debugging",
+    "Recover readable Unicode text from UTF-8 percent sequences",
+    "Detect malformed or incomplete percent encoding before application processing"
+  ],
+  "searchIntents": [
+    "decode percent encoded URL component locally",
+    "convert %20 to spaces online without upload",
+    "decodeURIComponent browser tool",
+    "debug malformed URI sequence"
+  ],
+  "processing": {
+    "mode": "local",
+    "implementation": "browser-js",
+    "workingInputSentToServer": false,
+    "providers": [],
+    "verifiedAt": "2026-08-22",
+    "limitations": [
+      "The engine trims leading and trailing whitespace before decoding the supplied component.",
+      "Plus signs remain plus signs because decodeURIComponent does not implement HTML form decoding.",
+      "Malformed percent triplets and invalid UTF-8 byte sequences are rejected rather than partially decoded.",
+      "The decoder handles one text value and does not parse a complete URL into named components."
+    ]
+  },
+  "metadata": {
+    "title": "URL Component Decoder in Local Mode | XFree Studio",
+    "description": "Decode percent-encoded query values and UTF-8 URL component text locally, with clear errors for malformed escape sequences and no working-input upload.",
+    "h1": "URL Component Decoder"
+  },
+  "content": {
+    "directAnswer": "The URL Component Decoder converts percent-encoded component text back into readable Unicode using the browser's decodeURIComponent function. Valid byte sequences such as %20 and %E2%9C%93 become a space and a check mark. Malformed escapes are rejected, and processing occurs in XFree Studio Local Mode.",
+    "technicalDetails": "The engine removes whitespace at the beginning and end of the submitted value, then passes the remaining string to decodeURIComponent. Each valid %HH triplet represents one byte. ASCII bytes map directly to their characters, while consecutive non-ASCII bytes are interpreted as a UTF-8 sequence. For example, %E2%9C%93 becomes the check-mark character. Characters that were never encoded remain in the result. A literal plus sign also remains a plus sign: decodeURIComponent follows URI-component behavior and does not apply the application/x-www-form-urlencoded convention that commonly maps plus to a space. The function fails atomically when it encounters a percent sign without two hexadecimal digits or a byte sequence that cannot represent valid decoded text. XFree catches that exception and returns a concise invalid-percent-encoding error instead of exposing a partial value as if it were trustworthy. The decoder does not split a full URL into scheme, host, path, query, and fragment fields. It also does not repeatedly decode until no percent signs remain, because repeated decoding can transform deliberately escaped delimiters and create security differences between application layers. The transformation runs as browser JavaScript in the active Studio session. This engine does not submit the working component to XFree servers or AI providers. Results are plain text. Extremely large values consume browser memory and execute on the main thread, although ordinary URL components are small. The output says what the bytes represent; it does not determine whether the decoded value is safe for HTML, SQL, a filesystem path, a redirect target, or another security-sensitive sink.",
+    "instructions": "Select URL Decode in XFree Studio and paste a single encoded value such as Doe%2C%20Jane. Run the engine and compare the readable result with the original request or application log. If the source came from a query string produced by an HTML form, decide whether plus characters should be translated to spaces before decoding; this engine intentionally leaves them unchanged. When the engine reports malformed encoding, look for a bare percent sign, a short sequence such as %2, non-hexadecimal digits such as %ZZ, or an incomplete multibyte UTF-8 sequence. Correct the upstream producer rather than deleting characters until the value parses. Decode only once unless the protocol explicitly defines nested encoding. A value such as %252F decodes once to %2F and only becomes a slash after a second decode; security bugs often occur when proxies and applications apply different numbers of decoding passes. Treat decoded output as untrusted input. Escaping for a URL is not equivalent to HTML sanitization, command quoting, SQL parameterization, or path validation. Keep the original encoded value beside the result during debugging so transformations remain auditable. Avoid sharing decoded secrets or personal values in tickets and screenshots even though this engine operates locally.",
+    "examples": [
+      {
+        "title": "Decode a name and separator",
+        "input": "Doe%2C%20Jane%20%26%20Sons",
+        "output": "Doe, Jane & Sons",
+        "explanation": "The encoded comma, spaces, and ampersand become readable text without treating the recovered ampersand as a new query parameter."
+      },
+      {
+        "title": "Decode UTF-8 component bytes",
+        "input": "docs%2F%E2%9C%93",
+        "output": "docs/✓",
+        "explanation": "The slash and the three-byte UTF-8 check-mark sequence are decoded in a single component-level operation."
+      }
+    ],
+    "edgeCases": [
+      "A plus sign is preserved rather than converted to a space, which differs from many HTML form parsers.",
+      "Inputs such as %ZZ, %2, or incomplete UTF-8 sequences fail rather than returning a partially decoded string.",
+      "Double-encoded text requires an explicit second operation and can reveal dangerous delimiter-normalization differences.",
+      "Decoded output remains untrusted and may require validation or contextual escaping before use elsewhere."
+    ],
+    "faqs": [
+      { "question": "Why did plus signs not become spaces?", "answer": "decodeURIComponent preserves plus signs. Converting plus to a space belongs to form-encoding rules and should only be applied when the source protocol requires it." },
+      { "question": "Why does the decoder reject %ZZ or a trailing percent sign?", "answer": "Every escape needs two hexadecimal digits, and the resulting byte sequence must be valid. The engine rejects malformed sequences rather than hiding upstream encoding errors." },
+      { "question": "Should I decode the value more than once?", "answer": "Only when the protocol explicitly uses nested encoding. Repeated decoding can expose delimiters and create security inconsistencies between proxies, frameworks, and applications." },
+      { "question": "Is the encoded value uploaded for decoding?", "answer": "No working input is sent to XFree servers or an AI provider by this engine. The browser performs the component decoding in the active session." }
+    ]
+  }
+}
