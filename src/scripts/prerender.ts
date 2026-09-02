@@ -293,7 +293,13 @@ function main() {
     const routeMeta: PageMeta = route === "/studio"
       ? { route, ...m, jsonLd, canonical: "https://app.xfree.in/" }
       : route === "/_app-shell"
-        ? { route, ...m, jsonLd, canonical: "https://app.xfree.in/", robots: "noindex,follow" }
+        // NOT noindex: Routing Middleware serves these exact bytes at the
+        // public app.xfree.in/ URL, and a robots tag lives in the HTML
+        // itself — noindex here would noindex the real page too. Isolation
+        // instead comes from the non-self canonical (consolidates even if
+        // this path is ever crawled directly), no sitemap entry, no
+        // internal links, and a robots.txt Disallow on the literal path.
+        ? { route, ...m, jsonLd, canonical: "https://app.xfree.in/" }
         : route === "/roadmap"
           ? { route, ...m, jsonLd: [], robots: "noindex,follow" }
           : { route, ...m, jsonLd };

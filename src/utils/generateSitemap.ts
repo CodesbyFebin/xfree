@@ -261,5 +261,5 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
 
 export function generateRobotsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = cleanOrigin(baseUrl);
-  return `# XFree.in crawl policy\nUser-agent: *\nAllow: /\nDisallow: /api/\n\n# Search and answer-engine crawlers\nUser-agent: Googlebot\nAllow: /\nDisallow: /api/\n\nUser-agent: Bingbot\nAllow: /\nDisallow: /api/\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /api/\n\nUser-agent: ChatGPT-User\nAllow: /\nDisallow: /api/\n\nUser-agent: PerplexityBot\nAllow: /\nDisallow: /api/\n\n# Canonical discovery entry point\nSitemap: ${cleanBase}/sitemap-index.xml\n`;
+  return `# XFree.in crawl policy\nUser-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\n# Search and answer-engine crawlers\nUser-agent: Googlebot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: Bingbot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: ChatGPT-User\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: PerplexityBot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\n# Canonical discovery entry point\nSitemap: ${cleanBase}/sitemap-index.xml\n`;
 }

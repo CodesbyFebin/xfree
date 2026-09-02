@@ -7296,27 +7296,33 @@ function generateRobotsTxt(baseUrl = DEFAULT_BASE_URL) {
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /_app-shell
 
 # Search and answer-engine crawlers
 User-agent: Googlebot
 Allow: /
 Disallow: /api/
+Disallow: /_app-shell
 
 User-agent: Bingbot
 Allow: /
 Disallow: /api/
+Disallow: /_app-shell
 
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /api/
+Disallow: /_app-shell
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /api/
+Disallow: /_app-shell
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /api/
+Disallow: /_app-shell
 
 # Canonical discovery entry point
 Sitemap: ${cleanBase}/sitemap-index.xml
