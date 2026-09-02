@@ -244,7 +244,20 @@ function renderHomeDirectoryLinks(): string {
   const tools = PUBLIC_TOOLS.slice(0, 10).map((tool) =>
     `<li><a href="/tools/${escapeHtml(tool.slug)}">${escapeHtml(tool.title)}</a> — ${escapeHtml(tool.shortDescription)}</li>`,
   ).join("");
-  return `<section><h2>What is XFree?</h2><p>XFree is a free browser-based developer and SEO tool suite. It currently exposes ${PUBLIC_TOOLS.length} verified published utilities; the ${ROADMAP_CONCEPT_COUNT.toLocaleString()}-concept matrix is a public roadmap, not a live-tool count.</p><p><a href="/pillars">Browse the XFree pillar directory</a> · <a href="/guides">Read reviewed XFree guides</a> · <a href="/how-it-works">See how XFree processing works</a> · <a href="/contribute">Contribute a tool</a></p></section><section><h2>Explore XFree SEO & developer tool categories</h2><ul>${categories}</ul></section><section><h2>Published XFree tools</h2><ul>${tools}</ul></section><section><h2>Frequently asked questions about XFree</h2><h3>Is XFree free and no-signup?</h3><p>Yes. Published XFree tools can be opened without creating an XFree account. Optional third-party or cloud features are disclosed separately when used.</p><h3>What does Local Mode mean?</h3><p>Local Mode means working input is processed in the browser rather than being submitted to an XFree processing service. Each published tool states its actual processing behavior.</p><h3>Are all ${ROADMAP_CONCEPT_COUNT.toLocaleString()} roadmap concepts live?</h3><p>No. The roadmap is a planning taxonomy. Planned concepts stay outside the public sitemap until implementation, testing, editorial review, canonical validation, and internal-link checks pass.</p><h3>How can I contribute?</h3><p>Choose a roadmap concept, open a tool request, implement it against the current repository architecture, add tests and disclosures, then submit a pull request for automated and human review.</p></section>`;
+  const resources = [
+    ["/use-cases", "Use cases"], ["/blog", "Blog"], ["/about", "About"],
+    ["/contact", "Contact"], ["/privacy", "Privacy"], ["/terms", "Terms"],
+    ["/security", "Security"], ["/xfree-app", "Install XFree"],
+    ["/instaserver", "InstaServer"], ["/json-tools", "JSON tools"],
+  ].map(([href, label]) => `<li><a href="${href}">${label}</a></li>`).join("");
+  return `<section><h2>What is XFree?</h2><p>XFree is a free browser-based developer and SEO tool suite. It currently exposes ${PUBLIC_TOOLS.length} verified published utilities; the ${ROADMAP_CONCEPT_COUNT.toLocaleString()}-concept matrix is a public roadmap, not a live-tool count.</p><p><a href="/pillars">Browse the XFree pillar directory</a> · <a href="/guides">Read reviewed XFree guides</a> · <a href="/how-it-works">See how XFree processing works</a> · <a href="/contribute">Contribute a tool</a></p></section><nav aria-label="XFree resources"><h2>Documentation, policies and projects</h2><ul>${resources}</ul></nav><section><h2>Explore XFree SEO & developer tool categories</h2><ul>${categories}</ul></section><section><h2>Published XFree tools</h2><ul>${tools}</ul></section><section><h2>Frequently asked questions about XFree</h2><h3>Is XFree free and no-signup?</h3><p>Yes. Published XFree tools can be opened without creating an XFree account. Optional third-party or cloud features are disclosed separately when used.</p><h3>What does Local Mode mean?</h3><p>Local Mode means working input is processed in the browser rather than being submitted to an XFree processing service. Each published tool states its actual processing behavior.</p><h3>Are all ${ROADMAP_CONCEPT_COUNT.toLocaleString()} roadmap concepts live?</h3><p>No. The roadmap is a planning taxonomy. Planned concepts stay outside the public sitemap until implementation, testing, editorial review, canonical validation, and internal-link checks pass.</p><h3>How can I contribute?</h3><p>Choose a roadmap concept, open a tool request, implement it against the current repository architecture, add tests and disclosures, then submit a pull request for automated and human review.</p></section>`;
+}
+
+function renderPillarDirectoryLinks(): string {
+  const items = PILLARS_50.filter((pillar) => isPillarIndexable(pillar.slug))
+    .map((pillar) => `<li><a href="/pillar/${escapeHtml(pillar.slug)}">${escapeHtml(pillar.name)}</a> — ${escapeHtml(pillar.description)}</li>`)
+    .join("");
+  return `<section><h2>Published XFree tool pillars</h2><ul>${items}</ul></section>`;
 }
 
 function renderContributeBody(): string {
@@ -303,7 +316,7 @@ function main() {
         : route === "/roadmap"
           ? { route, ...m, jsonLd: [], robots: "noindex,follow" }
           : { route, ...m, jsonLd };
-    writeRoute(route, injectMeta(template, routeMeta, route === "/" ? renderHomeDirectoryLinks() : route === "/contribute" ? renderContributeBody() : route === "/instaserver" ? renderInstaServerBody() : route === "/json-tools" ? renderJsonToolsBody() : ""));
+    writeRoute(route, injectMeta(template, routeMeta, route === "/" ? renderHomeDirectoryLinks() : route === "/pillars" ? renderPillarDirectoryLinks() : route === "/contribute" ? renderContributeBody() : route === "/instaserver" ? renderInstaServerBody() : route === "/json-tools" ? renderJsonToolsBody() : ""));
     count++;
   }
 
