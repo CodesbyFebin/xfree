@@ -156,10 +156,33 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 if (fs.existsSync(DIST)) {
-  for (const file of walk(DIST)) {
+  const htmlFiles = walk(DIST);
+  const discoveredPaths = new Set<string>();
+
+  for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf-8");
     if (/href=["']\/category\//i.test(html)) {
       fail(`${path.relative(DIST, file)} contains a legacy /category/ link — use /:categorySlug directly`);
+    }
+
+    for (const match of html.matchAll(/<a\b[^>]*\shref=["']([^"']+)["']/gi)) {
+      try {
+        const target = new URL(match[1], "https://www.xfree.in/");
+        if (target.origin === "https://www.xfree.in") discoveredPaths.add(target.pathname.replace(/\/$/, "") || "/");
+      } catch {
+        fail(`${path.relative(DIST, file)} contains an invalid anchor href: ${match[1]}`);
+      }
+    }
+  }
+
+  // Every canonical sitemap URL except the homepage must be reachable through
+  // at least one ordinary server-visible anchor. This catches orphan pages and
+  // client-only navigation regressions before release.
+  const sitemapUrls = Array.from(read("sitemap.xml").matchAll(/<loc>([^<]+)<\/loc>/g), (match) => match[1]);
+  for (const url of sitemapUrls) {
+    const targetPath = new URL(url).pathname.replace(/\/$/, "") || "/";
+    if (targetPath !== "/" && !discoveredPaths.has(targetPath)) {
+      fail(`orphan sitemap URL has no prerendered <a href> discovery path: ${url}`);
     }
   }
 }
@@ -170,4 +193,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log("[gsc-contract] PASS — redirect matrix, Studio dual-canonical pattern, and internal-link hygiene verified");
+console.log("[gsc-contract] PASS — redirects, raw canonicals, sitemap isolation, and internal discovery verified");

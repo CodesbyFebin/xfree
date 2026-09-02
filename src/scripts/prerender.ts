@@ -39,7 +39,7 @@ interface PageMeta {
   intro: string;
   jsonLd: any[];
   guide?: import("../data/toolGuides").GuideContent;
-  robots?: "index,follow" | "noindex,follow";
+  robots?: "index,follow" | "noindex,follow" | "noindex,nofollow";
   canonical?: string | null;
 }
 
@@ -514,7 +514,7 @@ function main() {
     h1: "404 — Page not found",
     intro: "This URL doesn't map to an indexable tool or page. Try the homepage.",
     jsonLd: [],
-    robots: "noindex,follow",
+    robots: "noindex,nofollow",
     canonical: null,
   });
   fs.writeFileSync(path.join(DIST, "404.html"), notFound, "utf-8");

@@ -360,13 +360,20 @@ export function compareTools(
     toolTitle: tool.title,
     scores: criteria.map(c => ({
       criterion: c,
-      score: tool.xfreeScore?.breakdown?.[c] || tool.xfreeScore?.[c] || 0,
+      score: scoreForCriterion(tool, c),
       weight: 1,
     })),
     overallScore: tool.xfreeScore?.overall || 0,
     strengths: extractStrengths(tool, criteria),
     weaknesses: extractWeaknesses(tool, criteria),
   }));
+}
+
+function scoreForCriterion(tool: ToolDefinition, criterion: string): number {
+  const breakdownScore = tool.xfreeScore?.breakdown?.[criterion];
+  if (typeof breakdownScore === "number") return breakdownScore;
+  const directScore = tool.xfreeScore?.[criterion as keyof NonNullable<ToolDefinition["xfreeScore"]>];
+  return typeof directScore === "number" ? directScore : 0;
 }
 
 function extractStrengths(tool: ToolDefinition, criteria: string[]): string[] {
