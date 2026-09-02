@@ -1,6 +1,7 @@
 import React from "react";
-import { Search, Sparkles, ArrowRight, ShieldCheck, Zap, Globe, Lock, Cpu, Check, Code, ExternalLink, RefreshCw } from "lucide-react";
+import { Search, Sparkles, ArrowRight, ShieldCheck, Zap, Globe, Lock, Cpu, Check, Code, ExternalLink } from "lucide-react";
 import { ToolCategory } from "../types";
+import { PageJumpNav } from "./landing/PageJumpNav";
 
 interface HeroBannerProps {
   searchQuery: string;
@@ -34,14 +35,25 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
           {/* Left Column: Headline, Copy, CTAs */}
           <div className="lg:col-span-6 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+              </span>
+              <span className="text-xs font-medium text-slate-300">
+                XFree AI Studio — open-source agent engine, now included
+              </span>
+            </div>
+
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
-              Free Developer, SEO &amp; AI Micro-Tools — <br className="hidden sm:inline" />
-              <span className="text-emerald-400 font-black">Get X Done for Free</span>
+              Free tools, built on a{" "}
+              <span className="text-emerald-400 font-black">real AI agent engine</span>
             </h1>
 
             <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-xl font-normal">
-              XFree.in is a free browser-based suite of AI, SEO, and developer micro-tools that format, validate, convert,
-              and analyze data instantly — with local-first privacy, no signup, and zero install.
+              XFree is an open-source intent-routing and execution engine — with tool mapping and a governed content
+              pipeline — that powers 10 free browser tools you can use right now, with local-first privacy, no signup,
+              and zero install.
             </p>
 
             {/* CTA Buttons */}
@@ -165,6 +177,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* In-page jump nav to the platform sections below */}
+      <PageJumpNav />
 
       {/* 4 Feature Trust Badges Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80">

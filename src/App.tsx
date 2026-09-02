@@ -6,7 +6,13 @@ import { findGuide } from "./data/guides";
 import { ToolCategory, SavedItem, ToolDefinition, WorkspacePreset } from "./types";
 import { Header } from "./components/Header";
 import { HeroBanner } from "./components/HeroBanner";
-import { PlatformShowcaseSection } from "./components/PlatformShowcaseSection";
+import { FeaturesSection } from "./components/landing/FeaturesSection";
+import { HowItWorksStrip } from "./components/landing/HowItWorksStrip";
+import { ArchitectureSection } from "./components/landing/ArchitectureSection";
+import { UseCasesStrip } from "./components/landing/UseCasesStrip";
+import { SecuritySection } from "./components/landing/SecuritySection";
+import { FaqStrip } from "./components/landing/FaqStrip";
+import { FinalCta } from "./components/landing/FinalCta";
 import { QuickLinksSection } from "./components/QuickLinksSection";
 import { PopularAndCategoriesSection } from "./components/PopularAndCategoriesSection";
 import { ResourceHubSection } from "./components/ResourceHubSection";
@@ -380,8 +386,10 @@ export default function App() {
               onOpenStudio={() => { window.location.href = "https://app.xfree.in/studio"; }}
             />
 
-            {/* Platform Showcase — intent engine, agents, Studio engines, content pipeline */}
-            <PlatformShowcaseSection onOpenStudio={() => { window.location.href = "https://app.xfree.in/studio"; }} />
+            {/* Platform sections — intent engine, agents, Studio engines, content pipeline */}
+            <FeaturesSection />
+            <HowItWorksStrip />
+            <ArchitectureSection />
 
             {/* Quick Links Section */}
             <QuickLinksSection onSelectTool={(slug) => navigateTo(`/tools/${slug}`)} />
@@ -426,6 +434,10 @@ export default function App() {
               )}
             </div>
 
+            {/* Use Cases & Security — platform-level, not just tool-usage */}
+            <UseCasesStrip onExplore={() => navigateTo("/use-cases")} />
+            <SecuritySection onReadMore={() => navigateTo("/security")} />
+
             {/* Popular Tools, Categories & Privacy Section */}
             <PopularAndCategoriesSection
               onSelectTool={(slug) => navigateTo(`/tools/${slug}`)}
@@ -436,6 +448,14 @@ export default function App() {
             />
 
             <ResourceHubSection onNavigate={navigateTo} />
+
+            {/* FAQ & final CTA */}
+            <FaqStrip onSeeFullFaq={() => navigateTo("/faq")} />
+            <FinalCta
+              onOpenStudio={() => { window.location.href = "https://app.xfree.in/studio"; }}
+              onExploreFreeTools={() => setActiveCategory("all")}
+              onReadDocs={() => navigateTo("/docs")}
+            />
           </div>
         )}
       </main>
