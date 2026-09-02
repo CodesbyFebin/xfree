@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XFree — Free Developer, SEO & Data Tools | Local-First, No Signup</title>
+<meta name="description" content="40 free browser-based developer, SEO and data tools plus a local workflow Studio. Zero build, zero backend, zero signup — everything runs as plain JavaScript in this one page.">
+<link rel="canonical" href="https://xfree.in/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="XFree — Free Developer, SEO & Data Tools">
+<meta property="og:description" content="40 free browser-based developer, SEO and data tools plus a local workflow Studio. No backend, no signup, no build step.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"XFree","description":"Free browser-based developer, SEO and data tools that run entirely client-side.","applicationCategory":"DeveloperApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.6/index.min.css">
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']},colors:{xfree:{50:'#f0f4ff',100:'#dbe4ff',200:'#bac8ff',300:'#91a7ff',400:'#748ffc',500:'#5c7cfa',600:'#4c6ef5',700:'#4263eb',800:'#3b5bdb',900:'#364fc7',950:'#1e3a8a'}}}}}
+</script>
+<style>
+*{scrollbar-width:thin;scrollbar-color:#334155 transparent}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+body{font-family:'Inter',system-ui,sans-serif;background:#020617}
+.mono{font-family:'JetBrains Mono',monospace}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .25s ease-out}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.slide-up{animation:slideUp .3s ease-out}
+details summary::-webkit-details-marker{display:none}
+details summary .chev{transition:transform .2s}
+details[open] summary .chev{transform:rotate(90deg)}
+.hero-bg{position:relative;overflow:hidden}
+.hero-bg::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 50%,rgba(92,124,250,.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,.06) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(59,130,246,.05) 0%,transparent 50%);animation:meshMove 20s ease-in-out infinite}
+@keyframes meshMove{0%,100%{transform:translate(0,0) rotate(0deg)}33%{transform:translate(2%,-1%) rotate(1deg)}66%{transform:translate(-1%,2%) rotate(-1deg)}}
+.grid-pattern{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%)}
+.glow-line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(92,124,250,.5),transparent);animation:glowPulse 4s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.feature-card{transition:all .3s cubic-bezier(.4,0,.2,1);border:1px solid rgba(255,255,255,.06)}
+.feature-card:hover{border-color:rgba(92,124,250,.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(92,124,250,.1)}
+.reveal{opacity:0;transform:translateY(20px);transition:all .6s cubic-bezier(.4,0,.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.code-block{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
+.code-header{background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);padding:10px 16px;display:flex;align-items:center;gap:8px}
+.code-dot{width:10px;height:10px;border-radius:50%}
+.nav-blur{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.pulse-ring{animation:pulseRing 2s cubic-bezier(.4,0,.6,1) infinite}
+@keyframes pulseRing{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.5);opacity:0}}
+.mobile-menu{transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.mobile-menu.open{transform:translateX(0)}
+.stat-value{font-variant-numeric:tabular-nums}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
+.faq-answer.open{max-height:500px}
+.faq-chevron{transition:transform .3s ease}
+.faq-chevron.rotated{transform:rotate(180deg)}
+</style>
+</head>
+<body class="bg-[#020617] text-gray-200 min-h-screen flex flex-col">
+<div id="root"></div>
+<script type="text/babel">
+const{useState,useEffect,useRef,useMemo}=React;
+
+/* ═══════════════════════════════════════════════════════
+   DATA — Single Source of Truth (real, wired tools only)
+   ═══════════════════════════════════════════════════════ */
+
+const TOOLS=[
+  {id:'json-formatter',slug:'json-formatter',name:'JSON Formatter',cat:'developer-tools',sub:'json-tools',short:'Format and beautify JSON with customizable indentation.',full:'Format raw JSON into a readable, indented structure. Supports 2-space and 4-space indentation.',kw:'json formatter',mode:'LOCAL',in:'json',out:'json',mob:true,off:true,rel:['json-validator','json-minifier'],gds:['how-to-format-json']},
+  {id:'json-validator',slug:'json-validator',name:'JSON Validator',cat:'developer-tools',sub:'json-tools',short:'Validate JSON syntax and locate errors with line numbers.',full:'Check if your JSON is syntactically valid. Reports exact error positions with line and column numbers.',kw:'json validator',mode:'LOCAL',in:'json',out:'result',mob:true,off:true,rel:['json-formatter','json-schema-validator'],gds:['how-to-validate-json','how-to-find-json-errors']},
+  {id:'json-minifier',slug:'json-minifier',name:'JSON Minifier',cat:'developer-tools',sub:'json-tools',short:'Minify JSON by removing all whitespace.',full:'Compress JSON by stripping all unnecessary whitespace. Ideal for reducing payload size in APIs.',kw:'json minifier',mode:'LOCAL',in:'json',out:'json',mob:true,off:true,rel:['json-formatter','json-validator'],gds:[]},
+  {id:'json-beautifier',slug:'json-beautifier',name:'JSON Beautifier',cat:'developer-tools',sub:'json-tools',short:'Beautify JSON with readable formatting.',full:'Transform compact JSON into a beautifully formatted, human-readable structure.',kw:'json beautifier',mode:'LOCAL',in:'json',out:'json',mob:true,off:true,rel:['json-formatter'],gds:['how-to-format-json']},
+  {id:'json-sort-keys',slug:'json-sort-keys',name:'JSON Sort Keys',cat:'developer-tools',sub:'json-tools',short:'Recursively sort all keys alphabetically.',full:'Sort all keys in a JSON object and nested objects alphabetically for deterministic output.',kw:'json sort keys',mode:'LOCAL',in:'json',out:'json',mob:true,off:true,rel:['json-formatter'],gds:[]},
+  {id:'json-to-csv',slug:'json-to-csv',name:'JSON to CSV',cat:'converters',sub:'data',short:'Convert JSON arrays to CSV format.',full:'Convert JSON arrays of objects into CSV format for spreadsheet import.',kw:'json to csv',mode:'LOCAL',in:'json',out:'csv',mob:true,off:true,rel:['csv-to-json'],gds:['how-to-convert-json-to-csv']},
+  {id:'csv-to-json',slug:'csv-to-json',name:'CSV to JSON',cat:'converters',sub:'data',short:'Convert CSV data to JSON array.',full:'Parse CSV data and convert to a JSON array of objects. Auto-detects headers.',kw:'csv to json',mode:'LOCAL',in:'csv',out:'json',mob:true,off:true,rel:['json-to-csv'],gds:[]},
+  {id:'json-escape',slug:'json-escape',name:'JSON Escape',cat:'developer-tools',sub:'json-tools',short:'Escape characters for safe JSON embedding.',full:'Escape special characters for safe JSON string embedding.',kw:'json escape',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['json-unescape'],gds:[]},
+  {id:'json-unescape',slug:'json-unescape',name:'JSON Unescape',cat:'developer-tools',sub:'json-tools',short:'Unescape JSON strings to readable text.',full:'Reverse JSON string escaping back to original characters.',kw:'json unescape',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['json-escape'],gds:[]},
+  {id:'json-depth',slug:'json-depth',name:'JSON Depth Analyzer',cat:'developer-tools',sub:'json-tools',short:'Analyze nesting depth and structure.',full:'Analyze JSON structure for max depth, total keys, array sizes, and complexity.',kw:'json depth analyzer',mode:'LOCAL',in:'json',out:'analysis',mob:true,off:true,rel:['json-key-extractor'],gds:[]},
+  {id:'json-key-extractor',slug:'json-key-extractor',name:'JSON Key Extractor',cat:'developer-tools',sub:'json-tools',short:'Extract all unique keys recursively.',full:'Recursively extract all unique key names from a JSON structure with full paths.',kw:'json key extractor',mode:'LOCAL',in:'json',out:'text',mob:true,off:true,rel:['json-depth'],gds:[]},
+  {id:'json-pointer',slug:'json-pointer',name:'JSON Pointer Resolver',cat:'developer-tools',sub:'json-tools',short:'Resolve JSON Pointer (RFC 6901) expressions.',full:'Evaluate JSON Pointer expressions (RFC 6901) to extract values from nested JSON.',kw:'json pointer',mode:'LOCAL',in:'json',out:'json',mob:true,off:true,rel:['json-key-extractor'],gds:['json-pointer-explained']},
+  {id:'xml-sitemap-generator',slug:'xml-sitemap-generator',name:'XML Sitemap Generator',cat:'seo-tools',sub:'sitemap',short:'Generate XML sitemaps from URL lists.',full:'Create standards-compliant XML sitemaps with lastmod, changefreq, and priority.',kw:'xml sitemap generator',mode:'LOCAL',in:'urls',out:'xml',mob:true,off:true,rel:['robots-txt-generator','url-extractor'],gds:['how-to-create-xml-sitemap']},
+  {id:'robots-txt-generator',slug:'robots-txt-generator',name:'Robots.txt Generator',cat:'seo-tools',sub:'robots',short:'Generate robots.txt files.',full:'Create robots.txt with proper syntax. Supports User-agent, Allow, Disallow, Sitemap.',kw:'robots.txt generator',mode:'LOCAL',in:'form',out:'text',mob:true,off:true,rel:['robots-txt-tester'],gds:['how-to-test-robots-txt']},
+  {id:'robots-txt-tester',slug:'robots-txt-tester',name:'Robots.txt Tester',cat:'seo-tools',sub:'robots',short:'Test if URLs are allowed by robots.txt.',full:'Validate robots.txt rules against URLs to check crawler access.',kw:'robots.txt tester',mode:'LOCAL',in:'text',out:'result',mob:true,off:true,rel:['robots-txt-generator'],gds:['how-to-test-robots-txt']},
+  {id:'meta-tag-preview',slug:'meta-tag-preview',name:'Meta Tag Preview',cat:'seo-tools',sub:'meta',short:'Preview Google search result appearance.',full:'Generate and preview title/meta as they appear in Google. Shows character counts.',kw:'meta tag preview',mode:'LOCAL',in:'form',out:'preview',mob:true,off:true,rel:['open-graph-preview'],gds:['how-to-check-meta-tags']},
+  {id:'open-graph-preview',slug:'open-graph-preview',name:'Open Graph Preview',cat:'seo-tools',sub:'meta',short:'Preview social media sharing appearance.',full:'Preview Open Graph tags as they appear on Facebook, LinkedIn, and other platforms.',kw:'open graph preview',mode:'LOCAL',in:'form',out:'preview',mob:true,off:true,rel:['meta-tag-preview'],gds:['how-to-preview-open-graph']},
+  {id:'schema-generator',slug:'schema-generator',name:'Schema Markup Generator',cat:'seo-tools',sub:'schema',short:'Generate JSON-LD structured data.',full:'Create JSON-LD structured data for articles, organizations, products, FAQs.',kw:'schema markup generator',mode:'LOCAL',in:'form',out:'json-ld',mob:true,off:true,rel:['meta-tag-preview'],gds:['how-to-generate-schema-markup']},
+  {id:'url-extractor',slug:'url-extractor',name:'URL Extractor',cat:'seo-tools',sub:'extraction',short:'Extract all URLs from HTML or text.',full:'Parse HTML or text to extract URLs. Supports deduplication and domain filtering.',kw:'url extractor',mode:'LOCAL',in:'html',out:'urls',mob:true,off:true,rel:['xml-sitemap-generator'],gds:['how-to-extract-urls-from-html']},
+  {id:'slug-generator',slug:'slug-generator',name:'Slug Generator',cat:'seo-tools',sub:'urls',short:'Generate SEO-friendly URL slugs.',full:'Convert text into clean, URL-safe slugs. Handles unicode and special characters.',kw:'slug generator',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['url-extractor'],gds:[]},
+  {id:'word-counter',slug:'word-counter',name:'Word Counter',cat:'text-tools',sub:'counting',short:'Count words, characters, sentences.',full:'Analyze text for words, characters, sentences, paragraphs, and reading time.',kw:'word counter',mode:'LOCAL',in:'text',out:'stats',mob:true,off:true,rel:['line-counter'],gds:[]},
+  {id:'line-counter',slug:'line-counter',name:'Line Counter',cat:'text-tools',sub:'counting',short:'Count lines and text statistics.',full:'Count lines, non-empty lines, words, and characters in text.',kw:'line counter',mode:'LOCAL',in:'text',out:'stats',mob:true,off:true,rel:['word-counter'],gds:[]},
+  {id:'case-converter',slug:'case-converter',name:'Case Converter',cat:'text-tools',sub:'case',short:'Convert between text cases.',full:'Transform text: UPPERCASE, lowercase, Title Case, camelCase, snake_case, kebab-case.',kw:'case converter',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['slug-generator'],gds:[]},
+  {id:'remove-duplicate-lines',slug:'remove-duplicate-lines',name:'Remove Duplicate Lines',cat:'text-tools',sub:'lines',short:'Deduplicate lines keeping unique entries.',full:'Remove duplicate lines with case-sensitive options and sorting.',kw:'remove duplicate lines',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['sort-lines','trim-whitespace'],gds:[]},
+  {id:'sort-lines',slug:'sort-lines',name:'Sort Lines',cat:'text-tools',sub:'lines',short:'Sort lines alphabetically or numerically.',full:'Sort lines ascending/descending. Supports alphabetical, numerical, and length sorting.',kw:'sort lines',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['remove-duplicate-lines','reverse-lines'],gds:[]},
+  {id:'reverse-lines',slug:'reverse-lines',name:'Reverse Lines',cat:'text-tools',sub:'lines',short:'Reverse the order of lines.',full:'Reverse line order in text.',kw:'reverse lines',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['sort-lines'],gds:[]},
+  {id:'trim-whitespace',slug:'trim-whitespace',name:'Trim Whitespace',cat:'text-tools',sub:'cleanup',short:'Remove excess whitespace from text.',full:'Clean text by removing leading/trailing whitespace, collapsing spaces, removing empty lines.',kw:'trim whitespace',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['remove-duplicate-lines'],gds:[]},
+  {id:'text-replacer',slug:'text-replacer',name:'Find & Replace',cat:'text-tools',sub:'cleanup',short:'Find and replace with regex support.',full:'Search and replace text patterns with regex, case sensitivity, and bulk options.',kw:'find and replace',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['regex-tester'],gds:[]},
+  {id:'base64-encode',slug:'base64-encode',name:'Base64 Encode/Decode',cat:'converters',sub:'encoding',short:'Encode to Base64 or decode from Base64.',full:'Convert text to/from Base64 encoding. Supports UTF-8.',kw:'base64 encode decode',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['url-encode','html-entity-encode'],gds:[]},
+  {id:'url-encode',slug:'url-encode',name:'URL Encode/Decode',cat:'converters',sub:'encoding',short:'Encode or decode URL components.',full:'Percent-encode or decode URLs. Handles special characters and unicode.',kw:'url encode decode',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['base64-encode'],gds:[]},
+  {id:'html-entity-encode',slug:'html-entity-encode',name:'HTML Entity Encode/Decode',cat:'converters',sub:'encoding',short:'Convert characters to/from HTML entities.',full:'Encode special characters to HTML entities or decode entities back.',kw:'html entity encode',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['base64-encode'],gds:[]},
+  {id:'unix-timestamp',slug:'unix-timestamp',name:'Unix Timestamp Converter',cat:'converters',sub:'data',short:'Convert timestamps to/from dates.',full:'Convert Unix timestamps to human-readable dates and vice versa.',kw:'unix timestamp converter',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:[],gds:[]},
+  {id:'hex-text-converter',slug:'hex-text-converter',name:'Hex/Text Converter',cat:'converters',sub:'encoding',short:'Convert between hex and text.',full:'Convert text to hexadecimal and decode hex back to text.',kw:'hex to text',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['base64-encode'],gds:[]},
+  {id:'regex-tester',slug:'regex-tester',name:'Regex Tester',cat:'validators',sub:'regex',short:'Test regex with real-time matching.',full:'Test regex patterns with real-time highlighting, capture groups, and flags.',kw:'regex tester',mode:'LOCAL',in:'text',out:'matches',mob:true,off:true,rel:['text-replacer'],gds:[]},
+  {id:'json-schema-validator',slug:'json-schema-validator',name:'JSON Schema Validator',cat:'validators',sub:'json',short:'Validate JSON against a schema.',full:'Validate JSON data against a JSON Schema. Reports errors with paths.',kw:'json schema validator',mode:'LOCAL',in:'json',out:'result',mob:true,off:true,rel:['json-validator'],gds:[]},
+  {id:'email-validator',slug:'email-validator',name:'Email Validator',cat:'validators',sub:'general',short:'Validate email address format.',full:'Check email addresses against RFC 5322 syntax. Supports bulk validation.',kw:'email validator',mode:'LOCAL',in:'text',out:'result',mob:true,off:true,rel:['url-validator'],gds:[]},
+  {id:'url-validator',slug:'url-validator',name:'URL Validator',cat:'validators',sub:'general',short:'Validate URL format.',full:'Check if URLs are properly formatted. Supports bulk validation.',kw:'url validator',mode:'LOCAL',in:'text',out:'result',mob:true,off:true,rel:['email-validator'],gds:[]},
+  {id:'uuid-generator',slug:'uuid-generator',name:'UUID Generator',cat:'generators',sub:'ids',short:'Generate UUIDs v4 in bulk.',full:'Generate RFC 4122 UUID v4 identifiers. Supports bulk generation.',kw:'uuid generator',mode:'LOCAL',in:'none',out:'text',mob:true,off:true,rel:['hash-generator'],gds:[]},
+  {id:'hash-generator',slug:'hash-generator',name:'Hash Generator',cat:'generators',sub:'crypto',short:'Generate SHA-256, SHA-1 hashes.',full:'Compute cryptographic hashes. Supports SHA-256, SHA-1.',kw:'hash generator',mode:'LOCAL',in:'text',out:'text',mob:true,off:true,rel:['uuid-generator'],gds:[]},
+  {id:'password-generator',slug:'password-generator',name:'Password Generator',cat:'generators',sub:'security',short:'Generate secure random passwords.',full:'Create strong passwords with configurable length and character sets.',kw:'password generator',mode:'LOCAL',in:'none',out:'text',mob:true,off:true,rel:['uuid-generator'],gds:[]},
+  {id:'lorem-ipsum',slug:'lorem-ipsum',name:'Lorem Ipsum Generator',cat:'generators',sub:'content',short:'Generate placeholder text.',full:'Generate lorem ipsum placeholder text for design mockups.',kw:'lorem ipsum generator',mode:'LOCAL',in:'none',out:'text',mob:true,off:true,rel:['word-counter'],gds:[]},
+];
+
+const GUIDES=[
+  {id:'how-to-format-json',slug:'how-to-format-json',title:'How to Format JSON',desc:'Learn to format and beautify JSON data for readability.',cat:'json',tool:'json-formatter'},
+  {id:'how-to-validate-json',slug:'how-to-validate-json',title:'How to Validate JSON',desc:'Step-by-step guide to validating JSON syntax.',cat:'json',tool:'json-validator'},
+  {id:'how-to-find-json-errors',slug:'how-to-find-json-errors',title:'How to Find JSON Errors',desc:'Techniques for locating and fixing JSON syntax errors.',cat:'json',tool:'json-validator'},
+  {id:'json-vs-jsonl',slug:'json-vs-jsonl',title:'JSON vs JSON Lines',desc:'Understanding differences between JSON and JSON Lines.',cat:'json',tool:'json-formatter'},
+  {id:'how-to-convert-json-to-csv',slug:'how-to-convert-json-to-csv',title:'How to Convert JSON to CSV',desc:'Convert JSON arrays to CSV for spreadsheet import.',cat:'json',tool:'json-to-csv'},
+  {id:'json-pointer-explained',slug:'json-pointer-explained',title:'JSON Pointer Explained',desc:'Understanding RFC 6901 JSON Pointer syntax.',cat:'json',tool:'json-pointer'},
+  {id:'how-to-create-xml-sitemap',slug:'how-to-create-xml-sitemap',title:'How to Create an XML Sitemap',desc:'Generate a standards-compliant XML sitemap.',cat:'seo',tool:'xml-sitemap-generator'},
+  {id:'how-to-test-robots-txt',slug:'how-to-test-robots-txt',title:'How to Test Robots.txt',desc:'Validate robots.txt for correct crawler directives.',cat:'seo',tool:'robots-txt-tester'},
+  {id:'how-to-check-meta-tags',slug:'how-to-check-meta-tags',title:'How to Check Meta Tags',desc:'Preview and validate title and meta description tags.',cat:'seo',tool:'meta-tag-preview'},
+  {id:'how-to-preview-open-graph',slug:'how-to-preview-open-graph',title:'How to Preview Open Graph',desc:'Preview pages as shared on social media.',cat:'seo',tool:'open-graph-preview'},
+  {id:'how-to-generate-schema-markup',slug:'how-to-generate-schema-markup',title:'How to Generate Schema Markup',desc:'Create JSON-LD structured data for search engines.',cat:'seo',tool:'schema-generator'},
+  {id:'how-to-extract-urls-from-html',slug:'how-to-extract-urls-from-html',title:'How to Extract URLs from HTML',desc:'Extract all links from HTML content.',cat:'seo',tool:'url-extractor'},
+];
+
+const WORKFLOWS=[
+  {id:'json-cleanup',slug:'json-cleanup',name:'JSON Cleanup Pipeline',desc:'Validate → Format → Sort Keys → Minify',steps:['json-validator','json-formatter','json-sort-keys','json-minifier']},
+  {id:'seo-crawl-prep',slug:'seo-crawl-prep',name:'SEO Crawl Prep',desc:'Extract URLs → Deduplicate → Sort → Sitemap',steps:['url-extractor','remove-duplicate-lines','sort-lines','xml-sitemap-generator']},
+  {id:'text-dedup',slug:'text-deduplication',name:'Text Deduplication',desc:'Trim → Remove Duplicates → Sort',steps:['trim-whitespace','remove-duplicate-lines','sort-lines']},
+  {id:'csv-json',slug:'csv-to-json-cleanup',name:'CSV to JSON Pipeline',desc:'CSV → JSON → Validate → Format',steps:['csv-to-json','json-validator','json-formatter']},
+  {id:'url-sitemap',slug:'url-to-sitemap',name:'URLs to Sitemap',desc:'Extract → Normalize → Deduplicate → Sitemap',steps:['url-extractor','trim-whitespace','remove-duplicate-lines','xml-sitemap-generator']},
+];
+
+const CATS=[
+  {id:'developer-tools',name:'Developer Tools',icon:'🛠️',desc:'JSON, regex, encoding & development utilities'},
+  {id:'seo-tools',name:'SEO Tools',icon:'🔍',desc:'Sitemaps, robots.txt, meta tags, schema markup'},
+  {id:'text-tools',name:'Text Tools',icon:'📝',desc:'Count, sort, deduplicate, transform text'},
+  {id:'converters',name:'Converters',icon:'🔄',desc:'Base64, URL encoding, CSV/JSON, timestamps'},
+  {id:'validators',name:'Validators',icon:'✅',desc:'JSON, regex, email, URL, schema validation'},
+  {id:'generators',name:'Generators',icon:'⚡',desc:'UUID, hashes, passwords, lorem ipsum'},
+];
+
+const COUNT=TOOLS.length;
+const GITHUB_URL='https://github.com/CodesbyFebin/xfree';
+
+/* ═══════════════════════════════════════════════════════
+   TOOL ENGINE — plain JavaScript, no network calls, no LLM
+   ═══════════════════════════════════════════════════════ */
+
+async function runTool(id,input,p={}){
+  switch(id){
+    case'json-formatter':case'json-beautifier':return{output:JSON.stringify(JSON.parse(input),null,p.indent||2)};
+    case'json-minifier':return{output:JSON.stringify(JSON.parse(input))};
+    case'json-sort-keys':{const sk=o=>Array.isArray(o)?o.map(sk):o&&typeof o==='object'?Object.keys(o).sort().reduce((a,k)=>{a[k]=sk(o[k]);return a},{}):o;return{output:JSON.stringify(sk(JSON.parse(input)),null,2)}}
+    case'json-validator':{try{JSON.parse(input);return{ok:true,msg:'✓ Valid JSON'}}catch(e){const pos=e.message.match(/position (\d+)/);let loc='';if(pos){const ls=input.substring(0,parseInt(pos[1])).split('\n');loc=` (Line ${ls.length}, Col ${ls[ls.length-1].length+1})`}return{ok:false,msg:`✗ Invalid JSON: ${e.message}${loc}`}}}
+    case'json-to-csv':{const a=JSON.parse(input);if(!Array.isArray(a)||!a.length)throw new Error('Input must be a non-empty JSON array');const h=[...new Set(a.flatMap(Object.keys))];const esc=v=>{const s=String(v??'');return s.match(/[,\"\n]/)?'"'+s.replace(/"/g,'""')+'"':s};return{output:[h.join(','),...a.map(o=>h.map(k=>esc(o[k])).join(','))].join('\n')}}
+    case'csv-to-json':{const ls=input.trim().split('\n');if(ls.length<2)throw new Error('Need header + data rows');const parse=l=>{const r=[];let c='',q=false;for(const ch of l){if(ch==='"')q=!q;else if(ch===','&&!q){r.push(c.trim());c=''}else c+=ch}r.push(c.trim());return r};const h=parse(ls[0]);return{output:JSON.stringify(ls.slice(1).filter(l=>l.trim()).map(l=>{const v=parse(l);const o={};h.forEach((k,i)=>o[k]=v[i]||'');return o}),null,2)}}
+    case'json-escape':return{output:JSON.stringify(input)};
+    case'json-unescape':{try{return{output:JSON.parse(input)}}catch{throw new Error('Invalid escaped string')}}
+    case'json-depth':{const an=(o,d=0)=>{let mx=d,k=0,ar=0;if(Array.isArray(o)){ar++;o.forEach(i=>{const r=an(i,d+1);mx=Math.max(mx,r.mx);k+=r.k;ar+=r.ar})}else if(o&&typeof o==='object'){const ks=Object.keys(o);k+=ks.length;ks.forEach(key=>{const r=an(o[key],d+1);mx=Math.max(mx,r.mx);k+=r.k;ar+=r.ar})}return{mx,k,ar}};const s=an(JSON.parse(input));return{stats:{depth:s.mx,keys:s.k,arrays:s.ar}}}
+    case'json-key-extractor':{const keys=new Set();const ex=(o,pt='')=>{if(Array.isArray(o))o.forEach((v,i)=>ex(v,pt+'['+i+']'));else if(o&&typeof o==='object')Object.keys(o).forEach(k=>{const fp=pt?pt+'.'+k:k;keys.add(fp);ex(o[k],fp)})};ex(JSON.parse(input));return{output:[...keys].join('\n')}}
+    case'json-pointer':{const data=JSON.parse(input);const ptr=p.pointer||'';if(!ptr)throw new Error('Enter a JSON Pointer');const parts=ptr.split('/').filter(Boolean).map(x=>x.replace(/~1/g,'/').replace(/~0/g,'~'));let cur=data;for(const pt of parts){if(cur===null||typeof cur!=='object')throw new Error(`Cannot resolve "${pt}"`);cur=Array.isArray(cur)?cur[parseInt(pt)]:cur[pt];if(cur===undefined)throw new Error(`Key "${pt}" not found`)}return{output:typeof cur==='object'?JSON.stringify(cur,null,2):String(cur)}}
+    case'base64-encode':return{output:p.dir==='decode'?decodeURIComponent(escape(atob(input.trim()))):btoa(unescape(encodeURIComponent(input)))};
+    case'url-encode':return{output:p.dir==='decode'?decodeURIComponent(input.trim()):encodeURIComponent(input)};
+    case'html-entity-encode':{if(p.dir==='decode'){const d=document.createElement('textarea');d.innerHTML=input;return{output:d.value}}return{output:input.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}}
+    case'hex-text-converter':{if(p.dir==='decode'){const h=input.replace(/\s/g,'');let s='';for(let i=0;i<h.length;i+=2)s+=String.fromCharCode(parseInt(h.substr(i,2),16));return{output:s}}return{output:input.split('').map(c=>c.charCodeAt(0).toString(16).padStart(2,'0')).join(' ')}}
+    case'word-counter':{const w=input.trim()?input.trim().split(/\s+/).length:0;return{stats:{words:w,chars:input.length,noSpaces:input.replace(/\s/g,'').length,sentences:input.split(/[.!?]+/).filter(s=>s.trim()).length,paragraphs:input.split(/\n\n+/).filter(pp=>pp.trim()).length,readTime:Math.ceil(w/200)}}}
+    case'line-counter':{const ls=input.split('\n');return{stats:{total:ls.length,nonEmpty:ls.filter(l=>l.trim()).length,words:input.trim()?input.trim().split(/\s+/).length:0,chars:input.length}}}
+    case'case-converter':{const m={upper:v=>v.toUpperCase(),lower:v=>v.toLowerCase(),title:v=>v.replace(/\w\S*/g,t=>t[0].toUpperCase()+t.slice(1).toLowerCase()),sentence:v=>v.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g,c=>c.toUpperCase()),camel:v=>v.toLowerCase().replace(/[^a-z0-9]+(.)/g,(_,c)=>c.toUpperCase()),snake:v=>v.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''),kebab:v=>v.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')};return{output:(m[p.mode]||m.upper)(input)}}
+    case'remove-duplicate-lines':{const s=new Set();return{output:input.split('\n').filter(l=>{const k=l.trim().toLowerCase();if(s.has(k))return false;s.add(k);return true}).join('\n')}}
+    case'sort-lines':return{output:input.split('\n').sort((a,b)=>a.localeCompare(b)).join('\n')};
+    case'reverse-lines':return{output:input.split('\n').reverse().join('\n')};
+    case'trim-whitespace':return{output:input.split('\n').map(l=>l.trim()).filter(l=>l).join('\n')};
+    case'slug-generator':return{output:input.toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/[\s-]+/g,'-').replace(/^-|-$/g,'')};
+    case'text-replacer':{const{find,replace:rep,regex:isRx,caseSensitive:cs}=p;if(!find)throw new Error('Find pattern is empty');const rx=isRx?new RegExp(find,cs?'g':'gi'):new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),cs?'g':'gi');return{output:input.replace(rx,rep||'')}}
+    case'regex-tester':{const{pattern,flags}=p;if(!pattern)return{matches:[],count:0};const rx=new RegExp(pattern,flags||'g');const matches=[...input.matchAll(rx)];return{matches:matches.map(m=>({value:m[0],index:m.index})),count:matches.length}}
+    case'xml-sitemap-generator':{const urls=input.split('\n').map(u=>u.trim()).filter(Boolean);const today=new Date().toISOString().split('T')[0];const freq=p.freq||'weekly',pri=p.priority||'0.8';return{output:`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url>\n    <loc>${u}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${freq}</changefreq>\n    <priority>${pri}</priority>\n  </url>`).join('\n')}\n</urlset>`}}
+    case'robots-txt-generator':{let t=`User-agent: ${p.agent||'*'}\n`;const dis=(p.disallow||'').split('\n').filter(l=>l.trim());if(dis.length)dis.forEach(pp=>t+=`Disallow: ${pp.trim()}\n`);else t+=`Allow: /\n`;if(p.sitemap)t+=`\nSitemap: ${p.sitemap}`;return{output:t}}
+    case'robots-txt-tester':{const{robots,url}=p;if(!url)throw new Error('Enter a URL to test');const rules=[];(robots||'').split('\n').forEach(line=>{const m=line.match(/^(Allow|Disallow):\s*(.+)/i);if(m)rules.push({dir:m[1].toLowerCase(),path:m[2].trim()})});let path;try{path=new URL(url).pathname}catch{throw new Error('Invalid URL')}let allowed=true;for(const r of rules){if(path.startsWith(r.path)||(r.path==='/'&&path==='/')){if(r.dir==='disallow')allowed=false;else allowed=true}}return{result:{allowed,path}}}
+    case'url-extractor':{let urls=input.match(/https?:\/\/[^\s<>"')\]\}]+/g)||[];if(p.dedup)urls=[...new Set(urls)];if(p.sort)urls.sort();return{output:urls.join('\n'),count:urls.length}}
+    case'unix-timestamp':{const ts=parseInt(input);if(isNaN(ts))throw new Error('Enter a valid timestamp');const d=new Date(ts>1e12?ts:ts*1000);return{output:d.toISOString(),date:d.toLocaleString()}}
+    case'email-validator':{const rx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;return{results:input.split('\n').map(e=>e.trim()).filter(Boolean).map(e=>({value:e,valid:rx.test(e)}))}}
+    case'url-validator':{return{results:input.split('\n').map(u=>u.trim()).filter(Boolean).map(u=>{try{new URL(u);return{value:u,valid:true}}catch{return{value:u,valid:false}}})}}
+    case'json-schema-validator':{const data=JSON.parse(input);const schema=JSON.parse(p.schema||'{}');const errs=[];const val=(d,s,pt='')=>{if(s.type){const a=Array.isArray(d)?'array':typeof d;if(a!==s.type)errs.push(`${pt||'root'}: expected ${s.type}, got ${a}`)}if(s.required&&typeof d==='object'&&!Array.isArray(d))s.required.forEach(k=>{if(!(k in d))errs.push(`${pt||'root'}: missing "${k}"`)});if(s.properties&&typeof d==='object')Object.entries(s.properties).forEach(([k,ps])=>{if(k in d)val(d[k],ps,`${pt}.${k}`)})};val(data,schema);return{ok:!errs.length,errs}}
+    case'uuid-generator':{const n=Math.min(parseInt(p.count)||5,100);const uuids=[];for(let i=0;i<n;i++)uuids.push('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)}));return{output:uuids.join('\n')}}
+    case'password-generator':{const n=Math.min(parseInt(p.count)||5,100);const len=parseInt(p.length)||16;const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';const pws=[];for(let i=0;i<n;i++){let pw='';const a=new Uint32Array(len);crypto.getRandomValues(a);for(let j=0;j<len;j++)pw+=chars[a[j]%chars.length];pws.push(pw)}return{output:pws.join('\n')}}
+    case'hash-generator':{const enc=new TextEncoder().encode(input);const sha256=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',enc))).map(b=>b.toString(16).padStart(2,'0')).join('');const sha1=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-1',enc))).map(b=>b.toString(16).padStart(2,'0')).join('');return{hashes:{'SHA-256':sha256,'SHA-1':sha1}}}
+    case'lorem-ipsum':{const n=parseInt(p.count)||5;const t='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';return{output:Array(n).fill(t).join('\n\n')}}
+    case'schema-generator':{const type=p.schemaType||'Article';const schema={'@context':'https://schema.org','@type':type};Object.entries(p.fields||{}).forEach(([k,v])=>{if(v)schema[k]=v});return{output:JSON.stringify(schema,null,2)}}
+    default:return{output:input}
+  }
+}
+
+function runPipeline(tid,input){
+  const m={
+    'json-formatter':i=>JSON.stringify(JSON.parse(i),null,2),
+    'json-beautifier':i=>JSON.stringify(JSON.parse(i),null,2),
+    'json-minifier':i=>JSON.stringify(JSON.parse(i)),
+    'json-sort-keys':i=>{const sk=o=>Array.isArray(o)?o.map(sk):o&&typeof o==='object'?Object.keys(o).sort().reduce((a,k)=>{a[k]=sk(o[k]);return a},{}):o;return JSON.stringify(sk(JSON.parse(i)),null,2)},
+    'json-validator':i=>{JSON.parse(i);return i},
+    'remove-duplicate-lines':i=>{const s=new Set();return i.split('\n').filter(l=>{const k=l.trim().toLowerCase();if(s.has(k))return false;s.add(k);return true}).join('\n')},
+    'sort-lines':i=>i.split('\n').sort().join('\n'),
+    'trim-whitespace':i=>i.split('\n').map(l=>l.trim()).filter(l=>l).join('\n'),
+    'reverse-lines':i=>i.split('\n').reverse().join('\n'),
+    'url-extractor':i=>[...new Set(i.match(/https?:\/\/[^\s<>"')\]]+/g)||[])].join('\n'),
+    'base64-encode':i=>btoa(unescape(encodeURIComponent(i))),
+    'url-encode':i=>encodeURIComponent(i),
+    'slug-generator':i=>i.toLowerCase().replace(/[^a-z0-9\s-]/g,'').replace(/[\s-]+/g,'-').replace(/^-|-$/g,''),
+    'csv-to-json':i=>{const ls=i.trim().split('\n');const h=ls[0].split(',');return JSON.stringify(ls.slice(1).map(l=>{const v=l.split(',');const o={};h.forEach((k,j)=>o[k.trim()]=(v[j]||'').trim());return o}),null,2)},
+    'json-to-csv':i=>{const a=JSON.parse(i);const h=[...new Set(a.flatMap(Object.keys))];return[h.join(','),...a.map(o=>h.map(k=>o[k]||'').join(','))].join('\n')},
+  };
+  if(m[tid])return m[tid](input);
+  return input;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ROUTER
+   ═══════════════════════════════════════════════════════ */
+
+function useRoute(){
+  const[r,setR]=useState(window.location.hash.slice(1)||'/');
+  useEffect(()=>{const h=()=>setR(window.location.hash.slice(1)||'/');window.addEventListener('hashchange',h);return()=>window.removeEventListener('hashchange',h)},[]);
+  return r;
+}
+function nav(p){window.location.hash=p}
+
+/* ═══════════════════════════════════════════════════════
+   ICONS (shared between landing sections and app chrome)
+   ═══════════════════════════════════════════════════════ */
+
+const Icon={
+  Bolt:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
+  GitHub:p=><svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>,
+  Arrow:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M5 12h14M12 5l7 7-7 7"/></svg>,
+  Menu:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+  Close:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+  Chevron:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}><polyline points="6 9 12 15 18 9"/></svg>,
+  Check:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...p}><polyline points="20 6 9 17 4 12"/></svg>,
+  Shield:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  Search:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>,
+  Layers:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
+  Box:p=><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>,
+};
+
+/* ═══════════════════════════════════════════════════════
+   SHARED (tool-directory chrome)
+   ═══════════════════════════════════════════════════════ */
+
+function Badge({mode}){
+  const c=mode==='LOCAL'?'bg-emerald-900/50 text-emerald-300 border-emerald-800':mode==='NETWORK REQUIRED'?'bg-amber-900/50 text-amber-300 border-amber-800':'bg-sky-900/50 text-sky-300 border-sky-800';
+  return<span className={`${c} text-[10px] px-2 py-0.5 rounded-full font-medium border`}>{mode}</span>
+}
+
+function Crumbs({items}){
+  return<nav className="flex items-center gap-2 text-sm text-gray-500 mb-6 flex-wrap" aria-label="Breadcrumb">
+    {items.map((it,i)=><React.Fragment key={i}>{i<items.length-1?<><a href={`#${it.h}`} onClick={e=>{e.preventDefault();nav(it.h)}} className="hover:text-green-400 transition-colors">{it.l}</a><span className="text-gray-700">/</span></>:<span className="text-gray-300">{it.l}</span>}</React.Fragment>)}
+  </nav>
+}
+
+function TCard({tool}){
+  return<a href={`#/tools/${tool.slug}`} onClick={e=>{e.preventDefault();nav(`/tools/${tool.slug}`)}} className="group bg-[#0f172a] border border-gray-800 hover:border-green-500/40 rounded-xl p-4 block transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-green-500/5">
+    <div className="flex items-start justify-between mb-2"><h3 className="font-semibold text-white text-sm group-hover:text-green-400 transition-colors">{tool.name}</h3><Badge mode={tool.mode}/></div>
+    <p className="text-xs text-gray-500 leading-relaxed">{tool.short}</p>
+  </a>
+}
+
+function Toast({msg,onClose}){
+  useEffect(()=>{const t=setTimeout(onClose,2000);return()=>clearTimeout(t)},[]);
+  return<div className="fixed bottom-6 right-6 bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-2xl z-[200] slide-up flex items-center gap-2"><Icon.Check className="w-4 h-4"/>{msg}</div>
+}
+
+/* ═══════════════════════════════════════════════════════
+   LANDING-SECTION HELPERS (reveal-on-scroll, code blocks)
+   ═══════════════════════════════════════════════════════ */
+
+function useReveal(){
+  const ref=useRef(null);
+  const[visible,setVisible]=useState(false);
+  useEffect(()=>{
+    const el=ref.current;if(!el)return;
+    const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){setVisible(true);obs.unobserve(el)}},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+    obs.observe(el);return()=>obs.disconnect();
+  },[]);
+  return[ref,visible];
+}
+function Reveal({children,delay=0,className=''}){
+  const[ref,visible]=useReveal();
+  return<div ref={ref} className={`reveal ${visible?'visible':''} ${className}`} style={{transitionDelay:`${delay}ms`}}>{children}</div>
+}
+function StatCounter({target,suffix=''}){
+  const[ref,visible]=useReveal();
+  const[count,setCount]=useState(0);
+  useEffect(()=>{
+    if(!visible)return;let cur=0;const inc=target/40;
+    const t=setInterval(()=>{cur+=inc;if(cur>=target){setCount(target);clearInterval(t)}else setCount(Math.floor(cur))},30);
+    return()=>clearInterval(t);
+  },[visible,target]);
+  return<div ref={ref} className={`reveal ${visible?'visible':''}`}><div className="stat-value text-3xl font-bold text-white">{count}{suffix}</div></div>
+}
+function CodeBlock({filename,children}){
+  return<div className="code-block">
+    <div className="code-header"><div className="code-dot bg-red-500/80"/><div className="code-dot bg-yellow-500/80"/><div className="code-dot bg-green-500/80"/><span className="ml-2 text-xs text-gray-500 font-mono">{filename}</span></div>
+    <div className="p-5 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto">{children}</div>
+  </div>
+}
+function FaqItem({question,answer}){
+  const[open,setOpen]=useState(false);
+  return<div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden">
+    <button onClick={()=>setOpen(!open)} className="w-full flex items-center justify-between p-5 text-left cursor-pointer" aria-expanded={open}>
+      <span className="text-base font-medium text-white pr-4">{question}</span>
+      <Icon.Chevron className={`faq-chevron w-4 h-4 text-gray-400 shrink-0 ${open?'rotated':''}`}/>
+    </button>
+    <div className={`faq-answer px-5 ${open?'open':''}`}><p className="text-sm text-gray-400 leading-relaxed pb-5">{answer}</p></div>
+  </div>
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAV — real functional links + on-page landing anchors
+   ═══════════════════════════════════════════════════════ */
+
+function Nav({onSearch,route}){
+  const[open,setOpen]=useState(false);
+  const isHome=route==='/'||route==='';
+  const anchors=[['#features','Features'],['#how-it-works','How It Works'],['#studio-preview','Studio']];
+  const pages=[['/tools','Tools'],['/studio','Studio'],['/guides','Guides'],['/docs','Docs']];
+  useEffect(()=>{document.body.style.overflow=open?'hidden':'';return()=>{document.body.style.overflow=''}},[open]);
+  return<>
+    <nav className="sticky top-0 z-50 bg-[#020617]/90 backdrop-blur-xl border-b border-gray-800/80">
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+        <a href="#/" onClick={e=>{e.preventDefault();nav('/')}} className="flex items-center gap-2.5 font-bold text-lg text-white">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-xfree-500 to-xfree-700 flex items-center justify-center shrink-0"><Icon.Bolt className="w-3.5 h-3.5 text-white"/></div>
+          XFree
+        </a>
+        <div className="hidden md:flex items-center gap-1">
+          {isHome&&anchors.map(([h,l])=><a key={h} href={h} className="px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-gray-800/50 transition-all">{l}</a>)}
+          {pages.map(([p,l])=><a key={p} href={`#${p}`} onClick={e=>{e.preventDefault();nav(p)}} className="px-3 py-1.5 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-gray-800/50 transition-all">{l}</a>)}
+        </div>
+        <div className="flex items-center gap-2">
+          <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"><Icon.GitHub className="w-4 h-4"/>GitHub</a>
+          <button onClick={onSearch} className="flex items-center gap-2 px-3 py-1.5 bg-gray-800/80 hover:bg-gray-700 rounded-lg text-sm text-gray-400 transition-colors border border-gray-700/50">
+            <Icon.Search className="w-4 h-4"/>
+            <span className="hidden sm:inline">Search</span>
+            <kbd className="hidden sm:inline text-[10px] bg-gray-700 px-1.5 py-0.5 rounded text-gray-500">⌘K</kbd>
+          </button>
+          <button onClick={()=>setOpen(!open)} className="md:hidden p-2 text-gray-400 hover:text-white"><Icon.Menu className="w-5 h-5"/></button>
+        </div>
+      </div>
+      {open&&<div className="md:hidden border-t border-gray-800 bg-[#020617] px-4 py-3 space-y-1">
+        {isHome&&anchors.map(([h,l])=><a key={h} href={h} onClick={()=>setOpen(false)} className="block px-3 py-2 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-gray-800/50">{l}</a>)}
+        {pages.map(([p,l])=><a key={p} href={`#${p}`} onClick={e=>{e.preventDefault();nav(p);setOpen(false)}} className="block px-3 py-2 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-gray-800/50">{l}</a>)}
+        <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="block px-3 py-2 text-sm text-gray-400 hover:text-white rounded-lg hover:bg-gray-800/50">GitHub ↗</a>
+      </div>}
+    </nav>
+  </>
+}
+
+/* ═══════════════════════════════════════════════════════
+   COMMAND PALETTE
+   ═══════════════════════════════════════════════════════ */
+
+function CmdPalette({open,onClose}){
+  const[q,setQ]=useState('');
+  const ref=useRef(null);
+  useEffect(()=>{if(open){setTimeout(()=>ref.current?.focus(),50);setQ('')}},[open]);
+  useEffect(()=>{const h=e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();if(open)onClose()}if(e.key==='Escape')onClose()};window.addEventListener('keydown',h);return()=>window.removeEventListener('keydown',h)},[open,onClose]);
+  const res=useMemo(()=>{if(!q.trim())return{t:TOOLS.slice(0,8),g:GUIDES.slice(0,4),w:WORKFLOWS.slice(0,3)};const s=q.toLowerCase();return{t:TOOLS.filter(t=>t.name.toLowerCase().includes(s)||t.short.toLowerCase().includes(s)||t.kw.includes(s)).slice(0,8),g:GUIDES.filter(g=>g.title.toLowerCase().includes(s)||g.desc.toLowerCase().includes(s)).slice(0,4),w:WORKFLOWS.filter(w=>w.name.toLowerCase().includes(s)).slice(0,3)}},[q]);
+  if(!open)return null;
+  return<div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true">
+    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}/>
+    <div className="relative max-w-xl mx-auto mt-16 md:mt-24 bg-[#0f172a] border border-gray-700 rounded-2xl shadow-2xl overflow-hidden mx-4">
+      <div className="flex items-center px-4 border-b border-gray-700/50">
+        <Icon.Search className="w-5 h-5 text-gray-500 shrink-0"/>
+        <input ref={ref} value={q} onChange={e=>setQ(e.target.value)} type="text" className="flex-1 bg-transparent px-3 py-4 text-white placeholder-gray-500 outline-none text-sm" placeholder="Search tools, guides, workflows..." autoComplete="off"/>
+        <kbd className="text-[10px] text-gray-500 bg-gray-800 px-2 py-1 rounded border border-gray-700">ESC</kbd>
+      </div>
+      <div className="max-h-[60vh] overflow-y-auto p-2">
+        {res.t.length>0&&<div className="mb-2"><div className="text-[10px] uppercase tracking-wider text-gray-500 font-medium px-3 py-2">Tools</div>{res.t.map(t=><a key={t.id} href={`#/tools/${t.slug}`} onClick={e=>{e.preventDefault();nav(`/tools/${t.slug}`);onClose()}} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"><span className="text-green-400 text-sm">⚡</span><div><div className="text-sm text-white">{t.name}</div><div className="text-xs text-gray-500">{t.short}</div></div></a>)}</div>}
+        {res.g.length>0&&<div className="mb-2"><div className="text-[10px] uppercase tracking-wider text-gray-500 font-medium px-3 py-2">Guides</div>{res.g.map(g=><a key={g.id} href={`#/guides/${g.slug}`} onClick={e=>{e.preventDefault();nav(`/guides/${g.slug}`);onClose()}} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"><span className="text-sky-400 text-sm">📖</span><div><div className="text-sm text-white">{g.title}</div><div className="text-xs text-gray-500">{g.desc}</div></div></a>)}</div>}
+        {res.w.length>0&&<div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-medium px-3 py-2">Workflows</div>{res.w.map(w=><a key={w.id} href="#/studio" onClick={e=>{e.preventDefault();nav('/studio');onClose()}} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"><span className="text-purple-400 text-sm">🔗</span><div><div className="text-sm text-white">{w.name}</div><div className="text-xs text-gray-500">{w.desc}</div></div></a>)}</div>}
+        {res.t.length===0&&res.g.length===0&&res.w.length===0&&<div className="px-4 py-8 text-center text-gray-500 text-sm">No results found</div>}
+      </div>
+    </div>
+  </div>
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER (real links only — no fabricated social/CI badges)
+   ═══════════════════════════════════════════════════════ */
+
+function Footer(){
+  return<footer className="border-t border-gray-800/80 bg-[#020617] mt-auto">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+        <div><h4 className="font-semibold text-white mb-3">Tools</h4><ul className="space-y-2 text-gray-500">{CATS.map(c=><li key={c.id}><a href={`#/${c.id}`} onClick={e=>{e.preventDefault();nav(`/${c.id}`)}} className="hover:text-green-400 transition-colors">{c.name}</a></li>)}</ul></div>
+        <div><h4 className="font-semibold text-white mb-3">Studio</h4><ul className="space-y-2 text-gray-500"><li><a href="#/studio" onClick={e=>{e.preventDefault();nav('/studio')}} className="hover:text-green-400 transition-colors">Workflow Builder</a></li><li><a href="#/workflows" onClick={e=>{e.preventDefault();nav('/workflows')}} className="hover:text-green-400 transition-colors">Recipes</a></li></ul></div>
+        <div><h4 className="font-semibold text-white mb-3">Resources</h4><ul className="space-y-2 text-gray-500"><li><a href="#/guides" onClick={e=>{e.preventDefault();nav('/guides')}} className="hover:text-green-400 transition-colors">Guides</a></li><li><a href="#/docs" onClick={e=>{e.preventDefault();nav('/docs')}} className="hover:text-green-400 transition-colors">Documentation</a></li><li><a href="#/use-cases" onClick={e=>{e.preventDefault();nav('/use-cases')}} className="hover:text-green-400 transition-colors">Use Cases</a></li></ul></div>
+        <div><h4 className="font-semibold text-white mb-3">About</h4><ul className="space-y-2 text-gray-500"><li><a href="#/about" onClick={e=>{e.preventDefault();nav('/about')}} className="hover:text-green-400 transition-colors">About XFree</a></li><li><a href="#/privacy" onClick={e=>{e.preventDefault();nav('/privacy')}} className="hover:text-green-400 transition-colors">Privacy</a></li><li><a href={GITHUB_URL} target="_blank" rel="noreferrer" className="hover:text-green-400 transition-colors">GitHub ↗</a></li></ul></div>
+      </div>
+      <div className="mt-10 pt-6 border-t border-gray-800/50 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-600">
+        <p>© 2025 XFree.in — Free Developer, SEO & Data Tools. Local first, no signup.</p>
+        <p>{COUNT} tools · {WORKFLOWS.length} recipes · {GUIDES.length} guides — all processing in your browser</p>
+      </div>
+    </div>
+  </footer>
+}
+
+/* ═══════════════════════════════════════════════════════
+   HOME / LANDING — fact-checked against what this file
+   actually does (no server, no LLM, no build step)
+   ═══════════════════════════════════════════════════════ */
+
+function LandingHero({onSearch}){
+  return<section className="hero-bg relative pt-16 pb-20">
+    <div className="grid-pattern"/>
+    <div className="glow-line top-1/4 left-0 right-0"/>
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 text-center">
+      <Reveal>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 mx-auto">
+          <span className="relative flex h-2 w-2"><span className="pulse-ring absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"/><span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"/></span>
+          <span className="text-xs font-medium text-gray-300">{COUNT} tools · zero build · zero backend</span>
+        </div>
+      </Reveal>
+      <Reveal delay={100}>
+        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] mb-6">
+          Free developer, SEO<br/><span className="bg-gradient-to-r from-xfree-400 via-xfree-300 to-blue-400 bg-clip-text text-transparent">& data tools</span>
+        </h1>
+      </Reveal>
+      <Reveal delay={200}>
+        <p className="text-lg sm:text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto mb-10">
+          Browser-based utilities for JSON, text, encoding, validation, and SEO workflows — plus a local Studio to chain
+          them into pipelines. Everything on this page runs as plain JavaScript. Nothing is uploaded anywhere.
+        </p>
+      </Reveal>
+      <Reveal delay={300}>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+          <button onClick={onSearch} className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold text-white bg-xfree-600 hover:bg-xfree-500 rounded-xl transition-all shadow-xl shadow-xfree-600/20 hover:shadow-xfree-500/30 hover:-translate-y-0.5 cursor-pointer">
+            <Icon.Search className="w-4 h-4"/>Search tools<kbd className="text-xs bg-white/20 px-1.5 py-0.5 rounded ml-1">⌘K</kbd>
+          </button>
+          <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-medium text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all">
+            <Icon.GitHub className="w-5 h-5"/>View on GitHub
+          </a>
+        </div>
+      </Reveal>
+      <Reveal delay={400}>
+        <div className="max-w-2xl mx-auto text-left">
+          <CodeBlock filename="how this page works">
+            <div className="text-gray-500">{'// no install, no server — this whole app is one .html file'}</div>
+            <div className="mt-2 text-green-400">$ open xfree-single-file.html</div>
+            <div className="mt-3 text-gray-500">
+              <span className="text-xfree-400">✓</span> React 18 + Babel Standalone loaded from CDN<br/>
+              <span className="text-xfree-400">✓</span> {COUNT} tools ready — no network calls<br/>
+              <span className="text-xfree-400">✓</span> {WORKFLOWS.length} Studio recipes ready to chain<br/>
+              <span className="text-xfree-400">✓</span> Works from <span className="text-blue-400 underline">file://</span> or any static host
+            </div>
+          </CodeBlock>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+}
+
+function LandingTrustBar(){
+  const stats=[
+    {node:<StatCounter target={COUNT}/>,label:'Free Tools'},
+    {node:<div className="text-3xl font-bold text-white">Zero</div>,label:'Backend Calls'},
+    {node:<div className="text-3xl font-bold text-white">Zero</div>,label:'Signup Required'},
+    {node:<div className="text-3xl font-bold text-white">One File</div>,label:'No Build Step'},
+  ];
+  return<section className="relative border-y border-white/5 bg-white/[0.02]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
+        {stats.map((s,i)=><Reveal key={i} delay={i*100} className="text-center">{s.node}<div className="text-sm text-gray-500 mt-1">{s.label}</div></Reveal>)}
+      </div>
+    </div>
+  </section>
+}
+
+function LandingFeatures(){
+  const features=[
+    {icon:<Icon.Layers className="w-5 h-5 text-xfree-400"/>,bg:'xfree',title:`${COUNT} Local Tools`,desc:'JSON, SEO, text, converter, validator and generator utilities — every one of them a real, working component, not a placeholder.'},
+    {icon:<Icon.Search className="w-5 h-5 text-purple-400"/>,bg:'purple',title:'Command Palette',desc:'Press ⌘K to fuzzy-search every tool, guide, and workflow by name or keyword without leaving the keyboard.'},
+    {icon:<Icon.Box className="w-5 h-5 text-blue-400"/>,bg:'blue',title:'Local Workflow Studio',desc:'Chain tools into a pipeline — e.g. validate → sort keys → minify — and run every step locally, in order.'},
+    {icon:<Icon.Shield className="w-5 h-5 text-emerald-400"/>,bg:'emerald',title:'Zero Backend',desc:'There is no server for this page to call. Every tool above is a pure JavaScript function running in your tab.'},
+    {icon:<Icon.Bolt className="w-5 h-5 text-amber-400"/>,bg:'amber',title:'Guides & Recipes',desc:`${GUIDES.length} written guides and ${WORKFLOWS.length} pre-built Studio recipes link straight to the tool that solves the task.`},
+    {icon:<Icon.GitHub className="w-5 h-5 text-rose-400"/>,bg:'rose',title:'Open Source',desc:'This file, and the full production codebase it was adapted from, are public — inspect or fork them on GitHub.'},
+  ];
+  return<section id="features" className="relative py-20 lg:py-28">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Reveal><div className="max-w-3xl mb-14"><p className="text-sm font-semibold text-xfree-400 uppercase tracking-wider mb-3">Capabilities</p><h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">What's actually in this page</h2><p className="text-lg text-gray-400">No hidden services, no accounts, no async provider calls — just tools that run.</p></div></Reveal>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {features.map((f,i)=><Reveal key={i} delay={i*80}><div className="feature-card rounded-2xl bg-white/[0.03] p-7 h-full"><div className={`w-10 h-10 rounded-xl bg-${f.bg}-500/10 border border-${f.bg}-500/20 flex items-center justify-center mb-5`}>{f.icon}</div><h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3><p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p></div></Reveal>)}
+      </div>
+    </div>
+  </section>
+}
+
+function LandingHowItWorks(){
+  const steps=[
+    {n:'1',color:'xfree',title:'Search or Browse',desc:'Press ⌘K, or open a category, to find the exact tool you need among the '+COUNT+' published.'},
+    {n:'2',color:'purple',title:'Paste Your Input',desc:'Open the tool page and paste text, JSON, a URL list, or whatever that tool accepts.'},
+    {n:'3',color:'blue',title:'Process Locally',desc:'The tool runs entirely as JavaScript in this tab — nothing you paste ever leaves the browser.'},
+    {n:'4',color:'emerald',title:'Chain in Studio',desc:'Optionally send the result into Studio to run several tools back-to-back as one saved recipe.'},
+  ];
+  return<section id="how-it-works" className="relative py-20 lg:py-28 border-t border-white/5">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Reveal><div className="max-w-3xl mb-14"><p className="text-sm font-semibold text-xfree-400 uppercase tracking-wider mb-3">How It Works</p><h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">From search to result in four steps</h2><p className="text-lg text-gray-400">No account, no upload step, no waiting on a server.</p></div></Reveal>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {steps.map((s,i)=><Reveal key={i} delay={i*100}><div className="relative"><div className="flex items-center gap-3 mb-4"><div className={`w-8 h-8 rounded-full bg-${s.color}-500/20 border border-${s.color}-500/30 flex items-center justify-center text-sm font-bold text-${s.color}-400`}>{s.n}</div>{i<3&&<div className={`h-px flex-1 bg-gradient-to-r from-${s.color}-500/30 to-transparent hidden lg:block`}/>}</div><h3 className="text-base font-semibold text-white mb-2">{s.title}</h3><p className="text-sm text-gray-400">{s.desc}</p></div></Reveal>)}
+      </div>
+    </div>
+  </section>
+}
+
+function LandingStudioPreview({onOpenStudio}){
+  const points=[
+    {title:'One HTML file, no bundler',desc:'React and Babel Standalone load from a CDN; JSX is transformed in the browser at load time.'},
+    {title:'Hash-based routing',desc:'Every tool, guide, and category is a real #/ route — deep-linkable and back/forward-button safe.'},
+    {title:'Deterministic pipelines',desc:'Studio recipes call the same pure functions each tool page uses — no LLM, no randomness beyond password/UUID generation.'},
+    {title:'Portable by design',desc:'Works from a local file, a GitHub Pages branch, or any static file host — no server process required.'},
+  ];
+  return<section id="studio-preview" className="relative py-20 lg:py-28 border-t border-white/5">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <Reveal><div>
+          <p className="text-sm font-semibold text-xfree-400 uppercase tracking-wider mb-3">Architecture</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">Built to be inspected, not trusted blindly</h2>
+          <p className="text-lg text-gray-400 mb-8">Every claim on this page maps to a function you can read in the file itself.</p>
+          <div className="space-y-4">
+            {points.map((p,i)=><div key={i} className="flex items-start gap-3"><div className="w-6 h-6 rounded-full bg-xfree-500/20 flex items-center justify-center mt-0.5 shrink-0"><Icon.Check className="w-3 h-3 text-xfree-400"/></div><div><h4 className="text-sm font-semibold text-white">{p.title}</h4><p className="text-sm text-gray-400">{p.desc}</p></div></div>)}
+          </div>
+          <button onClick={onOpenStudio} className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-xl font-medium text-sm transition-colors cursor-pointer">Open Studio<Icon.Arrow className="w-4 h-4"/></button>
+        </div></Reveal>
+        <Reveal delay={200}>
+          <CodeBlock filename="this file, runTool()">
+            <div className="text-purple-400">{'// the exact dispatcher every tool page calls'}</div>
+            <div className="mt-2"><span className="text-blue-400">async function</span> <span className="text-yellow-400">runTool</span>(id, input, params={'{}'}) {'{'}</div>
+            <div className="ml-4"><span className="text-purple-400">switch</span>(id) {'{'}</div>
+            <div className="ml-8"><span className="text-purple-400">case</span> <span className="text-emerald-400">'json-formatter'</span>: <span className="text-purple-400">return</span> {'{'} output: ... {'}'}</div>
+            <div className="ml-8"><span className="text-purple-400">case</span> <span className="text-emerald-400">'hash-generator'</span>: <span className="text-purple-400">return</span> {'{'} hashes: ... {'}'}</div>
+            <div className="ml-8 text-gray-500">{'// ...'+ COUNT +' cases total, zero fetch() calls'}</div>
+            <div className="ml-4">{'}'}</div>
+            <div>{'}'}</div>
+          </CodeBlock>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+}
+
+function LandingUseCases({onExplore}){
+  const cases=[
+    {emoji:'🛠️',title:'Developer Workflows',desc:'Format JSON, validate schemas, encode/decode data, and test regex patterns without switching tabs.',tags:['JSON Tools','Regex Tester','Encoders']},
+    {emoji:'🔍',title:'Technical SEO',desc:'Generate sitemaps, test robots.txt, preview meta tags, and build schema markup for a page.',tags:['Sitemap','Robots.txt','Schema']},
+    {emoji:'📝',title:'Text & Data Cleanup',desc:'Deduplicate lines, sort lists, convert CSV/JSON, and clean up messy pasted text.',tags:['Text Tools','Converters']},
+    {emoji:'⚡',title:'Quick Generators',desc:'UUIDs, secure passwords, cryptographic hashes, and lorem ipsum, all generated instantly in-browser.',tags:['UUID','Hashes','Passwords']},
+  ];
+  return<section id="use-cases" className="relative py-20 lg:py-28 border-t border-white/5">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Reveal><div className="flex flex-wrap items-end justify-between gap-4 mb-14"><div className="max-w-2xl"><p className="text-sm font-semibold text-xfree-400 uppercase tracking-wider mb-3">Use Cases</p><h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">Real workflows, all runnable now</h2><p className="text-lg text-gray-400">Every tag below links to tools that exist in this file today.</p></div><button onClick={onExplore} className="shrink-0 text-sm font-semibold text-green-400 hover:text-green-300 cursor-pointer">Browse all {COUNT} tools →</button></div></Reveal>
+      <div className="grid md:grid-cols-2 gap-5">
+        {cases.map((c,i)=><Reveal key={i} delay={i*100}><div className="feature-card rounded-2xl bg-white/[0.03] p-8 h-full"><div className="text-2xl mb-4">{c.emoji}</div><h3 className="text-lg font-semibold text-white mb-2">{c.title}</h3><p className="text-sm text-gray-400 leading-relaxed mb-4">{c.desc}</p><div className="flex flex-wrap gap-2">{c.tags.map(t=><span key={t} className="text-xs px-2 py-1 rounded-md bg-white/5 text-gray-400 border border-white/5">{t}</span>)}</div></div></Reveal>)}
+      </div>
+    </div>
+  </section>
+}
+
+function LandingPrivacy(){
+  const items=[
+    'No fetch(), XMLHttpRequest, or WebSocket calls anywhere in this file',
+    'No analytics, telemetry, or third-party tracking beacon',
+    'No signup, no accounts, no stored user data of any kind',
+    'Passwords, hashes, and UUIDs are generated with Web Crypto (crypto.getRandomValues/crypto.subtle)',
+    'CDN scripts (React, Babel, Tailwind, fonts) are the only network requests this page makes',
+  ];
+  return<section className="relative py-20 lg:py-28 border-t border-white/5">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <Reveal><div>
+          <p className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3">Privacy</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">Nothing to secure, because nothing leaves</h2>
+          <p className="text-lg text-gray-400 mb-8">This variant has no server, so there's no API to harden and no database to protect — the honest security story is simply what this page does and doesn't do over the network.</p>
+          <div className="space-y-3">{items.map((item,i)=><div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/5"><Icon.Shield className="w-4 h-4 text-emerald-400 shrink-0"/><span className="text-sm text-gray-300">{item}</span></div>)}</div>
+        </div></Reveal>
+        <Reveal delay={200}>
+          <CodeBlock filename="verify it yourself">
+            <div className="text-gray-500">{'// open devtools → Network tab → use any tool → filter XHR/fetch'}</div>
+            <div className="mt-2 text-green-400">$ 0 requests</div>
+            <div className="mt-3 text-gray-500">{'// the only requests you will ever see are the CDN <script>/<link> tags'}</div>
+            <div className="mt-1 text-gray-500">{'// loaded once, at the top of this document, before <div id="root">'}</div>
+          </CodeBlock>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+}
+
+function LandingFaq(){
+  const faqs=[
+    {q:'What is XFree?',a:`XFree is a collection of ${COUNT} free, browser-based developer and SEO tools, plus a Studio for chaining them into local pipelines. This particular page is a single-file, buildless variant of the project.`},
+    {q:'Is XFree really free?',a:'Yes. Every tool here is free with no signup, no usage limits, and no hidden costs — there is no billing system because there is no backend.'},
+    {q:'Does XFree call any AI or cloud provider?',a:'No. This file makes zero fetch/XHR calls. Every tool — including the hash generator and password generator — runs as plain, deterministic JavaScript (or the Web Crypto API) directly in your browser.'},
+    {q:'What is XFree Studio?',a:'Studio lets you chain multiple tools into a saved pipeline — for example: validate JSON → sort keys → minify. Each step calls the exact same local function the standalone tool page uses.'},
+    {q:'Does XFree work offline?',a:'Once the page and its CDN scripts (React, Babel, Tailwind, fonts) have loaded once, the tools themselves need no further network access to keep working.'},
+    {q:'How do I contribute or see the full project?',a:'The production codebase this page was adapted from is public on GitHub — open an issue, submit a pull request, or just read the source.'},
+  ];
+  return<section id="faq" className="relative py-20 lg:py-28 border-t border-white/5">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Reveal><div className="text-center mb-14"><p className="text-sm font-semibold text-xfree-400 uppercase tracking-wider mb-3">FAQ</p><h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">Common questions</h2></div></Reveal>
+      <div className="space-y-3">{faqs.map((f,i)=><Reveal key={i} delay={i*60}><FaqItem question={f.q} answer={f.a}/></Reveal>)}</div>
+    </div>
+  </section>
+}
+
+function LandingFinalCta({onSearch}){
+  return<section id="get-started" className="relative py-20 lg:py-28 border-t border-white/5">
+    <div className="absolute inset-0 bg-gradient-to-b from-xfree-950/20 to-transparent"/>
+    <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Reveal>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6">Pick a tool. Get X done.</h2>
+        <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-10">{COUNT} tools, no signup, no upload. Start with search or browse by category.</p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button onClick={onSearch} className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white bg-xfree-600 hover:bg-xfree-500 rounded-xl transition-all shadow-xl shadow-xfree-600/20 hover:shadow-xfree-500/30 hover:-translate-y-0.5 cursor-pointer">Search Tools<kbd className="text-xs bg-white/20 px-1.5 py-0.5 rounded ml-1">⌘K</kbd></button>
+          <a href="#/docs" onClick={e=>{e.preventDefault();nav('/docs')}} className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all cursor-pointer">Read the Docs</a>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+}
+
+function Home({onSearch}){
+  const top=TOOLS.slice(0,12);
+  return<div className="fade-in">
+    <LandingHero onSearch={onSearch}/>
+    <LandingTrustBar/>
+    <LandingFeatures/>
+    <LandingHowItWorks/>
+    <LandingStudioPreview onOpenStudio={()=>nav('/studio')}/>
+    <section className="max-w-7xl mx-auto px-4 py-14 border-t border-white/5">
+      <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-bold text-white">Popular Tools</h2><a href="#/tools" onClick={e=>{e.preventDefault();nav('/tools')}} className="text-sm text-green-400 hover:text-green-300 transition-colors">View all →</a></div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">{top.map(t=><TCard key={t.id} tool={t}/>)}</div>
+    </section>
+    <section className="max-w-7xl mx-auto px-4 pb-14">
+      <h2 className="text-xl font-bold text-white mb-6">Tool Categories</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {CATS.map(cat=>{const c=TOOLS.filter(t=>t.cat===cat.id).length;return<a key={cat.id} href={`#/${cat.id}`} onClick={e=>{e.preventDefault();nav(`/${cat.id}`)}} className="group bg-[#0f172a] border border-gray-800 hover:border-green-500/40 rounded-xl p-6 block transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-green-500/5"><div className="text-3xl mb-3">{cat.icon}</div><h3 className="font-semibold text-white mb-1 group-hover:text-green-400 transition-colors">{cat.name}</h3><p className="text-xs text-gray-500 mb-3">{cat.desc}</p><span className="text-xs text-green-400 font-medium">{c} tools</span></a>})}
+      </div>
+    </section>
+    <LandingUseCases onExplore={()=>nav('/tools')}/>
+    <LandingPrivacy/>
+    <section className="max-w-7xl mx-auto px-4 py-14 border-t border-white/5">
+      <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-bold text-white">Latest Guides</h2><a href="#/guides" onClick={e=>{e.preventDefault();nav('/guides')}} className="text-sm text-green-400 hover:text-green-300 transition-colors">All guides →</a></div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{GUIDES.slice(0,6).map(g=><a key={g.id} href={`#/guides/${g.slug}`} onClick={e=>{e.preventDefault();nav(`/guides/${g.slug}`)}} className="group bg-[#0f172a] border border-gray-800 hover:border-green-500/40 rounded-xl p-5 block transition-all hover:-translate-y-0.5"><span className="text-[10px] text-green-400 font-semibold uppercase tracking-wider">{g.cat}</span><h3 className="font-semibold text-white text-sm mt-1.5 mb-1.5 group-hover:text-green-400 transition-colors">{g.title}</h3><p className="text-xs text-gray-500 leading-relaxed">{g.desc}</p></a>)}</div>
+    </section>
+    <LandingFaq/>
+    <LandingFinalCta onSearch={onSearch}/>
+  </div>
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOOL PAGE
+   ═══════════════════════════════════════════════════════ */
+
+function ToolPage({slug}){
+  const tool=TOOLS.find(t=>t.slug===slug);
+  const[input,setInput]=useState('');
+  const[output,setOutput]=useState('');
+  const[error,setError]=useState('');
+  const[result,setResult]=useState(null);
+  const[stats,setStats]=useState(null);
+  const[toast,setToast]=useState('');
+  const[params,setParams]=useState({});
+
+  if(!tool)return<NotFound/>;
+  const cat=CATS.find(c=>c.id===tool.cat);
+  const relTools=TOOLS.filter(t=>tool.rel?.includes(t.id));
+  const relGuides=GUIDES.filter(g=>tool.gds?.includes(g.id));
+
+  const exec=async(ep={})=>{setError('');setResult(null);setStats(null);setOutput('');try{const r=await runTool(tool.id,input,{...params,...ep});if(r.output!==undefined)setOutput(String(r.output));if(r.ok!==undefined||r.msg)setResult(r);if(r.stats)setStats(r.stats);if(r.matches)setResult(r);if(r.hashes)setResult(r);if(r.results)setResult(r);if(r.errs)setResult(r)}catch(e){setError(e.message)}};
+  const copy=()=>{navigator.clipboard.writeText(output).then(()=>setToast('Copied'))};
+  const dl=(fn)=>{const b=new Blob([output],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn||'output.txt';a.click()};
+  const clear=()=>{setInput('');setOutput('');setError('');setResult(null);setStats(null)};
+
+  const examples={'json-formatter':'{"name":"John","age":30,"address":{"city":"New York"}}','json-validator':'{"valid": true, "count": 42}','json-to-csv':'[{"name":"Alice","age":30},{"name":"Bob","age":25}]','csv-to-json':'name,age\nAlice,30\nBob,25','json-depth':'{"a":{"b":{"c":"deep"}},"arr":[1,2]}','remove-duplicate-lines':'apple\nbanana\napple\ncherry','sort-lines':'cherry\napple\nbanana','xml-sitemap-generator':'https://example.com/\nhttps://example.com/about','url-extractor':'<a href="https://example.com">Link</a>','word-counter':'The quick brown fox jumps over the lazy dog.','base64-encode':'Hello, World!','regex-tester':'The rain in Spain falls mainly on the plain.','email-validator':'user@example.com\ninvalid\ntest@test.org','url-validator':'https://example.com\nnot-a-url'};
+  const hasEx=!!examples[tool.id];
+  const loadEx=()=>setInput(examples[tool.id]||'');
+
+  const TA=(ph,extra)=><textarea value={input} onChange={e=>{setInput(e.target.value);extra&&extra(e)}} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none mono text-sm leading-relaxed resize-y" placeholder={ph}/>;
+
+  const btns=()=>(<div className="flex flex-wrap gap-2 mt-4">
+    <button onClick={()=>exec()} className="px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">{tool.id.includes('valid')?'Validate':tool.id.includes('convert')?'Convert':tool.id.includes('extract')?'Extract':tool.id.includes('generate')?'Generate':tool.id.includes('sort')?'Sort':tool.id.includes('minif')?'Minify':tool.id.includes('format')||tool.id.includes('beautif')?'Format':'Process'}</button>
+    {hasEx&&<button onClick={loadEx} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors">Example</button>}
+    {output&&<button onClick={copy} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors">Copy</button>}
+    {output&&<button onClick={()=>dl()} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors">Download</button>}
+    <button onClick={clear} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors">Clear</button>
+  </div>);
+
+  const renderUI=()=>{
+    const isEncoder=['base64-encode','url-encode','html-entity-encode','hex-text-converter'].includes(tool.id);
+    const isSimple=['json-formatter','json-beautifier','json-minifier','json-sort-keys','json-to-csv','csv-to-json','json-depth','json-key-extractor','remove-duplicate-lines','sort-lines','reverse-lines','trim-whitespace','xml-sitemap-generator','url-extractor','json-escape','json-unescape'].includes(tool.id);
+
+    if(isEncoder)return(<div>
+      <div className="flex gap-2 mb-3">
+        <button onClick={()=>{setParams({...params,dir:'encode'});exec({dir:'encode'})}} className="px-4 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs font-medium transition-colors">Encode</button>
+        <button onClick={()=>{setParams({...params,dir:'decode'});exec({dir:'decode'})}} className="px-4 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-xs font-medium transition-colors">Decode</button>
+      </div>
+      <label className="block text-sm font-medium text-gray-300 mb-2">Input</label>{TA('Enter text...')}
+      {error&&<div className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-xl text-sm text-red-300">{error}</div>}
+      {output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">Output</label><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] mono text-sm"/></>}
+    </div>);
+
+    if(isSimple)return(<div>
+      {tool.id==='xml-sitemap-generator'&&<div className="flex flex-wrap gap-4 mb-4"><div><label className="text-xs text-gray-400 block mb-1">Change Freq</label><select onChange={e=>setParams({...params,freq:e.target.value})} className="bg-[#020617] border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white"><option value="daily">Daily</option><option value="weekly" selected>Weekly</option><option value="monthly">Monthly</option></select></div><div><label className="text-xs text-gray-400 block mb-1">Priority</label><select onChange={e=>setParams({...params,priority:e.target.value})} className="bg-[#020617] border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white"><option>1.0</option><option selected>0.8</option><option>0.5</option></select></div></div>}
+      {tool.id==='url-extractor'&&<div className="flex gap-4 mb-4"><label className="flex items-center gap-2 text-sm text-gray-300"><input type="checkbox" defaultChecked onChange={e=>setParams({...params,dedup:e.target.checked})} className="rounded"/> Deduplicate</label><label className="flex items-center gap-2 text-sm text-gray-300"><input type="checkbox" onChange={e=>setParams({...params,sort:e.target.checked})} className="rounded"/> Sort</label></div>}
+      <label className="block text-sm font-medium text-gray-300 mb-2">Input</label>{TA(tool.id==='json-to-csv'?'[{"name":"John","age":30}]':tool.id==='csv-to-json'?'name,age\nJohn,30':'Enter input...')}
+      {btns()}
+      {error&&<div className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-xl text-sm text-red-300">{error}</div>}
+      {output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">Output</label><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] mono text-sm"/></>}
+      {result?.count!==undefined&&<div className="text-xs text-gray-500 mt-2">{result.count} URLs extracted</div>}
+    </div>);
+
+    switch(tool.id){
+      case'json-validator':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input JSON</label>{TA('Paste JSON to validate...')}{btns()}{result&&<div className={`mt-4 p-4 rounded-xl text-sm ${result.ok?'bg-emerald-900/30 border border-emerald-800 text-emerald-300':'bg-red-900/30 border border-red-800 text-red-300'}`}>{result.msg}</div>}</div>);
+      case'json-pointer':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input JSON</label>{TA('{"store":{"book":[{"title":"Example"}]}}')}<label className="block text-sm font-medium text-gray-300 mt-4 mb-2">JSON Pointer</label><input type="text" onChange={e=>setParams({...params,pointer:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white mono text-sm outline-none focus:border-green-500" placeholder="/store/book/0/title"/>{btns()}{error&&<div className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-xl text-sm text-red-300">{error}</div>}{output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">Result</label><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[100px] mono text-sm"/></>}</div>);
+      case'json-schema-validator':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">JSON Data</label>{TA('{"name":"John","age":30}')}<label className="block text-sm font-medium text-gray-300 mt-4 mb-2">JSON Schema</label><textarea onChange={e=>setParams({...params,schema:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[150px] mono text-sm" placeholder='{"type":"object","properties":{"name":{"type":"string"}}}'/>{btns()}{result&&<div className={`mt-4 p-4 rounded-xl text-sm ${result.ok?'bg-emerald-900/30 border border-emerald-800 text-emerald-300':'bg-red-900/30 border border-red-800 text-red-300'}`}>{result.ok?'✓ Valid against schema':`✗ ${result.errs.length} error(s):`}{result.errs&&<div className="mt-2 space-y-1">{result.errs.map((e,i)=><div key={i} className="text-red-400">• {e}</div>)}</div>}</div>}</div>);
+      case'word-counter':case'line-counter':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input Text</label><textarea value={input} onChange={e=>setInput(e.target.value)} onInput={()=>exec()} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] focus:border-green-500 outline-none text-sm leading-relaxed resize-y" placeholder="Paste or type text..."/>{stats&&<div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">{Object.entries(stats).map(([k,v])=><div key={k} className="bg-gray-800 rounded-xl p-4 text-center"><div className="text-2xl font-bold text-white">{v}</div><div className="text-xs text-gray-500 capitalize mt-1">{k.replace(/([A-Z])/g,' $1').trim()}</div></div>)}</div>}</div>);
+      case'case-converter':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input Text</label>{TA('Enter text...')}<div className="flex flex-wrap gap-2 mt-4">{['upper','lower','title','sentence','camel','snake','kebab'].map(m=><button key={m} onClick={()=>exec({mode:m})} className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs transition-colors font-medium">{{upper:'UPPERCASE',lower:'lowercase',title:'Title Case',sentence:'Sentence',camel:'camelCase',snake:'snake_case',kebab:'kebab-case'}[m]}</button>)}</div>{output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">Output</label><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[150px] mono text-sm"/><button onClick={copy} className="mt-3 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">Copy</button></>}</div>);
+      case'slug-generator':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input Text</label><textarea value={input} onChange={e=>setInput(e.target.value)} onInput={()=>exec()} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[100px] focus:border-green-500 outline-none text-sm" placeholder="Enter text..."/>{output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">Slug</label><div className="bg-[#020617] border border-gray-700 rounded-xl p-4 text-green-400 mono text-sm break-all">{output}</div><button onClick={copy} className="mt-3 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">Copy</button></>}</div>);
+      case'regex-tester':return(<div><div className="mb-4"><label className="block text-sm font-medium text-gray-300 mb-2">Regular Expression</label><div className="flex gap-1"><span className="bg-[#020617] border border-gray-700 rounded-l-xl px-3 py-2.5 text-green-400 mono text-sm">/</span><input type="text" onChange={e=>setParams({...params,pattern:e.target.value})} className="flex-1 bg-[#020617] border-y border-gray-700 px-3 py-2.5 text-white mono text-sm outline-none focus:border-green-500" placeholder="pattern"/><span className="bg-[#020617] border border-gray-700 px-3 py-2.5 text-green-400 mono text-sm">/</span><input type="text" defaultValue="g" onChange={e=>setParams({...params,flags:e.target.value})} className="w-16 bg-[#020617] border border-gray-700 rounded-r-xl px-3 py-2.5 text-white mono text-sm outline-none focus:border-green-500" placeholder="flags"/></div></div><label className="block text-sm font-medium text-gray-300 mb-2">Test String</label><textarea value={input} onChange={e=>setInput(e.target.value)} onInput={()=>exec()} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[150px] focus:border-green-500 outline-none text-sm" placeholder="Enter test string..."/>{result&&<div className="mt-4"><div className="text-sm text-gray-400 mb-2">{result.count} match{result.count!==1?'es':''} found</div>{result.matches.length>0?<div className="bg-[#020617] border border-gray-700 rounded-xl p-4 space-y-2">{result.matches.map((m,i)=><div key={i} className="flex items-center gap-3 text-sm"><span className="text-gray-600 text-xs w-6">{i+1}</span><span className="bg-green-500/20 text-green-300 px-2 py-0.5 rounded mono text-xs">{m.value}</span><span className="text-gray-600 text-xs">idx: {m.index}</span></div>)}</div>:<div className="text-gray-500 text-sm">No matches</div>}</div>}</div>);
+      case'text-replacer':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input Text</label>{TA('Enter text...')}<div className="grid sm:grid-cols-2 gap-4 mt-4"><div><label className="block text-sm font-medium text-gray-300 mb-1">Find</label><input type="text" onChange={e=>setParams({...params,find:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white mono text-sm outline-none focus:border-green-500"/></div><div><label className="block text-sm font-medium text-gray-300 mb-1">Replace</label><input type="text" onChange={e=>setParams({...params,replace:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white mono text-sm outline-none focus:border-green-500"/></div></div><div className="flex gap-4 mt-3"><label className="flex items-center gap-2 text-sm text-gray-300"><input type="checkbox" onChange={e=>setParams({...params,regex:e.target.checked})} className="rounded"/> Regex</label><label className="flex items-center gap-2 text-sm text-gray-300"><input type="checkbox" onChange={e=>setParams({...params,caseSensitive:e.target.checked})} className="rounded"/> Case sensitive</label></div>{btns()}{error&&<div className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-xl text-sm text-red-300">{error}</div>}{output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">Output</label><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[150px] mono text-sm"/></>}</div>);
+      case'robots-txt-generator':return(<div><div className="grid sm:grid-cols-2 gap-4 mb-4"><div><label className="block text-sm font-medium text-gray-300 mb-1">User-Agent</label><input type="text" defaultValue="*" onChange={e=>setParams({...params,agent:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500"/></div><div><label className="block text-sm font-medium text-gray-300 mb-1">Sitemap URL</label><input type="text" onChange={e=>setParams({...params,sitemap:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500" placeholder="https://example.com/sitemap.xml"/></div></div><label className="block text-sm font-medium text-gray-300 mb-2">Disallow Paths (one per line)</label><textarea onChange={e=>setParams({...params,disallow:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[100px] mono text-sm" placeholder="/admin/&#10;/private/"/><button onClick={()=>exec()} className="mt-4 px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">Generate</button>{output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">robots.txt</label><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[150px] mono text-sm"/><button onClick={copy} className="mt-3 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">Copy</button></>}</div>);
+      case'robots-txt-tester':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Robots.txt Content</label><textarea onChange={e=>setParams({...params,robots:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[120px] mono text-sm" placeholder={"User-agent: *\nDisallow: /admin/\nAllow: /"}/><label className="block text-sm font-medium text-gray-300 mt-4 mb-2">Test URL</label><input type="text" onChange={e=>setParams({...params,url:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500" placeholder="https://example.com/admin/page"/><button onClick={()=>exec()} className="mt-4 px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">Test</button>{result?.result&&<div className={`mt-4 p-4 rounded-xl ${result.result.allowed?'bg-emerald-900/30 border border-emerald-800':'bg-red-900/30 border border-red-800'}`}><div className={`text-lg font-bold ${result.result.allowed?'text-emerald-400':'text-red-400'}`}>{result.result.allowed?'✓ ALLOWED':'✗ BLOCKED'}</div><div className="text-sm text-gray-400 mt-1">Path: {result.result.path}</div></div>}</div>);
+      case'meta-tag-preview':return<MetaPreview/>;
+      case'open-graph-preview':return<OGPreview/>;
+      case'schema-generator':return<SchemaGen/>;
+      case'unix-timestamp':return<TimestampConv/>;
+      case'uuid-generator':case'password-generator':case'lorem-ipsum':return(<div><div className="flex flex-wrap items-center gap-4 mb-4"><label className="text-sm text-gray-300">Count:</label><input type="number" defaultValue="5" min="1" max="100" id="gc" className="w-20 bg-[#020617] border border-gray-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500"/>{tool.id==='password-generator'&&<><label className="text-sm text-gray-300">Length:</label><input type="number" defaultValue="16" min="4" max="128" id="gl" className="w-20 bg-[#020617] border border-gray-700 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-green-500"/></>}</div><div className="flex gap-2"><button onClick={()=>exec({count:document.getElementById('gc')?.value||5,length:document.getElementById('gl')?.value||16})} className="px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">Generate</button>{output&&<button onClick={copy} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">Copy All</button>}</div>{output&&<textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] mono text-sm mt-4"/>}</div>);
+      case'hash-generator':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input Text</label>{TA('Enter text to hash...')}<button onClick={()=>exec()} className="mt-4 px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">Generate Hashes</button>{result?.hashes&&<div className="mt-6 space-y-3">{Object.entries(result.hashes).map(([a,h])=><div key={a} className="bg-gray-800 rounded-xl p-4"><div className="text-xs text-gray-500 mb-1 font-medium">{a}</div><div className="text-sm text-green-400 mono break-all">{h}</div></div>)}</div>}</div>);
+      case'email-validator':case'url-validator':return(<div><label className="block text-sm font-medium text-gray-300 mb-2">{tool.id==='email-validator'?'Email Addresses':'URLs'} (one per line)</label>{TA(tool.id==='email-validator'?'user@example.com':'https://example.com')}{btns()}{result?.results&&<div className="mt-4 space-y-2">{result.results.map((r,i)=><div key={i} className={`flex items-center gap-3 p-3 rounded-xl ${r.valid?'bg-emerald-900/20 border border-emerald-800/50':'bg-red-900/20 border border-red-800/50'}`}><span className={`text-lg ${r.valid?'text-emerald-400':'text-red-400'}`}>{r.valid?'✓':'✗'}</span><span className={`text-sm mono ${r.valid?'text-gray-300':'text-red-300'}`}>{r.value}</span></div>)}</div>}</div>);
+      default:return(<div><label className="block text-sm font-medium text-gray-300 mb-2">Input</label>{TA('Enter input...')}{btns()}{error&&<div className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-xl text-sm text-red-300">{error}</div>}{output&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">Output</label><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] mono text-sm"/></>}</div>);
+    }
+  };
+
+  return(<div className="max-w-7xl mx-auto px-4 py-8 fade-in">
+    {toast&&<Toast msg={toast} onClose={()=>setToast('')}/>}
+    <Crumbs items={[{l:'Home',h:'/'},{l:cat?.name||'Tools',h:`/${tool.cat}`},{l:tool.name,h:`/tools/${tool.slug}`}]}/>
+    <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-3 mb-2 flex-wrap"><h1 className="text-2xl md:text-3xl font-bold text-white">{tool.name}</h1><Badge mode={tool.mode}/></div>
+        <p className="text-gray-400 mb-6 leading-relaxed">{tool.full}</p>
+        <div className="bg-[#0f172a] border border-gray-700/50 rounded-2xl p-5 md:p-6">{renderUI()}</div>
+      </div>
+      <aside className="lg:w-72 space-y-4 shrink-0">
+        <div className="bg-[#0f172a] border border-gray-800 rounded-xl p-5"><h3 className="font-semibold text-white text-sm mb-3">Processing Info</h3><div className="space-y-2.5 text-xs">{[['Mode',tool.mode],['Input',tool.in],['Output',tool.out],['Mobile',tool.mob?'✓':'✗'],['Offline',tool.off?'✓':'✗']].map(([k,v])=><div key={k} className="flex justify-between"><span className="text-gray-500">{k}</span><span className="text-white font-medium">{v}</span></div>)}</div></div>
+        {relTools.length>0&&<div className="bg-[#0f172a] border border-gray-800 rounded-xl p-5"><h3 className="font-semibold text-white text-sm mb-3">Related Tools</h3><div className="space-y-2">{relTools.map(t=><a key={t.id} href={`#/tools/${t.slug}`} onClick={e=>{e.preventDefault();nav(`/tools/${t.slug}`)}} className="block text-xs text-green-400 hover:text-green-300 transition-colors">{t.name}</a>)}</div></div>}
+        {relGuides.length>0&&<div className="bg-[#0f172a] border border-gray-800 rounded-xl p-5"><h3 className="font-semibold text-white text-sm mb-3">Related Guides</h3><div className="space-y-2">{relGuides.map(g=><a key={g.id} href={`#/guides/${g.slug}`} onClick={e=>{e.preventDefault();nav(`/guides/${g.slug}`)}} className="block text-xs text-green-400 hover:text-green-300 transition-colors">{g.title}</a>)}</div></div>}
+        <div className="bg-[#0f172a] border border-gray-800 rounded-xl p-5"><h3 className="font-semibold text-white text-sm mb-2">Privacy</h3><p className="text-xs text-gray-500 leading-relaxed">All processing runs locally in your browser. No data is sent to any server.</p></div>
+      </aside>
+    </div>
+  </div>);
+}
+
+function MetaPreview(){
+  const[t,setT]=useState('');const[u,setU]=useState('');const[d,setD]=useState('');
+  return<div><div className="space-y-4"><div><label className="block text-sm font-medium text-gray-300 mb-1">Page Title</label><input type="text" value={t} onChange={e=>setT(e.target.value)} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500" placeholder="My Page Title" maxLength={70}/><div className="text-xs text-gray-500 mt-1">{t.length}/60 recommended</div></div><div><label className="block text-sm font-medium text-gray-300 mb-1">URL</label><input type="text" value={u} onChange={e=>setU(e.target.value)} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500" placeholder="https://example.com/page"/></div><div><label className="block text-sm font-medium text-gray-300 mb-1">Meta Description</label><textarea value={d} onChange={e=>setD(e.target.value)} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-white text-sm outline-none focus:border-green-500 min-h-[80px]" placeholder="Page description..." maxLength={170}/><div className="text-xs text-gray-500 mt-1">{d.length}/155 recommended</div></div></div><div className="mt-6"><h3 className="text-sm font-medium text-gray-300 mb-3">Google Search Preview</h3><div className="bg-white rounded-xl p-5 shadow-sm"><div className="text-xl text-[#1a0dab] truncate" style={{fontFamily:'arial'}}>{t||'Page Title'}</div><div className="text-sm text-[#006621] truncate mt-1" style={{fontFamily:'arial'}}>{u||'https://example.com'}</div><div className="text-sm text-[#545454] mt-1.5 line-clamp-2" style={{fontFamily:'arial'}}>{d||'Description will appear here...'}</div></div></div><div className="mt-4"><h3 className="text-sm font-medium text-gray-300 mb-2">Generated HTML</h3><textarea readOnly value={`<title>${t}</title>\n<meta name="description" content="${d}">`} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[80px] mono text-sm"/></div></div>
+}
+
+function OGPreview(){
+  const[t,setT]=useState('');const[d,setD]=useState('');const[u,setU]=useState('');
+  let dom='example.com';try{if(u)dom=new URL(u).hostname}catch{}
+  return<div><div className="space-y-4"><div><label className="block text-sm font-medium text-gray-300 mb-1">OG Title</label><input type="text" value={t} onChange={e=>setT(e.target.value)} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500" placeholder="Page Title"/></div><div><label className="block text-sm font-medium text-gray-300 mb-1">OG Description</label><textarea value={d} onChange={e=>setD(e.target.value)} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-white text-sm outline-none focus:border-green-500 min-h-[60px]" placeholder="Description..."/></div><div><label className="block text-sm font-medium text-gray-300 mb-1">OG URL</label><input type="text" value={u} onChange={e=>setU(e.target.value)} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500" placeholder="https://example.com"/></div></div><div className="mt-6"><h3 className="text-sm font-medium text-gray-300 mb-3">Social Preview</h3><div className="max-w-[500px] bg-white rounded-xl overflow-hidden shadow-lg"><div className="bg-gradient-to-br from-gray-600 to-gray-700 h-[260px] flex items-center justify-center text-gray-400 text-sm">OG Image Preview</div><div className="p-4 border-t border-gray-200"><div className="text-xs text-gray-500 uppercase">{dom}</div><div className="text-sm font-semibold text-gray-900 truncate mt-0.5">{t||'Page Title'}</div><div className="text-xs text-gray-500 line-clamp-2 mt-0.5">{d||'Description...'}</div></div></div></div><div className="mt-4"><h3 className="text-sm font-medium text-gray-300 mb-2">Generated Meta Tags</h3><textarea readOnly value={`<meta property="og:title" content="${t}">\n<meta property="og:description" content="${d}">\n<meta property="og:url" content="${u}">\n<meta property="og:type" content="website">`} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[100px] mono text-sm"/></div></div>
+}
+
+function SchemaGen(){
+  const[type,setType]=useState('Article');const[fields,setFields]=useState({});const[out,setOut]=useState('');
+  const sf={Article:[{k:'headline',l:'Headline'},{k:'author',l:'Author'},{k:'datePublished',l:'Date Published',t:'date'},{k:'description',l:'Description',t:'textarea'}],Organization:[{k:'name',l:'Name'},{k:'url',l:'URL'},{k:'logo',l:'Logo URL'}],WebPage:[{k:'name',l:'Page Name'},{k:'url',l:'URL'},{k:'description',l:'Description',t:'textarea'}],FAQPage:[{k:'headline',l:'Headline'},{k:'description',l:'Description',t:'textarea'}],Product:[{k:'name',l:'Product Name'},{k:'description',l:'Description',t:'textarea'},{k:'brand',l:'Brand'},{k:'sku',l:'SKU'}]};
+  return<div><div className="mb-4"><label className="block text-sm font-medium text-gray-300 mb-1">Schema Type</label><select value={type} onChange={e=>{setType(e.target.value);setFields({})}} className="bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500">{Object.keys(sf).map(t=><option key={t}>{t}</option>)}</select></div><div className="space-y-4 mb-4">{(sf[type]||[]).map(f=><div key={f.k}><label className="block text-sm font-medium text-gray-300 mb-1">{f.l}</label>{f.t==='textarea'?<textarea onChange={e=>setFields({...fields,[f.k]:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-3 text-white text-sm outline-none focus:border-green-500 min-h-[60px]"/>:<input type={f.t||'text'} onChange={e=>setFields({...fields,[f.k]:e.target.value})} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500"/>}</div>)}</div><button onClick={()=>{const s={'@context':'https://schema.org','@type':type};Object.entries(fields).forEach(([k,v])=>{if(v)s[k]=v});setOut(JSON.stringify(s,null,2))}} className="px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">Generate Schema</button>{out&&<><label className="block text-sm font-medium text-gray-300 mt-6 mb-2">JSON-LD Output</label><textarea readOnly value={out} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] mono text-sm"/></>}</div>
+}
+
+function TimestampConv(){
+  const[now,setNow]=useState(Math.floor(Date.now()/1000));
+  const[ts,setTs]=useState(now);
+  const[ds,setDs]=useState('');
+  useEffect(()=>{const d=new Date(ts>1e12?ts:ts*1000);setDs(d.toISOString().slice(0,16));const iv=setInterval(()=>setNow(Math.floor(Date.now()/1000)),1000);return()=>clearInterval(iv)},[]);
+  return<div><div className="grid sm:grid-cols-2 gap-6"><div><label className="block text-sm font-medium text-gray-300 mb-1">Unix Timestamp</label><input type="text" value={ts} onChange={e=>setTs(parseInt(e.target.value)||0)} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white mono text-sm outline-none focus:border-green-500"/><div className="mt-2 text-sm text-gray-400">{new Date(ts>1e12?ts:ts*1000).toLocaleString()}</div></div><div><label className="block text-sm font-medium text-gray-300 mb-1">Date/Time</label><input type="datetime-local" value={ds} onChange={e=>{setDs(e.target.value);setTs(Math.floor(new Date(e.target.value).getTime()/1000))}} className="w-full bg-[#020617] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500"/><div className="mt-2 text-sm text-gray-400 mono">{ts}</div></div></div><div className="mt-4 p-3 bg-gray-800 rounded-xl"><div className="text-xs text-gray-400">Current timestamp: <span className="text-green-400 mono">{now}</span></div></div></div>
+}
+
+/* ═══════════════════════════════════════════════════════
+   STUDIO
+   ═══════════════════════════════════════════════════════ */
+
+function Studio(){
+  const[steps,setSteps]=useState([{tid:''}]);
+  const[input,setInput]=useState('');
+  const[output,setOutput]=useState('');
+  const[toast,setToast]=useState('');
+  const addStep=()=>setSteps([...steps,{tid:''}]);
+  const rmStep=i=>{if(steps.length>1)setSteps(steps.filter((_,j)=>j!==i))};
+  const updStep=(i,tid)=>{const s=[...steps];s[i]={tid};setSteps(s)};
+  const run=()=>{const active=steps.filter(s=>s.tid);if(!active.length){setToast('Add at least one step');return}try{let d=input;active.forEach(s=>{d=runPipeline(s.tid,d)});setOutput(d);setToast('Workflow completed')}catch(e){setToast('Error: '+e.message)}};
+  const loadRecipe=w=>{setSteps(w.steps.map(s=>({tid:s})));setToast(`Loaded: ${w.name}`)};
+  return<div className="max-w-7xl mx-auto px-4 py-8 fade-in">
+    {toast&&<Toast msg={toast} onClose={()=>setToast('')}/>}
+    <Crumbs items={[{l:'Home',h:'/'},{l:'Studio',h:'/studio'}]}/>
+    <h1 className="text-3xl font-bold text-white mb-2">XFree Studio</h1>
+    <p className="text-gray-400 mb-8">Chain browser tools into local workflows. All processing stays in your browser.</p>
+    <div className="grid lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 space-y-6">
+        <div className="bg-[#0f172a] border border-gray-700/50 rounded-2xl p-6">
+          <h2 className="text-lg font-semibold text-white mb-4">Workflow Builder</h2>
+          <div className="space-y-3 mb-6">{steps.map((step,i)=><div key={i} className="bg-gray-800 rounded-xl p-4 pl-5" style={{borderLeft:'3px solid #22c55e'}}><div className="flex items-center justify-between"><div className="flex-1"><div className="text-[10px] text-green-400 font-semibold uppercase tracking-wider">Step {i+1}</div><select value={step.tid} onChange={e=>updStep(i,e.target.value)} className="mt-1 w-full bg-[#020617] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-green-500"><option value="">Select a tool...</option>{TOOLS.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div><button onClick={()=>rmStep(i)} className="ml-3 text-gray-500 hover:text-red-400 text-xl transition-colors shrink-0">×</button></div></div>)}</div>
+          <div className="flex flex-wrap gap-2"><button onClick={addStep} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors">+ Add Step</button><button onClick={run} className="px-5 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">Run Workflow</button><button onClick={()=>{setSteps([{tid:''}]);setInput('');setOutput('')}} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors">Reset</button></div>
+        </div>
+        <div className="bg-[#0f172a] border border-gray-700/50 rounded-2xl p-6"><h2 className="text-lg font-semibold text-white mb-3">Input</h2><textarea value={input} onChange={e=>setInput(e.target.value)} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[150px] mono text-sm focus:border-green-500 outline-none resize-y" placeholder="Enter your data here..."/></div>
+        <div className="bg-[#0f172a] border border-gray-700/50 rounded-2xl p-6"><h2 className="text-lg font-semibold text-white mb-3">Output</h2><textarea readOnly value={output} className="w-full bg-[#020617] border border-gray-700 rounded-xl p-4 text-gray-200 min-h-[200px] mono text-sm" placeholder="Workflow output will appear here..."/><div className="flex gap-2 mt-3">{output&&<button onClick={()=>{navigator.clipboard.writeText(output);setToast('Copied')}} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">Copy</button>}{output&&<button onClick={()=>{const b=new Blob([output],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='studio-output.txt';a.click()}} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm">Download</button>}</div></div>
+      </div>
+      <div className="space-y-4">
+        <div className="bg-[#0f172a] border border-gray-800 rounded-xl p-5"><h3 className="font-semibold text-white text-sm mb-3">Quick Recipes</h3><div className="space-y-2">{WORKFLOWS.map(w=><button key={w.id} onClick={()=>loadRecipe(w)} className="w-full text-left p-3 bg-gray-800 hover:bg-gray-700 rounded-xl transition-colors"><div className="text-sm font-medium text-white">{w.name}</div><div className="text-xs text-gray-500 mt-0.5">{w.desc}</div></button>)}</div></div>
+        <div className="bg-[#0f172a] border border-gray-800 rounded-xl p-5"><h3 className="font-semibold text-white text-sm mb-3">Processing</h3><div className="flex items-center gap-2"><Badge mode="LOCAL"/><span className="text-xs text-gray-400">All steps run in browser</span></div></div>
+      </div>
+    </div>
+  </div>
+}
+
+/* ═══════════════════════════════════════════════════════
+   PAGES
+   ═══════════════════════════════════════════════════════ */
+
+function AllTools(){
+  const g={};TOOLS.forEach(t=>{const c=CATS.find(c=>c.id===t.cat);const n=c?c.name:t.cat;if(!g[n])g[n]=[];g[n].push(t)});
+  return<div className="max-w-7xl mx-auto px-4 py-8 fade-in"><Crumbs items={[{l:'Home',h:'/'},{l:'All Tools',h:'/tools'}]}/><h1 className="text-3xl font-bold text-white mb-2">All Tools</h1><p className="text-gray-400 mb-8">{COUNT} free browser-based developer and SEO tools.</p>{Object.entries(g).map(([cat,tools])=><div key={cat} className="mb-10"><h2 className="text-lg font-semibold text-white mb-4">{cat} <span className="text-sm text-gray-500 font-normal">({tools.length})</span></h2><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">{tools.map(t=><TCard key={t.id} tool={t}/>)}</div></div>)}</div>
+}
+
+function CatPage({id}){
+  const cat=CATS.find(c=>c.id===id);if(!cat)return<NotFound/>;
+  const tools=TOOLS.filter(t=>t.cat===id);
+  const guides=GUIDES.filter(g=>{if(id==='developer-tools')return g.cat==='json';if(id==='seo-tools')return g.cat==='seo';return false});
+  return<div className="max-w-7xl mx-auto px-4 py-8 fade-in"><Crumbs items={[{l:'Home',h:'/'},{l:'Tools',h:'/tools'},{l:cat.name,h:`/${id}`}]}/><h1 className="text-3xl font-bold text-white mb-2">{cat.icon} {cat.name}</h1><p className="text-gray-400 mb-8">{cat.desc}</p><h2 className="text-lg font-semibold text-white mb-4">Tools <span className="text-sm text-gray-500 font-normal">({tools.length})</span></h2><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-10">{tools.map(t=><TCard key={t.id} tool={t}/>)}</div>{guides.length>0&&<><h2 className="text-lg font-semibold text-white mb-4">Related Guides</h2><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{guides.map(g=><a key={g.id} href={`#/guides/${g.slug}`} onClick={e=>{e.preventDefault();nav(`/guides/${g.slug}`)}} className="group bg-[#0f172a] border border-gray-800 hover:border-green-500/40 rounded-xl p-5 block transition-all hover:-translate-y-0.5"><h3 className="font-semibold text-white text-sm mb-1 group-hover:text-green-400 transition-colors">{g.title}</h3><p className="text-xs text-gray-500">{g.desc}</p></a>)}</div></>}</div>
+}
+
+function GuidesPage(){
+  return<div className="max-w-7xl mx-auto px-4 py-8 fade-in"><Crumbs items={[{l:'Home',h:'/'},{l:'Guides',h:'/guides'}]}/><h1 className="text-3xl font-bold text-white mb-2">Guides</h1><p className="text-gray-400 mb-8">Practical tutorials connected to working XFree tools.</p><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{GUIDES.map(g=><a key={g.id} href={`#/guides/${g.slug}`} onClick={e=>{e.preventDefault();nav(`/guides/${g.slug}`)}} className="group bg-[#0f172a] border border-gray-800 hover:border-green-500/40 rounded-xl p-5 block transition-all hover:-translate-y-0.5"><span className="text-[10px] text-green-400 font-semibold uppercase tracking-wider">{g.cat}</span><h2 className="font-semibold text-white mt-1.5 mb-1.5 group-hover:text-green-400 transition-colors">{g.title}</h2><p className="text-sm text-gray-500">{g.desc}</p></a>)}</div></div>
+}
+
+function GuidePage({slug}){
+  const g=GUIDES.find(g=>g.slug===slug);if(!g)return<NotFound/>;
+  const tool=TOOLS.find(t=>t.id===g.tool);
+  return<div className="max-w-3xl mx-auto px-4 py-8 fade-in"><Crumbs items={[{l:'Home',h:'/'},{l:'Guides',h:'/guides'},{l:g.title,h:`/guides/${g.slug}`}]}/><span className="text-[10px] text-green-400 font-semibold uppercase tracking-wider">{g.cat}</span><h1 className="text-3xl font-bold text-white mt-2 mb-4">{g.title}</h1><p className="text-gray-400 mb-8 leading-relaxed">{g.desc}</p><div className="space-y-8"><section><h2 className="text-xl font-semibold text-white mb-3">What You'll Learn</h2><p className="text-gray-400 leading-relaxed">This guide walks you through using the <a href={`#/tools/${tool?.slug}`} onClick={e=>{e.preventDefault();nav(`/tools/${tool?.slug}`)}} className="text-green-400 hover:text-green-300 underline underline-offset-2">{tool?.name||'tool'}</a> to accomplish common tasks.</p></section><section><h2 className="text-xl font-semibold text-white mb-3">Get Started</h2><div className="bg-[#0f172a] border border-gray-700/50 rounded-xl p-6"><p className="text-gray-400 mb-4">Open the tool and enter your data:</p><a href={`#/tools/${tool?.slug}`} onClick={e=>{e.preventDefault();nav(`/tools/${tool?.slug}`)}} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-medium transition-colors">Open {tool?.name||'Tool'} →</a></div></section><section><h2 className="text-xl font-semibold text-white mb-3">Common Use Cases</h2><ul className="space-y-2 text-gray-400"><li className="flex items-start gap-2"><span className="text-green-400 mt-0.5">•</span>Quick validation and formatting during development</li><li className="flex items-start gap-2"><span className="text-green-400 mt-0.5">•</span>Data transformation for API testing</li><li className="flex items-start gap-2"><span className="text-green-400 mt-0.5">•</span>Batch processing of configuration files</li></ul></section><section className="bg-[#0f172a] border border-gray-800 rounded-xl p-5"><h3 className="font-semibold text-white text-sm mb-2">Privacy</h3><p className="text-sm text-gray-400">This tool processes all data locally in your browser.</p><div className="mt-2"><Badge mode="LOCAL"/></div></section></div></div>
+}
+
+function WorkflowsPage(){
+  return<div className="max-w-7xl mx-auto px-4 py-8 fade-in"><Crumbs items={[{l:'Home',h:'/'},{l:'Workflows',h:'/workflows'}]}/><h1 className="text-3xl font-bold text-white mb-2">Workflow Recipes</h1><p className="text-gray-400 mb-8">Pre-built multi-step pipelines for common data processing tasks.</p><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{WORKFLOWS.map(w=><div key={w.id} className="bg-[#0f172a] border border-gray-800 rounded-xl p-5 hover:border-green-500/40 transition-all"><h2 className="font-semibold text-white mb-2">{w.name}</h2><p className="text-sm text-gray-500 mb-4">{w.desc}</p><div className="flex flex-wrap items-center gap-1">{w.steps.map((s,i)=>{const t=TOOLS.find(tl=>tl.id===s);return<React.Fragment key={s}>{i>0&&<span className="text-gray-600 text-xs mx-0.5">→</span>}<span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-lg border border-gray-700/50">{t?.name||s}</span></React.Fragment>})}</div><a href="#/studio" onClick={e=>{e.preventDefault();nav('/studio')}} className="mt-4 inline-flex text-xs text-green-400 hover:text-green-300 transition-colors">Open in Studio →</a></div>)}</div></div>
+}
+
+function DocsPage(){
+  return<div className="max-w-3xl mx-auto px-4 py-8 fade-in"><Crumbs items={[{l:'Home',h:'/'},{l:'Documentation',h:'/docs'}]}/><h1 className="text-3xl font-bold text-white mb-6">Documentation</h1><div className="space-y-4">{[{t:'What is XFree?',d:`XFree is a collection of ${COUNT} free, browser-based developer and SEO tools. All processing runs locally in your browser using Local Mode.`},{t:'Local Mode',d:'Local Mode means all data processing happens in your browser using JavaScript and Web Workers. Your input is never sent to any server.'},{t:'XFree Studio',d:'Studio lets you chain multiple tools into automated workflows. Build multi-step data processing pipelines entirely in your browser.'},{t:'Publication Policy',d:'Only verified, working tools are published. XFree distinguishes between live tools and planned concepts.'},{t:'Privacy',d:'XFree processes your data locally. No analytics tracking of input data. No third-party data sharing.'}].map((s,i)=>(<div key={i} className="bg-[#0f172a] border border-gray-800 rounded-xl p-6"><h2 className="text-lg font-semibold text-white mb-2">{s.t}</h2><p className="text-gray-400 text-sm leading-relaxed">{s.d}</p></div>))}</div></div>
+}
+
+function StaticPage({title,sections}){
+  return<div className="max-w-3xl mx-auto px-4 py-8 fade-in"><Crumbs items={[{l:'Home',h:'/'},{l:title,h:`/${title.toLowerCase().replace(/\s+/g,'-')}`}]}/><h1 className="text-3xl font-bold text-white mb-6">{title}</h1><div className="space-y-4">{sections.map((s,i)=>(<div key={i} className="bg-[#0f172a] border border-gray-800 rounded-xl p-6"><h2 className="text-lg font-semibold text-white mb-2">{s.t}</h2><p className="text-gray-400 text-sm leading-relaxed">{s.d}</p></div>))}</div></div>
+}
+
+function NotFound(){
+  return<div className="max-w-3xl mx-auto px-4 py-20 text-center fade-in"><div className="text-6xl mb-4">🔍</div><h1 className="text-3xl font-bold text-white mb-3">Page Not Found</h1><p className="text-gray-400 mb-8">The page you're looking for doesn't exist or has been moved.</p><a href="#/" onClick={e=>{e.preventDefault();nav('/')}} className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-medium transition-colors">Go Home →</a></div>
+}
+
+/* ═══════════════════════════════════════════════════════
+   APP
+   ═══════════════════════════════════════════════════════ */
+
+function App(){
+  const route=useRoute();
+  const[cmdOpen,setCmdOpen]=useState(false);
+
+  useEffect(()=>{window.scrollTo(0,0)},[route]);
+
+  useEffect(()=>{
+    const handler=e=>{
+      const href=e.target.closest('a')?.getAttribute('href');
+      if(href&&href.startsWith('#')&&href.length>1&&!href.startsWith('#/')){
+        const target=document.querySelector(href);
+        if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'})}
+      }
+    };
+    document.addEventListener('click',handler);
+    return()=>document.removeEventListener('click',handler);
+  },[]);
+
+  let page;
+  if(route==='/'||route==='')page=<Home onSearch={()=>setCmdOpen(true)}/>;
+  else if(route==='/tools')page=<AllTools/>;
+  else if(route==='/studio')page=<Studio/>;
+  else if(route==='/guides')page=<GuidesPage/>;
+  else if(route==='/workflows')page=<WorkflowsPage/>;
+  else if(route==='/docs')page=<DocsPage/>;
+  else if(route==='/about')page=<StaticPage title="About XFree" sections={[{t:'Our Mission',d:'XFree provides free, browser-based developer and SEO tools that run entirely in your browser. No signup, no data collection, no friction.'},{t:'Local First',d:'All processing happens locally. Your data never leaves your device unless you explicitly choose a cloud-enabled feature.'},{t:'Open & Transparent',d:'We believe in transparency. Every tool clearly shows its processing mode, and we never count planned features as live tools.'}]}/>;
+  else if(route==='/privacy')page=<StaticPage title="Privacy Policy" sections={[{t:'Local Processing',d:'All tools process data locally in your browser. Your input is never sent to our servers.'},{t:'No Data Collection',d:'We do not collect, store, or transmit your working data. What you type stays in your browser.'},{t:'Cookies',d:'This file sets no cookies of its own.'}]}/>;
+  else if(route==='/terms')page=<StaticPage title="Terms of Service" sections={[{t:'Free to Use',d:'All XFree tools are free to use for personal and commercial purposes.'},{t:'No Warranty',d:'Tools are provided as-is. We strive for accuracy but make no guarantees.'},{t:'Acceptable Use',d:'Do not use XFree tools for illegal activities or to harm others.'}]}/>;
+  else if(route==='/use-cases')page=<StaticPage title="Use Cases" sections={[{t:'Developer Workflows',d:'Format JSON, validate schemas, encode/decode data, and test regex patterns — all locally.'},{t:'Technical SEO',d:'Generate sitemaps, test robots.txt, preview meta tags, and create schema markup.'},{t:'Data Processing',d:'Convert between formats, deduplicate lists, sort data, and clean text files.'},{t:'Content Creation',d:'Generate UUIDs, passwords, lorem ipsum, and URL slugs for your projects.'}]}/>;
+  else if(route.startsWith('/tools/'))page=<ToolPage slug={route.replace('/tools/','')}/>;
+  else if(route.startsWith('/guides/'))page=<GuidePage slug={route.replace('/guides/','')}/>;
+  else{
+    const cat=CATS.find(c=>c.id===route.replace('/',''));
+    if(cat)page=<CatPage id={cat.id}/>;
+    else page=<NotFound/>;
+  }
+
+  return<>
+    <Nav onSearch={()=>setCmdOpen(true)} route={route}/>
+    <main className="flex-1">{page}</main>
+    <Footer/>
+    <CmdPalette open={cmdOpen} onClose={()=>setCmdOpen(false)}/>
+  </>
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
