@@ -14,6 +14,7 @@ const BASE_STATIC_ROUTES = [
   "/security",
   "/xfree-app",
   "/studio",
+  "/_app-shell",
   "/instaserver",
   "/json-tools",
   "/guides",

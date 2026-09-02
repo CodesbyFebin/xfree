@@ -17,6 +17,7 @@ const DIST = path.join(process.cwd(), "dist");
 const ALLOWED_NOINDEX = new Set<string>([
   "404.html",
   path.join("roadmap", "index.html"),
+  path.join("_app-shell", "index.html"),
   ...PILLARS_50
     .filter((pillar) => !isPillarIndexable(pillar.slug))
     .map((pillar) => path.join("pillar", pillar.slug, "index.html")),
