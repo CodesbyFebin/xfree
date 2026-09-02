@@ -62,12 +62,20 @@ import { TimestampColorConverter } from "./components/tools/TimestampColorConver
 import { TextDiffChecker } from "./components/tools/TextDiffChecker";
 import { AiMicroToolComponent } from "./components/tools/AiMicroToolComponent";
 
+// app.xfree.in is a dedicated Studio host: its root ("/") is the canonical
+// Studio URL, not the marketing homepage. This resolves the effective SPA
+// path so routing, static-route detection, and useMetaTags' canonical logic
+// (which already treats "/studio" as canonical https://app.xfree.in/) all
+// agree — without bypassing the shared Header/Footer chrome.
+const isStudioHost = () => window.location.hostname.toLowerCase() === "app.xfree.in";
+const resolveEffectivePath = (pathname: string) => (isStudioHost() && pathname === "/" ? "/studio" : pathname);
+
 export default function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-  const initialCategory = categorySlugFromPath(window.location.pathname) as ToolCategory | null;
+  const [currentPath, setCurrentPath] = useState(() => resolveEffectivePath(window.location.pathname));
+  const initialCategory = categorySlugFromPath(resolveEffectivePath(window.location.pathname)) as ToolCategory | null;
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "all">(initialCategory || "all");
   const [activeView, setActiveView] = useState<"tools" | "category-hub" | "page">(
-    initialCategory ? "category-hub" : isKnownStaticRoute(window.location.pathname) ? "page" : "tools",
+    initialCategory ? "category-hub" : isKnownStaticRoute(resolveEffectivePath(window.location.pathname)) ? "page" : "tools",
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
@@ -102,7 +110,7 @@ export default function App() {
   // Handle browser popstate / back / forward navigation
   useEffect(() => {
     const handleLocationChange = () => {
-      const nextPath = window.location.pathname;
+      const nextPath = resolveEffectivePath(window.location.pathname);
       const nextCategory = categorySlugFromPath(nextPath);
       setCurrentPath(nextPath);
       setActiveCategory((nextCategory as ToolCategory | null) || "all");
@@ -127,14 +135,15 @@ export default function App() {
   const navigateTo = (path: string) => {
     const url = new URL(path, window.location.origin);
     window.history.pushState({}, "", `${url.pathname}${url.search}`);
-    setCurrentPath(url.pathname);
-    const routeCategory = categorySlugFromPath(url.pathname);
+    const effectivePath = resolveEffectivePath(url.pathname);
+    setCurrentPath(effectivePath);
+    const routeCategory = categorySlugFromPath(effectivePath);
     setActiveCategory((routeCategory as ToolCategory | null) || "all");
-    if (isKnownStaticRoute(url.pathname)) {
+    if (isKnownStaticRoute(effectivePath)) {
       setActiveView("page");
     } else if (routeCategory) {
       setActiveView("category-hub");
-    } else if (url.pathname === "/") {
+    } else if (effectivePath === "/") {
       setActiveView("tools");
     }
     window.scrollTo(0, 0);
