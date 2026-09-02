@@ -45,6 +45,7 @@ import {
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
 import { getPublicToolBySlug, PUBLIC_TOOL_SLUGS } from "../data/publicTools";
+import { TOOLS_REGISTRY } from "../data/toolsRegistry";
 import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
 import { PILLARS_50 } from "../data/masterBlueprint";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
@@ -486,20 +487,37 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
   return app;
 }
 
+// Slugs that exist as real roadmap/draft concepts (so Googlebot can plausibly
+// have discovered a link to them at some point) but are not currently
+// published. These get 410 Gone instead of 404 — a stronger "this will not
+// come back" signal that gets crawlers to stop retrying much faster than a
+// plain 404, which Google keeps periodically re-checking indefinitely.
+const DRAFT_TOOL_SLUGS = new Set<string>(
+  TOOLS_REGISTRY.filter((t) => !PUBLIC_TOOL_SLUGS.has(t.slug)).map((t) => t.slug),
+);
+
 /**
  * Minimal fallback for serverless (Vercel): static assets are served by the
  * platform before the function runs, so the function only sees paths that
- * didn't match a file. Return 404 for anything left over — no filesystem reads.
+ * didn't match a file. Known draft-tool slugs get 410 Gone; everything else
+ * gets a plain 404 — no filesystem reads either way.
  */
 export function serveMinimalFallback() {
   return async function attach(app: Express) {
-    const notFound = (_req: Request, res: Response) => {
-      res.status(404).setHeader("Content-Type", "text/html; charset=utf-8").send(
-        `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>404 — XFree.in</title><meta name="robots" content="noindex"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>404</h1><p>This URL does not map to a published tool or page.</p><p><a href="/">Back to home</a></p></body></html>`,
+    const respond = (req: Request, res: Response) => {
+      const toolMatch = req.path.match(/^\/tools\/([^/]+)\/?$/);
+      const isKnownDraft = toolMatch ? DRAFT_TOOL_SLUGS.has(toolMatch[1]) : false;
+      const status = isKnownDraft ? 410 : 404;
+      const heading = isKnownDraft ? "410 — Not published" : "404";
+      const body = isKnownDraft
+        ? "This tool concept is on the XFree roadmap but has not been implemented and published yet. It will not appear at this URL until it passes review — check back via the roadmap instead."
+        : "This URL does not map to a published tool or page.";
+      res.status(status).setHeader("Content-Type", "text/html; charset=utf-8").send(
+        `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${heading} — XFree.in</title><meta name="robots" content="noindex"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>${heading}</h1><p>${body}</p><p><a href="/roadmap">Browse the roadmap</a> · <a href="/">Back to home</a></p></body></html>`,
       );
     };
-    app.get("*", notFound);
-    app.head("*", notFound);
+    app.get("*", respond);
+    app.head("*", respond);
   };
 }
 

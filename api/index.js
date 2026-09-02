@@ -8510,15 +8510,23 @@ Path: ${parsed.data.path || "n/a"}`,
   });
   return app;
 }
+var DRAFT_TOOL_SLUGS = new Set(
+  TOOLS_REGISTRY.filter((t) => !PUBLIC_TOOL_SLUGS.has(t.slug)).map((t) => t.slug)
+);
 function serveMinimalFallback() {
   return async function attach(app) {
-    const notFound = (_req, res) => {
-      res.status(404).setHeader("Content-Type", "text/html; charset=utf-8").send(
-        `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>404 \u2014 XFree.in</title><meta name="robots" content="noindex"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>404</h1><p>This URL does not map to a published tool or page.</p><p><a href="/">Back to home</a></p></body></html>`
+    const respond = (req, res) => {
+      const toolMatch = req.path.match(/^\/tools\/([^/]+)\/?$/);
+      const isKnownDraft = toolMatch ? DRAFT_TOOL_SLUGS.has(toolMatch[1]) : false;
+      const status = isKnownDraft ? 410 : 404;
+      const heading = isKnownDraft ? "410 \u2014 Not published" : "404";
+      const body = isKnownDraft ? "This tool concept is on the XFree roadmap but has not been implemented and published yet. It will not appear at this URL until it passes review \u2014 check back via the roadmap instead." : "This URL does not map to a published tool or page.";
+      res.status(status).setHeader("Content-Type", "text/html; charset=utf-8").send(
+        `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${heading} \u2014 XFree.in</title><meta name="robots" content="noindex"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>${heading}</h1><p>${body}</p><p><a href="/roadmap">Browse the roadmap</a> \xB7 <a href="/">Back to home</a></p></body></html>`
       );
     };
-    app.get("*", notFound);
-    app.head("*", notFound);
+    app.get("*", respond);
+    app.head("*", respond);
   };
 }
 
