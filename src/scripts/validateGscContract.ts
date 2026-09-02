@@ -48,6 +48,7 @@ interface VercelRedirect {
 
 const vercelConfig = JSON.parse(fs.readFileSync(path.join(ROOT, "vercel.json"), "utf-8")) as {
   redirects?: VercelRedirect[];
+  headers?: Array<{ source: string; headers?: Array<{ key: string; value: string }> }>;
 };
 const redirects = vercelConfig.redirects ?? [];
 
@@ -138,6 +139,11 @@ for (const sitemapFile of ["sitemap.xml", "sitemap-pages.xml", "sitemap-index.xm
 const robotsTxt = read("robots.txt");
 if (!/Disallow:\s*\/_app-shell/.test(robotsTxt)) {
   fail("robots.txt missing Disallow: /_app-shell (defense-in-depth for the internal shell path)");
+}
+
+const internalShellHeaders = (vercelConfig.headers ?? []).find((entry) => entry.source === "/_app-shell")?.headers ?? [];
+if (!internalShellHeaders.some((header) => header.key.toLowerCase() === "x-robots-tag" && /noindex/i.test(header.value))) {
+  fail("vercel.json must apply X-Robots-Tag: noindex to direct /_app-shell requests");
 }
 
 // ---------------------------------------------------------------------------

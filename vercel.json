@@ -71,6 +71,15 @@
   ],
   "headers": [
     {
+      "source": "/_app-shell",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {

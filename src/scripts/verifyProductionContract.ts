@@ -97,11 +97,14 @@ const checks: Check[] = [
     },
   },
   {
-    name: "internal shell path /_app-shell is blocked in robots.txt",
+    name: "internal shell path /_app-shell is blocked in robots.txt and noindexed when requested directly",
     run: async () => {
       const res = await fetch(`${BASE}/robots.txt`);
       const text = await res.text();
       if (!/Disallow:\s*\/_app-shell/.test(text)) return "robots.txt does not disallow /_app-shell";
+      const shell = await fetchNoRedirect(`${BASE}/_app-shell`);
+      const xRobots = shell.headers.get("x-robots-tag") ?? "";
+      if (!/noindex/i.test(xRobots)) return `direct /_app-shell X-Robots-Tag is "${xRobots}", expected noindex`;
       return null;
     },
   },
