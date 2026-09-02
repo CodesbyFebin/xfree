@@ -37,8 +37,21 @@ const EnvSchema = z.object({
 
 export type AppConfig = z.infer<typeof EnvSchema>;
 
+// dotenv loads an unset value like `GEMINI_API_KEY=` as "", not undefined.
+// An empty string fails z.string().min(1).optional() and must not be treated
+// the same as an invalid config — drop empty-string keys here so one blank
+// optional var can't fail the whole schema and reset every other var (PORT,
+// PUBLIC_SITE_URL, etc.) to its default.
+function stripEmptyStrings(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const sanitized: NodeJS.ProcessEnv = {};
+  for (const [key, value] of Object.entries(env)) {
+    if (value !== "") sanitized[key] = value;
+  }
+  return sanitized;
+}
+
 function loadConfig(): AppConfig {
-  const parsed = EnvSchema.safeParse(process.env);
+  const parsed = EnvSchema.safeParse(stripEmptyStrings(process.env));
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
     // Do NOT process.exit here. On Vercel serverless, exiting at import time
