@@ -58,10 +58,36 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: TruffleHog
+
+      # Diff range depends on event type: a push to main sets base/head to the
+      # same commit if we hardcode base to the default branch (base and head
+      # both resolve to the just-pushed tip), which TruffleHog rejects as
+      # "nothing to diff" and fails every push to main. Use the actual
+      # before/after SHAs for push events instead, and the PR's base/head SHAs
+      # for pull_request events. A brand-new branch's "before" is all-zeros
+      # and a scheduled run has no diff at all, so those fall back to a full
+      # scan with no base/head.
+      - name: TruffleHog (push)
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          base: ${{ github.event.before }}
+          head: ${{ github.event.after }}
+          extra_args: --only-verified
+
+      - name: TruffleHog (pull request)
+        if: github.event_name == 'pull_request'
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.pull_request.base.sha }}
+          head: ${{ github.event.pull_request.head.sha }}
+          extra_args: --only-verified
+
+      - name: TruffleHog (full scan)
+        if: github.event_name == 'schedule' || (github.event_name == 'push' && github.event.before == '0000000000000000000000000000000000000000')
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
           extra_args: --only-verified
