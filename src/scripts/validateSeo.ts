@@ -144,8 +144,8 @@ for (const url of fullUrls) {
   }
 }
 
-if (!/<meta\s+name=["']robots["'][^>]+content=["']noindex,follow["']/i.test(notFound)) {
-  fail("404.html must contain noindex,follow");
+if (!/<meta\s+name=["']robots["'][^>]+content=["']noindex,nofollow["']/i.test(notFound)) {
+  fail("404.html must contain noindex,nofollow");
 }
 if (/<link\s+rel=["']canonical["']/i.test(notFound)) {
   fail("404.html must not publish a canonical URL");

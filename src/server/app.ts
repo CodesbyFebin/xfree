@@ -240,6 +240,7 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       const parsed = AiBatchSchema.safeParse(req.body);
       if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
       const { taskId, items } = parsed.data;
+      if (!isValidTaskId(taskId)) return res.status(400).json({ error: "invalid_task" });
       const cap = Math.min(items.length, config.AI_BATCH_MAX_ITEMS);
       const trimmed = items.slice(0, cap);
       const task = AI_TASKS[taskId];
@@ -487,33 +488,35 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
   return app;
 }
 
-// Slugs that exist as real roadmap/draft concepts (so Googlebot can plausibly
-// have discovered a link to them at some point) but are not currently
-// published. These get 410 Gone instead of 404 — a stronger "this will not
-// come back" signal that gets crawlers to stop retrying much faster than a
-// plain 404, which Google keeps periodically re-checking indefinitely.
-const DRAFT_TOOL_SLUGS = new Set<string>(
-  TOOLS_REGISTRY.filter((t) => !PUBLIC_TOOL_SLUGS.has(t.slug)).map((t) => t.slug),
+// Statuses are semantic: draft/roadmap concepts may still be published later,
+// so they are ordinary 404s. Only explicitly retired URLs are permanently
+// gone and qualify for 410.
+const RETIRED_TOOL_SLUGS = new Set<string>(
+  TOOLS_REGISTRY.filter((t) => t.status === "retired" && !PUBLIC_TOOL_SLUGS.has(t.slug)).map((t) => t.slug),
 );
+
+export function fallbackStatusForToolStatus(status?: "published" | "draft" | "roadmap" | "retired"): 404 | 410 {
+  return status === "retired" ? 410 : 404;
+}
 
 /**
  * Minimal fallback for serverless (Vercel): static assets are served by the
  * platform before the function runs, so the function only sees paths that
- * didn't match a file. Known draft-tool slugs get 410 Gone; everything else
- * gets a plain 404 — no filesystem reads either way.
+ * didn't match a file. Explicitly retired slugs get 410 Gone; draft, roadmap,
+ * and unknown paths get 404 — no filesystem reads either way.
  */
 export function serveMinimalFallback() {
   return async function attach(app: Express) {
     const respond = (req: Request, res: Response) => {
       const toolMatch = req.path.match(/^\/tools\/([^/]+)\/?$/);
-      const isKnownDraft = toolMatch ? DRAFT_TOOL_SLUGS.has(toolMatch[1]) : false;
-      const status = isKnownDraft ? 410 : 404;
-      const heading = isKnownDraft ? "410 — Not published" : "404";
-      const body = isKnownDraft
-        ? "This tool concept is on the XFree roadmap but has not been implemented and published yet. It will not appear at this URL until it passes review — check back via the roadmap instead."
+      const isRetired = toolMatch ? RETIRED_TOOL_SLUGS.has(toolMatch[1]) : false;
+      const status = fallbackStatusForToolStatus(isRetired ? "retired" : undefined);
+      const heading = isRetired ? "410 — Retired" : "404";
+      const body = isRetired
+        ? "This tool URL has been permanently retired. Browse the published directory for a current alternative."
         : "This URL does not map to a published tool or page.";
-      res.status(status).setHeader("Content-Type", "text/html; charset=utf-8").send(
-        `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${heading} — XFree.in</title><meta name="robots" content="noindex"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>${heading}</h1><p>${body}</p><p><a href="/roadmap">Browse the roadmap</a> · <a href="/">Back to home</a></p></body></html>`,
+      res.status(status).setHeader("X-Robots-Tag", "noindex, nofollow").setHeader("Content-Type", "text/html; charset=utf-8").send(
+        `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${heading} — XFree.in</title><meta name="robots" content="noindex,nofollow"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>${heading}</h1><p>${body}</p><p><a href="/roadmap">Browse the roadmap</a> · <a href="/">Back to home</a></p></body></html>`,
       );
     };
     app.get("*", respond);

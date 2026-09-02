@@ -66,7 +66,7 @@ describe("Tool Registry", () => {
 
   it("every tool carries a valid status enum value", () => {
     const valid = new Set(["published", "draft", "roadmap", "retired"]);
-    expect(TOOLS_REGISTRY.every((t) => valid.has(t.status))).toBe(true);
+    expect(TOOLS_REGISTRY.every((t) => valid.has(t.status ?? ""))).toBe(true);
   });
 
   it("publishes only explicitly indexable, completed tools", () => {

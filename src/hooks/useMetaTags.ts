@@ -275,7 +275,7 @@ export function useMetaTags({
 
     // 3. SoftwareApplication Schema (for Tools)
     if (generatedPage) {
-      jsonLdGraph.push({ "@context": "https://schema.org", ...generatedPage.jsonLd });
+      jsonLdGraph.push(generatedPage.jsonLd);
     } else if (tool) {
       jsonLdGraph.push({
         "@context": "https://schema.org",
