@@ -1,5 +1,10 @@
 # XFree.in
 
+> **⚠️ This checkout is a standalone local prototype, not production.** See
+> [PROTOTYPE.md](PROTOTYPE.md) before assuming anything below reflects the real,
+> currently-deployed [github.com/CodesbyFebin/xfree](https://github.com/CodesbyFebin/xfree). The
+> badges below link to that real repo's CI for reference only — they do not reflect this checkout.
+
 [![CI](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml/badge.svg)](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](tsconfig.json)
