@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "src/data/recipes.ts",
+  "recipes": [
+    {
+      "id": "recipe-url-cleanup-v1",
+      "slug": "url-cleanup-pipeline",
+      "version": 1,
+      "title": "URL Cleanup Pipeline",
+      "summary": "Extract HTTP(S) URLs, normalize each URL, remove duplicates, sort the list, and export a JSON array.",
+      "url": "https://www.xfree.in/recipes/url-cleanup-pipeline",
+      "studioUrl": "https://app.xfree.in/?recipe=url-cleanup-pipeline",
+      "share": {
+        "recipeId": "recipe-url-cleanup-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "extract",
+            "kind": "engine",
+            "engineId": "http-url-extract"
+          },
+          {
+            "id": "normalize",
+            "kind": "engine",
+            "engineId": "url-normalize",
+            "config": {
+              "mapLines": true
+            }
+          },
+          {
+            "id": "dedupe",
+            "kind": "engine",
+            "engineId": "line-dedupe"
+          },
+          {
+            "id": "sort",
+            "kind": "engine",
+            "engineId": "line-sort"
+          },
+          {
+            "id": "json",
+            "kind": "transform",
+            "transformId": "lines-to-json-array"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe-log-sanitizer-v1",
+      "slug": "log-sanitizer",
+      "version": 1,
+      "title": "Log Sanitizer",
+      "summary": "Trim log lines, keep ERROR lines, deduplicate repeated errors, sort them, and emit structured JSON.",
+      "url": "https://www.xfree.in/recipes/log-sanitizer",
+      "studioUrl": "https://app.xfree.in/?recipe=log-sanitizer",
+      "share": {
+        "recipeId": "recipe-log-sanitizer-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "trim",
+            "kind": "engine",
+            "engineId": "trim-lines"
+          },
+          {
+            "id": "errors",
+            "kind": "engine",
+            "engineId": "filter-lines",
+            "config": {
+              "prependLine": "ERROR"
+            }
+          },
+          {
+            "id": "dedupe",
+            "kind": "engine",
+            "engineId": "line-dedupe"
+          },
+          {
+            "id": "sort",
+            "kind": "engine",
+            "engineId": "line-sort"
+          },
+          {
+            "id": "json",
+            "kind": "transform",
+            "transformId": "lines-to-json-array"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe-jwt-inspection-v1",
+      "slug": "jwt-inspection-workflow",
+      "version": 1,
+      "title": "JWT Inspection Workflow",
+      "summary": "Decode a JWT without verifying its signature, format the decoded JSON, and sort object keys for inspection.",
+      "url": "https://www.xfree.in/recipes/jwt-inspection-workflow",
+      "studioUrl": "https://app.xfree.in/?recipe=jwt-inspection-workflow",
+      "share": {
+        "recipeId": "recipe-jwt-inspection-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "decode",
+            "kind": "engine",
+            "engineId": "jwt-decode"
+          },
+          {
+            "id": "format",
+            "kind": "engine",
+            "engineId": "json-format"
+          },
+          {
+            "id": "sort",
+            "kind": "engine",
+            "engineId": "json-sort-keys"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe-seo-url-audit-v1",
+      "slug": "seo-url-audit",
+      "version": 1,
+      "title": "SEO URL Audit",
+      "summary": "Extract and normalize links, deduplicate them, then classify URLs by the origin of the first extracted URL.",
+      "url": "https://www.xfree.in/recipes/seo-url-audit",
+      "studioUrl": "https://app.xfree.in/?recipe=seo-url-audit",
+      "share": {
+        "recipeId": "recipe-seo-url-audit-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "extract",
+            "kind": "engine",
+            "engineId": "http-url-extract"
+          },
+          {
+            "id": "normalize",
+            "kind": "engine",
+            "engineId": "url-normalize",
+            "config": {
+              "mapLines": true
+            }
+          },
+          {
+            "id": "dedupe",
+            "kind": "engine",
+            "engineId": "line-dedupe"
+          },
+          {
+            "id": "classify",
+            "kind": "transform",
+            "transformId": "classify-urls-by-first-origin"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe-json-api-cleanup-v1",
+      "slug": "json-api-cleanup",
+      "version": 1,
+      "title": "JSON API Cleanup",
+      "summary": "Validate JSON, format it, and recursively sort object keys into a stable review-friendly representation.",
+      "url": "https://www.xfree.in/recipes/json-api-cleanup",
+      "studioUrl": "https://app.xfree.in/?recipe=json-api-cleanup",
+      "share": {
+        "recipeId": "recipe-json-api-cleanup-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "validate",
+            "kind": "engine",
+            "engineId": "json-validate",
+            "passthrough": true
+          },
+          {
+            "id": "format",
+            "kind": "engine",
+            "engineId": "json-format"
+          },
+          {
+            "id": "sort",
+            "kind": "engine",
+            "engineId": "json-sort-keys"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe-text-cleanup-v1",
+      "slug": "text-cleanup-pipeline",
+      "version": 1,
+      "title": "Text Cleanup Pipeline",
+      "summary": "Trim lines, remove blanks, deduplicate repeated lines, sort the result, and count words without changing final text.",
+      "url": "https://www.xfree.in/recipes/text-cleanup-pipeline",
+      "studioUrl": "https://app.xfree.in/?recipe=text-cleanup-pipeline",
+      "share": {
+        "recipeId": "recipe-text-cleanup-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "trim",
+            "kind": "engine",
+            "engineId": "trim-lines"
+          },
+          {
+            "id": "blank",
+            "kind": "engine",
+            "engineId": "empty-line-remove"
+          },
+          {
+            "id": "dedupe",
+            "kind": "engine",
+            "engineId": "line-dedupe"
+          },
+          {
+            "id": "sort",
+            "kind": "engine",
+            "engineId": "line-sort"
+          },
+          {
+            "id": "count",
+            "kind": "engine",
+            "engineId": "word-count",
+            "passthrough": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe-csv-preparation-v1",
+      "slug": "csv-preparation",
+      "version": 1,
+      "title": "CSV Preparation",
+      "summary": "Parse CSV into structured JSON, then serialize it back into consistently quoted CSV for a deterministic cleanup pass.",
+      "url": "https://www.xfree.in/recipes/csv-preparation",
+      "studioUrl": "https://app.xfree.in/?recipe=csv-preparation",
+      "share": {
+        "recipeId": "recipe-csv-preparation-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "parse",
+            "kind": "engine",
+            "engineId": "csv-to-json"
+          },
+          {
+            "id": "serialize",
+            "kind": "engine",
+            "engineId": "json-to-csv"
+          }
+        ]
+      }
+    },
+    {
+      "id": "recipe-developer-clipboard-v1",
+      "slug": "developer-clipboard-cleanup",
+      "version": 1,
+      "title": "Developer Clipboard Cleanup",
+      "summary": "Pull URL-shaped values out of noisy terminal or CI output, deduplicate and sort them, then export JSON.",
+      "url": "https://www.xfree.in/recipes/developer-clipboard-cleanup",
+      "studioUrl": "https://app.xfree.in/?recipe=developer-clipboard-cleanup",
+      "share": {
+        "recipeId": "recipe-developer-clipboard-v1",
+        "version": 1,
+        "mode": "local",
+        "llmRequired": false,
+        "steps": [
+          {
+            "id": "extract",
+            "kind": "engine",
+            "engineId": "http-url-extract"
+          },
+          {
+            "id": "dedupe",
+            "kind": "engine",
+            "engineId": "line-dedupe"
+          },
+          {
+            "id": "sort",
+            "kind": "engine",
+            "engineId": "line-sort"
+          },
+          {
+            "id": "json",
+            "kind": "transform",
+            "transformId": "lines-to-json-array"
+          }
+        ]
+      }
+    }
+  ]
+}

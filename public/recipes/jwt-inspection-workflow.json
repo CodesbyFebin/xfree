@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-jwt-inspection-v1",
+  "slug": "jwt-inspection-workflow",
+  "version": 1,
+  "title": "JWT Inspection Workflow",
+  "summary": "Decode a JWT without verifying its signature, format the decoded JSON, and sort object keys for inspection.",
+  "description": "This workflow is designed for local inspection of JWT structure and claims. It uses the existing unverified JWT decoder, then formats the resulting JSON and sorts keys recursively to make comparison easier. The recipe does not claim that a token is authentic, valid, or trusted: decoding is not signature verification. Keep production secrets and live bearer tokens out of screenshots, issue reports, and public recipe examples.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/jwt-inspection-workflow",
+  "studioUrl": "https://app.xfree.in/?recipe=jwt-inspection-workflow",
+  "share": {
+    "recipeId": "recipe-jwt-inspection-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "decode",
+        "kind": "engine",
+        "engineId": "jwt-decode"
+      },
+      {
+        "id": "format",
+        "kind": "engine",
+        "engineId": "json-format"
+      },
+      {
+        "id": "sort",
+        "kind": "engine",
+        "engineId": "json-sort-keys"
+      }
+    ]
+  }
+}

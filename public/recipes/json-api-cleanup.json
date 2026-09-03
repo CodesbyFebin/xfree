@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-json-api-cleanup-v1",
+  "slug": "json-api-cleanup",
+  "version": 1,
+  "title": "JSON API Cleanup",
+  "summary": "Validate JSON, format it, and recursively sort object keys into a stable review-friendly representation.",
+  "description": "This recipe turns pasted API JSON into a deterministic, readable representation without sending the payload to a model. Validation runs first as a passthrough gate: if parsing fails, later steps never execute. Valid JSON is then pretty-formatted and object keys are sorted recursively while array order is preserved. The output is useful for code review, fixtures, diff preparation, and debugging where stable key order makes changes easier to inspect.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/json-api-cleanup",
+  "studioUrl": "https://app.xfree.in/?recipe=json-api-cleanup",
+  "share": {
+    "recipeId": "recipe-json-api-cleanup-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "validate",
+        "kind": "engine",
+        "engineId": "json-validate",
+        "passthrough": true
+      },
+      {
+        "id": "format",
+        "kind": "engine",
+        "engineId": "json-format"
+      },
+      {
+        "id": "sort",
+        "kind": "engine",
+        "engineId": "json-sort-keys"
+      }
+    ]
+  }
+}

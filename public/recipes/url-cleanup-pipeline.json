@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-url-cleanup-v1",
+  "slug": "url-cleanup-pipeline",
+  "version": 1,
+  "title": "URL Cleanup Pipeline",
+  "summary": "Extract HTTP(S) URLs, normalize each URL, remove duplicates, sort the list, and export a JSON array.",
+  "description": "Use this recipe when links are buried inside copied documents, logs, tickets, crawl output, or chat transcripts. The recipe first extracts HTTP and HTTPS candidates, then runs the audited URL normalizer independently across each line. It removes exact duplicates, sorts the surviving URLs, and serializes the final list as JSON. No LLM is required and no arbitrary JavaScript is accepted from the recipe payload.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/url-cleanup-pipeline",
+  "studioUrl": "https://app.xfree.in/?recipe=url-cleanup-pipeline",
+  "share": {
+    "recipeId": "recipe-url-cleanup-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "extract",
+        "kind": "engine",
+        "engineId": "http-url-extract"
+      },
+      {
+        "id": "normalize",
+        "kind": "engine",
+        "engineId": "url-normalize",
+        "config": {
+          "mapLines": true
+        }
+      },
+      {
+        "id": "dedupe",
+        "kind": "engine",
+        "engineId": "line-dedupe"
+      },
+      {
+        "id": "sort",
+        "kind": "engine",
+        "engineId": "line-sort"
+      },
+      {
+        "id": "json",
+        "kind": "transform",
+        "transformId": "lines-to-json-array"
+      }
+    ]
+  }
+}

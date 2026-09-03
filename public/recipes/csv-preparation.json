@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-csv-preparation-v1",
+  "slug": "csv-preparation",
+  "version": 1,
+  "title": "CSV Preparation",
+  "summary": "Parse CSV into structured JSON, then serialize it back into consistently quoted CSV for a deterministic cleanup pass.",
+  "description": "This recipe uses XFree's local CSV parser and serializer as a round-trip validation and normalization workflow. The CSV-to-JSON engine parses the header row and quoted fields; malformed quoted input fails instead of being silently guessed. The structured result is then sent to the JSON-to-CSV engine, which produces consistently quoted CSV output. It is useful before importing data into tools that are sensitive to inconsistent quoting or delimiter edge cases.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/csv-preparation",
+  "studioUrl": "https://app.xfree.in/?recipe=csv-preparation",
+  "share": {
+    "recipeId": "recipe-csv-preparation-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "parse",
+        "kind": "engine",
+        "engineId": "csv-to-json"
+      },
+      {
+        "id": "serialize",
+        "kind": "engine",
+        "engineId": "json-to-csv"
+      }
+    ]
+  }
+}

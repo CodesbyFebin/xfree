@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-text-cleanup-v1",
+  "slug": "text-cleanup-pipeline",
+  "version": 1,
+  "title": "Text Cleanup Pipeline",
+  "summary": "Trim lines, remove blanks, deduplicate repeated lines, sort the result, and count words without changing final text.",
+  "description": "Use this recipe to clean pasted lists, notes, exported labels, or line-oriented text before reuse. It trims each line, removes empty lines, deduplicates exact repeats, and sorts the remaining content. A final word-count engine runs in passthrough mode so the execution trace records a useful metric while the recipe output remains the cleaned text rather than replacing it with the numeric count.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/text-cleanup-pipeline",
+  "studioUrl": "https://app.xfree.in/?recipe=text-cleanup-pipeline",
+  "share": {
+    "recipeId": "recipe-text-cleanup-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "trim",
+        "kind": "engine",
+        "engineId": "trim-lines"
+      },
+      {
+        "id": "blank",
+        "kind": "engine",
+        "engineId": "empty-line-remove"
+      },
+      {
+        "id": "dedupe",
+        "kind": "engine",
+        "engineId": "line-dedupe"
+      },
+      {
+        "id": "sort",
+        "kind": "engine",
+        "engineId": "line-sort"
+      },
+      {
+        "id": "count",
+        "kind": "engine",
+        "engineId": "word-count",
+        "passthrough": true
+      }
+    ]
+  }
+}
