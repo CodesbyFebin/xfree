@@ -387,6 +387,40 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     return "unknown";
   };
 
+  // /home — alternate cyberpunk-themed marketing page served from
+  // public/home.html. Per the prototype policy (blueprint §18) this is a
+  // design reference rendered as a standalone page so visitors can compare
+  // the cyberpunk visual system against the production SPA. It uses CDN
+  // fonts and the Tailwind play CDN, so it gets a relaxed CSP that allows
+  // jsdelivr and cdn.tailwindcss in addition to the production allowlist.
+  const HOME_CSP_DIRECTIVES = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com https://cdn.tailwindcss.com",
+    "script-src-elem 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com https://cdn.tailwindcss.com",
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com",
+    "img-src 'self' data: blob: https: https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com",
+    "font-src 'self' data: https://cdn.jsdelivr.net",
+    "connect-src 'self' https://api.github.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://adservice.google.com",
+    "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com",
+    "upgrade-insecure-requests",
+  ];
+  const homeHtmlPath = path.join(process.cwd(), "public", "home.html");
+  const serveHome = (_req: Request, res: Response) => {
+    if (!fs.existsSync(homeHtmlPath)) {
+      return res.status(404).send("home.html not found");
+    }
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=300, s-maxage=3600");
+    res.setHeader("Content-Security-Policy", HOME_CSP_DIRECTIVES.join("; "));
+    res.setHeader("X-Robots-Tag", "index, follow");
+    res.status(200).sendFile(homeHtmlPath);
+  };
+  app.get(["/home", "/home/"], serveHome);
+
   if (opts.attachStatic) await opts.attachStatic(app);
   if (opts.attachSpaFallback) await opts.attachSpaFallback(app);
 

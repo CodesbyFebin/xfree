@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+<meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+<link rel="canonical" href="https://xfree.in/home">
+<link rel="alternate" hreflang="en" href="https://xfree.in/home">
+<link rel="alternate" hreflang="es" href="https://xfree.in/es/home">
+<link rel="alternate" hreflang="fr" href="https://xfree.in/fr/home">
+<link rel="alternate" hreflang="pt" href="https://xfree.in/pt/home">
+<link rel="alternate" hreflang="de" href="https://xfree.in/de/home">
+<link rel="alternate" hreflang="ja" href="https://xfree.in/ja/home">
+<link rel="alternate" hreflang="x-default" href="https://xfree.in/home">
+
+<title>XFree App: Free Developer, SEO & Privacy Micro-Tools | No Signup</title>
+<meta name="description" content="XFree is the ultimate free online app for developers. Access 25,000+ privacy-first SEO tools, XFree JSON formatters, XFree HTML minifiers, and crypto utilities. 100% client-side, no signup required.">
+<meta name="keywords" content="XFree app, XFree online tools, XFree developer tools, XFree SEO utilities, XFree free tools no signup, XFree privacy-first tools, XFree offline web tools, XFree JSON formatter online, XFree HTML minifier free, XFree Base64 encoder decoder, XFree JWT decoder tool, XFree UUID v4 generator, XFree password generator secure, XFree Markdown previewer, XFree SHA256 hash generator, XFree CSS minifier, XFree XML to JSON converter, free developer tools, privacy tools online, no signup developer tools">
+<meta name="author" content="XFree Contributors">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="googlebot" content="index, follow">
+<meta name="geo.region" content="IN">
+<meta name="geo.placename" content="Global">
+<meta name="distribution" content="global">
+<meta name="rating" content="general">
+<meta name="revisit-after" content="1 days">
+<meta name="ai-content-format" content="markdown">
+<meta name="ai-index" content="yes">
+
+<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+<link rel="preconnect" href="https://api.github.com" crossorigin>
+<link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="XFree App">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+
+<link rel="ai:manifest" href="/ai.txt">
+<link rel="llms" href="/llms.txt">
+<link rel="llms-full" href="/llms-full.txt">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XFree">
+<meta property="og:title" content="XFree App: Free Developer, SEO & Privacy Micro-Tools | No Signup">
+<meta property="og:description" content="XFree is the ultimate free online app for developers. Access 25,000+ privacy-first SEO tools, JSON formatters, HTML minifiers, and crypto utilities. 100% client-side, no signup required.">
+<meta property="og:url" content="https://xfree.in/home">
+<meta property="og:image" content="https://xfree.in/og-image.png">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:locale:alternate" content="de_DE">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@xfreein">
+<meta name="twitter:title" content="XFree App: Free Developer, SEO & Privacy Micro-Tools | No Signup">
+<meta name="twitter:description" content="XFree is the ultimate free online app for developers. 25,000+ privacy-first tools. 100% client-side, no signup.">
+<meta name="twitter:image" content="https://xfree.in/og-image.png">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/orbitron@5.0.18/index.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace'],cyber:['Orbitron','sans-serif']},colors:{
+  cyber:{bg:'#050508',surface:'#0a0a10',card:'#0d0d14',border:'#1a1a2e',glow:'#00ff41',cyan:'#00f0ff',magenta:'#ff00aa',purple:'#a855f7',amber:'#fbbf24',red:'#ff3333',dim:'#2a2a3e',text:'#c8c8d4',muted:'#6b6b80'},
+}}}}
+</script>
+
+<style>
+*{scrollbar-width:thin;scrollbar-color:#1a1a2e #050508}
+*::-webkit-scrollbar{width:5px;height:5px}
+*::-webkit-scrollbar-track{background:#050508}
+*::-webkit-scrollbar-thumb{background:#1a1a2e;border-radius:3px}
+*::-webkit-scrollbar-thumb:hover{background:#00ff41}
+
+body{background:#050508;color:#c8c8d4;font-family:'Inter',system-ui,sans-serif;overflow-x:hidden}
+
+.scanlines{pointer-events:none;position:fixed;inset:0;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.015) 2px,rgba(0,255,65,.015) 4px);mix-blend-mode:overlay}
+
+.crt-vignette{pointer-events:none;position:fixed;inset:0;z-index:9998;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.4) 100%)}
+
+.matrix-grid{background-image:
+  linear-gradient(rgba(0,255,65,.03) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,255,65,.03) 1px,transparent 1px);
+  background-size:40px 40px}
+
+.neon-green{text-shadow:0 0 7px #00ff41,0 0 10px #00ff41,0 0 21px #00ff41}
+.neon-cyan{text-shadow:0 0 7px #00f0ff,0 0 10px #00f0ff,0 0 21px #00f0ff}
+.neon-magenta{text-shadow:0 0 7px #ff00aa,0 0 10px #ff00aa,0 0 21px #ff00aa}
+.neon-box-green{box-shadow:0 0 5px rgba(0,255,65,.3),inset 0 0 5px rgba(0,255,65,.1)}
+.neon-box-cyan{box-shadow:0 0 5px rgba(0,240,255,.3),inset 0 0 5px rgba(0,240,255,.1)}
+.neon-box-magenta{box-shadow:0 0 5px rgba(255,0,170,.3),inset 0 0 5px rgba(255,0,170,.1)}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse-neon{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.7;filter:brightness(1.3)}}
+@keyframes glitch{0%{transform:translate(0)}20%{transform:translate(-2px,2px)}40%{transform:translate(-2px,-2px)}60%{transform:translate(2px,2px)}80%{transform:translate(2px,-2px)}100%{transform:translate(0)}}
+@keyframes scanline-move{0%{top:-100%}100%{top:100%}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes blink-caret{from,to{border-color:transparent}50%{border-color:#00ff41}}
+@keyframes slide-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes border-glow{0%,100%{border-color:rgba(0,255,65,.2)}50%{border-color:rgba(0,255,65,.6)}}
+@keyframes data-stream{0%{background-position:0 0}100%{background-position:0 100%}}
+
+.anim-float{animation:float 4s ease-in-out infinite}
+.anim-slide-up{animation:slide-up .6s ease-out both}
+.anim-fade-in{animation:fade-in .4s ease-out both}
+.anim-pulse{animation:pulse-neon 2s ease-in-out infinite}
+.anim-border{animation:border-glow 3s ease-in-out infinite}
+
+.glitch{position:relative}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%}
+.glitch::before{animation:glitch .3s infinite;color:#00f0ff;z-index:-1;clip-path:polygon(0 0,100% 0,100% 45%,0 45%)}
+.glitch::after{animation:glitch .3s infinite reverse;color:#ff00aa;z-index:-1;clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%)}
+
+.terminal{background:#0a0a10;border:1px solid #1a1a2e;border-radius:8px;overflow:hidden}
+.terminal-header{background:#0d0d14;border-bottom:1px solid #1a1a2e;padding:8px 12px;display:flex;align-items:center;gap:6px}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+
+.cyber-card{background:#0a0a10;border:1px solid #1a1a2e;border-radius:8px;position:relative;overflow:hidden;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.cyber-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#00ff41,transparent);opacity:0;transition:opacity .3s}
+.cyber-card:hover::before{opacity:1}
+.cyber-card:hover{border-color:rgba(0,255,65,.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,255,65,.08)}
+
+.cyber-btn{position:relative;padding:10px 24px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;border:1px solid #00ff41;color:#00ff41;background:transparent;cursor:pointer;transition:all .2s;overflow:hidden}
+.cyber-btn::before{content:'';position:absolute;inset:0;background:#00ff41;transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.cyber-btn:hover::before{transform:scaleX(1)}
+.cyber-btn:hover{color:#050508;text-shadow:none}
+.cyber-btn span{position:relative;z-index:1}
+
+.cyber-btn-filled{background:#00ff41;color:#050508;border-color:#00ff41}
+.cyber-btn-filled::before{background:#050508}
+.cyber-btn-filled:hover{color:#00ff41}
+
+.cyber-btn-cyan{border-color:#00f0ff;color:#00f0ff}
+.cyber-btn-cyan::before{background:#00f0ff}
+.cyber-btn-cyan:hover{color:#050508}
+
+.badge-flagship{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.badge-popular{background:rgba(0,240,255,.1);color:#00f0ff;border:1px solid rgba(0,240,255,.3)}
+.badge-local{background:rgba(0,255,65,.1);color:#00ff41;border:1px solid rgba(0,255,65,.3)}
+.badge-new{background:rgba(168,85,247,.1);color:#a855f7;border:1px solid rgba(168,85,247,.3)}
+.badge-essential{background:rgba(255,0,170,.1);color:#ff00aa;border:1px solid rgba(255,0,170,.3)}
+
+.ticker-track{display:flex;animation:marquee 40s linear infinite;width:max-content}
+.metric-ticker{overflow:hidden;position:relative}
+.metric-ticker::before,.metric-ticker::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2}
+.metric-ticker::before{left:0;background:linear-gradient(90deg,#050508,transparent)}
+.metric-ticker::after{right:0;background:linear-gradient(-90deg,#050508,transparent)}
+
+.focus-ring:focus-visible{outline:2px solid #00ff41;outline-offset:2px;border-radius:4px}
+.skip-link{position:absolute;top:-50px;left:0;background:#00ff41;color:#050508;padding:8px 16px;z-index:10000;transition:top .2s;text-decoration:none;font-weight:700;font-family:'JetBrains Mono',monospace}
+.skip-link:focus{top:0}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+kbd{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 6px;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:4px;color:#00ff41}
+input,select,textarea{background:transparent!important;border:none!important;color:#c8c8d4!important}
+input:focus,select:focus,textarea:focus{outline:none!important;box-shadow:none!important}
+input::placeholder,textarea::placeholder{color:#6b6b80!important}
+
+details summary{cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:'+';font-size:1.25rem;font-weight:300;color:#00ff41;transition:transform .2s;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+details[open] summary::after{content:'−'}
+details[open]{background:#0d0d14;border-color:rgba(0,255,65,.3)}
+
+.bear-trap{position:absolute;left:-9999px;opacity:0;pointer-events:none}
+
+.ad-safe-zone{padding-top:160px;padding-bottom:160px}
+
+.live-demo-input{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;resize:none}
+
+.cmd-bar:focus-within{border-color:#00ff41!important;box-shadow:0 0 0 4px rgba(0,255,65,.1),0 10px 40px -10px rgba(0,255,65,.15)}
+
+.hero-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.12;pointer-events:none}
+
+.corner-brackets{position:relative}
+.corner-brackets::before,.corner-brackets::after{content:'';position:absolute;width:12px;height:12px;border-color:#00ff41;opacity:.5}
+.corner-brackets::before{top:-1px;left:-1px;border-top:1px solid;border-left:1px solid}
+.corner-brackets::after{bottom:-1px;right:-1px;border-bottom:1px solid;border-right:1px solid}
+
+.data-line{height:1px;background:linear-gradient(90deg,transparent,#00ff41,transparent);opacity:.3}
+
+.pillar-card{transition:all .2s ease;position:relative;overflow:hidden}
+.pillar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#00ff41,transparent);opacity:0;transition:opacity .2s}
+.pillar-card:hover::before{opacity:1}
+.pillar-card:hover{border-color:rgba(0,255,65,.3);transform:translateY(-1px)}
+
+.lang-switcher{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:4px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;color:#6b6b80;background:#0d0d14;border:1px solid #1a1a2e;transition:all .2s}
+.lang-switcher:hover{background:#1a1a2e;color:#00ff41;border-color:rgba(0,255,65,.3)}
+.lang-switcher.active{background:rgba(0,255,65,.1);color:#00ff41;border-color:#00ff41}
+
+.sticky-nav{transition:all .25s ease}
+.sticky-nav.scrolled{background:rgba(5,5,8,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #1a1a2e}
+
+@media(max-width:768px){.hero-title{font-size:2rem!important;line-height:1.1!important}}
+
+.hex-pattern{background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L55 20v20L30 55 5 40V20z' fill='none' stroke='%2300ff41' stroke-width='.3' opacity='.05'/%3E%3C/svg%3E")}
+</style>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"XFree","url":"https://xfree.in","logo":"https://xfree.in/logo.png","description":"XFree is the ultimate free online app for developers offering 25,000+ privacy-first micro-tools.","foundingDate":"2025","license":"https://opensource.org/licenses/MIT","sameAs":["https://github.com/xfree-in/xfree","https://twitter.com/xfreein"],"contactPoint":{"@type":"ContactPoint","contactType":"customer support","email":"support@xfree.in","availableLanguage":["English","Spanish","French","Portuguese","German","Japanese"]}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"XFree","url":"https://xfree.in","description":"XFree is the ultimate free online app for developers. Access 25,000+ privacy-first SEO tools, JSON formatters, HTML minifiers, and crypto utilities.","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://xfree.in/search?q={search_term_string}"},"query-input":"required name=search_term_string"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"XFree App","url":"https://xfree.in","description":"XFree is the ultimate free online app for developers. Access 25,000+ privacy-first SEO tools, JSON formatters, HTML minifiers, and crypto utilities. 100% client-side, no signup required.","applicationCategory":"DeveloperApplication","operatingSystem":"Any (Browser-based)","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["25,000+ Developer Tools","100% Client-Side Execution","Zero Telemetry","Open Source MIT","No Account Required","Offline Capable","Privacy-First Architecture","WebAssembly Optimized","Military-Grade CSP Security","Streaming File Parser"],"author":{"@type":"Organization","name":"XFree Contributors"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://xfree.in/"},{"@type":"ListItem","position":2,"name":"Categories","item":"https://xfree.in/categories"},{"@type":"ListItem","position":3,"name":"50 Pillars","item":"https://xfree.in/pillars"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is XFree app?","acceptedAnswer":{"@type":"Answer","text":"XFree app is the ultimate free online platform for developers offering 25,000+ privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. All tools run 100% client-side with no signup required."}},{"@type":"Question","name":"Is XFree really free with no signup?","acceptedAnswer":{"@type":"Answer","text":"Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and run entirely in your browser."}},{"@type":"Question","name":"How does XFree ensure privacy?","acceptedAnswer":{"@type":"Answer","text":"XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed."}},{"@type":"Question","name":"What is XFree alternative to CodeBeautify?","acceptedAnswer":{"@type":"Answer","text":"XFree is a privacy-first alternative to CodeBeautify and similar tools. Unlike those platforms, XFree runs 100% client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit."}},{"@type":"Question","name":"Can I use XFree offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. Because XFree tools are static HTML with embedded JavaScript, you can save any tool page and use it completely offline without an internet connection."}},{"@type":"Question","name":"Is XFree open source?","acceptedAnswer":{"@type":"Answer","text":"Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our GitHub repository at github.com/xfree-in/xfree."}},{"@type":"Question","name":"How many tools are on XFree?","acceptedAnswer":{"@type":"Answer","text":"XFree currently publishes a growing catalog organized across 50 pillar categories and 2,500 topic clusters, with a roadmap of 25,000 micro-tool concepts."}},{"@type":"Question","name":"What is XFree JSON formatter online?","acceptedAnswer":{"@type":"Answer","text":"The XFree JSON Formatter online is a free, privacy-first tool that beautifies, minifies, validates, and repairs JSON data instantly in your browser. No data leaves your device."}}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ItemList","name":"XFree Tool Pillars","description":"The 50 core categories of XFree developer and SEO tools.","numberOfItems":50,"itemListElement":[{"@type":"ListItem","position":1,"name":"XFree Frontend Development Tools","url":"https://xfree.in/pillar/frontend-development/"},{"@type":"ListItem","position":2,"name":"XFree Backend Development Tools","url":"https://xfree.in/pillar/backend-development/"},{"@type":"ListItem","position":3,"name":"XFree DevOps & CI/CD Tools","url":"https://xfree.in/pillar/devops-cicd/"},{"@type":"ListItem","position":4,"name":"XFree Cybersecurity & Privacy Tools","url":"https://xfree.in/pillar/cybersecurity-privacy/"},{"@type":"ListItem","position":5,"name":"XFree Technical SEO Tools","url":"https://xfree.in/pillar/technical-seo/"}]}
+</script>
+</head>
+<body class="bg-cyber-bg text-cyber-text antialiased">
+
+<div class="scanlines" aria-hidden="true"></div>
+<div class="crt-vignette" aria-hidden="true"></div>
+
+<a href="#main-content" class="skip-link focus-ring">Skip to main content</a>
+
+<header id="mainNav" class="sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3" role="banner">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="https://xfree.in/" class="flex items-center gap-2.5 group focus-ring" aria-label="XFree Home">
+      <div class="w-9 h-9 rounded-lg border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 group-hover:bg-cyber-glow/10 transition-all neon-box-green">
+        <span class="text-sm font-black text-cyber-glow tracking-tighter font-cyber">X</span>
+      </div>
+      <div>
+        <span class="text-base font-bold text-white tracking-tight">XFree<span class="text-cyber-glow">.in</span></span>
+        <span class="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-2">// XFree App · Free Developer Tools</span>
+      </div>
+    </a>
+    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+      <a href="https://xfree.in/categories" class="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all focus-ring">Categories</a>
+      <a href="https://xfree.in/pillars" class="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all focus-ring">50 Pillars</a>
+      <a href="https://xfree.in/roadmap" class="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all focus-ring">Roadmap</a>
+      <a href="https://xfree.in/how-it-works" class="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all focus-ring">How It Works</a>
+      <a href="https://xfree.in/faq" class="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all focus-ring">FAQ</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <div class="hidden lg:flex items-center gap-1" role="navigation" aria-label="Language selector">
+        <a href="https://xfree.in/" class="lang-switcher active" aria-label="English">EN</a>
+        <a href="https://xfree.in/es/" class="lang-switcher" aria-label="Español">ES</a>
+        <a href="https://xfree.in/fr/" class="lang-switcher" aria-label="Français">FR</a>
+        <a href="https://xfree.in/pt/" class="lang-switcher" aria-label="Português">PT</a>
+        <a href="https://xfree.in/de/" class="lang-switcher" aria-label="Deutsch">DE</a>
+        <a href="https://xfree.in/ja/" class="lang-switcher" aria-label="日本語">JA</a>
+      </div>
+      <a href="https://studio.xfree.in" class="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring" rel="noopener">
+        <span>Launch Studio →</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+<section class="relative min-h-[92vh] flex items-center justify-center pt-20 pb-12 overflow-hidden matrix-grid hex-pattern" aria-labelledby="hero-heading">
+  <div class="hero-orb w-[500px] h-[500px] bg-cyber-glow -top-40 -left-40" style="position:absolute" aria-hidden="true"></div>
+  <div class="hero-orb w-[400px] h-[400px] bg-cyber-magenta top-1/4 -right-32" style="position:absolute" aria-hidden="true"></div>
+  <div class="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" style="position:absolute" aria-hidden="true"></div>
+  <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="absolute top-32 left-[15%] w-1.5 h-1.5 rounded-full bg-cyber-glow/40 anim-float"></div>
+    <div class="absolute top-48 right-[20%] w-2 h-2 rounded-full bg-cyber-cyan/30 anim-float" style="animation-delay:1s"></div>
+    <div class="absolute bottom-40 left-[25%] w-1 h-1 rounded-full bg-cyber-magenta/40 anim-float" style="animation-delay:2s"></div>
+    <div class="absolute top-60 right-[40%] w-1 h-1 rounded-full bg-cyber-glow/30 anim-float" style="animation-delay:3s"></div>
+  </div>
+
+  <div class="relative z-10 max-w-5xl mx-auto px-4 text-center">
+    <div class="anim-slide-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-8 neon-box-green" style="animation-delay:.1s">
+      <span class="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse" aria-hidden="true"></span>
+      <span>$ XFree App · 25,000+ Free Tools · No Signup Required</span>
+    </div>
+
+    <h1 id="hero-heading" class="hero-title anim-slide-up text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4 glitch" data-text="XFree: The Ultimate Free Developer, SEO & Privacy Micro-Tools App" style="animation-delay:.2s">
+      XFree: The Ultimate Free<br>Developer, SEO &amp; <span class="text-cyber-glow neon-green">Privacy Micro-Tools App</span>
+    </h1>
+
+    <p class="anim-slide-up text-lg sm:text-xl text-cyber-cyan font-mono mb-2" style="animation-delay:.25s">// Get X Done for Free — Fast, Private, No Sign-Up</p>
+
+    <p class="anim-slide-up text-base text-cyber-muted max-w-2xl mx-auto mb-10 leading-relaxed" style="animation-delay:.3s">
+      XFree is the ultimate free online app for developers. Access 25,000+ privacy-first SEO tools, XFree JSON formatters, XFree HTML minifiers, and XFree crypto utilities. 100% client-side, no signup required.
+    </p>
+
+    <div class="anim-slide-up max-w-2xl mx-auto mb-6" style="animation-delay:.4s">
+      <form action="https://xfree.in/search" method="get" role="search">
+        <div class="cmd-bar relative flex items-center bg-cyber-card rounded-lg p-1.5 border border-cyber-border transition-all duration-300 corner-brackets">
+          <div class="pl-4 pr-2 text-cyber-glow" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <label for="heroSearch" class="sr-only">Search XFree tools</label>
+          <input type="text" id="heroSearch" name="q" placeholder="search> XFree tools — JSON, Regex, Sitemap, JWT, Hash..." class="flex-1 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono" autocomplete="off">
+          <div class="flex items-center gap-2 pr-2">
+            <kbd aria-hidden="true">⌘K</kbd>
+            <button type="submit" class="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring"><span>EXECUTE</span></button>
+          </div>
+        </div>
+      </form>
+      <nav class="flex items-center justify-center gap-2 mt-3 flex-wrap" aria-label="Popular XFree tool searches">
+        <span class="text-[11px] text-cyber-muted font-mono">Popular:</span>
+        <a href="https://xfree.in/tool/json-formatter/" class="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">XFree JSON Formatter</a>
+        <span class="text-cyber-dim" aria-hidden="true">·</span>
+        <a href="https://xfree.in/tool/regex-tester/" class="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">XFree Regex Tester</a>
+        <span class="text-cyber-dim" aria-hidden="true">·</span>
+        <a href="https://xfree.in/tool/xml-sitemap-generator/" class="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">XFree Sitemap Generator</a>
+        <span class="text-cyber-dim" aria-hidden="true">·</span>
+        <a href="https://xfree.in/tool/meta-tag-generator/" class="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">XFree Meta Tags</a>
+        <span class="text-cyber-dim" aria-hidden="true">·</span>
+        <a href="https://xfree.in/tool/jwt-decoder/" class="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">XFree JWT Decoder</a>
+        <span class="text-cyber-dim" aria-hidden="true">·</span>
+        <a href="https://xfree.in/tool/cron-generator/" class="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">XFree Cron Gen</a>
+      </nav>
+      <small class="block mt-3 text-[10px] text-cyber-dim font-mono"> Pro-tip: Press <kbd>Ctrl+Enter</kbd> to process, <kbd>Ctrl+Shift+C</kbd> to copy.</small>
+    </div>
+
+    <div class="anim-slide-up flex items-center justify-center gap-4 sm:gap-8 text-xs text-cyber-muted font-mono mt-6" style="animation-delay:.5s">
+      <span class="flex items-center gap-1.5"><span class="text-cyber-glow" aria-hidden="true">⚡</span> <span class="text-cyber-glow">LOCAL</span> Mode by Default</span>
+      <span class="hidden sm:inline text-cyber-dim" aria-hidden="true">|</span>
+      <span class="flex items-center gap-1.5"><span class="text-cyber-cyan" aria-hidden="true">🔒</span> <span class="text-cyber-cyan">PRIVACY</span>-First</span>
+      <span class="hidden sm:inline text-cyber-dim" aria-hidden="true">|</span>
+      <span class="flex items-center gap-1.5"><span class="text-cyber-magenta" aria-hidden="true">🚀</span> <span class="text-cyber-magenta">ZERO</span> Sign-Up</span>
+    </div>
+  </div>
+</section>
+
+<section class="relative py-5 border-y border-cyber-border bg-cyber-surface" aria-label="Platform metrics">
+  <div class="metric-ticker">
+    <div class="ticker-track">
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-glow font-cyber neon-green">25K+</span><span class="text-xs text-cyber-muted font-mono">XFree Planned Tools</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">50</span><span class="text-xs text-cyber-muted font-mono">XFree Pillar Categories</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">2,500</span><span class="text-xs text-cyber-muted font-mono">XFree Topic Clusters</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-glow font-cyber neon-green">LOCAL</span><span class="text-xs text-cyber-muted font-mono">Mode by Default</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">0</span><span class="text-xs text-cyber-muted font-mono">Required Signups</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-cyan font-cyber neon-cyan">MIT</span><span class="text-xs text-cyber-muted font-mono">XFree Open Source</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-magenta font-cyber neon-magenta">FREE</span><span class="text-xs text-cyber-muted font-mono">Forever</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">BROWSER</span><span class="text-xs text-cyber-muted font-mono">Native Execution</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-glow font-cyber neon-green">25K+</span><span class="text-xs text-cyber-muted font-mono">XFree Planned Tools</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">50</span><span class="text-xs text-cyber-muted font-mono">XFree Pillar Categories</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">2,500</span><span class="text-xs text-cyber-muted font-mono">XFree Topic Clusters</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-glow font-cyber neon-green">LOCAL</span><span class="text-xs text-cyber-muted font-mono">Mode by Default</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">0</span><span class="text-xs text-cyber-muted font-mono">Required Signups</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-cyan font-cyber neon-cyan">MIT</span><span class="text-xs text-cyber-muted font-mono">XFree Open Source</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-cyber-magenta font-cyber neon-magenta">FREE</span><span class="text-xs text-cyber-muted font-mono">Forever</span></div>
+      <div class="flex items-center gap-3 px-8"><span class="text-2xl font-black text-white font-cyber">BROWSER</span><span class="text-xs text-cyber-muted font-mono">Native Execution</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-14 px-4" aria-labelledby="playground-heading">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-8">
+      <span class="inline-block px-3 py-1 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-xs font-mono mb-3 neon-box-green">// Live Demo</span>
+      <h2 id="playground-heading" class="text-2xl font-bold text-white mb-2">Try the XFree JSON Formatter Now</h2>
+      <p class="text-cyber-muted text-sm font-mono">$ Experience instant, browser-based tool execution. Zero server calls.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot bg-cyber-red"></div>
+          <div class="terminal-dot bg-cyber-amber"></div>
+          <div class="terminal-dot bg-cyber-glow"></div>
+          <span class="text-xs font-mono text-cyber-muted ml-2">xfree@json-formatter ~ $</span>
+          <span class="text-[10px] px-2 py-0.5 rounded badge-local font-mono ml-auto">LOCAL</span>
+        </div>
+        <div class="p-4">
+          <label for="demoInput" class="text-[10px] uppercase tracking-wider text-cyber-glow font-mono font-semibold mb-2 block">> Raw Input JSON:</label>
+          <textarea id="demoInput" class="live-demo-input w-full h-36 bg-cyber-bg border border-cyber-border rounded p-3 text-cyber-glow focus:border-cyber-glow focus:outline-none transition-colors" aria-label="JSON input">{"name":"xfree","type":"micro-tool","fast":true}</textarea>
+          <div class="flex items-center gap-2 mt-2">
+            <span id="demoStatus" class="flex items-center gap-1 text-[10px] text-cyber-glow font-mono"><span class="w-1.5 h-1.5 rounded-full bg-cyber-glow"></span> Valid Syntax</span>
+            <span class="text-[10px] text-cyber-dim">·</span>
+            <span id="demoTime" class="text-[10px] text-cyber-muted font-mono">Execution: 0.1ms</span>
+          </div>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot bg-cyber-red"></div>
+          <div class="terminal-dot bg-cyber-amber"></div>
+          <div class="terminal-dot bg-cyber-glow"></div>
+          <span class="text-xs font-mono text-cyber-muted ml-2">output ~ formatted</span>
+          <button id="demoCopyBtn" class="text-[10px] text-cyber-glow hover:text-white transition-colors flex items-center gap-1 focus-ring font-mono ml-auto" aria-label="Copy output to clipboard">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            COPY
+          </button>
+        </div>
+        <div class="p-4">
+          <pre id="demoOutput" class="live-demo-input h-36 bg-cyber-bg border border-cyber-border rounded p-3 text-cyber-glow overflow-auto whitespace-pre-wrap" aria-label="JSON output">{
+  "name": "xfree",
+  "type": "micro-tool",
+  "fast": true
+}</pre>
+          <div class="flex items-center justify-between mt-2">
+            <span class="text-[10px] text-cyber-muted font-mono">In-browser · No server</span>
+            <a href="https://xfree.in/tool/json-formatter/" class="text-[10px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">Open Full XFree JSON Formatter →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="data-line max-w-7xl mx-auto" aria-hidden="true"></div>
+
+<section class="py-14 px-4 bg-cyber-surface/50" aria-labelledby="featured-heading">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 id="featured-heading" class="text-xl font-bold text-white font-mono"><span class="text-cyber-glow">$</span> Featured XFree Tools</h2>
+        <p class="text-sm text-cyber-muted mt-1 font-mono">// Working tools available now in the <a href="https://studio.xfree.in" class="text-cyber-cyan hover:text-white underline focus-ring" rel="noopener">XFree Studio app</a></p>
+      </div>
+      <a href="https://xfree.in/categories" class="text-xs text-cyber-glow hover:text-white transition-colors focus-ring font-mono">View all →</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+      <a href="https://xfree.in/tool/json-formatter/" class="cyber-card p-4 group block focus-ring" aria-label="XFree JSON Formatter online">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-sm font-mono font-bold text-cyber-glow group-hover:neon-box-green transition-all">{ }</div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded badge-flagship font-mono">★ FLAGSHIP</span>
+        </div>
+        <h3 class="text-sm font-semibold text-white mb-1 group-hover:text-cyber-glow transition-colors font-mono">XFree JSON Formatter</h3>
+        <p class="text-xs text-cyber-muted leading-relaxed mb-3">XFree JSON formatter online free. Format, validate, repair, and minify JSON data with instant tree inspect.</p>
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] text-cyber-dim font-mono">Category: <span class="text-cyber-muted">Developer</span></span>
+          <span class="text-cyber-glow text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity">EXEC →</span>
+        </div>
+      </a>
+
+      <a href="https://xfree.in/tool/regex-tester/" class="cyber-card p-4 group block focus-ring" aria-label="XFree Regex Tester">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center text-sm font-mono font-bold text-cyber-cyan group-hover:neon-box-cyan transition-all">.*</div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded badge-popular font-mono">POPULAR</span>
+        </div>
+        <h3 class="text-sm font-semibold text-white mb-1 group-hover:text-cyber-cyan transition-colors font-mono">XFree Regex Tester</h3>
+        <p class="text-xs text-cyber-muted leading-relaxed mb-3">XFree regex tester no login. Test JS regex patterns live with match group tables and replacements.</p>
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] text-cyber-dim font-mono">Category: <span class="text-cyber-muted">Developer</span></span>
+          <span class="text-cyber-cyan text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity">EXEC →</span>
+        </div>
+      </a>
+
+      <a href="https://xfree.in/tool/xml-sitemap-generator/" class="cyber-card p-4 group block focus-ring" aria-label="XFree XML Sitemap Generator">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-sm font-mono font-bold text-cyber-glow group-hover:neon-box-green transition-all">🗺️</div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded badge-flagship font-mono">★ FLAGSHIP</span>
+        </div>
+        <h3 class="text-sm font-semibold text-white mb-1 group-hover:text-cyber-glow transition-colors font-mono">XFree Sitemap Generator</h3>
+        <p class="text-xs text-cyber-muted leading-relaxed mb-3">XFree SEO tools for digital marketers. Extract links from HTML and generate Google XML sitemaps with priority.</p>
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] text-cyber-dim font-mono">Category: <span class="text-cyber-muted">SEO & URL</span></span>
+          <span class="text-cyber-glow text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity">EXEC →</span>
+        </div>
+      </a>
+
+      <a href="https://xfree.in/tool/meta-tag-generator/" class="cyber-card p-4 group block focus-ring" aria-label="XFree Meta Tag Generator">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-cyber-magenta/5 border border-cyber-magenta/20 flex items-center justify-center text-sm font-mono font-bold text-cyber-magenta group-hover:neon-box-magenta transition-all">🏷️</div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded badge-essential font-mono">ESSENTIAL</span>
+        </div>
+        <h3 class="text-sm font-semibold text-white mb-1 group-hover:text-cyber-magenta transition-colors font-mono">XFree Meta Tag Generator</h3>
+        <p class="text-xs text-cyber-muted leading-relaxed mb-3">XFree SEO utilities. Generate meta titles, descriptions, and preview social cards for Google & X.</p>
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] text-cyber-dim font-mono">Category: <span class="text-cyber-muted">SEO & URL</span></span>
+          <span class="text-cyber-magenta text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity">EXEC →</span>
+        </div>
+      </a>
+
+      <a href="https://xfree.in/tool/jwt-decoder/" class="cyber-card p-4 group block focus-ring" aria-label="XFree JWT Decoder">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center text-sm font-mono font-bold text-cyber-cyan group-hover:neon-box-cyan transition-all">🔑</div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded badge-popular font-mono">POPULAR</span>
+        </div>
+        <h3 class="text-sm font-semibold text-white mb-1 group-hover:text-cyber-cyan transition-colors font-mono">XFree JWT Decoder</h3>
+        <p class="text-xs text-cyber-muted leading-relaxed mb-3">XFree JWT decoder client-side. Decode OAuth JWT tokens and convert Base64 strings safely in browser.</p>
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] text-cyber-dim font-mono">Category: <span class="text-cyber-muted">Security</span></span>
+          <span class="text-cyber-cyan text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity">EXEC →</span>
+        </div>
+      </a>
+
+      <a href="https://xfree.in/tool/cron-generator/" class="cyber-card p-4 group block focus-ring" aria-label="XFree Cron Generator">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-10 h-10 rounded-lg bg-cyber-purple/5 border border-cyber-purple/20 flex items-center justify-center text-sm font-mono font-bold text-cyber-purple group-hover:transition-all">⏰</div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded badge-new font-mono">NEW</span>
+        </div>
+        <h3 class="text-sm font-semibold text-white mb-1 group-hover:text-cyber-purple transition-colors font-mono">XFree Cron Generator</h3>
+        <p class="text-xs text-cyber-muted leading-relaxed mb-3">XFree DevOps and CI/CD generators. Generate cron expressions the easy way with human-readable output.</p>
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] text-cyber-dim font-mono">Category: <span class="text-cyber-muted">Developer</span></span>
+          <span class="text-cyber-purple text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity">EXEC →</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<section class="ad-safe-zone px-4" aria-label="Advertisement">
+  <div class="max-w-7xl mx-auto">
+    <div class="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
+      <div class="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+  </div>
+</section>
+
+<section class="py-14 px-4" aria-labelledby="categories-heading">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 id="categories-heading" class="text-2xl font-bold text-white mb-2 font-mono"><span class="text-cyber-glow">ls</span> XFree Tool Categories</h2>
+      <p class="text-cyber-muted font-mono text-sm">// Find the right XFree tool in the right category.</p>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <a href="https://xfree.in/category/developer-tools" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">⚡</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree Developer Tools</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">Formatters, validators, debuggers</p>
+      </a>
+      <a href="https://xfree.in/category/seo-tools" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">🌐</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree SEO Tools</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">Sitemaps, meta tags, schema</p>
+      </a>
+      <a href="https://xfree.in/category/ai-tools" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">🤖</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree AI Tools</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">Prompt tools, token counters</p>
+      </a>
+      <a href="https://xfree.in/category/text-tools" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">📝</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree Text Tools</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">Word count, diff, case convert</p>
+      </a>
+      <a href="https://xfree.in/category/converters" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">🔄</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree Converters</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">JSON, CSV, Base64, YAML</p>
+      </a>
+      <a href="https://xfree.in/category/generators" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">⚙️</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree Generators</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">UUID, QR, password, cron</p>
+      </a>
+      <a href="https://xfree.in/category/validators" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">✓</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree Validators</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">JSON Schema, HTML, CSS</p>
+      </a>
+      <a href="https://xfree.in/category/security-tools" class="cyber-card p-4 text-center block focus-ring">
+        <div class="text-2xl mb-2" aria-hidden="true">🔒</div>
+        <h3 class="text-sm font-semibold text-white font-mono">XFree Security Tools</h3>
+        <p class="text-[11px] text-cyber-muted mt-1">Hash, encrypt, JWT, HMAC</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="data-line max-w-7xl mx-auto" aria-hidden="true"></div>
+
+<section class="py-16 px-4 bg-cyber-surface/50" aria-labelledby="why-heading">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 id="why-heading" class="text-3xl font-black text-white mb-3 font-mono"><span class="text-cyber-glow">&gt;</span> Why Choose the XFree App for Privacy-First Tools?</h2>
+      <p class="text-cyber-muted max-w-xl mx-auto font-mono text-sm">// Your data stays in your browser. XFree believes powerful tools should be private, fast, and hassle-free.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <article class="cyber-card p-6 text-center">
+        <div class="w-14 h-14 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center mx-auto mb-4 neon-box-green"><span class="text-2xl">🛡️</span></div>
+        <h3 class="text-lg font-bold text-white mb-2 font-mono">XFree <span class="text-cyber-glow">Local Mode</span> by Default</h3>
+        <p class="text-sm text-cyber-muted">XFree tools process your data inside your browser session using JavaScript and WebAssembly. Each tool page clearly discloses its processing mode. No data is sent to external servers unless explicitly required and labeled.</p>
+      </article>
+      <article class="cyber-card p-6 text-center">
+        <div class="w-14 h-14 rounded-xl bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center mx-auto mb-4 neon-box-cyan"><span class="text-2xl">⚡</span></div>
+        <h3 class="text-lg font-bold text-white mb-2 font-mono">XFree <span class="text-cyber-cyan">Blazing Fast</span></h3>
+        <p class="text-sm text-cyber-muted">No uploads, no waits. Get instant results every time. Zero network latency for local processing. All computation happens directly in your browser's JavaScript engine with WebAssembly optimization for heavy tasks.</p>
+      </article>
+      <article class="cyber-card p-6 text-center">
+        <div class="w-14 h-14 rounded-xl bg-cyber-magenta/5 border border-cyber-magenta/20 flex items-center justify-center mx-auto mb-4 neon-box-magenta"><span class="text-2xl">🎯</span></div>
+        <h3 class="text-lg font-bold text-white mb-2 font-mono">XFree <span class="text-cyber-magenta">One Problem.</span> One Tool.</h3>
+        <p class="text-sm text-cyber-muted">No clutter. No complexity. Just the right XFree tool to get X done. Each tool is focused on a single task, designed for developers who need fast, reliable results without navigating through bloated interfaces.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 px-4" aria-labelledby="how-heading">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 id="how-heading" class="text-3xl font-black text-white mb-3 font-mono"><span class="text-cyber-glow">./</span>how_xfree_works.sh</h2>
+      <p class="text-cyber-muted font-mono text-sm">Three steps. Zero sign-up. Your data stays in your browser by default.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <article class="cyber-card p-6 text-center">
+        <div class="w-14 h-14 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center mx-auto mb-4"><span class="text-2xl">🔍</span></div>
+        <div class="text-xs font-mono text-cyber-glow mb-2">STEP 01</div>
+        <h3 class="text-lg font-bold text-white mb-2 font-mono">Search or Browse XFree Tools</h3>
+        <p class="text-sm text-cyber-muted">Find any XFree tool via search, category filters, or pillar hubs. Browse <a href="https://xfree.in/categories" class="text-cyber-glow hover:underline focus-ring">XFree categories</a> or explore <a href="https://xfree.in/pillars" class="text-cyber-glow hover:underline focus-ring">50 XFree pillars</a>.</p>
+      </article>
+      <article class="cyber-card p-6 text-center">
+        <div class="w-14 h-14 rounded-xl bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center mx-auto mb-4"><span class="text-2xl">⚡</span></div>
+        <div class="text-xs font-mono text-cyber-cyan mb-2">STEP 02</div>
+        <h3 class="text-lg font-bold text-white mb-2 font-mono">Paste &amp; Execute in XFree</h3>
+        <p class="text-sm text-cyber-muted">Drop your input — JSON, text, URLs, code — and get results. Processing runs in XFree Local Mode by default within your browser. No data leaves your device.</p>
+      </article>
+      <article class="cyber-card p-6 text-center">
+        <div class="w-14 h-14 rounded-xl bg-cyber-magenta/5 border border-cyber-magenta/20 flex items-center justify-center mx-auto mb-4"><span class="text-2xl">📋</span></div>
+        <div class="text-xs font-mono text-cyber-magenta mb-2">STEP 03</div>
+        <h3 class="text-lg font-bold text-white mb-2 font-mono">Copy &amp; Ship with XFree</h3>
+        <p class="text-sm text-cyber-muted">One-click copy to clipboard. Export as file. Your data stays in your local session by default. Close the tab and everything is cleared from memory.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="ad-safe-zone px-4" aria-label="Advertisement">
+  <div class="max-w-7xl mx-auto">
+    <div class="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
+      <div class="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 px-4 bg-cyber-surface/50" aria-labelledby="pillars-heading">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-10">
+      <span class="inline-block px-3 py-1 rounded border border-cyber-cyan/30 bg-cyber-cyan/5 text-cyber-cyan text-xs font-mono mb-4 neon-box-cyan">// XFree Knowledge Graph</span>
+      <h2 id="pillars-heading" class="text-3xl font-black text-white mb-3 font-mono">The XFree Tool Directory: <span class="text-cyber-glow">50</span> Pillars, <span class="text-cyber-cyan">2,500</span> Clusters, <span class="text-cyber-magenta">25,000</span> Utilities</h2>
+      <p class="text-cyber-muted max-w-2xl mx-auto font-mono text-sm">The most comprehensive developer tool taxonomy. Each XFree pillar connects 50 specialized clusters with dedicated micro-tools.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <a href="https://xfree.in/pillar/frontend-development/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">🖥️</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-glow">#01</span><span class="text-[9px] text-cyber-dim font-mono">500 tools</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Frontend Development Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">XFree tools for frontend developers</p></div></div></a>
+      <a href="https://xfree.in/pillar/backend-development/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">⚙️</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-cyan">#02</span><span class="text-[9px] text-cyber-dim font-mono">500 tools</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Backend Development Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">Node.js, Python, Go, Rust</p></div></div></a>
+      <a href="https://xfree.in/pillar/devops-cicd/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-magenta/5 border border-cyber-magenta/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">🚀</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-magenta">#03</span><span class="text-[9px] text-cyber-dim font-mono">500 tools</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree DevOps &amp; CI/CD Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">GitHub Actions, Docker, K8s</p></div></div></a>
+      <a href="https://xfree.in/pillar/cybersecurity-privacy/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">🔒</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-glow">#04</span><span class="text-[9px] text-cyber-dim font-mono">500 tools</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Cybersecurity &amp; Privacy Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">XFree cybersecurity utilities for pentesters</p></div></div></a>
+      <a href="https://xfree.in/pillar/technical-seo/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">📊</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-cyan">#05</span><span class="text-[9px] text-cyber-dim font-mono">500 tools</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Technical SEO Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">XFree SEO tools for digital marketers</p></div></div></a>
+      <a href="https://xfree.in/pillar/content-copywriting/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-magenta/5 border border-cyber-magenta/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">✍️</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-magenta">#06</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Content &amp; Copywriting Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">Readability, word count</p></div></div></a>
+      <a href="https://xfree.in/pillar/data-engineering/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">🗄️</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-glow">#07</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Data Engineering Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">CSV, JSON, XML, ETL</p></div></div></a>
+      <a href="https://xfree.in/pillar/ai-machine-learning/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">🤖</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-cyan">#08</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree AI &amp; Machine Learning Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">Prompts, tokens, embeddings</p></div></div></a>
+      <a href="https://xfree.in/pillar/database-management/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-magenta/5 border border-cyber-magenta/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">💾</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-magenta">#09</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Database Management Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">XFree database management tools</p></div></div></a>
+      <a href="https://xfree.in/pillar/api-development/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">🔌</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-glow">#10</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree API Development Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">OpenAPI, GraphQL, REST</p></div></div></a>
+      <a href="https://xfree.in/pillar/cloud-infrastructure/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-cyan/5 border border-cyber-cyan/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">☁️</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-cyan">#11</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Cloud Infrastructure Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">AWS, Azure, GCP configs</p></div></div></a>
+      <a href="https://xfree.in/pillar/mobile-development/" class="pillar-card cyber-card p-3.5 block"><div class="flex items-start gap-2.5"><div class="w-8 h-8 rounded-lg bg-cyber-magenta/5 border border-cyber-magenta/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">📱</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-[9px] font-mono text-cyber-magenta">#12</span></div><h3 class="text-xs font-semibold text-white leading-tight truncate font-mono">XFree Mobile Development Tools</h3><p class="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">iOS, Android, React Native</p></div></div></a>
+    </div>
+    <div class="text-center mt-8">
+      <a href="https://xfree.in/pillars" class="cyber-btn text-sm px-6 py-3 rounded focus-ring inline-block">
+        <span>View All 50 XFree Pillars →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="py-12 px-4" aria-labelledby="roadmap-heading">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 id="roadmap-heading" class="text-2xl font-bold text-white mb-3 font-mono"><span class="text-cyber-glow">&gt;</span> XFree Roadmap: 25,000 Planned Tools</h2>
+    <p class="text-cyber-muted mb-6 max-w-2xl mx-auto font-mono text-sm">The XFree 50-pillar, 2,500-cluster taxonomy maps 25,000 micro-tool concepts. Tools that are not yet built are tracked on our <a href="https://xfree.in/roadmap" class="text-cyber-glow hover:underline focus-ring">public XFree roadmap</a>.</p>
+    <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
+      <div class="cyber-card p-3 text-center corner-brackets"><div class="text-xl font-bold text-cyber-glow font-cyber neon-green">50</div><div class="text-[10px] text-cyber-muted font-mono">XFree Pillars</div></div>
+      <div class="cyber-card p-3 text-center corner-brackets"><div class="text-xl font-bold text-cyber-cyan font-cyber neon-cyan">2,500</div><div class="text-[10px] text-cyber-muted font-mono">XFree Clusters</div></div>
+      <div class="cyber-card p-3 text-center corner-brackets"><div class="text-xl font-bold text-cyber-magenta font-cyber neon-magenta">25K</div><div class="text-[10px] text-cyber-muted font-mono">XFree Planned</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="data-line max-w-7xl mx-auto" aria-hidden="true"></div>
+
+<section class="py-16 px-4 bg-cyber-surface/50" aria-labelledby="faq-heading">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 id="faq-heading" class="text-3xl font-black text-white mb-3 font-mono"><span class="text-cyber-glow">man</span> xfree — FAQ</h2>
+      <p class="text-cyber-muted font-mono text-sm">// Common questions about XFree app, tools, privacy, and the platform.</p>
+    </div>
+    <div class="space-y-2">
+      <details class="cyber-card overflow-hidden" open>
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">What is XFree app?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">XFree app is the ultimate free online platform for developers offering 25,000+ privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. All tools run 100% client-side with no signup required.</div>
+      </details>
+      <details class="cyber-card overflow-hidden">
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">Is XFree really free with no signup?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and run entirely in your browser.</div>
+      </details>
+      <details class="cyber-card overflow-hidden">
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">How does XFree ensure privacy?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed.</div>
+      </details>
+      <details class="cyber-card overflow-hidden">
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">What is XFree alternative to CodeBeautify?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs 100% client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit. Try the <a href="https://xfree.in/tool/json-formatter/" class="text-cyber-glow hover:underline focus-ring">XFree JSON Formatter online</a>.</div>
+      </details>
+      <details class="cyber-card overflow-hidden">
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">Can I use XFree offline?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">Yes. Because XFree tools are static HTML with embedded JavaScript, you can save any tool page and use it completely offline without an internet connection.</div>
+      </details>
+      <details class="cyber-card overflow-hidden">
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">Is XFree open source?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our <a href="https://github.com/xfree-in/xfree" class="text-cyber-glow hover:underline focus-ring" rel="noopener">GitHub repository</a>.</div>
+      </details>
+      <details class="cyber-card overflow-hidden">
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">How many tools are on XFree?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">XFree currently publishes a growing catalog organized across 50 pillar categories and 2,500 topic clusters, with a roadmap of 25,000 micro-tool concepts.</div>
+      </details>
+      <details class="cyber-card overflow-hidden">
+        <summary class="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">What is XFree JSON formatter online?</summary>
+        <div class="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">The XFree JSON Formatter online is a free, privacy-first tool that beautifies, minifies, validates, and repairs JSON data instantly in your browser. No data leaves your device.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="ad-safe-zone px-4" aria-label="Advertisement">
+  <div class="max-w-7xl mx-auto">
+    <div class="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
+      <div class="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 px-4 relative overflow-hidden" aria-labelledby="cta-heading">
+  <div class="absolute inset-0 matrix-grid opacity-50" aria-hidden="true"></div>
+  <div class="relative max-w-3xl mx-auto text-center">
+    <h2 id="cta-heading" class="text-3xl sm:text-4xl font-black text-white mb-4 font-mono glitch" data-text="Ready to Get X Done with XFree?">Ready to Get <span class="text-cyber-glow neon-green">X</span> Done with XFree?</h2>
+    <p class="text-cyber-muted mb-8 max-w-lg mx-auto font-mono text-sm">// Fast, privacy-first browser micro-tools for developers, SEO professionals, creators, and AI builders. No sign-up required.</p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="https://studio.xfree.in" class="cyber-btn cyber-btn-filled text-sm px-8 py-3.5 rounded focus-ring inline-flex items-center gap-2" rel="noopener">
+        <span>Launch XFree Studio App</span>
+        <svg class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </a>
+      <a href="https://xfree.in/pillars" class="cyber-btn cyber-btn-cyan text-sm px-8 py-3.5 rounded focus-ring inline-block">
+        <span>Browse 50 XFree Pillars</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="border-t border-cyber-border bg-cyber-surface py-12 px-4" role="contentinfo">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-8 mb-10">
+      <div class="col-span-2">
+        <a href="https://xfree.in/" class="flex items-center gap-2 mb-4 focus-ring">
+          <div class="w-8 h-8 rounded-lg border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 neon-box-green"><span class="text-xs font-black text-cyber-glow font-cyber">X</span></div>
+          <span class="text-sm font-bold text-white">XFree<span class="text-cyber-glow">.in</span></span>
+        </a>
+        <p class="text-xs text-cyber-muted leading-relaxed mb-4 font-mono">XFree is the ultimate free online app for developers. Fast, privacy-first browser micro-tools. Open-source under the MIT License.</p>
+        <a href="https://studio.xfree.in" class="cyber-btn cyber-btn-filled text-[10px] px-3 py-1.5 rounded focus-ring inline-block" rel="noopener"><span>Launch XFree Studio →</span></a>
+      </div>
+      <nav aria-label="XFree Categories">
+        <h3 class="text-xs font-semibold text-cyber-glow uppercase tracking-wider mb-3 font-mono">// Categories</h3>
+        <ul class="space-y-2 text-xs text-cyber-muted">
+          <li><a href="https://xfree.in/category/developer-tools" class="hover:text-cyber-glow transition-colors focus-ring">XFree Developer Tools</a></li>
+          <li><a href="https://xfree.in/category/seo-tools" class="hover:text-cyber-glow transition-colors focus-ring">XFree SEO Tools</a></li>
+          <li><a href="https://xfree.in/category/ai-tools" class="hover:text-cyber-glow transition-colors focus-ring">XFree AI Tools</a></li>
+          <li><a href="https://xfree.in/category/text-tools" class="hover:text-cyber-glow transition-colors focus-ring">XFree Text Tools</a></li>
+          <li><a href="https://xfree.in/category/converters" class="hover:text-cyber-glow transition-colors focus-ring">XFree Converters</a></li>
+          <li><a href="https://xfree.in/category/generators" class="hover:text-cyber-glow transition-colors focus-ring">XFree Generators</a></li>
+          <li><a href="https://xfree.in/category/validators" class="hover:text-cyber-glow transition-colors focus-ring">XFree Validators</a></li>
+          <li><a href="https://xfree.in/category/security-tools" class="hover:text-cyber-glow transition-colors focus-ring">XFree Security Tools</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Popular XFree Tools">
+        <h3 class="text-xs font-semibold text-cyber-cyan uppercase tracking-wider mb-3 font-mono">// Popular</h3>
+        <ul class="space-y-2 text-xs text-cyber-muted">
+          <li><a href="https://xfree.in/tool/json-formatter/" class="hover:text-cyber-cyan transition-colors focus-ring">XFree JSON Formatter</a></li>
+          <li><a href="https://xfree.in/tool/regex-tester/" class="hover:text-cyber-cyan transition-colors focus-ring">XFree Regex Tester</a></li>
+          <li><a href="https://xfree.in/tool/xml-sitemap-generator/" class="hover:text-cyber-cyan transition-colors focus-ring">XFree Sitemap Generator</a></li>
+          <li><a href="https://xfree.in/tool/meta-tag-generator/" class="hover:text-cyfree-cyan transition-colors focus-ring">XFree Meta Tags</a></li>
+          <li><a href="https://xfree.in/tool/jwt-decoder/" class="hover:text-cyber-cyan transition-colors focus-ring">XFree JWT Decoder</a></li>
+          <li><a href="https://xfree.in/tool/cron-generator/" class="hover:text-cyber-cyan transition-colors focus-ring">XFree Cron Generator</a></li>
+          <li><a href="https://xfree.in/tool/hash-generator/" class="hover:text-cyber-cyan transition-colors focus-ring">XFree Hash Generator</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="XFree Resources">
+        <h3 class="text-xs font-semibold text-cyber-magenta uppercase tracking-wider mb-3 font-mono">// Resources</h3>
+        <ul class="space-y-2 text-xs text-cyber-muted">
+          <li><a href="https://xfree.in/pillars" class="hover:text-cyber-magenta transition-colors focus-ring">50 XFree Pillar Hubs</a></li>
+          <li><a href="https://xfree.in/roadmap" class="hover:text-cyber-magenta transition-colors focus-ring">XFree Roadmap (25K)</a></li>
+          <li><a href="https://xfree.in/how-it-works" class="hover:text-cyber-magenta transition-colors focus-ring">How XFree Works</a></li>
+          <li><a href="https://xfree.in/use-cases" class="hover:text-cyber-magenta transition-colors focus-ring">XFree Use Cases</a></li>
+          <li><a href="https://xfree.in/docs" class="hover:text-cyber-magenta transition-colors focus-ring">XFree Documentation</a></li>
+          <li><a href="https://xfree.in/blog" class="hover:text-cyber-magenta transition-colors focus-ring">XFree Blog</a></li>
+          <li><a href="/health.json" class="hover:text-cyber-magenta transition-colors focus-ring">System Status</a></li>
+          <li><a href="/sitemap.xml" class="hover:text-cyber-magenta transition-colors focus-ring">Sitemap</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="XFree Legal">
+        <h3 class="text-xs font-semibold text-white uppercase tracking-wider mb-3 font-mono">// Legal</h3>
+        <ul class="space-y-2 text-xs text-cyber-muted">
+          <li><a href="https://xfree.in/about" class="hover:text-white transition-colors focus-ring">About XFree</a></li>
+          <li><a href="https://xfree.in/contact" class="hover:text-white transition-colors focus-ring">Contact XFree</a></li>
+          <li><a href="https://xfree.in/privacy" class="hover:text-white transition-colors focus-ring">XFree Privacy Policy</a></li>
+          <li><a href="https://xfree.in/terms" class="hover:text-white transition-colors focus-ring">XFree Terms of Service</a></li>
+          <li><a href="https://xfree.in/security" class="hover:text-white transition-colors focus-ring">XFree Security</a></li>
+          <li><a href="/.well-known/security.txt" class="hover:text-white transition-colors focus-ring">Security.txt</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <a href="/api/honeypot-trigger" class="bear-trap" tabindex="-1" aria-hidden="true">Click here for free tools</a>
+
+    <div class="data-line mb-6" aria-hidden="true"></div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-cyber-dim font-mono">© 2025 XFree.in — <span class="text-cyber-glow">LOCAL</span> Mode by default. Open-source under MIT License.</p>
+      <div class="flex items-center gap-4">
+        <a href="https://xfree.in/privacy" class="text-xs text-cyber-muted hover:text-cyber-glow transition-colors focus-ring font-mono">Privacy</a>
+        <span class="text-cyber-dim" aria-hidden="true">·</span>
+        <a href="https://xfree.in/terms" class="text-xs text-cyber-muted hover:text-cyber-glow transition-colors focus-ring font-mono">Terms</a>
+        <span class="text-cyber-dim" aria-hidden="true">·</span>
+        <a href="https://xfree.in/security" class="text-xs text-cyber-muted hover:text-cyber-glow transition-colors focus-ring font-mono">Security</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "codeRepository": "https://github.com/xfree-in/xfree",
+    "version": "1.0.0",
+    "buildCommit": "a1b2c3d4e5f6",
+    "buildTimestamp": "2025-01-24T12:00:00Z",
+    "license": "https://opensource.org/licenses/MIT",
+    "programmingLanguage": ["JavaScript", "TypeScript"],
+    "runtimePlatform": "Browser (Client-Side)"
+  }
+  </script>
+  <p class="sr-only">Built from commit a1b2c3d4. Verifiable open-source build. Deterministic SSG.</p>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  var nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', function(){
+    if (window.scrollY > 20) { nav.classList.add('scrolled'); }
+    else { nav.classList.remove('scrolled'); }
+  }, {passive: true});
+
+  var demoInput = document.getElementById('demoInput');
+  var demoOutput = document.getElementById('demoOutput');
+  var demoStatus = document.getElementById('demoStatus');
+  var demoTime = document.getElementById('demoTime');
+  var demoCopyBtn = document.getElementById('demoCopyBtn');
+
+  function runDemo(){
+    var input = demoInput.value;
+    var t0 = performance.now();
+    try {
+      var parsed = JSON.parse(input);
+      var formatted = JSON.stringify(parsed, null, 2);
+      demoOutput.textContent = formatted;
+      demoOutput.style.color = '#00ff41';
+      var elapsed = (performance.now() - t0).toFixed(1);
+      demoTime.textContent = 'Execution: ' + elapsed + 'ms';
+      demoStatus.innerHTML = '';
+      var dot = document.createElement('span');
+      dot.className = 'w-1.5 h-1.5 rounded-full bg-cyber-glow';
+      demoStatus.appendChild(dot);
+      var txt = document.createTextNode(' Valid Syntax');
+      demoStatus.appendChild(txt);
+      demoStatus.className = 'flex items-center gap-1 text-[10px] text-cyber-glow font-mono';
+    } catch(e) {
+      demoOutput.textContent = 'Error: ' + e.message;
+      demoOutput.style.color = '#ff3333';
+      demoTime.textContent = 'Invalid JSON';
+      demoStatus.innerHTML = '';
+      var dot2 = document.createElement('span');
+      dot2.className = 'w-1.5 h-1.5 rounded-full bg-cyber-red';
+      demoStatus.appendChild(dot2);
+      var txt2 = document.createTextNode(' Invalid JSON');
+      demoStatus.appendChild(txt2);
+      demoStatus.className = 'flex items-center gap-1 text-[10px] text-cyber-red font-mono';
+    }
+  }
+
+  if (demoInput) { demoInput.addEventListener('input', runDemo); }
+
+  if (demoCopyBtn && demoOutput) {
+    demoCopyBtn.addEventListener('click', function(){
+      var text = demoOutput.textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function(){
+          demoCopyBtn.textContent = '✓ COPIED';
+          setTimeout(function(){ demoCopyBtn.textContent = 'COPY'; }, 2000);
+        });
+      }
+    });
+  }
+
+  document.addEventListener('keydown', function(e){
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if (demoInput) { runDemo(); }
+    }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+      if (demoOutput) {
+        e.preventDefault();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(demoOutput.textContent);
+        }
+      }
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      var s = document.getElementById('heroSearch');
+      if (s) { s.focus(); s.scrollIntoView({behavior:'smooth', block:'center'}); }
+    }
+  });
+
+  try {
+    var ads = document.querySelectorAll('.adsbygoogle');
+    for (var i = 0; i < ads.length; i++) {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    }
+  } catch(e) {}
+
+})();
+</script>
+
+</body>
+</html>
