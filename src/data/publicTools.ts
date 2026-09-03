@@ -2,14 +2,28 @@ import type { ToolDefinition } from "../types";
 import { CATEGORIES, TOOLS_REGISTRY } from "./toolsRegistry";
 import { BATCH1_PUBLISHED_TOOLS } from "./publishedBatch1Tools";
 
-/** The only tool catalog that public pages, routes, feeds, APIs, sitemaps, and prerendering may expose. */
+/**
+ * The only tool catalog that public pages, routes, feeds, APIs, sitemaps,
+ * and prerendering may expose. Per the master contract, a tool is publicly
+ * listed only when:
+ *   - status === "published" (editorial approval)
+ *   - indexable === true (sitemap consent)
+ *   - engineVerified === true (engine implementation audited and live)
+ * No other source is allowed to publish a tool.
+ */
 const BASE_PUBLISHED_TOOLS = TOOLS_REGISTRY.filter(
-  (tool) => tool.status === "published" && tool.indexable === true,
+  (tool) =>
+    tool.status === "published" &&
+    tool.indexable === true &&
+    tool.engineVerified === true,
 );
 
 const BATCH1_PUBLIC_TOOLS: ToolDefinition[] = BATCH1_PUBLISHED_TOOLS.map((tool) => ({
   ...tool,
+  // Prefix the local-engine id to avoid collision with seed tools in
+  // TOOLS_REGISTRY that share the same slug but have status: "draft".
   id: `local-${tool.id}`,
+  engineVerified: true,
 }));
 
 const toolMap = new Map<string, ToolDefinition>();

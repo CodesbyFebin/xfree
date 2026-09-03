@@ -163,6 +163,10 @@ export interface ToolDefinition {
   execution?: ToolExecutionMode;
   status?: ToolStatus;
   indexable: boolean;
+  // A tool is publicly listed only when status === "published" AND indexable === true
+  // AND engineVerified === true. The latter proves the engine implementation
+  // exists, has been audited, and is wired into the studio engine registry.
+  engineVerified?: boolean;
   lastModified?: string;
   toolComponent?: string;
   isAi?: boolean;

@@ -448,20 +448,6 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     res.status(404).json({ error: "not_found" });
   });
 
-  // /home — alternate single-file React homepage served from public/home.html.
-  // Served as a noindex, followable prototype page. The canonical homepage
-  // remains the React app at /, so the canonical link in home.html points to
-  // https://www.xfree.in/ and we mark this route as a design reference.
-  app.get(["/home", "/home/"], (_req, res, next) => {
-    const filePath = path.join(process.cwd(), "public", "home.html");
-    if (!fs.existsSync(filePath)) {
-      return next();
-    }
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.setHeader("Cache-Control", "public, max-age=300, s-maxage=3600");
-    res.status(200).sendFile(filePath);
-  });
-
   const staticRouteSet = new Set<string>(STATIC_ROUTES);
   const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/${s}`));
   const guideSlugSet = new Set<string>(GUIDES.map((g) => g.slug));
