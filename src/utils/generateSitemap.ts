@@ -1,5 +1,6 @@
 import { CATEGORIES } from "../data/toolsRegistry";
 import { PUBLIC_TOOLS } from "../data/publicTools";
+import { PUBLIC_TOOL_PILLARS } from "../data/pillars";
 import { GUIDES } from "../data/guides";
 
 const DEFAULT_BASE_URL = "https://www.xfree.in";
@@ -108,6 +109,20 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
     xml += `    <loc>${escapeXml(`${cleanBase}/guides/${g.slug}`)}</loc>\n`;
     xml += `    <lastmod>${g.lastReviewed}</lastmod>\n`;
     xml += `    <changefreq>monthly</changefreq>\n`;
+    xml += `    <priority>0.7</priority>\n`;
+    xml += `  </url>\n`;
+  }
+
+  // 6. Pillar canonical pages (published tool pillars only)
+  const seenPillarHrefs = new Set<string>();
+  for (const p of PUBLIC_TOOL_PILLARS) {
+    if (!p.href || p.href.startsWith("http") || seenPillarHrefs.has(p.href)) continue;
+    seenPillarHrefs.add(p.href);
+    const lastmod = currentDate;
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(`${cleanBase}${p.href}`)}</loc>\n`;
+    xml += `    <lastmod>${lastmod}</lastmod>\n`;
+    xml += `    <changefreq>weekly</changefreq>\n`;
     xml += `    <priority>0.7</priority>\n`;
     xml += `  </url>\n`;
   }

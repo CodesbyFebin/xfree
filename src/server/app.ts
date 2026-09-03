@@ -387,13 +387,13 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     return "unknown";
   };
 
-  // /home — alternate cyberpunk-themed marketing page served from
-  // public/home.html. Per the prototype policy (blueprint §18) this is a
-  // design reference rendered as a standalone page so visitors can compare
-  // the cyberpunk visual system against the production SPA. It uses CDN
-  // fonts and the Tailwind play CDN, so it gets a relaxed CSP that allows
+  // /home and /pillars — alternate cyberpunk-themed marketing pages served
+  // from public/*.html. Per the prototype policy (blueprint §18) these are
+  // design references rendered as standalone pages so visitors can compare
+  // the cyberpunk visual system against the production SPA. They use CDN
+  // fonts and the Tailwind play CDN, so they get a relaxed CSP that allows
   // jsdelivr and cdn.tailwindcss in addition to the production allowlist.
-  const HOME_CSP_DIRECTIVES = [
+  const STATIC_HTML_CSP_DIRECTIVES = [
     "default-src 'self'",
     "base-uri 'self'",
     "object-src 'none'",
@@ -408,18 +408,19 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com",
     "upgrade-insecure-requests",
   ];
-  const homeHtmlPath = path.join(process.cwd(), "public", "home.html");
-  const serveHome = (_req: Request, res: Response) => {
-    if (!fs.existsSync(homeHtmlPath)) {
-      return res.status(404).send("home.html not found");
+  const serveStaticHtmlPage = (file: string) => (_req: Request, res: Response) => {
+    const filePath = path.join(process.cwd(), "public", file);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send(`${file} not found`);
     }
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=300, s-maxage=3600");
-    res.setHeader("Content-Security-Policy", HOME_CSP_DIRECTIVES.join("; "));
+    res.setHeader("Content-Security-Policy", STATIC_HTML_CSP_DIRECTIVES.join("; "));
     res.setHeader("X-Robots-Tag", "index, follow");
-    res.status(200).sendFile(homeHtmlPath);
+    res.status(200).sendFile(filePath);
   };
-  app.get(["/home", "/home/"], serveHome);
+  app.get(["/home", "/home/"], serveStaticHtmlPage("home.html"));
+  app.get(["/pillars", "/pillars/"], serveStaticHtmlPage("pillars.html"));
 
   if (opts.attachStatic) await opts.attachStatic(app);
   if (opts.attachSpaFallback) await opts.attachSpaFallback(app);
