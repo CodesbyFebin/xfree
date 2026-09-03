@@ -64,7 +64,15 @@ describe("Tool Registry", () => {
   });
 
   it("every tool carries a valid status enum value", () => {
-    const valid = new Set(["draft", "indexable", "noindex", "retired"]);
+    const valid = new Set([
+      "draft",
+      "roadmap",
+      "pending_review",
+      "published",
+      "indexable",
+      "noindex",
+      "retired",
+    ]);
     expect(TOOLS_REGISTRY.every((t) => !t.status || valid.has(t.status))).toBe(true);
   });
 });
