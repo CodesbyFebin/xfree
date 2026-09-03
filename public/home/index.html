@@ -227,6 +227,40 @@
       </div>
     </section>
 
+    <section class="demo" aria-labelledby="demo-heading">
+      <div class="container">
+        <header class="section-head">
+          <h2 id="demo-heading">Try the JSON formatter now</h2>
+          <p>Processing happens entirely in your browser. Nothing is sent to a server.</p>
+        </header>
+        <div class="demo-grid">
+          <div class="demo-pane">
+            <label for="demoInput" class="demo-label">Input</label>
+            <textarea
+              id="demoInput"
+              class="demo-textarea"
+              spellcheck="false"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              aria-describedby="demoStatus"
+            >{"name":"xfree","tools":12,"pillars":60,"local":true}</textarea>
+            <p class="demo-meta" id="demoStatus" role="status" aria-live="polite">Idle</p>
+          </div>
+          <div class="demo-pane">
+            <span class="demo-label">Formatted output</span>
+            <pre id="demoOutput" class="demo-output" aria-live="polite">{
+  "name": "xfree",
+  "tools": 12,
+  "pillars": 60,
+  "local": true
+}</pre>
+            <p class="demo-meta">Processed locally · no server</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="pillars" aria-labelledby="pillars-heading">
       <div class="container">
         <header class="section-head">
