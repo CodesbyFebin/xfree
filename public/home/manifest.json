@@ -1,0 +1,25 @@
+{
+  "name": "XFree — Free Privacy-First Developer Tools",
+  "short_name": "XFree",
+  "description": "Free browser-based developer, SEO, and data tools. Local Mode by default; no signup required.",
+  "start_url": "/home/",
+  "scope": "/home/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a10",
+  "theme_color": "#0a0a10",
+  "icons": [
+    {
+      "src": "/home/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/home/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

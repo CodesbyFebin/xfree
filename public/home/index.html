@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XFree: Free Privacy-First Developer Tools | No Signup</title>
+  <meta name="description" content="XFree provides free browser-based developer, SEO, and data tools. Local Mode is the default; no signup required. Open source under the MIT License.">
+  <meta name="author" content="XFree Contributors">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="theme-color" content="#0a0a10">
+  <meta name="color-scheme" content="dark">
+
+  <link rel="canonical" href="https://www.xfree.in/">
+  <link rel="alternate" hreflang="en" href="https://www.xfree.in/">
+  <link rel="alternate" hreflang="x-default" href="https://www.xfree.in/">
+  <link rel="manifest" href="/home/manifest.json">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="/home/icons/icon-192.png">
+
+  <link rel="preload" href="/home/styles.css" as="style">
+  <link rel="preload" href="/home/app.js" as="script" crossorigin="anonymous">
+  <link rel="stylesheet" href="/home/styles.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="XFree">
+  <meta property="og:title" content="XFree: Free Privacy-First Developer Tools | No Signup">
+  <meta property="og:description" content="Free browser-based developer, SEO, and data tools. Local Mode by default; no signup required. Open source MIT.">
+  <meta property="og:url" content="https://www.xfree.in/">
+  <meta property="og:image" content="https://www.xfree.in/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="XFree: Free Privacy-First Developer Tools | No Signup">
+  <meta name="twitter:description" content="Free browser-based developer, SEO, and data tools. Local Mode by default. Open source MIT.">
+  <meta name="twitter:image" content="https://www.xfree.in/og-image.png">
+  <meta name="twitter:image:alt" content="XFree — free browser tools">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "XFree",
+    "url": "https://www.xfree.in/",
+    "description": "Free browser-based developer, SEO, and data tools. Local Mode by default; no signup required.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "XFree",
+      "url": "https://www.xfree.in/"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://www.xfree.in/#org",
+    "name": "XFree",
+    "url": "https://www.xfree.in/",
+    "logo": "https://www.xfree.in/logo.png",
+    "description": "XFree develops free browser-based developer, SEO, and data tools.",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "XFree",
+    "url": "https://www.xfree.in/",
+    "description": "Free browser-based developer, SEO, and data tools. Local Mode by default; no signup required.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any (Browser-based)",
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Privacy-first developer tools",
+      "100% client-side execution",
+      "Open source under the MIT License",
+      "No account required",
+      "Offline capable"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is XFree?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "XFree is a free, open-source suite of browser-based developer, SEO, and data tools. Local Mode is the default: your input is processed in your browser using JavaScript. No signup, no tracking, no server round-trip required."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is XFree free with no signup?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. XFree is completely free to use, with no sign-up, no account creation, and no usage limits. The codebase is open source under the MIT License."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does XFree handle privacy?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Local Mode is the default. Tools process your data inside your browser session using JavaScript and WebAssembly. The XFree server only receives minimal request metadata needed to serve the static site. There are no analytics scripts, no tracking pixels, and no fingerprinting."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use XFree offline?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. XFree ships a service worker that caches the static assets for offline use. After the first visit, you can use the page without an internet connection. Individual tools that do not require network resources continue to work fully offline."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <a href="/" class="brand" aria-label="XFree — home">
+        <span class="brand-mark" aria-hidden="true">⚡</span>
+        <span class="brand-name">XFree</span>
+        <span class="brand-tag">.in</span>
+      </a>
+
+      <nav class="primary-nav" aria-label="Primary">
+        <ul class="primary-nav-list">
+          <li><a href="/dev-tools">Developer Tools</a></li>
+          <li><a href="/seo-tools">SEO Tools</a></li>
+          <li><a href="/ai-tools">AI Tools</a></li>
+          <li><a href="/pillars">Pillars</a></li>
+          <li><a href="/guides">Guides</a></li>
+          <li><a href="/docs">Docs</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn btn-primary" href="https://app.xfree.in/" rel="noopener">Open Studio</a>
+        <button type="button" class="hamburger" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu" id="hamburgerBtn">
+          <span class="hamburger-line" aria-hidden="true"></span>
+          <span class="hamburger-line" aria-hidden="true"></span>
+          <span class="hamburger-line" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="mobile-menu" hidden>
+      <nav aria-label="Mobile navigation">
+        <ul>
+          <li><a href="/dev-tools">Developer Tools</a></li>
+          <li><a href="/seo-tools">SEO Tools</a></li>
+          <li><a href="/ai-tools">AI Tools</a></li>
+          <li><a href="/pillars">Pillars</a></li>
+          <li><a href="/guides">Guides</a></li>
+          <li><a href="/docs">Docs</a></li>
+          <li><a class="btn btn-primary" href="https://app.xfree.in/" rel="noopener">Open Studio</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="container">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Local Mode by default · No signup · Open source MIT</p>
+        <h1 id="hero-heading" class="hero-title">
+          Free developer, SEO<br>and data tools<br><span class="accent">that respect your privacy</span>
+        </h1>
+        <p class="hero-lead">
+          XFree runs <strong>entirely in your browser</strong>. No uploads, no accounts, no tracking. Format JSON, test regex, generate sitemaps, decode JWT, and dozens more — all client-side, all open source.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="https://app.xfree.in/" rel="noopener">Open Studio</a>
+          <a class="btn btn-ghost btn-lg" href="/pillars">Browse pillars</a>
+        </div>
+        <p class="hero-meta">
+          <span><strong id="metricTools" data-source="/api/v1/stats">—</strong> published tools</span>
+          <span aria-hidden="true">·</span>
+          <span><strong id="metricPillars" data-source="/api/v1/stats">—</strong> live pillars</span>
+          <span aria-hidden="true">·</span>
+          <span><strong>0</strong> required signups</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="tools" aria-labelledby="tools-heading">
+      <div class="container">
+        <header class="section-head">
+          <h2 id="tools-heading">Featured tools</h2>
+          <p>Verified utilities that work entirely in your browser. Open each one to run it locally.</p>
+        </header>
+        <div class="tool-grid" id="toolGrid" data-source="/api/v1/featured-tools" role="list">
+          <article class="tool-card" role="listitem" data-loading="true">
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+          </article>
+          <article class="tool-card" role="listitem" data-loading="true">
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+          </article>
+          <article class="tool-card" role="listitem" data-loading="true">
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+          </article>
+        </div>
+        <p class="see-more"><a href="/dev-tools">See all developer tools →</a></p>
+      </div>
+    </section>
+
+    <section class="pillars" aria-labelledby="pillars-heading">
+      <div class="container">
+        <header class="section-head">
+          <h2 id="pillars-heading">Pillar directory</h2>
+          <p>Each pillar is a governed collection of related tools and guides. <span id="pillarCount" data-source="/api/v1/stats">—</span> are live; more are drafted.</p>
+        </header>
+        <div class="pillar-grid" id="pillarGrid" data-source="/api/v1/published-pillars" role="list">
+          <article class="pillar-card" role="listitem" data-loading="true">
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+          </article>
+          <article class="pillar-card" role="listitem" data-loading="true">
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+            <span class="skeleton" aria-hidden="true"></span>
+          </article>
+        </div>
+        <p class="see-more"><a href="/pillars">Full pillar directory →</a></p>
+      </div>
+    </section>
+
+    <section class="why" aria-labelledby="why-heading">
+      <div class="container">
+        <header class="section-head">
+          <h2 id="why-heading">Why XFree?</h2>
+        </header>
+        <div class="why-grid">
+          <article class="why-card">
+            <h3>Local by default</h3>
+            <p>Tools process your data inside your browser using JavaScript and WebAssembly. The server only serves static assets — your input never leaves your device.</p>
+          </article>
+          <article class="why-card">
+            <h3>Verified, not advertised</h3>
+            <p>Every tool in the public directory has been audited and runs on a verified local engine. We do not list tools that do not yet work.</p>
+          </article>
+          <article class="why-card">
+            <h3>Open source MIT</h3>
+            <p>The entire XFree codebase is open source under the MIT License. Audit, fork, or self-host — the contract is permissive.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq-heading">
+      <div class="container container-narrow">
+        <header class="section-head">
+          <h2 id="faq-heading">Frequently asked questions</h2>
+        </header>
+        <details>
+          <summary>What is XFree?</summary>
+          <p>XFree is a free, open-source suite of browser-based developer, SEO, and data tools. Local Mode is the default.</p>
+        </details>
+        <details>
+          <summary>Is XFree really free with no signup?</summary>
+          <p>Yes. XFree is open source under the MIT License and has no signup, no accounts, and no usage limits.</p>
+        </details>
+        <details>
+          <summary>How does XFree ensure privacy?</summary>
+          <p>Tools process data in your browser by default. The server only receives the minimum request metadata needed to serve the static site.</p>
+        </details>
+        <details>
+          <summary>Can I use XFree offline?</summary>
+          <p>Yes. The XFree service worker caches the static shell so the page works without an internet connection after the first visit.</p>
+        </details>
+        <details>
+          <summary>How are tools verified?</summary>
+          <p>Each tool is implemented against a registered local engine. The build runs an engine audit before any tool becomes indexable.</p>
+        </details>
+        <details>
+          <summary>Where is the source code?</summary>
+          <p>The XFree source is available on <a href="https://github.com/xfree-in/xfree" rel="noopener noreferrer">GitHub</a> under the MIT License.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="cta" aria-labelledby="cta-heading">
+      <div class="container container-narrow">
+        <h2 id="cta-heading">Try XFree Studio</h2>
+        <p>Chain tools into multi-step pipelines. Local Mode is the default; opt in to Cloud Mode per request, never by default.</p>
+        <a class="btn btn-primary btn-lg" href="https://app.xfree.in/" rel="noopener">Open Studio</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <section class="footer-brand">
+          <a href="/" class="brand" aria-label="XFree — home">
+            <span class="brand-mark" aria-hidden="true">⚡</span>
+            <span class="brand-name">XFree</span>
+          </a>
+          <p>Free, open-source, privacy-first browser tools. Local Mode is the default.</p>
+        </section>
+        <nav aria-label="Categories">
+          <h2>Categories</h2>
+          <ul>
+            <li><a href="/dev-tools">Developer Tools</a></li>
+            <li><a href="/seo-tools">SEO Tools</a></li>
+            <li><a href="/ai-tools">AI Tools</a></li>
+            <li><a href="/security-tools">Security Tools</a></li>
+            <li><a href="/text-tools">Text Tools</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Resources">
+          <h2>Resources</h2>
+          <ul>
+            <li><a href="/pillars">Pillar Directory</a></li>
+            <li><a href="/guides">Guides</a></li>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/sitemap.xml">Sitemap</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Company &amp; Legal">
+          <h2>Company &amp; Legal</h2>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+            <li><a href="/terms">Terms</a></li>
+            <li><a href="/security">Security</a></li>
+            <li><a href="/.well-known/security.txt">security.txt</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="copyright">© <span id="footerYear">—</span> XFree Contributors. Released under the <a href="https://opensource.org/licenses/MIT" rel="noopener noreferrer">MIT License</a>.</p>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/home/app.js" defer crossorigin="anonymous"></script>
+</body>
+</html>

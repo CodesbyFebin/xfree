@@ -44,10 +44,11 @@ import {
   generateToolsJson,
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
-import { getPublicToolBySlug, PUBLIC_TOOL_SLUGS } from "../data/publicTools";
+import { getPublicToolBySlug, PUBLIC_TOOLS, PUBLIC_TOOL_SLUGS } from "../data/publicTools";
 import { TOOLS_REGISTRY } from "../data/toolsRegistry";
 import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
 import { PILLARS_50 } from "../data/masterBlueprint";
+import { PUBLIC_PILLARS } from "../data/pillarRegistry";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { CANONICAL_ORIGIN } from "../data/siteConfig";
 import { GUIDES } from "../data/guides";
@@ -94,6 +95,15 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
 
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", service: "xfree.in", timestamp: new Date().toISOString() });
+  });
+
+  app.get("/api/v1/stats", (_req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300");
+    res.json({
+      tools: PUBLIC_TOOLS.length,
+      pillars: PUBLIC_PILLARS.length,
+      timestamp: new Date().toISOString(),
+    });
   });
 
   app.get("/api/ready", (_req, res) => {
@@ -447,6 +457,44 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     app.all("/api/*", (_req, res) => {
     res.status(404).json({ error: "not_found" });
   });
+
+  // /home — contract-compliant static marketing landing page.
+  // Served from public/home/ with strict security headers, no CDNs
+  // for application code, no simulated auth, no 'unsafe-inline'.
+  const homeStaticRoot = path.join(process.cwd(), "public", "home");
+  const homeIndexFile = path.join(homeStaticRoot, "index.html");
+  if (fs.existsSync(homeIndexFile)) {
+    const setHomeHeaders = (res: import("express").Response) => {
+      res.setHeader("X-Frame-Options", "DENY");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+      res.setHeader(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+      );
+      res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+      res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+      res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://www.googletagservices.com; style-src 'self'; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests",
+      );
+      res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    };
+    app.get(["/home", "/home/"], (_req, res) => {
+      setHomeHeaders(res);
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("Cache-Control", "public, max-age=300, s-maxage=3600");
+      res.status(200).sendFile(homeIndexFile);
+    });
+    app.use("/home", (req, res, next) => {
+      const filePath = path.join(homeStaticRoot, req.path);
+      if (!filePath.startsWith(homeStaticRoot)) return next();
+      if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) return next();
+      setHomeHeaders(res);
+      res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=86400");
+      res.status(200).sendFile(filePath);
+    });
+  }
 
   const staticRouteSet = new Set<string>(STATIC_ROUTES);
   const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/${s}`));
