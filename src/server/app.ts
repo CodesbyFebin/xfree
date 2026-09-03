@@ -19,6 +19,7 @@ import {
 } from "./schemas";
 import { deliverMessage } from "./delivery";
 import { securityHeadersMiddleware } from "../middleware/security-headers";
+import { canonicalDomainMiddleware } from "../middleware/canonical-domain";
 import {
   generateSitemapXml,
   generateRssXml,
@@ -33,6 +34,7 @@ import {
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
 import { findToolBySlug } from "../data/toolsRegistry";
 import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
 
@@ -47,6 +49,11 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
   app.set("trust proxy", config.TRUST_PROXY);
   app.disable("x-powered-by");
 
+  // Canonical domain redirects (apex -> www, /studio -> app) and internal
+  // shell protection. Must run before any other route or middleware that
+  // inspects req.url so redirects happen on the very first request.
+  app.use(canonicalDomainMiddleware);
+
   app.use((req, _res, next) => {
     (req as any).requestId = crypto.randomUUID();
     next();
@@ -54,6 +61,8 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
 
   app.use(securityHeadersMiddleware);
   app.use(express.json({ limit: "100kb" }));
+
+  const baseUrl = config.PUBLIC_SITE_URL;
 
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", service: "xfree.in", timestamp: new Date().toISOString() });
@@ -68,7 +77,28 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
     });
   });
 
-  const baseUrl = config.PUBLIC_SITE_URL;
+  // Public health endpoint referenced by the XFree homepage footer, sitemap
+  // generators and the production verification script. Mirrors /api/health
+  // with operational metadata suitable for a static probe.
+  app.get("/health.json", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.setHeader("X-Robots-Tag", "all");
+    res.status(200).json({
+      status: "operational",
+      service: "xfree.in",
+      version: process.env.npm_package_version || "1.0.0",
+      timestamp: new Date().toISOString(),
+      public_tools: PUBLIC_TOOLS.length,
+      planned_tools: 25000,
+      endpoints: {
+        sitemap: `${baseUrl}/sitemap.xml`,
+        llms: `${baseUrl}/llms.txt`,
+        llms_full: `${baseUrl}/llms-full.txt`,
+        robots: `${baseUrl}/robots.txt`,
+        studio: "https://app.xfree.in/",
+      },
+    });
+  });
 
   app.get(["/sitemap.xml", "/sitemap-tools.xml", "/app/sitemap.xml"], (_req, res) => {
     res.header("Content-Type", "application/xml; charset=utf-8");

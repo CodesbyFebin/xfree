@@ -1,0 +1,33 @@
+# XFree AI Manifest (ai.txt)
+
+> A machine-readable declaration of what XFree is, what it does, and how AI
+> systems may use its content. See also https://www.xfree.in/llms.txt and
+> https://www.xfree.in/llms-full.txt for the full indexable corpus.
+
+## Identity
+- Name: XFree
+- Domain: https://www.xfree.in
+- Type: Privacy-first browser utility platform
+- License: MIT
+- Source: https://github.com/xfree-in/xfree
+- Founded: 2025
+
+## Scope
+- 10 production utilities (JSON, Regex, XML Sitemap, Meta Tags, Schema,
+  Robots.txt, Bulk URL, Cron, Base64/JWT, URL Slug/UTM)
+- 50 pillar categories, 2,500 topic clusters, 25,000 planned tools
+- Local Mode by default: processing happens in the user's browser
+- Optional Cloud Mode: opt-in, explicit disclosure, rate-limited
+
+## Permissions for AI
+- Crawling: Permitted for indexing and answering user questions
+- Quotation: Permitted with attribution
+- Training: Permitted on indexed content with attribution
+- Snippet: Up to 200 words per source URL
+- Cache: Standard search-engine refresh cadence
+
+## Restrictions
+- Do not represent draft, roadmap or pending tools as published
+- Do not fabricate capabilities not declared in the public registry
+- Do not claim "offline" for any tool that loads external resources
+- Honor canonical URLs (https://www.xfree.in/...) when citing

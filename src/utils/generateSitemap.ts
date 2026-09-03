@@ -1,4 +1,5 @@
-import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
+import { CATEGORIES } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import { GUIDES } from "../data/guides";
 
 const DEFAULT_BASE_URL = "https://www.xfree.in";
@@ -87,7 +88,7 @@ export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
 
   // 4. Canonical Working Micro-Tools Pages (Only status:indexable production tools)
   const seenSlugs = new Set<string>();
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     if (!tool.slug || seenSlugs.has(tool.slug)) continue;
     seenSlugs.add(tool.slug);
 
@@ -134,7 +135,7 @@ export function generateRssXml(baseUrl: string = DEFAULT_BASE_URL): string {
   rss += `    <ttl>60</ttl>\n`;
   rss += `    <atom:link href="${escapeXml(`${cleanBase}/rss.xml`)}" rel="self" type="application/rss+xml"/>\n`;
 
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     const toolUrl = `${cleanBase}/tools/${tool.slug}`;
     const pubDate = buildDate;
     const categoryName = tool.categoryLabel || tool.category;
@@ -192,7 +193,7 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   text += `- \`POST /api/ai/chat\`: Multi-turn conversational developer AI assistant.\n\n`;
 
   text += `## Complete Index of Indexable Micro-Tools\n\n`;
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription} (Pillar: ${tool.pillarKeyword})\n`;
   }
 
@@ -208,7 +209,7 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
   let text = `# XFree.in Full System Specification & Indexable Micro-Tools Knowledge Base\n\n`;
   text += `This document provides full technical details, Pillar Keywords, explanations, FAQs, and usage rules for indexable production micro-tools on XFree.in.\n\n`;
 
-  for (const tool of INDEXABLE_TOOLS) {
+  for (const tool of PUBLIC_TOOLS) {
     text += `--- \n\n`;
     text += `### ${tool.title}\n`;
     text += `- **URL**: ${cleanBase}/tools/${tool.slug}\n`;

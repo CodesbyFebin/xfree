@@ -1,9 +1,10 @@
-import { INDEXABLE_TOOLS, CATEGORIES, TOOLS_REGISTRY } from "../data/toolsRegistry";
+import { CATEGORIES, TOOLS_REGISTRY } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 
 export function generateCapabilitiesJson(baseUrl: string = "https://www.xfree.in"): string {
   const capabilitiesMap = new Map<string, any[]>();
-  
-  for (const tool of INDEXABLE_TOOLS) {
+
+  for (const tool of PUBLIC_TOOLS) {
     if (tool.capabilities) {
       for (const cap of tool.capabilities) {
         if (!capabilitiesMap.has(cap.id)) {
@@ -57,7 +58,7 @@ export function generateCapabilitiesJson(baseUrl: string = "https://www.xfree.in
 }
 
 export function generateToolsJson(baseUrl: string = "https://www.xfree.in"): string {
-  const tools = INDEXABLE_TOOLS.map(tool => ({
+  const tools = PUBLIC_TOOLS.map(tool => ({
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "@id": `${baseUrl}/tools/${tool.slug}`,

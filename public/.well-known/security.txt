@@ -1,0 +1,5 @@
+Contact: https://github.com/xfree-in/xfree/security/advisories/new
+Contact: mailto:security@xfree.in
+Expires: 2027-12-31T23:59:59z
+Preferred-Languages: en
+Canonical: https://www.xfree.in/.well-known/security.txt
