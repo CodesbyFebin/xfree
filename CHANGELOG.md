@@ -19,6 +19,44 @@ adheres to semantic versioning once it reaches `v1.0.0`.
   templates; CODEOWNERS; dependabot; CODE_OF_CONDUCT; CONTRIBUTING; SECURITY;
   SUPPORT.
 - `LICENSE` (MIT).
+- `public/home.html` — alternate single-file React homepage prototype served at
+  `/home`. Includes a 35-pillar `ALL_PILLARS` registry with live / beta /
+  coming-soon status badges, a `PillarExplorer` with filter chips mapped to
+  the six navigation menus, a `SiteHeader` with prominent search bar and
+  `⌘K` modal, an `AuthProvider` + `AuthModal` / `ProfileModal` with
+  localStorage-backed simulated auth, favorites and recent-activity tracking,
+  and six featured tools. Single-file deliverable: no build step, no
+  dependencies to install, CDN React 18 + Babel standalone.
+- `src/server/app.ts`: `GET /home` and `GET /home/` route handler that serves
+  `public/home.html` with `text/html; charset=utf-8` and
+  `Cache-Control: public, max-age=300, s-maxage=3600`. Falls through if the
+  file is missing. The canonical homepage at `/` remains the React SPA.
+- `src/server/__tests__/home-route.test.ts` — 4 tests covering 200 status,
+  content-type, trailing-slash handling, cache-control header, and on-disk
+  file presence.
+
+### Security
+- Reminder: rotate the `NVIDIA_API_KEY` previously exposed in conversation
+  history. Revoke the old key at https://org.nvidia.com, generate a new one,
+  and re-provision in all three Vercel environments. `src/server/env.ts` reads
+  the key from `process.env` only; no value is logged, echoed, or hard-coded.
+  Cloud Mode stays disabled by default until the new key is deployed; an
+  unset key returns 503 via `NvidiaNotConfiguredError` rather than failing the
+  whole function. The repository was searched for hard-coded values: no
+  `nvapi-` strings are present in `src/`, `docs/`, `api/`, `content/`, or
+  `.github/`, and `git log --all -S 'nvapi-'` returns no matches.
+
+### Known gaps vs the authoritative split
+- Pillar registry: `PILLARS_50` (50 topical pillars) on `main` vs 60 in the
+  blueprint. Migration path: add 10 more pillar definitions to
+  `src/data/masterBlueprint.ts`.
+- Sub-clusters: the 50-pillar × 50-cluster × 10-modifier taxonomy produces
+  25,000 roadmap concept entries; the 600 sub-clusters called for in the
+  blueprint are not yet modeled as individually governable records.
+- Product/authority pillars (Studio, OpenHost, Downloads, HowItWorks,
+  UseCases, Docs, Guides, Blog, PillarDirectory) appear as plain header and
+  footer links on `main` but are not yet a first-class `AUTHORITY_PILLARS_9`
+  data structure with an associated route map.
 
 ### Changed
 - `src/lib/intent-engine.ts`: `PROBLEM_TO_TOOL_MAP` now maps only to tools that
