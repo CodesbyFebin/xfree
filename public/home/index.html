@@ -186,6 +186,24 @@
         <p class="hero-lead">
           XFree runs <strong>entirely in your browser</strong>. No uploads, no accounts, no tracking. Format JSON, test regex, generate sitemaps, decode JWT, and dozens more — all client-side, all open source.
         </p>
+        <form class="hero-search" role="search" onsubmit="return false" aria-label="Search XFree tools and pillars">
+          <label for="heroSearch" class="sr-only">Search XFree tools and pillars</label>
+          <input
+            type="search"
+            id="heroSearch"
+            class="hero-search-input"
+            placeholder="Search tools and pillars…"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            aria-controls="heroSearchResults"
+            aria-describedby="heroSearchHint"
+          >
+          <button type="submit" class="hero-search-btn" aria-label="Run search">Search</button>
+        </form>
+        <div id="heroSearchResults" class="hero-search-results" role="region" aria-live="polite" hidden></div>
+        <p id="heroSearchHint" class="hero-search-hint">Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to focus · results update as you type</p>
         <div class="hero-actions">
           <a class="btn btn-primary btn-lg" href="https://app.xfree.in/" rel="noopener">Open Studio</a>
           <a class="btn btn-ghost btn-lg" href="/pillars">Browse pillars</a>

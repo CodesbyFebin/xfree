@@ -44,6 +44,7 @@ import {
   generateToolsJson,
 } from "../utils/generateStructuredData";
 import { executeTool, solveProblem, verifyToolResult } from "../lib/execution-engine";
+import { publicSearch, type SearchKind } from "../lib/public-search";
 import { getPublicToolBySlug, PUBLIC_TOOLS, PUBLIC_TOOL_SLUGS } from "../data/publicTools";
 import { TOOLS_REGISTRY } from "../data/toolsRegistry";
 import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
@@ -104,6 +105,22 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       pillars: PUBLIC_PILLARS.length,
       timestamp: new Date().toISOString(),
     });
+  });
+
+  app.get("/api/v1/search", (req, res) => {
+    const query = typeof req.query.q === "string" ? req.query.q : "";
+    const limitRaw = typeof req.query.limit === "string" ? Number(req.query.limit) : undefined;
+    const kindsRaw = typeof req.query.kinds === "string" ? req.query.kinds : undefined;
+    const kinds: SearchKind[] = kindsRaw
+      ? (kindsRaw.split(",").filter((k): k is SearchKind => k === "tool" || k === "pillar"))
+      : ["tool", "pillar"];
+    const result = publicSearch({
+      query,
+      ...(typeof limitRaw === "number" && !Number.isNaN(limitRaw) ? { limit: limitRaw } : {}),
+      kinds,
+    });
+    res.setHeader("Cache-Control", "public, max-age=30, s-maxage=300");
+    res.json(result);
   });
 
   app.get("/api/ready", (_req, res) => {

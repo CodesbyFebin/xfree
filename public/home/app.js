@@ -155,6 +155,100 @@
     runDemo();
   }
 
+  // ── Hero search bar (Local Mode) ───────────────────────────
+  // Debounced fetch against the public /api/v1/search endpoint.
+  // Results are rendered into a list under the search input; the input
+  // itself is the canonical form element with role="search" on the
+  // wrapping <form>.
+  var heroSearch = $("#heroSearch");
+  var heroSearchResults = $("#heroSearchResults");
+  if (heroSearch && heroSearchResults) {
+    var searchSeq = 0;
+    function renderSearchResults(results) {
+      heroSearchResults.innerHTML = "";
+      if (!results || results.length === 0) {
+        var empty = document.createElement("div");
+        empty.className = "hero-search-empty";
+        empty.textContent = "No matches.";
+        heroSearchResults.appendChild(empty);
+        heroSearchResults.hidden = false;
+        return;
+      }
+      var list = document.createElement("ul");
+      results.slice(0, 8).forEach(function (r) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = r.href;
+        var kind = document.createElement("span");
+        kind.className = "result-kind";
+        kind.textContent = r.kind === "tool" ? "Tool" : "Pillar";
+        var title = document.createElement("span");
+        title.className = "result-title";
+        title.appendChild(kind);
+        title.appendChild(document.createTextNode(r.title));
+        var desc = document.createElement("span");
+        desc.className = "result-desc";
+        desc.textContent = r.description;
+        a.appendChild(title);
+        a.appendChild(desc);
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      heroSearchResults.appendChild(list);
+      heroSearchResults.hidden = false;
+    }
+    function showSearchLoading() {
+      heroSearchResults.innerHTML = "";
+      var loading = document.createElement("div");
+      loading.className = "hero-search-loading";
+      loading.textContent = "Searching…";
+      heroSearchResults.appendChild(loading);
+      heroSearchResults.hidden = false;
+    }
+    function hideSearch() {
+      heroSearchResults.hidden = true;
+      heroSearchResults.innerHTML = "";
+    }
+    var searchDebounce = 0;
+    function runSearch() {
+      var q = heroSearch.value.trim();
+      if (!q) { hideSearch(); return; }
+      showSearchLoading();
+      var seq = ++searchSeq;
+      fetch("/api/v1/search?q=" + encodeURIComponent(q), { credentials: "omit" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (seq !== searchSeq) return; // stale
+          if (!data) { hideSearch(); return; }
+          renderSearchResults(data.results || []);
+        })
+        .catch(function () {
+          if (seq !== searchSeq) return;
+          hideSearch();
+        });
+    }
+    heroSearch.addEventListener("input", function () {
+      clearTimeout(searchDebounce);
+      var q = heroSearch.value.trim();
+      if (!q) { hideSearch(); return; }
+      searchDebounce = window.setTimeout(runSearch, 180);
+    });
+    heroSearch.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        hideSearch();
+        heroSearch.blur();
+      }
+    });
+    // Ctrl/Cmd+K focuses search
+    document.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        heroSearch.focus();
+        heroSearch.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+  }
+
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker
