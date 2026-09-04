@@ -119,6 +119,42 @@
       .catch(function () { /* silent — public metrics are non-critical */ });
   }
 
+  // ── JSON formatter demo (Local Mode) ────────────────────────
+  // Pure functions; exposed on the IIFE-bound object for tests.
+  var JSON_FORMATTER = {
+    format: function (input) {
+      try {
+        return { ok: true, value: JSON.stringify(JSON.parse(input), null, 2) };
+      } catch (err) {
+        return { ok: false, error: err && err.message ? err.message : "Invalid JSON" };
+      }
+    },
+  };
+
+  var demoInput = $("#demoInput");
+  var demoOutput = $("#demoOutput");
+  var demoStatus = $("#demoStatus");
+  if (demoInput && demoOutput && demoStatus) {
+    function runDemo() {
+      var result = JSON_FORMATTER.format(demoInput.value);
+      if (result.ok) {
+        demoOutput.textContent = result.value;
+        demoOutput.classList.remove("demo-error");
+        demoStatus.textContent = "Valid · " + result.value.length + " chars";
+        demoStatus.classList.add("demo-ok");
+        demoStatus.classList.remove("demo-err");
+      } else {
+        demoOutput.textContent = "Error: " + result.error;
+        demoOutput.classList.add("demo-error");
+        demoStatus.textContent = "Invalid JSON";
+        demoStatus.classList.add("demo-err");
+        demoStatus.classList.remove("demo-ok");
+      }
+    }
+    demoInput.addEventListener("input", runDemo);
+    runDemo();
+  }
+
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker
