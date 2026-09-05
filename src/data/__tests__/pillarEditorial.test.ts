@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { PILLAR_EDITORIAL, getPillarEditorial, getRelatedPillars } from "../pillarEditorial";
 import { PUBLIC_PILLARS, type PillarDefinition } from "../pillarRegistry";
+import type { PillarEditorialContent } from "../pillarEditorial";
 
 describe("pillarEditorial (editorial content for published pillars)", () => {
   it("has content for every published pillar", () => {
@@ -84,25 +85,28 @@ describe("getRelatedPillars", () => {
     const devTools = PUBLIC_PILLARS.find((p) => p.slug === "dev-tools");
     expect(devTools).toBeDefined();
     if (!devTools) return;
-    const related = getRelatedPillars(devTools, PUBLIC_PILLARS);
+    const editorial = PILLAR_EDITORIAL[devTools.slug];
+    expect(editorial).toBeDefined();
+    const related = getRelatedPillars(editorial, PUBLIC_PILLARS);
     expect(related.length).toBeGreaterThan(0);
     for (const p of related) expect(p.slug).not.toBe("dev-tools");
   });
 
   it("returns an empty array for a pillar with no editorial", () => {
-    const synthetic: PillarDefinition = {
-      id: 999,
-      name: "XFree Synthetic",
-      slug: "synthetic-test",
-      icon: "?",
-      description: "test",
-      headerGroup: "dev-data",
-      status: "draft",
-      indexable: false,
-      contentApproved: false,
-      approvedClusterIds: [],
-      verifiedToolSlugs: [],
-      lastmod: "2026-09-01",
+    const synthetic: PillarEditorialContent = {
+      pillarSlug: "synthetic-test",
+      directAnswer: "Test",
+      purposeAndAudience: "Test",
+      useCases: [],
+      howProcessingWorks: "Test",
+      supportedInputs: [],
+      supportedOutputs: [],
+      localCloudBoundary: "Test",
+      knownLimitations: [],
+      troubleshooting: [],
+      faq: [],
+      relatedPillarSlugs: [],
+      lastReviewed: "2026-09-01",
     };
     const out = getRelatedPillars(synthetic, PUBLIC_PILLARS);
     expect(out).toEqual([]);
