@@ -344,73 +344,14 @@ export function getCapabilityRecommendations(problem: string): ToolDefinition[] 
     .filter((t): t is ToolDefinition => t !== undefined);
 }
 
-/**
- * Compare multiple tools for a given capability
- */
-export function compareTools(
-  toolIds: string[],
-  criteria: string[] = ["capabilityFit", "reliability", "speed", "privacy", "pricing"]
-): ComparisonResult[] {
-  const tools = toolIds
-    .map(id => findToolBySlug(id))
-    .filter((t): t is ToolDefinition => t !== undefined);
-  
-  return tools.map(tool => ({
-    toolId: tool.id,
-    toolTitle: tool.title,
-    scores: criteria.map(c => ({
-      criterion: c,
-      score: tool.xfreeScore?.breakdown?.[c] || tool.xfreeScore?.[c] || 0,
-      weight: 1,
-    })),
-    overallScore: tool.xfreeScore?.overall || 0,
-    strengths: extractStrengths(tool, criteria),
-    weaknesses: extractWeaknesses(tool, criteria),
-  }));
-}
-
-function extractStrengths(tool: ToolDefinition, criteria: string[]): string[] {
-  const strengths: string[] = [];
-  if (tool.xfreeScore) {
-    for (const c of criteria) {
-      const score = tool.xfreeScore.breakdown?.[c] || tool.xfreeScore[c as keyof typeof tool.xfreeScore];
-      if (typeof score === "number" && score >= 0.8) {
-        strengths.push(c);
-      }
-    }
-  }
-  if (tool.isFlagship) strengths.push("flagship");
-  if (tool.verification?.status === "verified") strengths.push("verified");
-  return strengths;
-}
-
-function extractWeaknesses(tool: ToolDefinition, criteria: string[]): string[] {
-  const weaknesses: string[] = [];
-  if (tool.xfreeScore) {
-    for (const c of criteria) {
-      const score = tool.xfreeScore.breakdown?.[c] || tool.xfreeScore[c as keyof typeof tool.xfreeScore];
-      if (typeof score === "number" && score <= 0.5) {
-        weaknesses.push(c);
-      }
-    }
-  }
-  if (tool.verification?.status === "failed") weaknesses.push("verification_failed");
-  if (tool.availability === "degraded") weaknesses.push("degraded");
-  return weaknesses;
-}
-
-export interface ComparisonResult {
-  toolId: string;
-  toolTitle: string;
-  scores: Array<{ criterion: string; score: number; weight: number }>;
-  overallScore: number;
-  strengths: string[];
-  weaknesses: string[];
-}
-
-/**
- * Health check for a tool
- */
+export {
+  compareTools,
+  extractStrengths,
+  extractWeaknesses,
+  type ComparisonResult,
+  type ComparisonCriteria,
+  DEFAULT_CRITERIA,
+} from "./comparison-engine";
 export async function healthCheckTool(toolId: string): Promise<{
   healthy: boolean;
   toolId: string;

@@ -35,6 +35,7 @@ import { XFreeAppPage } from "./components/pages/XFreeAppPage";
 import { GuideIndexPage } from "./components/pages/GuideIndexPage";
 import { GuidePage } from "./components/pages/GuidePage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
+import { SolvePage } from "./components/solve/SolvePage";
 
 // Import Micro-Tools
 import { BulkUrlExtractorSitemap } from "./components/tools/BulkUrlExtractorSitemap";
@@ -168,14 +169,17 @@ export default function App() {
   const activeGuideSlug = guideSlugFromPath(currentPath);
   const activeGuide = useMemo(() => (activeGuideSlug ? findGuide(activeGuideSlug) ?? null : null), [activeGuideSlug]);
 
+  const solveProblemSlug = currentPath.startsWith("/solve/") ? currentPath.replace("/solve/", "").replace(/\/$/, "") : null;
+
   const isKnownRoute = useMemo(() => {
     if (currentPath === "/") return true;
     if (isKnownStaticRoute(currentPath)) return true;
     if (categorySlugFromPath(currentPath)) return true;
+    if (solveProblemSlug) return true;
     if (activeToolSlug) return Boolean(activeTool);
     if (activeGuideSlug) return Boolean(activeGuide);
     return false;
-  }, [currentPath, activeTool, activeToolSlug, activeGuide, activeGuideSlug]);
+  }, [currentPath, activeTool, activeToolSlug, activeGuide, activeGuideSlug, solveProblemSlug]);
 
   // Hook for dynamic head meta tag management (SEO pSEO pillar keywords & JSON-LD schemas)
   useMetaTags({
@@ -351,6 +355,9 @@ export default function App() {
               {renderToolComponent(activeTool)}
             </ToolPageLayout>
           </div>
+        ) : solveProblemSlug ? (
+          /* Solve Problem Screen */
+          <SolvePage problem={solveProblemSlug} onNavigate={navigateTo} />
         ) : activeView === "thinking" ? (
           /* Thinking Mode View (gemini-3.1-pro-preview) */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
