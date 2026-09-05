@@ -1,9 +1,8 @@
-import { CATEGORIES, TOOLS_REGISTRY } from "../data/toolsRegistry";
 import { PUBLIC_TOOLS } from "../data/publicTools";
 
 export function generateCapabilitiesJson(baseUrl: string = "https://www.xfree.in"): string {
   const capabilitiesMap = new Map<string, any[]>();
-
+  
   for (const tool of PUBLIC_TOOLS) {
     if (tool.capabilities) {
       for (const cap of tool.capabilities) {
@@ -85,67 +84,4 @@ export function generateToolsJson(baseUrl: string = "https://www.xfree.in"): str
     "url": baseUrl,
     "dataset": tools,
   }, null, 2);
-}
-
-export function generateProblemPagesSitemap(baseUrl: string = "https://www.xfree.in"): string {
-  const problems = [
-    "compress-pdf",
-    "merge-pdf",
-    "split-pdf",
-    "compress-image",
-    "remove-background",
-    "convert-file",
-    "clean-csv",
-    "transform-csv",
-    "format-json",
-    "validate-sitemap",
-    "generate-meta-tags",
-    "build-utm-links",
-    "generate-uuid",
-    "test-regex",
-    "generate-cron",
-    "decode-jwt",
-    "encode-base64",
-    "generate-schema",
-    "write-robots-txt",
-    "create-sitemap",
-    "format-xml",
-    "validate-xml",
-    "sort-lines",
-    "count-words",
-    "convert-color",
-    "convert-timestamp",
-    "generate-hash",
-    "generate-sitemap",
-    "debug-api",
-    "analyze-code",
-    "generate-readme",
-    "write-commit-message",
-    "review-pr",
-    "find-bugs",
-    "optimize-css",
-    "minify-js",
-    "create-image-compression-workflow",
-    "build-seo-workflow",
-    "generate-hreflang-sitemap",
-    "create-robots-testing-workflow",
-    "audit-open-graph",
-    "validate-schema-org",
-  ];
-
-  const currentDate = new Date().toISOString().split("T")[0];
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-
-  for (const problem of problems) {
-    xml += `  <url>\n`;
-    xml += `    <loc>${baseUrl}/solve/${problem}</loc>\n`;
-    xml += `    <lastmod>${currentDate}</lastmod>\n`;
-    xml += `    <changefreq>weekly</changefreq>\n`;
-    xml += `    <priority>0.7</priority>\n`;
-    xml += `  </url>\n`;
-  }
-
-  xml += `</urlset>`;
-  return xml;
 }

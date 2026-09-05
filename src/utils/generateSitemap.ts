@@ -1,13 +1,17 @@
-import { CATEGORIES } from "../data/toolsRegistry";
-import { PUBLIC_TOOLS } from "../data/publicTools";
-import { PUBLIC_TOOL_PILLARS } from "../data/pillars";
+import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { GUIDES } from "../data/guides";
+import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
+import { CANONICAL_ORIGIN, SITE_CONTENT_LASTMOD } from "../data/siteConfig";
+import { INDEXABLE_PILLARS } from "../data/pillarPublishing";
+import { ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
 
-const DEFAULT_BASE_URL = "https://www.xfree.in";
+const DEFAULT_BASE_URL = CANONICAL_ORIGIN;
 
-/**
- * Escapes special XML characters to prevent XML parsing errors.
- */
+export type SitemapEntry = {
+  path: string;
+  lastmod: string;
+};
+
 function escapeXml(unsafe: string): string {
   if (!unsafe) return "";
   return unsafe
@@ -18,229 +22,233 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, "&apos;");
 }
 
-/**
- * Formats date to ISO 8601 string or RFC 822 for RSS.
- */
-function getIsoDate(): string {
-  return new Date().toISOString();
+function cleanOrigin(baseUrl: string): string {
+  // Canonical artifacts should never inherit request/preview hosts. Accept an
+  // explicit generator override only when it is already HTTPS + www.xfree.in.
+  try {
+    const parsed = new URL(baseUrl);
+    if (parsed.protocol === "https:" && parsed.hostname === "www.xfree.in") {
+      return parsed.origin;
+    }
+  } catch {
+    // fall through to the fixed production origin
+  }
+  return DEFAULT_BASE_URL;
 }
 
-function getRssDate(): string {
-  return new Date().toUTCString();
+function normalizeDate(value?: string): string {
+  if (!value) return SITE_CONTENT_LASTMOD;
+  const match = value.match(/^\d{4}-\d{2}-\d{2}/);
+  return match ? match[0] : SITE_CONTENT_LASTMOD;
 }
 
-/**
- * Generates Google & Bing compliant sitemap.xml for all indexable production tools + categories + hubs.
- */
+function toRfc822(value: string): string {
+  const date = new Date(`${normalizeDate(value)}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime())
+    ? new Date(`${SITE_CONTENT_LASTMOD}T00:00:00.000Z`).toUTCString()
+    : date.toUTCString();
+}
+
+function maxLastmod(entries: SitemapEntry[]): string {
+  if (!entries.length) return SITE_CONTENT_LASTMOD;
+  return entries.reduce((latest, entry) => entry.lastmod > latest ? entry.lastmod : latest, entries[0].lastmod);
+}
+
+const STATIC_PAGE_ENTRIES: SitemapEntry[] = [
+  { path: "/", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/how-it-works", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/use-cases", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/docs", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/blog", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/faq", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/about", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/contact", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/privacy", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/terms", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/security", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/xfree-app", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/pillars", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/instaserver", lastmod: SITE_CONTENT_LASTMOD },
+  { path: "/json-tools", lastmod: SITE_CONTENT_LASTMOD },
+];
+
+export function getPageSitemapEntries(): SitemapEntry[] {
+  return [
+    ...STATIC_PAGE_ENTRIES,
+    ...PUBLIC_CATEGORIES.map((category) => ({
+      path: `/${category.id}`,
+      lastmod: SITE_CONTENT_LASTMOD,
+    })),
+    ...INDEXABLE_PILLARS.map((pillar) => ({
+      path: `/pillar/${pillar.slug}`,
+      lastmod: SITE_CONTENT_LASTMOD,
+    })),
+  ];
+}
+
+export function getToolSitemapEntries(): SitemapEntry[] {
+  const seen = new Set<string>();
+  const entries: SitemapEntry[] = [];
+
+  for (const tool of PUBLIC_TOOLS) {
+    if (!tool.slug || seen.has(tool.slug)) continue;
+    seen.add(tool.slug);
+    entries.push({
+      path: `/tools/${tool.slug}`,
+      lastmod: normalizeDate(tool.lastModified),
+    });
+  }
+
+  for (const artifact of Object.values(GENERATED_PUBLISHED_CONTENT)) {
+    if (!artifact.slug || seen.has(artifact.slug)) continue;
+    seen.add(artifact.slug);
+    entries.push({
+      path: `/tools/${artifact.slug}`,
+      lastmod: normalizeDate(artifact.approval.reviewedAt),
+    });
+  }
+
+  return entries;
+}
+
+export function getGuideSitemapEntries(): SitemapEntry[] {
+  return [
+    { path: "/guides", lastmod: SITE_CONTENT_LASTMOD },
+    ...GUIDES.map((guide) => ({
+      path: `/guides/${guide.slug}`,
+      lastmod: normalizeDate(guide.lastReviewed),
+    })),
+  ];
+}
+
+function renderUrlset(entries: SitemapEntry[], baseUrl: string): string {
+  const cleanBase = cleanOrigin(baseUrl);
+  const unique = new Map(entries.map((entry) => [entry.path, entry]));
+  const rows = Array.from(unique.values())
+    .map((entry) => `  <url>\n    <loc>${escapeXml(`${cleanBase}${entry.path === "/" ? "/" : entry.path}`)}</loc>\n    <lastmod>${escapeXml(normalizeDate(entry.lastmod))}</lastmod>\n  </url>`)
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows}\n</urlset>`;
+}
+
+/** Full compatibility sitemap containing every canonical indexable URL. */
 export function generateSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  const currentDate = getIsoDate().split("T")[0];
+  return renderUrlset([
+    ...getPageSitemapEntries(),
+    ...getToolSitemapEntries(),
+    ...getGuideSitemapEntries(),
+  ], baseUrl);
+}
 
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
-  xml += `        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n`;
-  xml += `        xmlns:xhtml="http://www.w3.org/1999/xhtml"\n`;
-  xml += `        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n`;
+export function generatePagesSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
+  return renderUrlset(getPageSitemapEntries(), baseUrl);
+}
 
-  // 1. Root / Home
-  xml += `  <url>\n`;
-  xml += `    <loc>${escapeXml(`${cleanBase}/`)}</loc>\n`;
-  xml += `    <lastmod>${currentDate}</lastmod>\n`;
-  xml += `    <changefreq>daily</changefreq>\n`;
-  xml += `    <priority>1.0</priority>\n`;
-  xml += `  </url>\n`;
+export function generateToolsSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
+  return renderUrlset(getToolSitemapEntries(), baseUrl);
+}
 
-  // 2. Static Content Pages
-  const staticPages = [
-    { path: "/how-it-works", priority: "0.8", freq: "weekly" },
-    { path: "/use-cases", priority: "0.8", freq: "weekly" },
-    { path: "/docs", priority: "0.8", freq: "weekly" },
-    { path: "/blog", priority: "0.8", freq: "daily" },
-    { path: "/faq", priority: "0.7", freq: "monthly" },
-    { path: "/about", priority: "0.6", freq: "monthly" },
-    { path: "/contact", priority: "0.5", freq: "monthly" },
-    { path: "/privacy", priority: "0.3", freq: "yearly" },
-    { path: "/terms", priority: "0.3", freq: "yearly" },
-    { path: "/security", priority: "0.5", freq: "monthly" },
-    { path: "/clusters", priority: "0.9", freq: "daily" },
-    { path: "/thinking", priority: "0.8", freq: "weekly" },
-    { path: "/xfree-app", priority: "0.9", freq: "monthly" },
-    { path: "/guides", priority: "0.7", freq: "weekly" },
+export function generateGuidesSitemapXml(baseUrl: string = DEFAULT_BASE_URL): string {
+  return renderUrlset(getGuideSitemapEntries(), baseUrl);
+}
+
+export function generateSitemapIndexXml(baseUrl: string = DEFAULT_BASE_URL): string {
+  const cleanBase = cleanOrigin(baseUrl);
+  const groups = [
+    { path: "/sitemap-pages.xml", lastmod: maxLastmod(getPageSitemapEntries()) },
+    { path: "/sitemap-tools.xml", lastmod: maxLastmod(getToolSitemapEntries()) },
+    { path: "/sitemap-guides.xml", lastmod: maxLastmod(getGuideSitemapEntries()) },
   ];
 
-  for (const page of staticPages) {
-    xml += `  <url>\n`;
-    xml += `    <loc>${escapeXml(`${cleanBase}${page.path}`)}</loc>\n`;
-    xml += `    <lastmod>${currentDate}</lastmod>\n`;
-    xml += `    <changefreq>${page.freq}</changefreq>\n`;
-    xml += `    <priority>${page.priority}</priority>\n`;
-    xml += `  </url>\n`;
-  }
-
-  // 3. Category Hub Pages
-  for (const cat of CATEGORIES) {
-    xml += `  <url>\n`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/category/${cat.id}`)}</loc>\n`;
-    xml += `    <lastmod>${currentDate}</lastmod>\n`;
-    xml += `    <changefreq>daily</changefreq>\n`;
-    xml += `    <priority>0.9</priority>\n`;
-    xml += `  </url>\n`;
-  }
-
-  // 4. Canonical Working Micro-Tools Pages (Only status:indexable production tools)
-  const seenSlugs = new Set<string>();
-  for (const tool of PUBLIC_TOOLS) {
-    if (!tool.slug || seenSlugs.has(tool.slug)) continue;
-    seenSlugs.add(tool.slug);
-
-    const priority = tool.isFlagship ? "0.9" : "0.8";
-    const lastmod = tool.lastModified || currentDate;
-    xml += `  <url>\n`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/tools/${tool.slug}`)}</loc>\n`;
-    xml += `    <lastmod>${lastmod}</lastmod>\n`;
-    xml += `    <changefreq>weekly</changefreq>\n`;
-    xml += `    <priority>${priority}</priority>\n`;
-    xml += `  </url>\n`;
-  }
-
-  // 5. Guides
-  for (const g of GUIDES) {
-    xml += `  <url>\n`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/guides/${g.slug}`)}</loc>\n`;
-    xml += `    <lastmod>${g.lastReviewed}</lastmod>\n`;
-    xml += `    <changefreq>monthly</changefreq>\n`;
-    xml += `    <priority>0.7</priority>\n`;
-    xml += `  </url>\n`;
-  }
-
-  // 6. Pillar canonical pages (published tool pillars only)
-  const seenPillarHrefs = new Set<string>();
-  for (const p of PUBLIC_TOOL_PILLARS) {
-    if (!p.href || p.href.startsWith("http") || seenPillarHrefs.has(p.href)) continue;
-    seenPillarHrefs.add(p.href);
-    const lastmod = currentDate;
-    xml += `  <url>\n`;
-    xml += `    <loc>${escapeXml(`${cleanBase}${p.href}`)}</loc>\n`;
-    xml += `    <lastmod>${lastmod}</lastmod>\n`;
-    xml += `    <changefreq>weekly</changefreq>\n`;
-    xml += `    <priority>0.7</priority>\n`;
-    xml += `  </url>\n`;
-  }
-
-  xml += `</urlset>`;
-  return xml;
+  const rows = groups.map((group) => `  <sitemap>\n    <loc>${escapeXml(`${cleanBase}${group.path}`)}</loc>\n    <lastmod>${escapeXml(group.lastmod)}</lastmod>\n  </sitemap>`).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows}\n</sitemapindex>`;
 }
 
-/**
- * Generates RSS 2.0 feed (rss.xml) containing all indexable production micro-tools for fast search engine & LLM crawler indexing.
- */
+/** RSS is a discovery/feed surface, not a sitemap. Dates come from content. */
 export function generateRssXml(baseUrl: string = DEFAULT_BASE_URL): string {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  const buildDate = getRssDate();
+  const cleanBase = cleanOrigin(baseUrl);
+  const tools = getToolSitemapEntries();
+  const buildDate = toRfc822(maxLastmod(tools));
 
   let rss = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   rss += `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">\n`;
   rss += `  <channel>\n`;
-  rss += `    <title>XFree.in — Free Online Developer, SEO, AI &amp; Converter Micro-Tools</title>\n`;
-  rss += `    <link>${escapeXml(cleanBase)}</link>\n`;
-  rss += `    <description>100% Free client-side developer, SEO, AI, and converter micro-tools. Instant browser execution, no signup.</description>\n`;
+  rss += `    <title>XFree.in — Free Developer, SEO &amp; AI Micro-Tools</title>\n`;
+  rss += `    <link>${escapeXml(`${cleanBase}/`)}</link>\n`;
+  rss += `    <description>Published browser-based developer, SEO, AI, and converter micro-tools with clear processing disclosures.</description>\n`;
   rss += `    <language>en-us</language>\n`;
   rss += `    <lastBuildDate>${buildDate}</lastBuildDate>\n`;
-  rss += `    <pubDate>${buildDate}</pubDate>\n`;
-  rss += `    <ttl>60</ttl>\n`;
   rss += `    <atom:link href="${escapeXml(`${cleanBase}/rss.xml`)}" rel="self" type="application/rss+xml"/>\n`;
 
+  const toolDate = new Map(tools.map((entry) => [entry.path.replace("/tools/", ""), entry.lastmod]));
   for (const tool of PUBLIC_TOOLS) {
     const toolUrl = `${cleanBase}/tools/${tool.slug}`;
-    const pubDate = buildDate;
     const categoryName = tool.categoryLabel || tool.category;
-
     rss += `    <item>\n`;
     rss += `      <title>${escapeXml(tool.title)}</title>\n`;
     rss += `      <link>${escapeXml(toolUrl)}</link>\n`;
     rss += `      <guid isPermaLink="true">${escapeXml(toolUrl)}</guid>\n`;
-    rss += `      <pubDate>${pubDate}</pubDate>\n`;
+    rss += `      <pubDate>${toRfc822(toolDate.get(tool.slug) || SITE_CONTENT_LASTMOD)}</pubDate>\n`;
     rss += `      <category>${escapeXml(categoryName)}</category>\n`;
-    rss += `      <description>${escapeXml(`${tool.shortDescription} Pillar Keyword: ${tool.pillarKeyword}. 100% Free browser utility with instant execution.`)}</description>\n`;
-    rss += `      <content:encoded><![CDATA[`;
-    rss += `<h3>${escapeXml(tool.title)}</h3>`;
-    rss += `<p><strong>Pillar Keyword:</strong> ${escapeXml(tool.pillarKeyword)}</p>`;
-    rss += `<p>${escapeXml(tool.explanation)}</p>`;
-    if (tool.howToUse && tool.howToUse.length > 0) {
-      rss += `<h4>How to Use:</h4><ul>`;
-      for (const step of tool.howToUse) {
-        rss += `<li>${escapeXml(step)}</li>`;
-      }
-      rss += `</ul>`;
-    }
-    rss += `]]></content:encoded>\n`;
+    rss += `      <description>${escapeXml(tool.shortDescription)}</description>\n`;
+    rss += `      <content:encoded><![CDATA[<h3>${escapeXml(tool.title)}</h3><p>${escapeXml(tool.explanation)}</p>]]></content:encoded>\n`;
     rss += `    </item>\n`;
   }
 
-  rss += `  </channel>\n`;
-  rss += `</rss>`;
+  rss += `  </channel>\n</rss>`;
   return rss;
 }
 
-/**
- * Generates llms.txt (Standard format for LLM agents & AI search crawlers).
- */
 export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-
-  let text = `# XFree.in — Free Online Developer, SEO, AI & Converter Micro-Tools Suite\n\n`;
-  text += `> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with browser-based execution for local tools.\n\n`;
-
-  text += `## Primary Sections & Hubs\n\n`;
-  text += `- [Home Page](${cleanBase}/): Complete registry search and grid view of indexable micro-tools.\n`;
-  text += `- [100 Keyword Clusters Hub](${cleanBase}/clusters): Programmatic SEO directory mapping 100 search intent clusters and supporting keywords.\n`;
-  text += `- [Gemini Deep Thinking Mode](${cleanBase}/api/ai/thinking): Server-side high-reasoning Gemini 3.1 Pro endpoint for complex SQL, Regex, and SEO architectural analysis.\n\n`;
+  const cleanBase = cleanOrigin(baseUrl);
+  let text = `# XFree.in — Free Developer, SEO & AI Micro-Tools\n\n`;
+  text += `> XFree.in publishes focused browser-based developer utilities, technical SEO tools, formatters, converters, and clearly disclosed AI assistants.\n\n`;
+  text += `## Primary Sections\n\n`;
+  text += `- [Home](${cleanBase}/): Search and browse the published tool directory.\n`;
+  text += `- [Guides](${cleanBase}/guides): Reviewed documentation connected to published tools.\n`;
+  text += `- [How It Works](${cleanBase}/how-it-works): Processing modes, browser execution, and optional cloud handoffs.\n`;
+  text += `- [Pillars](${cleanBase}/pillars): 50 developer and SEO topic pillars; only pillars backed by published tools enter the sitemap.\n`;
+  text += `- [Roadmap](${cleanBase}/roadmap): ${ROADMAP_CONCEPT_COUNT.toLocaleString()} planned concepts on a noindex discovery page; this is not a count of live tools.\n`;
+  text += `- [Contribute](${cleanBase}/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.\n`;
+  text += `- [InstaServer](${cleanBase}/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.\n`;
+  text += `- [JSON Tools](${cleanBase}/json-tools): Hub of 18 free browser-based JSON tools — format, validate, minify, convert, sort, and inspect.\n`;
+  text += `- [OpenAPI](${cleanBase}/openapi.json): Machine-readable description of the public XFree API surface.\n\n`;
 
   text += `## Categories\n\n`;
-  for (const cat of CATEGORIES) {
-    text += `- [${cat.label}](${cleanBase}/category/${cat.id}): ${cat.description}\n`;
+  for (const cat of PUBLIC_CATEGORIES) {
+    text += `- [${cat.label}](${cleanBase}/${cat.id}): ${cat.description}\n`;
   }
 
-  text += `\n## Core API Endpoints for Developers & AI Agents\n\n`;
-  text += `- \`POST /api/ai\`: Single-purpose AI proxy (ai-regex, ai-json-repair, ai-meta-optimizer, ai-sql-generator, ai-search-intent, ai-code-explainer, ai-commit-generator, ai-schema-generator).\n`;
-  text += `- \`POST /api/ai/batch\`: Batch processing endpoint for bulk CSV/TXT items.\n`;
-  text += `- \`POST /api/ai/thinking\`: Deep reasoning endpoint powered by Google Gemini reasoning model (configurable via GEMINI_THINKING_MODEL) with high thinking budget.\n`;
-  text += `- \`POST /api/ai/chat\`: Multi-turn conversational developer AI assistant.\n\n`;
+  text += `\n## Published Pillars\n\n`;
+  for (const pillar of INDEXABLE_PILLARS) {
+    text += `- [${pillar.name}](${cleanBase}/pillar/${pillar.slug}): ${pillar.description}\n`;
+  }
 
-  text += `## Complete Index of Indexable Micro-Tools\n\n`;
+  text += `\n## Published Tools\n\n`;
   for (const tool of PUBLIC_TOOLS) {
-    text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription} (Pillar: ${tool.pillarKeyword})\n`;
+    text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription}\n`;
   }
-
   return text;
 }
 
-/**
- * Generates llms-full.txt (Comprehensive detailed technical knowledge base for LLM context injection).
- */
 export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-
-  let text = `# XFree.in Full System Specification & Indexable Micro-Tools Knowledge Base\n\n`;
-  text += `This document provides full technical details, Pillar Keywords, explanations, FAQs, and usage rules for indexable production micro-tools on XFree.in.\n\n`;
+  const cleanBase = cleanOrigin(baseUrl);
+  let text = `# XFree.in Full Published Tool Reference\n\n`;
+  text += `This file documents only tools in the public published/indexable registry. Draft and planned tools are intentionally excluded.\n\n`;
 
   for (const tool of PUBLIC_TOOLS) {
-    text += `--- \n\n`;
-    text += `### ${tool.title}\n`;
+    text += `---\n\n### ${tool.title}\n`;
     text += `- **URL**: ${cleanBase}/tools/${tool.slug}\n`;
     text += `- **Category**: ${tool.categoryLabel || tool.category}\n`;
-    text += `- **Pillar Keyword**: ${tool.pillarKeyword}\n`;
     text += `- **Description**: ${tool.shortDescription}\n`;
+    text += `- **Processing**: ${tool.privacyNotice || (tool.isAi ? "Cloud processing is disclosed before submission." : "Runs locally in the browser.")}\n`;
     text += `- **Explanation**: ${tool.explanation}\n`;
-
-    if (tool.howToUse && tool.howToUse.length > 0) {
-      text += `- **How to Use**:\n`;
-      for (const step of tool.howToUse) {
-        text += `  1. ${step}\n`;
-      }
+    if (tool.howToUse?.length) {
+      text += `- **How to use**:\n`;
+      tool.howToUse.forEach((step, index) => { text += `  ${index + 1}. ${step}\n`; });
     }
-
-    if (tool.faqs && tool.faqs.length > 0) {
+    if (tool.faqs?.length) {
       text += `- **Top FAQs**:\n`;
       for (const faq of tool.faqs.slice(0, 3)) {
         text += `  - **Q: ${faq.question}**\n    A: ${faq.answer}\n`;
@@ -248,102 +256,10 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
     }
     text += `\n`;
   }
-
   return text;
 }
 
-/**
- * Generates robots.txt directing search engine & LLM crawlers to sitemaps and feeds.
- */
 export function generateRobotsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-
-  // Open-crawl policy per site owner: all bots allowed, including bulk
-  // training crawlers (GPTBot, ClaudeBot, Google-Extended, CCBot, etc.).
-  // Trade-off accepted: content ends up in LLM training corpora in exchange
-  // for showing up in model base knowledge. Only /api/ is still disallowed
-  // (private endpoints, not user-facing content).
-  //
-  // To revert to a split-brain policy (block training, allow citation),
-  // restore the pre-<COMMIT> version from git history.
-  return `# Global rules
-User-agent: *
-Allow: /
-Disallow: /api/
-
-# --- Traditional search engines ---
-User-agent: Googlebot
-Allow: /
-Disallow: /api/
-
-User-agent: Bingbot
-Allow: /
-Disallow: /api/
-
-User-agent: DuckDuckBot
-Allow: /
-Disallow: /api/
-
-User-agent: BraveBot
-Allow: /
-Disallow: /api/
-
-# --- AI citation / live-fetch bots ---
-User-agent: OAI-SearchBot
-Allow: /
-Disallow: /api/
-
-User-agent: ChatGPT-User
-Allow: /
-Disallow: /api/
-
-User-agent: PerplexityBot
-Allow: /
-Disallow: /api/
-
-User-agent: Claude-SearchBot
-Allow: /
-Disallow: /api/
-
-User-agent: Claude-User
-Allow: /
-Disallow: /api/
-
-User-agent: Applebot
-Allow: /
-Disallow: /api/
-
-# --- AI training crawlers (allowed per site owner) ---
-User-agent: GPTBot
-Allow: /
-Disallow: /api/
-
-User-agent: ClaudeBot
-Allow: /
-Disallow: /api/
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /api/
-
-User-agent: Applebot-Extended
-Allow: /
-Disallow: /api/
-
-User-agent: CCBot
-Allow: /
-Disallow: /api/
-
-User-agent: Meta-ExternalAgent
-Allow: /
-Disallow: /api/
-
-User-agent: Bytespider
-Allow: /
-Disallow: /api/
-
-# Discovery files
-Sitemap: ${cleanBase}/sitemap.xml
-Sitemap: ${cleanBase}/rss.xml
-`;
+  const cleanBase = cleanOrigin(baseUrl);
+  return `# XFree.in crawl policy\nUser-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\n# Search and answer-engine crawlers\nUser-agent: Googlebot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: Bingbot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: ChatGPT-User\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: PerplexityBot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\n# Canonical discovery entry point\nSitemap: ${cleanBase}/sitemap-index.xml\n`;
 }

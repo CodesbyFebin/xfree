@@ -184,6 +184,1224 @@
       "requiredFeature": [],
       "url": "https://www.xfree.in/tools/url-slug-utm-builder",
       "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/sip-emi-calculator",
+      "name": "SIP & EMI Calculator — Mutual Fund & Loan EMI",
+      "description": "Calculate SIP mutual fund maturity value with a year-by-year growth breakdown, and EMI loan repayment with a full amortization schedule.",
+      "applicationCategory": "Generators",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/sip-emi-calculator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-to-csv-converter",
+      "name": "JSON to CSV Converter",
+      "description": "Convert JSON arrays or objects into consistently quoted CSV for spreadsheets, data review, imports, and local pipeline preparation.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-to-csv.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-to-csv-converter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/csv-to-json-converter",
+      "name": "CSV to JSON Converter",
+      "description": "Parse quoted CSV with a header row into structured JSON objects for APIs, fixtures, analysis, and browser-side data cleanup.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: csv-to-json.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/csv-to-json-converter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/base64-text-encoder",
+      "name": "Base64 Text Encoder",
+      "description": "Encode Unicode text into standard Base64 using UTF-8 bytes for transport, test fixtures, configuration, and payload inspection.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: base64-encode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/base64-text-encoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/base64-text-decoder",
+      "name": "Base64 Text Decoder",
+      "description": "Decode standard Base64 into UTF-8 text locally for inspecting payloads, configuration values, tokens, and encoded snippets.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: base64-decode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/base64-text-decoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/url-component-encoder",
+      "name": "URL Component Encoder",
+      "description": "Percent-encode text as a URL component so reserved characters can safely appear inside query values, fragments, or generated links.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: url-encode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/url-component-encoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/url-component-decoder",
+      "name": "URL Component Decoder",
+      "description": "Decode percent-encoded URL component text to inspect human-readable query values, slugs, redirect parameters, and tracking data.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: url-decode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/url-component-decoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/utf8-hex-encoder",
+      "name": "UTF-8 Hex Encoder",
+      "description": "Encode Unicode text into lowercase UTF-8 hexadecimal byte pairs for debugging protocol payloads, storage formats, and byte boundaries.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: hex-encode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/utf8-hex-encoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/utf8-hex-decoder",
+      "name": "UTF-8 Hex Decoder",
+      "description": "Decode hexadecimal byte pairs as strict UTF-8 text for inspecting encoded payloads, serialized values, and protocol samples.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: hex-decode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/utf8-hex-decoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/html-entity-encoder",
+      "name": "HTML Entity Encoder",
+      "description": "Escape HTML-significant characters so text can be displayed literally instead of being interpreted as markup by an HTML parser.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: html-encode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/html-entity-encoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/html-entity-decoder",
+      "name": "HTML Entity Decoder",
+      "description": "Decode common named and numeric HTML entities into readable Unicode text without evaluating the decoded result as executable markup.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: html-decode.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/html-entity-decoder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-pretty-printer",
+      "name": "JSON Pretty Printer",
+      "description": "Parse valid JSON and pretty-print it with consistent indentation for debugging, code review, documentation, and version-control friendly diffs.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-format.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-pretty-printer",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-minifier",
+      "name": "JSON Minifier",
+      "description": "Remove insignificant JSON whitespace by parsing and reserializing valid JSON for compact transport, fixtures, and embedded configuration.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-minify.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-minifier",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-key-sorter",
+      "name": "JSON Key Sorter",
+      "description": "Sort JSON object keys recursively while preserving array order to make configuration snapshots, reviews, and structural diffs easier to compare.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-sort-keys.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-key-sorter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-syntax-validator",
+      "name": "JSON Syntax Validator",
+      "description": "Validate whether input is syntactically correct JSON with an immediate browser-side pass result or parser error for malformed documents.",
+      "applicationCategory": "Validators",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-validate.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-syntax-validator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-value-type-inspector",
+      "name": "JSON Value Type Inspector",
+      "description": "Identify the top-level JSON value type to distinguish objects, arrays, strings, numbers, booleans, and null during payload inspection.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-value-type.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-value-type-inspector",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-object-key-extractor",
+      "name": "JSON Object Key Extractor",
+      "description": "List the top-level keys of a JSON object for schema discovery, payload auditing, fixture review, and quick field inventory checks.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-object-keys.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-object-key-extractor",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-array-length-counter",
+      "name": "JSON Array Length Counter",
+      "description": "Count entries in a top-level JSON array without manually scanning a collection or uploading the payload to a remote processing service.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-array-length.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-array-length-counter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-pointer-resolver",
+      "name": "JSON Pointer Resolver",
+      "description": "Resolve an RFC 6901-style JSON Pointer against a JSON document to inspect a precise nested value in the browser without server code.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-pointer-get.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-pointer-resolver",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-array-deduplicator",
+      "name": "JSON Array Deduplicator",
+      "description": "Remove repeated values from a top-level JSON array by comparing their serialized representation for deterministic browser-side cleanup.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-array-dedupe.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-array-deduplicator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-array-sorter",
+      "name": "JSON Array Sorter",
+      "description": "Sort a homogeneous top-level JSON array of strings or numbers for predictable review, fixtures, comparisons, and local data preparation.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-array-sort.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-array-sorter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-string-escaper",
+      "name": "JSON String Escaper",
+      "description": "Serialize arbitrary text as one valid JSON string literal with quotes, line breaks, controls, and backslashes escaped correctly.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-string-escape.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-string-escaper",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-string-unescaper",
+      "name": "JSON String Unescaper",
+      "description": "Parse one valid JSON string literal and recover the underlying Unicode text for debugging escaped API values and serialized configuration.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-string-unescape.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-string-unescaper",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/jsonl-to-json-array",
+      "name": "JSON Lines to Array Converter",
+      "description": "Convert newline-delimited JSON records into one standard JSON array for APIs, analysis, fixtures, and spreadsheet conversion workflows.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-lines-to-array.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/jsonl-to-json-array",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-array-to-jsonl",
+      "name": "JSON Array to JSON Lines Converter",
+      "description": "Serialize each element of a top-level JSON array as one JSON Lines record for streaming, logs, import pipelines, and line-oriented tooling.",
+      "applicationCategory": "Converters & Encoders",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-array-to-lines.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-array-to-jsonl",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/json-nesting-depth-calculator",
+      "name": "JSON Nesting Depth Calculator",
+      "description": "Calculate the nesting depth of JSON objects and arrays to spot deeply nested payloads that can be difficult to inspect, transform, or validate.",
+      "applicationCategory": "Developer Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: json-depth.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/json-nesting-depth-calculator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/text-case-converter",
+      "name": "Text Case Converter",
+      "description": "Convert text to upper, lower, or title-style case and inspect basic word and character counts with one local browser utility.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: case-converter.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/text-case-converter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/text-to-url-slug-generator",
+      "name": "Text to URL Slug Generator",
+      "description": "Turn titles and labels into lowercase ASCII hyphenated slugs for clean paths, filenames, anchors, and stable content identifiers.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: slugify.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/text-to-url-slug-generator",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/duplicate-line-remover",
+      "name": "Duplicate Line Remover",
+      "description": "Remove exact duplicate lines while preserving first occurrence order for lists, exports, keyword sets, logs, and configuration fragments.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: line-dedupe.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/duplicate-line-remover",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/alphabetical-line-sorter",
+      "name": "Alphabetical Line Sorter",
+      "description": "Sort newline-separated text with the browser locale comparator for cleaner lists, reports, configuration files, and review workflows.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: line-sort.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/alphabetical-line-sorter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/whitespace-normalizer",
+      "name": "Whitespace Normalizer",
+      "description": "Trim text and collapse runs of spaces, tabs, and line breaks into single spaces for compact comparison, cleanup, and normalization tasks.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: whitespace-normalize.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/whitespace-normalizer",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/empty-line-remover",
+      "name": "Empty Line Remover",
+      "description": "Remove blank and whitespace-only lines while preserving the content and order of every non-empty line in the source text.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: empty-line-remove.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/empty-line-remover",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/line-order-reverser",
+      "name": "Line Order Reverser",
+      "description": "Reverse the order of lines without reversing characters inside each line for lists, chronological notes, logs, and stack-like data.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: line-reverse.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/line-order-reverser",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/unicode-character-counter",
+      "name": "Unicode Character Counter",
+      "description": "Count UTF-16 code units and Unicode code points to understand how browsers and Unicode-aware systems measure a text string.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: character-count.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/unicode-character-counter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/unicode-code-point-counter",
+      "name": "Unicode Code Point Counter",
+      "description": "Count Unicode code points without confusing supplementary characters with two UTF-16 code units during browser-side text inspection.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: code-point-count.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/unicode-code-point-counter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/grapheme-cluster-counter",
+      "name": "Grapheme Cluster Counter",
+      "description": "Count user-perceived grapheme clusters with Intl.Segmenter for realistic text limits involving international characters and emoji sequences.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: grapheme-count.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/grapheme-cluster-counter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/unicode-word-counter",
+      "name": "Unicode Word Counter",
+      "description": "Count practical Unicode word tokens for drafts, documentation, snippets, and content checks without uploading the working text.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: word-count.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/unicode-word-counter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/sentence-counter",
+      "name": "Sentence Counter",
+      "description": "Estimate sentence count from terminal punctuation for quick draft checks, documentation review, and lightweight readability workflows.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: sentence-count.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/sentence-counter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/paragraph-counter",
+      "name": "Paragraph Counter",
+      "description": "Count text blocks separated by blank lines to inspect document structure, drafts, notes, and content without sending it to a server.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: paragraph-count.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/paragraph-counter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/character-frequency-analyzer",
+      "name": "Character Frequency Analyzer",
+      "description": "Count occurrences of each Unicode code point to inspect symbol distribution, separators, repeated characters, and unusual text patterns.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: character-frequency.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/character-frequency-analyzer",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/word-frequency-analyzer",
+      "name": "Word Frequency Analyzer",
+      "description": "Count normalized practical word tokens to reveal repeated terminology, dominant vocabulary, and simple text distribution patterns locally.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: word-frequency.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/word-frequency-analyzer",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/unicode-text-reverser",
+      "name": "Unicode Text Reverser",
+      "description": "Reverse text by Unicode code point for transformation testing, puzzles, fixtures, and string-processing experiments in the browser.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: reverse-text.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/unicode-text-reverser",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/word-order-reverser",
+      "name": "Word Order Reverser",
+      "description": "Reverse whitespace-delimited word order while preserving characters inside each token for quick text transformation and test preparation.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: reverse-words.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/word-order-reverser",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/line-whitespace-trimmer",
+      "name": "Line Whitespace Trimmer",
+      "description": "Remove leading and trailing whitespace from every line while preserving line order and internal spacing for controlled text cleanup.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: trim-lines.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/line-whitespace-trimmer",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/line-prefix-adder",
+      "name": "Line Prefix Adder",
+      "description": "Add one shared prefix to every line for comments, bullets, log labels, generated configuration, and batch text preparation workflows.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: prefix-lines.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/line-prefix-adder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/line-suffix-adder",
+      "name": "Line Suffix Adder",
+      "description": "Append one shared suffix to every line for delimiters, annotations, generated code fragments, and repetitive batch editing workflows.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: suffix-lines.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/line-suffix-adder",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/line-numbering-tool",
+      "name": "Line Numbering Tool",
+      "description": "Prefix each line with a one-based number for reviews, checklists, snippets, transcripts, instructions, and manual reference workflows.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: number-lines.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/line-numbering-tool",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/line-include-filter",
+      "name": "Line Include Filter",
+      "description": "Keep only lines containing an exact substring for quick log triage, keyword filtering, exports, lists, and configuration cleanup.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: filter-lines.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/line-include-filter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/matching-line-remover",
+      "name": "Matching Line Remover",
+      "description": "Remove lines containing an exact substring while preserving every non-matching line in its original order for controlled cleanup.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: remove-matching-lines.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/matching-line-remover",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/tabs-to-spaces-converter",
+      "name": "Tabs to Spaces Converter",
+      "description": "Replace tab characters with a configurable number of spaces for code review, data cleanup, indentation checks, and formatting normalization.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: tabs-to-spaces.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/tabs-to-spaces-converter",
+      "sameAs": []
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://www.xfree.in/tools/leading-spaces-to-tabs",
+      "name": "Leading Spaces to Tabs Converter",
+      "description": "Convert groups of leading spaces into tab characters using a chosen indentation width while leaving internal spacing untouched.",
+      "applicationCategory": "Text & Diff Tools",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "unknown",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Uses the verified XFree Studio local engine: spaces-to-tabs.",
+        "Runs the core transformation in the browser with no tool-processing server round-trip.",
+        "Provides deterministic text output and explicit errors instead of silently guessing malformed input.",
+        "Includes copy support and a Ctrl+Shift+C shortcut once a result is available.",
+        "Publishes a dedicated canonical route with visible documentation, FAQs, and related-tool links."
+      ],
+      "requiredFeature": [],
+      "url": "https://www.xfree.in/tools/leading-spaces-to-tabs",
+      "sameAs": []
     }
   ]
 }

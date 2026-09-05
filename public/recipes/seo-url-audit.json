@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-seo-url-audit-v1",
+  "slug": "seo-url-audit",
+  "version": 1,
+  "title": "SEO URL Audit",
+  "summary": "Extract and normalize links, deduplicate them, then classify URLs by the origin of the first extracted URL.",
+  "description": "Use this recipe for a quick local classification pass over URLs copied from crawl output, page source, reports, or content inventories. After extraction and normalization, the workflow removes duplicates and classifies each URL as internal or external. Version 1 deliberately uses the origin of the first extracted URL as the internal baseline so the shared recipe needs no arbitrary hostname expression or executable configuration. Put a representative site URL first when using this workflow.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/seo-url-audit",
+  "studioUrl": "https://app.xfree.in/?recipe=seo-url-audit",
+  "share": {
+    "recipeId": "recipe-seo-url-audit-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "extract",
+        "kind": "engine",
+        "engineId": "http-url-extract"
+      },
+      {
+        "id": "normalize",
+        "kind": "engine",
+        "engineId": "url-normalize",
+        "config": {
+          "mapLines": true
+        }
+      },
+      {
+        "id": "dedupe",
+        "kind": "engine",
+        "engineId": "line-dedupe"
+      },
+      {
+        "id": "classify",
+        "kind": "transform",
+        "transformId": "classify-urls-by-first-origin"
+      }
+    ]
+  }
+}

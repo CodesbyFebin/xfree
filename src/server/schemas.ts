@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AI_TASKS } from "./tasks";
+import { NVIDIA_TASK_TYPES } from "./nvidia/types";
 
 const taskIdSchema = z.enum(Object.keys(AI_TASKS) as [string, ...string[]]);
 
@@ -28,6 +29,23 @@ export const AiChatSchema = z.object({
 export const AiThinkingSchema = z.object({
   taskId: taskIdSchema.default("general"),
   prompt: z.string().trim().min(1).max(8_000),
+});
+
+const NvidiaMessageSchema = z.object({
+  role: z.enum(["system", "user", "assistant"]),
+  content: z.string().trim().min(1).max(8_000),
+});
+
+export const NvidiaChatSchema = z.object({
+  model: z.string().trim().min(1).max(300).default("auto"),
+  taskType: z.enum(NVIDIA_TASK_TYPES).default("general"),
+  messages: z.array(NvidiaMessageSchema).min(1).max(20),
+  temperature: z.number().min(0).max(1).optional(),
+  maxTokens: z.number().int().positive().max(4_096).optional(),
+});
+
+export const NvidiaValidateSchema = z.object({
+  model: z.string().trim().min(1).max(300),
 });
 
 export const ContactSchema = z.object({

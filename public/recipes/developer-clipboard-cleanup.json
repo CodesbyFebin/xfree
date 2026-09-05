@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-developer-clipboard-v1",
+  "slug": "developer-clipboard-cleanup",
+  "version": 1,
+  "title": "Developer Clipboard Cleanup",
+  "summary": "Pull URL-shaped values out of noisy terminal or CI output, deduplicate and sort them, then export JSON.",
+  "description": "Developer clipboard content often mixes prompts, timestamps, status messages, stack output, and useful URLs. Version 1 of this recipe intentionally solves one auditable slice of that problem: it extracts HTTP and HTTPS values, removes duplicates, sorts the list, and returns JSON. It does not use an LLM to decide what is important, so the behavior is predictable and reproducible across runs.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/developer-clipboard-cleanup",
+  "studioUrl": "https://app.xfree.in/?recipe=developer-clipboard-cleanup",
+  "share": {
+    "recipeId": "recipe-developer-clipboard-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "extract",
+        "kind": "engine",
+        "engineId": "http-url-extract"
+      },
+      {
+        "id": "dedupe",
+        "kind": "engine",
+        "engineId": "line-dedupe"
+      },
+      {
+        "id": "sort",
+        "kind": "engine",
+        "engineId": "line-sort"
+      },
+      {
+        "id": "json",
+        "kind": "transform",
+        "transformId": "lines-to-json-array"
+      }
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "recipe-log-sanitizer-v1",
+  "slug": "log-sanitizer",
+  "version": 1,
+  "title": "Log Sanitizer",
+  "summary": "Trim log lines, keep ERROR lines, deduplicate repeated errors, sort them, and emit structured JSON.",
+  "description": "This recipe is a deterministic first-pass error triage workflow for pasted application or server logs. It trims leading and trailing whitespace, filters for the fixed repository-owned token ERROR, deduplicates repeated lines, sorts the remaining entries, and emits a JSON array. The filter token is part of the reviewed recipe definition rather than executable user code, so shared recipe URLs cannot redefine the filter implementation or inject scripts.",
+  "mode": "local",
+  "llmRequired": false,
+  "canonical": "https://www.xfree.in/recipes/log-sanitizer",
+  "studioUrl": "https://app.xfree.in/?recipe=log-sanitizer",
+  "share": {
+    "recipeId": "recipe-log-sanitizer-v1",
+    "version": 1,
+    "mode": "local",
+    "llmRequired": false,
+    "steps": [
+      {
+        "id": "trim",
+        "kind": "engine",
+        "engineId": "trim-lines"
+      },
+      {
+        "id": "errors",
+        "kind": "engine",
+        "engineId": "filter-lines",
+        "config": {
+          "prependLine": "ERROR"
+        }
+      },
+      {
+        "id": "dedupe",
+        "kind": "engine",
+        "engineId": "line-dedupe"
+      },
+      {
+        "id": "sort",
+        "kind": "engine",
+        "engineId": "line-sort"
+      },
+      {
+        "id": "json",
+        "kind": "transform",
+        "transformId": "lines-to-json-array"
+      }
+    ]
+  }
+}

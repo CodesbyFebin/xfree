@@ -8,14 +8,7 @@ export type ToolCategory =
   | "validators";
 
 export type ToolExecutionMode = "local" | "ai" | "workflow";
-export type ToolStatus =
-  | "draft"
-  | "roadmap"
-  | "pending_review"
-  | "published"
-  | "indexable"
-  | "noindex"
-  | "retired";
+export type ToolStatus = "published" | "draft" | "roadmap" | "retired";
 export type VerificationStatus = "verified" | "pending" | "failed" | "unknown";
 export type PricingModel = "free" | "freemium" | "paid" | "custom";
 
@@ -169,7 +162,11 @@ export interface ToolDefinition {
   iconName: string;
   execution?: ToolExecutionMode;
   status?: ToolStatus;
-  indexable?: boolean;
+  indexable: boolean;
+  // A tool is publicly listed only when status === "published" AND indexable === true
+  // AND engineVerified === true. The latter proves the engine implementation
+  // exists, has been audited, and is wired into the studio engine registry.
+  engineVerified?: boolean;
   lastModified?: string;
   toolComponent?: string;
   isAi?: boolean;

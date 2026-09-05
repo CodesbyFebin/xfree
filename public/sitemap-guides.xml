@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.xfree.in/guides</loc>
+    <lastmod>2026-08-23</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/regex-cheat-sheet</loc>
+    <lastmod>2026-08-03</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/cron-expression-examples</loc>
+    <lastmod>2026-08-03</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/common-json-formatting-errors</loc>
+    <lastmod>2026-08-03</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/guides/canonical-tag-vs-301-redirect</loc>
+    <lastmod>2026-08-03</lastmod>
+  </url>
+</urlset>

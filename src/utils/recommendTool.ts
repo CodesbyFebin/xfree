@@ -1,4 +1,4 @@
-import { INDEXABLE_TOOLS } from "../data/toolsRegistry";
+import { PUBLIC_TOOLS } from "../data/publicTools";
 import type { ToolDefinition } from "../types";
 
 const STOPWORDS = new Set([
@@ -38,7 +38,7 @@ export function recommendTool(taskDescription: string): Recommendation {
   const tokens = tokenize(taskDescription);
   if (!tokens.length) return { tool: null, confidence: "none" };
 
-  const scored = INDEXABLE_TOOLS
+  const scored = PUBLIC_TOOLS
     .map((tool) => ({ tool, s: score(tool, tokens) }))
     .filter((r) => r.s > 0)
     .sort((a, b) => b.s - a.s);
