@@ -107,6 +107,23 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
     });
   });
 
+  app.get("/api/v1/pillars", (_req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=60, s-maxage=300");
+    const payload = {
+      pillars: PUBLIC_PILLARS.map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        icon: p.icon,
+        description: p.description,
+        headerGroup: p.headerGroup,
+        href: `/${p.slug}`,
+      })),
+      timestamp: new Date().toISOString(),
+    };
+    res.json(payload);
+  });
+
   app.get("/api/v1/search", (req, res) => {
     const query = typeof req.query.q === "string" ? req.query.q : "";
     const limitRaw = typeof req.query.limit === "string" ? Number(req.query.limit) : undefined;
