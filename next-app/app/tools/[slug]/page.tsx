@@ -10,6 +10,12 @@ import { HashGeneratorTool } from '@/components/tools/HashGeneratorTool';
 import { JwtDecoderTool } from '@/components/tools/JwtDecoderTool';
 import { Base64Tool } from '@/components/tools/Base64Tool';
 import { CronGeneratorTool } from '@/components/tools/CronGeneratorTool';
+import { PasswordGeneratorTool } from '@/components/tools/PasswordGeneratorTool';
+import { UuidGeneratorTool } from '@/components/tools/UuidGeneratorTool';
+import { UrlEncoderTool } from '@/components/tools/UrlEncoderTool';
+import { MetaTagGeneratorTool } from '@/components/tools/MetaTagGeneratorTool';
+import { SitemapGeneratorTool } from '@/components/tools/SitemapGeneratorTool';
+import { RobotsTxtGeneratorTool } from '@/components/tools/RobotsTxtGeneratorTool';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -78,6 +84,18 @@ function ToolComponent({ toolId }: { toolId: string }) {
       return <Base64Tool />;
     case 'cron-generator':
       return <CronGeneratorTool />;
+    case 'password-generator':
+      return <PasswordGeneratorTool />;
+    case 'uuid-generator':
+      return <UuidGeneratorTool />;
+    case 'url-encoder':
+      return <UrlEncoderTool />;
+    case 'meta-tag-generator':
+      return <MetaTagGeneratorTool />;
+    case 'sitemap-generator':
+      return <SitemapGeneratorTool />;
+    case 'robots-txt-generator':
+      return <RobotsTxtGeneratorTool />;
     default:
       return <JsonFormatterTool />;
   }
