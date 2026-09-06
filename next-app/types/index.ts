@@ -4,6 +4,7 @@ export interface ToolDefinition {
   title: string;
   pillarKeyword?: string;
   shortDescription: string;
+  longDescription?: string;
   category: string;
   categoryLabel: string;
   iconName: string;
@@ -12,6 +13,8 @@ export interface ToolDefinition {
   indexable: boolean;
   engineVerified?: boolean;
   tags: string[];
+  seoKeywords?: string[];
+  searchVolume?: number;
   exampleInput?: string;
   explanation: string;
   howToUse: string[];

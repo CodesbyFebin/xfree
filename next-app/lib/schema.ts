@@ -67,7 +67,7 @@ export function generateFAQSchema(faqs: Array<{ question: string; answer: string
 }
 
 export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>
+  items: Array<{ name: string; href: string }>
 ) {
   return {
     '@context': 'https://schema.org',
@@ -76,7 +76,7 @@ export function generateBreadcrumbSchema(
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.url,
+      item: item.href,
     })),
   };
 }
