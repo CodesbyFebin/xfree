@@ -168,7 +168,7 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
     }
   }, [mobileOpen]);
 
-  const AppLink: React.FC<{ href: string; children: React.ReactNode; className?: string; onClick?: () => void }> = ({
+  const a: React.FC<{ href: string; children: React.ReactNode; className?: string; onClick?: () => void }> = ({
     href,
     children,
     className,
@@ -191,7 +191,7 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
     <>
       <header className={`sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all ${scrolled ? "scrolled" : ""}`} role="banner">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <AppLink href="/" className="flex items-center gap-2.5 group focus-ring" aria-label="XFree homepage">
+          <a href="/" className="flex items-center gap-2.5 group focus-ring" aria-label="XFree homepage">
             <div className="w-9 h-9 rounded-lg border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 group-hover:bg-cyber-glow/10 transition-all neon-box-green">
               <span className="text-sm font-black text-cyber-glow tracking-tighter font-cyber">X</span>
             </div>
@@ -199,7 +199,7 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
               <span className="text-base font-bold text-white tracking-tight">XFree<span className="text-cyber-glow">.in</span></span>
               <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-2">// Free Dev Tools</span>
             </div>
-          </AppLink>
+          </a>
 
           <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
             {CATEGORIES.map((cat) => (
@@ -213,7 +213,7 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
                 </button>
                 <div className="nav-dropdown-menu" role="menu" aria-label={`${cat.label} tools`}>
                   {cat.pillars.map((p) => (
-                    <AppLink
+                    <a
                       key={p.def.slug}
                       href={`/pillars/${p.def.slug}`}
                       className="nav-dropdown-item"
@@ -221,18 +221,18 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
                       onClick={closeMobile}
                     >
                       {p.def.name}
-                    </AppLink>
+                    </a>
                   ))}
                 </div>
               </div>
             ))}
-            <AppLink
+            <a
               href="/pillars"
               className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all focus-ring"
               aria-label="All pillars"
             >
               Pillars
-            </AppLink>
+            </a>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -297,26 +297,26 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
                 <h3 className="text-xs font-mono text-cyber-glow mb-2">{`// ${cat.label.split(" & ")[0]}`}</h3>
                 <div className="space-y-2">
                   {cat.pillars.slice(0, 6).map((p) => (
-                    <AppLink
+                    <a
                       key={p.def.slug}
                       href={`/pillars/${p.def.slug}`}
                       className="block text-sm text-cyber-muted hover:text-cyber-glow"
                       onClick={closeMobile}
                     >
                       {p.def.name}
-                    </AppLink>
+                    </a>
                   ))}
                 </div>
               </div>
             ))}
             <div className="pt-4 border-t border-cyber-border">
-              <AppLink
+              <a
                 href="/pillars"
                 className="block text-sm text-cyber-glow mb-2"
                 onClick={closeMobile}
               >
                 All Pillars →
-              </AppLink>
+              </a>
             </div>
             <div className="pt-4 border-t border-cyber-border">
               <h3 className="text-xs font-mono text-cyber-muted mb-2">// Languages</h3>
@@ -478,47 +478,47 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
             aria-label="Popular XFree tool searches"
           >
             <span className="text-[11px] text-cyber-muted font-mono">Popular:</span>
-            <AppLink
+            <a
               href="/tools/json-formatter"
               className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
             >
               XFree JSON Formatter
-            </AppLink>
+            </a>
             <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <AppLink
+            <a
               href="/tools/regex-tester"
               className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
             >
               XFree Regex Tester
-            </AppLink>
+            </a>
             <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <AppLink
+            <a
               href="/tools/xml-sitemap-generator"
               className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
             >
               XFree Sitemap Generator
-            </AppLink>
+            </a>
             <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <AppLink
+            <a
               href="/tools/meta-tag-generator"
               className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
             >
               XFree Meta Tags
-            </AppLink>
+            </a>
             <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <AppLink
+            <a
               href="/tools/jwt-decoder"
               className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
             >
               XFree JWT Decoder
-            </AppLink>
+            </a>
             <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <AppLink
+            <a
               href="/tools/cron-generator"
               className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
             >
               XFree Cron Gen
-            </AppLink>
+            </a>
           </nav>
           <small className="block mt-3 text-[10px] text-cyber-dim font-mono">
             Pro-tip: Press <kbd>Ctrl+Enter</kbd> to process, <kbd>Ctrl+Shift+C</kbd> to copy.
@@ -609,12 +609,12 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
                 </pre>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-[10px] text-cyber-muted font-mono">In-browser · No server</span>
-                  <AppLink
+                  <a
                     href="/tools/json-formatter"
                     className="text-[10px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
                   >
                     Open Full XFree JSON Formatter →
-                  </AppLink>
+                  </a>
                 </div>
               </div>
             </div>

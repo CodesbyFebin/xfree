@@ -37,7 +37,7 @@ export interface PillarDefinition {
   status?: "published" | "draft";
   indexable?: boolean;
   contentApproved?: boolean;
-  fullDescription?: string;
+}
 
 export const PILLAR_CATEGORIES: ReadonlyArray<{
   id: PillarCategory;
@@ -143,7 +143,7 @@ export const INDEXED_PILLARS: ReadonlyArray<PillarDefinition> = PILLARS_60;
 /* ══════════════════════════════════════════════════════════════════
    Normalize — ensure every pillar has id/headerGroup/status fields
    ══════════════════════════════════════════════════════════════════ */
-PILLOWS_60.forEach((p) => {
+PILLARS_60.forEach((p) => {
   p.id = p.slug;
   p.headerGroup = p.category;
   p.status = "published";
