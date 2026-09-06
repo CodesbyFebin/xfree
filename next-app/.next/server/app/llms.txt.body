@@ -1,140 +1,116 @@
-# XFree App - Free Online Developer & SEO Tools
+# XFree: 150+ Free Privacy-First Developer & SEO Tools
 
-## Overview
-XFree App provides free, privacy-first browser-based tools for developers and SEO professionals.
-All tools execute entirely client-side with zero data transmission.
+## What is XFree?
+XFree is the ultimate free online toolbox for developers and SEO professionals. We provide 150+ completely free online tools organized into 55 thematic pillars.
+
+## Key Features
+- 100% free with no signup required
+- All tools run client-side in your browser
+- Your data never leaves your device
+- Privacy-first approach with zero tracking
+- Optimized for both humans and AI crawlers
 
 ## Available Tools (68)
-- [json formatter](https://www.xfree.in/tools/json-formatter)
-- [json minify](https://www.xfree.in/tools/json-minify)
-- [json validator](https://www.xfree.in/tools/json-validator)
-- [json to csv](https://www.xfree.in/tools/json-to-csv)
-- [json to yaml](https://www.xfree.in/tools/json-to-yaml)
-- [json to xml](https://www.xfree.in/tools/json-to-xml)
-- [regex tester](https://www.xfree.in/tools/regex-tester)
-- [regex builder](https://www.xfree.in/tools/regex-builder)
-- [regex explainer](https://www.xfree.in/tools/regex-explainer)
-- [regex cheat sheet](https://www.xfree.in/tools/regex-cheat-sheet)
-- [base64 encode](https://www.xfree.in/tools/base64-encode)
-- [base64 decode](https://www.xfree.in/tools/base64-decode)
-- [url encode](https://www.xfree.in/tools/url-encode)
-- [url decode](https://www.xfree.in/tools/url-decode)
-- [hash generator](https://www.xfree.in/tools/hash-generator)
-- [sha256 hash](https://www.xfree.in/tools/sha256-hash)
-- [md5 hash](https://www.xfree.in/tools/md5-hash)
-- [bcrypt hash](https://www.xfree.in/tools/bcrypt-hash)
-- [jwt decoder](https://www.xfree.in/tools/jwt-decoder)
-- [jwt encoder](https://www.xfree.in/tools/jwt-encoder)
-- [password generator](https://www.xfree.in/tools/password-generator)
-- [uuid generator](https://www.xfree.in/tools/uuid-generator)
-- [cron generator](https://www.xfree.in/tools/cron-generator)
-- [cron parser](https://www.xfree.in/tools/cron-parser)
-- [xml sitemap generator](https://www.xfree.in/tools/xml-sitemap-generator)
-- [robots txt generator](https://www.xfree.in/tools/robots-txt-generator)
-- [meta tag generator](https://www.xfree.in/tools/meta-tag-generator)
-- [html minifier](https://www.xfree.in/tools/html-minifier)
-- [css minifier](https://www.xfree.in/tools/css-minifier)
-- [js minifier](https://www.xfree.in/tools/js-minifier)
-- [sql formatter](https://www.xfree.in/tools/sql-formatter)
-- [yaml validator](https://www.xfree.in/tools/yaml-validator)
-- [xml validator](https://www.xfree.in/tools/xml-validator)
-- [toml validator](https://www.xfree.in/tools/toml-validator)
-- [bulk url extractor](https://www.xfree.in/tools/bulk-url-extractor)
-- [slug generator](https://www.xfree.in/tools/slug-generator)
-- [utm builder](https://www.xfree.in/tools/utm-builder)
-- [word counter](https://www.xfree.in/tools/word-counter)
-- [diff tool](https://www.xfree.in/tools/diff-tool)
-- [case converter](https://www.xfree.in/tools/case-converter)
-- [markdown editor](https://www.xfree.in/tools/markdown-editor)
-- [table generator](https://www.xfree.in/tools/table-generator)
-- [color converter](https://www.xfree.in/tools/color-converter)
-- [color palette](https://www.xfree.in/tools/color-palette)
-- [qr code generator](https://www.xfree.in/tools/qr-code-generator)
-- [barcode generator](https://www.xfree.in/tools/barcode-generator)
-- [hash generator](https://www.xfree.in/tools/hash-generator)
-- [hmac generator](https://www.xfree.in/tools/hmac-generator)
-- [jwt encoder](https://www.xfree.in/tools/jwt-encoder)
-- [jwt decoder](https://www.xfree.in/tools/jwt-decoder)
-- [random string](https://www.xfree.in/tools/random-string)
-- [random number](https://www.xfree.in/tools/random-number)
-- [random color](https://www.xfree.in/tools/random-color)
-- [credit card validator](https://www.xfree.in/tools/credit-card-validator)
-- [email validator](https://www.xfree.in/tools/email-validator)
-- [phone validator](https://www.xfree.in/tools/phone-validator)
-- [url validator](https://www.xfree.in/tools/url-validator)
-- [ip lookup](https://www.xfree.in/tools/ip-lookup)
-- [dns lookup](https://www.xfree.in/tools/dns-lookup)
-- [whois lookup](https://www.xfree.in/tools/whois-lookup)
-- [csv to json](https://www.xfree.in/tools/csv-to-json)
-- [tsv to json](https://www.xfree.in/tools/tsv-to-json)
-- [xml to json](https://www.xfree.in/tools/xml-to-json)
-- [yaml to json](https://www.xfree.in/tools/yaml-to-json)
-- [hex to rgb](https://www.xfree.in/tools/hex-to-rgb)
-- [rgb to hex](https://www.xfree.in/tools/rgb-to-hex)
-- [hsl to hex](https://www.xfree.in/tools/hsl-to-hex)
-- [hex to hsl](https://www.xfree.in/tools/hex-to-hsl)
+
+### Developer Tools
+- JSON Formatter, Minifier, Validator
+- Regex Tester, Builder, Explainer
+- Base64 Encoder/Decoder
+- URL Encoder/Decoder
+- Hash Generator (MD5, SHA-256, SHA-512)
+- Password Generator
+- UUID Generator
+- JWT Decoder/Encoder
+- SQL Formatter
+- Cron Expression Generator
+- HTML/CSS/JS Minifier
+- YAML Validator
+
+### SEO Tools
+- XML Sitemap Generator
+- robots.txt Generator
+- Meta Tag Generator (Open Graph, Twitter Cards)
+- Schema Markup Generator (FAQ, HowTo, Product)
+- URL Slug Generator
+- UTM Builder
+
+### Security & Privacy Tools
+- Hash Generator
+- Password Generator with strength checker
+- JWT Decoder
+- Email/URL/Phone Validators
+
+### Text & Data Tools
+- Word Counter, Character Counter
+- Diff Tool
+- Case Converter
+- CSV to JSON Converter
+- JSON to CSV Converter
 
 ## Tool Pillars (58)
-- [json data tools](https://www.xfree.in/pillars/json-data-tools)
-- [regex pattern tools](https://www.xfree.in/pillars/regex-pattern-tools)
-- [encoding conversion tools](https://www.xfree.in/pillars/encoding-conversion-tools)
-- [code formatters](https://www.xfree.in/pillars/code-formatters)
-- [validators debuggers](https://www.xfree.in/pillars/validators-debuggers)
-- [api development](https://www.xfree.in/pillars/api-development)
-- [database tools](https://www.xfree.in/pillars/database-tools)
-- [version control](https://www.xfree.in/pillars/version-control)
-- [shell command tools](https://www.xfree.in/pillars/shell-command-tools)
-- [sitemap generators](https://www.xfree.in/pillars/sitemap-generators)
-- [meta tag tools](https://www.xfree.in/pillars/meta-tag-tools)
-- [schema markup tools](https://www.xfree.in/pillars/schema-markup-tools)
-- [seo audit tools](https://www.xfree.in/pillars/seo-audit-tools)
-- [performance tools](https://www.xfree.in/pillars/performance-tools)
-- [url analysis tools](https://www.xfree.in/pillars/url-analysis-tools)
-- [accessibility tools](https://www.xfree.in/pillars/accessibility-tools)
-- [prompt engineering](https://www.xfree.in/pillars/prompt-engineering)
-- [llm utilities](https://www.xfree.in/pillars/llm-utilities)
-- [rag tools](https://www.xfree.in/pillars/rag-tools)
-- [ai agent tools](https://www.xfree.in/pillars/ai-agent-tools)
-- [content generation](https://www.xfree.in/pillars/content-generation)
-- [pdf conversion tools](https://www.xfree.in/pillars/pdf-conversion-tools)
-- [pdf editing tools](https://www.xfree.in/pillars/pdf-editing-tools)
-- [document converters](https://www.xfree.in/pillars/document-converters)
-- [markdown tools](https://www.xfree.in/pillars/markdown-tools)
-- [hash generator tools](https://www.xfree.in/pillars/hash-generator-tools)
-- [password tools](https://www.xfree.in/pillars/password-tools)
-- [token decoder tools](https://www.xfree.in/pillars/token-decoder-tools)
-- [encryption tools](https://www.xfree.in/pillars/encryption-tools)
-- [ssl certificate tools](https://www.xfree.in/pillars/ssl-certificate-tools)
-- [dns lookup tools](https://www.xfree.in/pillars/dns-lookup-tools)
-- [text analysis tools](https://www.xfree.in/pillars/text-analysis-tools)
-- [case conversion tools](https://www.xfree.in/pillars/case-conversion-tools)
-- [list utilities](https://www.xfree.in/pillars/list-utilities)
-- [calculator tools](https://www.xfree.in/pillars/calculator-tools)
-- [generator tools](https://www.xfree.in/pillars/generator-tools)
-- [pdf extract tools](https://www.xfree.in/pillars/pdf-extract-tools)
-- [pdf protect tools](https://www.xfree.in/pillars/pdf-protect-tools)
-- [image conversion tools](https://www.xfree.in/pillars/image-conversion-tools)
-- [image optimization tools](https://www.xfree.in/pillars/image-optimization-tools)
-- [image analysis tools](https://www.xfree.in/pillars/image-analysis-tools)
-- [video conversion tools](https://www.xfree.in/pillars/video-conversion-tools)
-- [video editing tools](https://www.xfree.in/pillars/video-editing-tools)
-- [gif creation tools](https://www.xfree.in/pillars/gif-creation-tools)
-- [diff comparison tools](https://www.xfree.in/pillars/diff-comparison-tools)
-- [text cleaning tools](https://www.xfree.in/pillars/text-cleaning-tools)
-- [text extraction tools](https://www.xfree.in/pillars/text-extraction-tools)
-- [text translation tools](https://www.xfree.in/pillars/text-translation-tools)
-- [color tools](https://www.xfree.in/pillars/color-tools)
-- [typography tools](https://www.xfree.in/pillars/typography-tools)
-- [mockup wireframe tools](https://www.xfree.in/pillars/mockup-wireframe-tools)
-- [task automation tools](https://www.xfree.in/pillars/task-automation-tools)
-- [note taking tools](https://www.xfree.in/pillars/note-taking-tools)
-- [meeting productivity tools](https://www.xfree.in/pillars/meeting-productivity-tools)
-- [data visualization tools](https://www.xfree.in/pillars/data-visualization-tools)
-- [json data tools](https://www.xfree.in/pillars/json-data-tools)
-- [regex pattern tools](https://www.xfree.in/pillars/regex-pattern-tools)
-- [encoding conversion tools](https://www.xfree.in/pillars/encoding-conversion-tools)
 
-## Privacy
-All XFree tools are 100% client-side.
-No data is transmitted to any server.
-No cookies or tracking.
+### Authority Pillars
+- JSON Data Tools Hub
+- Regex & Pattern Tools Hub
+- Encoding & Conversion Tools Hub
+
+### Developer Pillars
+- Code Formatters Hub
+- Validators & Debuggers Hub
+- API Development Tools Hub
+- Database Tools Hub
+- Version Control Tools Hub
+- Shell & Command Tools Hub
+
+### SEO Pillars
+- Sitemap Generator Tools Hub
+- Meta Tag Generator Tools Hub
+- Schema Markup Tools Hub
+- SEO Audit Tools Hub
+- Performance Optimization Tools Hub
+- URL Analysis Tools Hub
+
+### Security Pillars
+- Hash Generator Tools Hub
+- Password Generator & Manager Tools Hub
+- Token Decoder & Encoder Tools Hub
+- Encryption & Decryption Tools Hub
+- SSL & Certificate Tools Hub
+
+### Media & Document Pillars
+- PDF Conversion Tools Hub
+- PDF Editing Tools Hub
+- Document Converter Tools Hub
+- Markdown Tools Hub
+
+### Business Pillars
+- Text Analysis & NLP Tools Hub
+- Case Conversion Tools Hub
+- List & Table Utilities Hub
+- Calculator & Converter Tools Hub
+- Generator & Random Data Tools Hub
+
+## Privacy Commitment
+All XFree tools run 100% in your browser using:
+- JavaScript Web APIs
+- Web Crypto API for cryptographic operations
+
+Your data never leaves your device unless explicitly stated.
+
+## How to Use XFree Tools
+1. Browse categories or search for the tool you need
+2. Enter your text, JSON, URLs, or other data
+3. Get instant formatted, validated, or converted output
+4. Copy results or download files
+
+## Organization
+Website: https://www.xfree.in
+Contact: https://www.xfree.in/contact
+FAQ: https://www.xfree.in/faq
+Privacy Policy: https://www.xfree.in/privacy
+
+## License
+All XFree tools are free for personal and commercial use under the MIT License.
+
+---
+Last updated: September 2026

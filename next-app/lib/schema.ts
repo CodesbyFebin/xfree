@@ -81,6 +81,40 @@ export function generateBreadcrumbSchema(
   };
 }
 
+export function generateHowToSchema(toolName: string, steps: string[]) {
+  const baseUrl = 'https://www.xfree.in';
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: `How to use XFree ${toolName}`,
+    description: `Step-by-step guide for using the free XFree ${toolName} tool online.`,
+    step: steps.map((stepText, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: `Step ${index + 1}`,
+      text: stepText,
+      itemListElement: [{
+        '@type': 'HowToDirection',
+        text: stepText,
+      }],
+    })),
+    totalTime: 'PT5M',
+    supply: {
+      '@type': 'HowToSupply',
+      name: 'Web browser with internet access',
+    },
+    tool: {
+      '@type': 'HowToTool',
+      name: `XFree ${toolName}`,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'XFree',
+      url: baseUrl,
+    },
+  };
+}
+
 export function generatePillarSchema(pillar: PillarDefinition, toolCount: number) {
   const baseUrl = 'https://www.xfree.in';
 
