@@ -4,5 +4,166 @@
   "name": "XFree Capabilities",
   "description": "Structured capability definitions for all tools in the XFree registry",
   "url": "https://www.xfree.in",
-  "itemListElement": []
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "url": "https://www.xfree.in/capabilities/xml-sitemap-generator-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/xml-sitemap-generator-capability",
+        "name": "xml-sitemap-generator-capability",
+        "description": "Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "XML Sitemap Generator & Validator"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "url": "https://www.xfree.in/capabilities/robots-txt-generator-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/robots-txt-generator-capability",
+        "name": "robots-txt-generator-capability",
+        "description": "Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "Robots.txt Generator & User-Agent Rule Tester"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "url": "https://www.xfree.in/capabilities/meta-tag-generator-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/meta-tag-generator-capability",
+        "name": "meta-tag-generator-capability",
+        "description": "Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "Meta Tag & Open Graph Social Card Preview"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "url": "https://www.xfree.in/capabilities/schema-markup-generator-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/schema-markup-generator-capability",
+        "name": "schema-markup-generator-capability",
+        "description": "Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "Schema Markup Generator (JSON-LD Structured Data)"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "url": "https://www.xfree.in/capabilities/json-formatter-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/json-formatter-capability",
+        "name": "json-formatter-capability",
+        "description": "Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "JSON / XML Formatter, Validator & Tree Viewer"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "url": "https://www.xfree.in/capabilities/regex-tester-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/regex-tester-capability",
+        "name": "regex-tester-capability",
+        "description": "Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "Regex Tester & Interactive Match Explainer"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 7,
+      "url": "https://www.xfree.in/capabilities/bulk-url-extractor-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/bulk-url-extractor-capability",
+        "name": "bulk-url-extractor-capability",
+        "description": "Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "Bulk URL Extractor & Sitemap Generator"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 8,
+      "url": "https://www.xfree.in/capabilities/cron-expression-generator-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/cron-expression-generator-capability",
+        "name": "cron-expression-generator-capability",
+        "description": "Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "Cron Expression Generator & Human Translator"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 9,
+      "url": "https://www.xfree.in/capabilities/base64-encoder-decoder-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/base64-encoder-decoder-capability",
+        "name": "base64-encoder-decoder-capability",
+        "description": "Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "Base64 Encoder/Decoder & JWT Token Inspector"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 10,
+      "url": "https://www.xfree.in/capabilities/url-slug-utm-builder-capability",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/url-slug-utm-builder-capability",
+        "name": "url-slug-utm-builder-capability",
+        "description": "Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).",
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": 1,
+          "toolName": "URL Slug Generator & Campaign UTM Parameter Builder"
+        }
+      }
+    }
+  ]
 }

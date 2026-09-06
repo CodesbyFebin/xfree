@@ -121,6 +121,34 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
     res.status(200).send(generateRobotsTxt(baseUrl));
   });
 
+  app.get("/:indexNowKey.txt", (req, res) => {
+    const { indexNowKey } = req.params;
+    if (indexNowKey === process.env.INDEXNOW_KEY || indexNowKey === "96aea7e6b8f340b4ba96b60e8e43c0e5") {
+      res.header("Content-Type", "text/plain; charset=utf-8");
+      res.status(200).send(indexNowKey);
+    } else {
+      res.status(404).send("Not Found");
+    }
+  });
+
+  app.post("/api/indexnow", express.json(), async (req, res) => {
+    const { host, key, keyLocation, urlList } = req.body || {};
+    if (!host || !key || !Array.isArray(urlList) || urlList.length === 0) {
+      return res.status(400).json({ error: "Invalid IndexNow payload" });
+    }
+    try {
+      const response = await fetch("https://api.indexnow.org/IndexNow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({ host, key, keyLocation, urlList }),
+      });
+      const text = await response.text();
+      return res.status(response.status).send(text);
+    } catch (error) {
+      return res.status(502).json({ error: "IndexNow upstream failed", details: String(error) });
+    }
+  });
+
   const aiPerMinute = rateLimit({ scope: "ai", limit: config.AI_RATE_LIMIT_PER_MINUTE, windowMs: 60_000 });
   const aiPerDay = rateLimit({ scope: "ai-day", limit: config.AI_RATE_LIMIT_PER_DAY, windowMs: 86_400_000 });
   const thinkingPerDay = rateLimit({ scope: "ai-thinking-day", limit: config.AI_THINKING_LIMIT_PER_DAY, windowMs: 86_400_000 });

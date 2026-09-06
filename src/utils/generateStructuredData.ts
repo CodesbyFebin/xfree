@@ -1,36 +1,40 @@
 import { PUBLIC_TOOLS } from "../data/publicTools";
 
 export function generateCapabilitiesJson(baseUrl: string = "https://www.xfree.in"): string {
-  const capabilitiesMap = new Map<string, any[]>();
-  
+  const capabilitiesMap = new Map<string, { tools: any[]; description: string }>();
+
   for (const tool of PUBLIC_TOOLS) {
-    if (tool.capabilities) {
-      for (const cap of tool.capabilities) {
-        if (!capabilitiesMap.has(cap.id)) {
-          capabilitiesMap.set(cap.id, []);
-        }
-        capabilitiesMap.get(cap.id)!.push({
-          toolId: tool.id,
-          toolTitle: tool.title,
-          toolUrl: `${baseUrl}/tools/${tool.slug}`,
-          fit: cap.description,
-        });
+    const caps = tool.capabilities?.length ? tool.capabilities : [
+      {
+        id: `${tool.slug}-capability`,
+        name: tool.title,
+        description: tool.shortDescription || tool.explanation || tool.title,
+        inputSchema: tool.supportedInputs ? { type: "object", properties: tool.supportedInputs.reduce((acc, input) => ({ ...acc, [input]: { type: "string" } }), {}) } : { type: "object" },
+        outputSchema: { type: "string" },
       }
+    ];
+
+    for (const cap of caps) {
+      if (!capabilitiesMap.has(cap.id)) {
+        capabilitiesMap.set(cap.id, { tools: [], description: cap.description });
+      }
+      capabilitiesMap.get(cap.id)!.tools.push({
+        toolId: tool.id,
+        toolTitle: tool.title,
+        toolUrl: `${baseUrl}/tools/${tool.slug}`,
+        fit: cap.description,
+      });
     }
   }
-  
-  const capabilities = [];
-  for (const [id, tools] of capabilitiesMap) {
-    const primaryTool = tools[0];
-    capabilities.push({
-      id,
-      name: primaryTool.toolTitle.split(" ")[0] || id,
-      description: `Capability: ${id}`,
-      tools,
-      url: `${baseUrl}/capabilities/${encodeURIComponent(id)}`,
-    });
-  }
-  
+
+  const capabilities = Array.from(capabilitiesMap.entries()).map(([id, data], index) => ({
+    id,
+    name: data.tools[0]?.toolTitle?.split(" ")[0] || id,
+    description: data.description,
+    tools: data.tools,
+    url: `${baseUrl}/capabilities/${encodeURIComponent(id)}`,
+  }));
+
   return JSON.stringify({
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -49,7 +53,7 @@ export function generateCapabilitiesJson(baseUrl: string = "https://www.xfree.in
         "hasDefinedTerm": {
           "@type": "Tool",
           "name": cap.tools.length,
-          "toolName": cap.tools.map(t => t.toolTitle).join(", "),
+          "toolName": cap.tools.map((t: any) => t.toolTitle).join(", "),
         }
       }
     }))

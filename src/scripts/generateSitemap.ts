@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { generateSitemapXml, generateRssXml, generateLlmsTxt, generateLlmsFullTxt, generateRobotsTxt } from "../utils/generateSitemap";
 import { generateCapabilitiesJson, generateToolsJson, generateProblemPagesSitemap } from "../utils/generateStructuredData";
+import { INDEXNOW_KEY, INDEXNOW_KEY_FILE } from "../utils/indexNow";
 
 function runGenerator() {
   const publicDir = path.join(process.cwd(), "public");
@@ -28,8 +29,9 @@ function runGenerator() {
   fs.writeFileSync(path.join(publicDir, "capabilities.json"), capabilitiesContent, "utf-8");
   fs.writeFileSync(path.join(publicDir, "tools.json"), toolsContent, "utf-8");
   fs.writeFileSync(path.join(publicDir, "problem-pages-sitemap.xml"), problemPagesContent, "utf-8");
+  fs.writeFileSync(path.join(publicDir, INDEXNOW_KEY_FILE), INDEXNOW_KEY, "utf-8");
 
-  console.log("Successfully generated sitemap.xml, rss.xml, llms.txt, llms-full.txt, robots.txt, capabilities.json, tools.json, and problem-pages-sitemap.xml in /public!");
+  console.log("Successfully generated sitemap.xml, rss.xml, llms.txt, llms-full.txt, robots.txt, capabilities.json, tools.json, problem-pages-sitemap.xml, and IndexNow key file in /public!");
 }
 
 runGenerator();
