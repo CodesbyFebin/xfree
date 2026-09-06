@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0f"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00ff41;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Grid pattern -->
+  <g stroke="#00ff41" stroke-opacity="0.1" stroke-width="1">
+    <line x1="0" y1="0" x2="1200" y2="0"/>
+    <line x1="0" y1="63" x2="1200" y2="63"/>
+    <line x1="0" y1="126" x2="1200" y2="126"/>
+    <line x1="0" y1="189" x2="1200" y2="189"/>
+    <line x1="0" y1="252" x2="1200" y2="252"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="378" x2="1200" y2="378"/>
+    <line x1="0" y1="441" x2="1200" y2="441"/>
+    <line x1="0" y1="504" x2="1200" y2="504"/>
+    <line x1="0" y1="567" x2="1200" y2="567"/>
+    <line x1="0" y1="630" x2="1200" y2="630"/>
+    <line x1="0" y1="0" x2="0" y2="630"/>
+    <line x1="120" y1="0" x2="120" y2="630"/>
+    <line x1="240" y1="0" x2="240" y2="630"/>
+    <line x1="360" y1="0" x2="360" y2="630"/>
+    <line x1="480" y1="0" x2="480" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="720" y1="0" x2="720" y2="630"/>
+    <line x1="840" y1="0" x2="840" y2="630"/>
+    <line x1="960" y1="0" x2="960" y2="630"/>
+    <line x1="1080" y1="0" x2="1080" y2="630"/>
+    <line x1="1200" y1="0" x2="1200" y2="630"/>
+  </g>
+
+  <!-- Glow line -->
+  <rect x="0" y="280" width="1200" height="2" fill="url(#glow)" opacity="0.5"/>
+
+  <!-- X logo -->
+  <g transform="translate(100, 240)">
+    <rect x="-5" y="-5" width="90" height="90" rx="12" fill="#00ff41" fill-opacity="0.1" stroke="#00ff41" stroke-opacity="0.5"/>
+    <text x="40" y="55" font-family="monospace" font-size="48" font-weight="900" fill="#00ff41" text-anchor="middle">X</text>
+  </g>
+
+  <!-- Title -->
+  <text x="220" y="290" font-family="monospace" font-size="56" font-weight="900" fill="#ffffff">XFree</text>
+  <text x="220" y="340" font-family="monospace" font-size="28" fill="#00ff41">Free Developer &amp; SEO Tools</text>
+
+  <!-- Features -->
+  <g transform="translate(220, 400)">
+    <circle cx="8" cy="-8" r="4" fill="#00ff41"/>
+    <text x="24" y="0" font-family="monospace" font-size="18" fill="#888888">100% Client-Side Processing</text>
+
+    <circle cx="8" cy="22" r="4" fill="#00ff41"/>
+    <text x="24" y="30" font-family="monospace" font-size="18" fill="#888888">No Signup Required</text>
+
+    <circle cx="8" cy="52" r="4" fill="#00ff41"/>
+    <text x="24" y="60" font-family="monospace" font-size="18" fill="#888888">Privacy-First Design</text>
+  </g>
+
+  <!-- Bottom tagline -->
+  <text x="600" y="580" font-family="monospace" font-size="20" fill="#666666" text-anchor="middle">xfree.in — Get X Done for Free</text>
+</svg>

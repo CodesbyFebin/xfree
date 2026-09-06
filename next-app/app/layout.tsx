@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     url: 'https://www.xfree.in/',
     images: [
       {
-        url: '/og-image.png',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
         alt: 'XFree developer tools interface with neon green terminal aesthetic',
@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     creator: '@xfreein',
     title: 'XFree App: Free Developer, SEO & Privacy Micro-Tools | No Signup',
     description: 'XFree is the ultimate free online app for developers. Privacy-first tools. 100% client-side, no signup.',
-    images: ['/og-image.png'],
+    images: ['/twitter-image'],
   },
   verification: {
     google: 'google-site-verification-code',
