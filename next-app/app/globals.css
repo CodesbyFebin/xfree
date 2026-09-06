@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #1a1a2e #050508;
+  }
+
+  *::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #050508;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #1a1a2e;
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #00ff41;
+  }
+
+  body {
+    background: #050508;
+    color: #c8c8d4;
+    font-family: var(--font-inter), system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  input,
+  select,
+  textarea {
+    background: transparent !important;
+    border: none !important;
+    color: #c8c8d4 !important;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #6b7280 !important;
+  }
+
+  kbd {
+    font-family: var(--font-jetbrains), monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #1a1a2e;
+    border: 1px solid #2a2a3e;
+    border-radius: 4px;
+    color: #00ff41;
+  }
+}
+
+@layer components {
+  .cyber-card {
+    @apply bg-cyber-surface border border-cyber-border rounded-lg relative overflow-hidden transition-all duration-300;
+  }
+
+  .cyber-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyber-glow to-transparent opacity-0 transition-opacity duration-300;
+  }
+
+  .cyber-card:hover::before {
+    @apply opacity-100;
+  }
+
+  .cyber-card:hover {
+    @apply border-cyber-glow/30;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 255, 65, 0.08);
+  }
+
+  .cyber-btn {
+    @apply relative px-6 py-2.5 font-mono text-sm font-semibold uppercase tracking-wider border border-cyber-glow text-cyber-glow bg-transparent cursor-pointer transition-all duration-200 overflow-hidden no-underline inline-block;
+  }
+
+  .cyber-btn::before {
+    content: '';
+    @apply absolute inset-0 bg-cyber-glow scale-x-0 origin-left transition-transform duration-300;
+  }
+
+  .cyber-btn:hover::before {
+    @apply scale-x-100;
+  }
+
+  .cyber-btn:hover {
+    @apply text-cyber-bg;
+    text-shadow: none;
+  }
+
+  .cyber-btn span {
+    @apply relative z-10;
+  }
+
+  .cyber-btn-filled {
+    @apply bg-cyber-glow text-cyber-bg border-cyber-glow;
+  }
+
+  .cyber-btn-filled::before {
+    @apply bg-cyber-bg;
+  }
+
+  .cyber-btn-filled:hover {
+    @apply text-cyber-glow;
+  }
+
+  .neon-green {
+    text-shadow: 0 0 7px #00ff41, 0 0 10px #00ff41, 0 0 21px #00ff41;
+  }
+
+  .neon-cyan {
+    text-shadow: 0 0 7px #00f0ff, 0 0 10px #00f0ff, 0 0 21px #00f0ff;
+  }
+
+  .neon-magenta {
+    text-shadow: 0 0 7px #ff00aa, 0 0 10px #ff00aa, 0 0 21px #ff00aa;
+  }
+
+  .neon-box-green {
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.3), inset 0 0 5px rgba(0, 255, 65, 0.1);
+  }
+
+  .neon-box-cyan {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.3), inset 0 0 5px rgba(0, 240, 255, 0.1);
+  }
+
+  .scanlines {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 65, 0.015) 2px,
+      rgba(0, 255, 65, 0.015) 4px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  .matrix-grid {
+    background-image:
+      linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .cmd-bar:focus-within {
+    @apply border-cyber-glow;
+    box-shadow: 0 0 0 4px rgba(0, 255, 65, 0.1), 0 10px 40px -10px rgba(0, 255, 65, 0.15);
+  }
+
+  .sticky-nav {
+    @apply transition-all duration-250;
+  }
+
+  .sticky-nav.scrolled {
+    @apply bg-cyber-bg/95 backdrop-blur-lg border-b border-cyber-border;
+  }
+}
+
+@layer utilities {
+  .font-cyber {
+    font-family: var(--font-orbitron), sans-serif;
+  }
+
+  .font-mono {
+    font-family: var(--font-jetbrains), monospace;
+  }
+}
