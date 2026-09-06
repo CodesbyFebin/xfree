@@ -15,6 +15,11 @@ const EnvSchema = z.object({
   GEMINI_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().default(2048),
   GEMINI_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
 
+  NVIDIA_API_KEY: z.string().min(1).optional(),
+  NVIDIA_BASE_URL: z.string().url().default("https://integrate.api.nvidia.com/v1"),
+  NVIDIA_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().max(16_384).default(2_048),
+  NVIDIA_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(45_000),
+
   AI_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(10),
   AI_RATE_LIMIT_PER_DAY: z.coerce.number().int().positive().default(100),
   AI_THINKING_LIMIT_PER_DAY: z.coerce.number().int().positive().default(15),
@@ -49,6 +54,9 @@ function loadConfig(): AppConfig {
     // Warn but don't kill the process — health/contact/feedback and static
     // fallback don't need Gemini. AI endpoints check at request time.
     console.warn("[env] GEMINI_API_KEY is not set. AI endpoints will return 503 until it is provisioned.");
+  }
+  if (cfg.NODE_ENV === "production" && !cfg.NVIDIA_API_KEY) {
+    console.warn("[env] NVIDIA_API_KEY is not set. NVIDIA Cloud Mode will remain unavailable.");
   }
   return cfg;
 }

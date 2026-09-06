@@ -3,13 +3,24 @@
  * (either <meta name="robots" content="...noindex..."> or X-Robots-Tag equivalents
  * embedded in a comment).
  *
- * The 404 shell is expected to carry noindex; everything else must not.
+ * Expected planning surfaces may also carry noindex,follow. The allow-list is
+ * derived from the same pillar publishing policy used by sitemap + prerender,
+ * so this gate catches accidental noindex on publishable pages without rejecting
+ * intentional roadmap-only URLs.
  */
 import fs from "fs";
 import path from "path";
+import { PILLARS_50 } from "../data/masterBlueprint";
+import { isPillarIndexable } from "../data/pillarPublishing";
 
 const DIST = path.join(process.cwd(), "dist");
-const ALLOWED_NOINDEX = new Set<string>(["404.html"]);
+const ALLOWED_NOINDEX = new Set<string>([
+  "404.html",
+  path.join("roadmap", "index.html"),
+  ...PILLARS_50
+    .filter((pillar) => !isPillarIndexable(pillar.slug))
+    .map((pillar) => path.join("pillar", pillar.slug, "index.html")),
+]);
 
 function walk(dir: string, out: string[] = []): string[] {
   if (!fs.existsSync(dir)) return out;
