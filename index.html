@@ -4,31 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ═══════════════ SECURITY ═══════════════ -->
-<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
-<meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
-<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<!-- ═══════════════════════════════════════════════════════════════
+     SECURITY HEADERS
+     ═══════════════════════════════════════════════════════════════ -->
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
 
-<!-- ═══════════════ CORE SEO ═══════════════ -->
-<title>XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup</title>
-<meta name="description" content="Free, privacy-first developer & SEO tools. JSON formatters, HTML minifiers, crypto utilities & more. 100% client-side, no signup required.">
-<meta name="keywords" content="XFree, free developer tools, privacy-first tools, JSON formatter, HTML minifier, Base64 encoder, JWT decoder, UUID generator, no signup developer tools">
-<meta name="author" content="XFree Contributors">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="googlebot" content="index, follow">
-<meta name="coverage" content="Worldwide">
-<meta name="geo.region" content="IN">
-<meta name="geo.placename" content="Global">
-<meta name="distribution" content="global">
-<meta name="rating" content="general">
-<meta name="revisit-after" content="1 days">
-<meta name="generator" content="XFree Static Site">
-
+<!-- ═══════════════════════════════════════════════════════════════
+     CANONICAL + HREFLANG
+     ═══════════════════════════════════════════════════════════════ -->
 <link rel="canonical" href="https://www.xfree.in/">
-<link rel="sitemap" href="https://www.xfree.in/sitemap.xml">
 <link rel="alternate" hreflang="en" href="https://www.xfree.in/">
 <link rel="alternate" hreflang="es" href="https://www.xfree.in/es/">
 <link rel="alternate" hreflang="fr" href="https://www.xfree.in/fr/">
@@ -36,59 +23,88 @@
 <link rel="alternate" hreflang="de" href="https://www.xfree.in/de/">
 <link rel="alternate" hreflang="ja" href="https://www.xfree.in/ja/">
 <link rel="alternate" hreflang="x-default" href="https://www.xfree.in/">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
 
-<!-- ═══════════════ PERFORMANCE ═══════════════ -->
-<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
-<link rel="preconnect" href="https://api.github.com" crossorigin>
-<link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<!-- ═══════════════════════════════════════════════════════════════
+     PRIMARY META
+     SAFESEARCH DEFENSE: "xfree", "xfreehd", and "freexhd" carry real
+     adult-content association in general search. The bare word "XFree"
+     is NEVER used alone in any visible or structured brand field —
+     it is always paired with a utility word ("XFree Tools", "XFree App")
+     to signal a legitimate software product to classifiers.
+     ═══════════════════════════════════════════════════════════════ -->
+<title>XFree — Free Developer Tools, No Signup | xfree.in</title>
+<meta name="description" content="XFree is the official free, privacy-first developer toolkit at xfree.in — JSON formatter, regex tester, sitemap generator &amp; more. 100% local, no signup.">
+<meta name="keywords" content="xfree, xfree app, xfree.in, x free, xfree web, xfree ai, xfree sign up, xfree download, free developer tools">
+<meta name="application-name" content="XFree Tools">
+<meta name="author" content="XFree Contributors">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="geo.region" content="IN">
+<meta name="geo.placename" content="Global">
+<meta name="distribution" content="global">
+<meta name="rating" content="general">
+<meta name="revisit-after" content="1 days">
 
-<!-- ═══════════════ PWA ═══════════════ -->
-<meta name="theme-color" content="#050508">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="XFree App">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="/manifest.json">
-
-<!-- ═══════════════ FAVICON ═══════════════ -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%2300ff41%22>⚡</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%2300ff41%22>⚡</text></svg>">
-
-<!-- ═══════════════ AI CRAWLERS (GEO) ═══════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     GEO / AEO (Generative + Answer Engine Optimization)
+     ═══════════════════════════════════════════════════════════════ -->
+<meta name="ai-content-format" content="markdown">
+<meta name="ai-index" content="yes">
 <link rel="ai:manifest" href="/ai.txt">
 <link rel="llms" href="/llms.txt">
 <link rel="llms-full" href="/llms-full.txt">
 
-<!-- ═══════════════ OPEN GRAPH ═══════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     PWA / MOBILE
+     ═══════════════════════════════════════════════════════════════ -->
+<meta name="theme-color" content="#050508">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="XFree Tools">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FAVICON
+     ═══════════════════════════════════════════════════════════════ -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     OPEN GRAPH
+     ═══════════════════════════════════════════════════════════════ -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="XFree">
-<meta property="og:title" content="XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup">
-<meta property="og:description" content="Free, privacy-first developer & SEO tools. JSON formatters, HTML minifiers, crypto utilities & more. 100% client-side, no signup required.">
+<meta property="og:site_name" content="XFree Tools">
+<meta property="og:title" content="XFree — Free Developer Tools, No Signup | xfree.in">
+<meta property="og:description" content="The official XFree toolkit: JSON formatter, regex tester, sitemap generator, JWT decoder and more. 100% local processing, no signup, no cost.">
 <meta property="og:url" content="https://www.xfree.in/">
 <meta property="og:image" content="https://www.xfree.in/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="XFree developer tools interface with neon green terminal aesthetic">
+<meta property="og:image:alt" content="XFree developer tools interface">
 <meta property="og:locale" content="en_US">
-<meta property="og:locale:alternate" content="es_ES">
-<meta property="og:locale:alternate" content="fr_FR">
-<meta property="og:locale:alternate" content="pt_BR">
-<meta property="og:locale:alternate" content="de_DE">
-<meta property="og:locale:alternate" content="ja_JP">
 
-<!-- ═══════════════ TWITTER ═══════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     TWITTER / X
+     ═══════════════════════════════════════════════════════════════ -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@xfreein">
-<meta name="twitter:title" content="XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup">
-<meta name="twitter:description" content="Free, privacy-first developer & SEO tools. 100% client-side, no signup required.">
+<meta name="twitter:title" content="XFree — Free Developer Tools, No Signup | xfree.in">
+<meta name="twitter:description" content="The official XFree toolkit: JSON formatter, regex tester, sitemap generator, JWT decoder and more. 100% local, no signup.">
 <meta name="twitter:image" content="https://www.xfree.in/og-image.png">
-<meta name="twitter:image:alt" content="XFree developer tools interface">
 
-<!-- ═══════════════ STYLES ═══════════════ -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/index.min.css" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/orbitron@5.0.18/index.min.css" crossorigin="anonymous">
+<!-- ═══════════════════════════════════════════════════════════════
+     PERFORMANCE
+     ═══════════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/index.min.css">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     STYLES
+     ═══════════════════════════════════════════════════════════════ -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace'],cyber:['Orbitron','sans-serif']},colors:{
@@ -233,154 +249,166 @@ details[open]{background:#0d0d14;border-color:rgba(0,255,65,.3)}
 @media(max-width:1023px){.mobile-menu-btn{display:flex}.nav-desktop{display:none}.lang-switcher-desktop{display:none}}
 </style>
 
-<!-- ═══════════════ UNIFIED SCHEMA GRAPH (100/100 Machine Readable) ═══════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     STRUCTURED DATA — Organization (Brand Disambiguation)
+     ═══════════════════════════════════════════════════════════════ -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@graph": [
+  "@type": "Organization",
+  "name": "XFree Tools",
+  "alternateName": ["XFree", "XFree.in", "XFree App", "XFree Studio"],
+  "url": "https://www.xfree.in",
+  "logo": "https://www.xfree.in/logo.png",
+  "description": "XFree Tools is the official developer-first, privacy-first browser tool suite for formatting, validating, and converting structured data.",
+  "disambiguatingDescription": "www.xfree.in is the only official XFree domain. XFree does not operate under the .com, .org, .net, .co, or .io TLDs, and is not affiliated with any adult-content site or other unrelated domain that shares a similar spelling.",
+  "foundingDate": "2025",
+  "license": "https://opensource.org/licenses/MIT",
+  "sameAs": [
+    "https://github.com/xfree-in/xfree",
+    "https://twitter.com/xfreein"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "support@xfree.in",
+    "availableLanguage": ["English", "Spanish", "French", "Portuguese", "German", "Japanese"]
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     STRUCTURED DATA — WebSite (enables sitelinks search box)
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "XFree Tools",
+  "url": "https://www.xfree.in",
+  "description": "Free browser-based developer, SEO, and privacy tools. Local Mode is the default. No signup required.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://www.xfree.in/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     STRUCTURED DATA — SoftwareApplication
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "XFree App",
+  "url": "https://www.xfree.in",
+  "description": "XFree is a free online app for developers offering privacy-first micro-tools including a JSON formatter, HTML minifier, regex tester, sitemap generator, JWT decoder, and cron generator. All tools run 100% client-side with no signup required.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any (Browser-based)",
+  "isAccessibleForFree": true,
+  "softwareVersion": "1.0.0",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Privacy-First Developer Tools",
+    "100% Client-Side Execution",
+    "Zero Telemetry",
+    "Open Source MIT",
+    "No Account Required",
+    "Offline Capable"
+  ],
+  "author": { "@type": "Organization", "name": "XFree Contributors" }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     STRUCTURED DATA — FAQPage
+     Targeting branded search queries for answer engine optimization
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
     {
-      "@type": "Organization",
-      "@id": "https://www.xfree.in/#organization",
-      "name": "XFree",
-      "url": "https://www.xfree.in/",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://www.xfree.in/logo.png",
-        "width": 1200,
-        "height": 630
-      },
-      "description": "XFree provides free, privacy-first, client-side developer and SEO micro-tools.",
-      "foundingDate": "2025",
-      "license": "https://opensource.org/licenses/MIT",
-      "sameAs": [
-        "https://github.com/xfree-in/xfree",
-        "https://twitter.com/xfreein"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer support",
-        "email": "support@xfree.in",
-        "availableLanguage": ["English", "Spanish", "French", "Portuguese", "German", "Japanese"]
+      "@type": "Question",
+      "name": "What is XFree Tools?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "XFree is a free, privacy-first browser toolkit for developers, offering tools such as a JSON formatter, regex tester, sitemap generator, meta tag generator, JWT decoder, and cron generator. All tools run 100% client-side with no signup required."
       }
     },
     {
-      "@type": "WebSite",
-      "@id": "https://www.xfree.in/#website",
-      "url": "https://www.xfree.in/",
-      "name": "XFree",
-      "description": "Free, privacy-first developer & SEO tools. 100% client-side, no signup required.",
-      "publisher": {
-        "@id": "https://www.xfree.in/#organization"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://www.xfree.in/search?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
+      "@type": "Question",
+      "name": "Is xfree.in the official XFree website?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. www.xfree.in is the official marketing and documentation site for the XFree developer tools app. The XFree Studio application itself runs at app.xfree.in. XFree is not affiliated with any adult-content site or other unrelated domain that shares a similar name."
       }
     },
     {
-      "@type": "CollectionPage",
-      "@id": "https://www.xfree.in/#webpage",
-      "url": "https://www.xfree.in/",
-      "name": "XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup",
-      "description": "Free, privacy-first developer & SEO tools. JSON formatters, HTML minifiers, crypto utilities & more. 100% client-side, no signup required.",
-      "isPartOf": {
-        "@id": "https://www.xfree.in/#website"
-      },
-      "about": {
-        "@id": "https://www.xfree.in/#organization"
-      },
-      "mainEntity": {
-        "@type": "ItemList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "item": {
-              "@type": "WebApplication",
-              "name": "XFree JSON Formatter",
-              "url": "https://www.xfree.in/tools/json-formatter",
-              "applicationCategory": "DeveloperApplication",
-              "operatingSystem": "Any"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "item": {
-              "@type": "WebApplication",
-              "name": "XFree Regex Tester",
-              "url": "https://www.xfree.in/tools/regex-tester",
-              "applicationCategory": "DeveloperApplication",
-              "operatingSystem": "Any"
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "item": {
-              "@type": "WebApplication",
-              "name": "XFree Sitemap Generator",
-              "url": "https://www.xfree.in/tools/xml-sitemap-generator",
-              "applicationCategory": "SEOApplication",
-              "operatingSystem": "Any"
-            }
-          }
-        ]
+      "@type": "Question",
+      "name": "What is the XFree app?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The XFree app is a browser-based suite of developer, SEO, and privacy micro-tools. It requires no download or installation beyond a modern web browser, and no account signup."
       }
     },
     {
-      "@type": "FAQPage",
-      "@id": "https://www.xfree.in/#faq",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is XFree app?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "XFree app is the ultimate free online platform for developers offering privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. All tools run 100% client-side with no signup required."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is XFree really free with no signup?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and run entirely in your browser."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does XFree ensure privacy?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I use XFree offline?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Because XFree tools are static HTML with embedded JavaScript, you can save any tool page and use it completely offline without an internet connection."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is XFree open source?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our GitHub repository at github.com/xfree-in/xfree."
-          }
-        }
-      ]
+      "@type": "Question",
+      "name": "Is XFree really free with no signup?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and run entirely in your browser."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does XFree have AI tools?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. XFree's AI & Automation category includes prompt engineering tools, token counters, and MCP (Model Context Protocol) configuration tools, in addition to its core developer and SEO utilities."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I download or start using XFree?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "There is nothing to download. Open app.xfree.in in any modern browser to start using XFree's tools immediately, or install it as a Progressive Web App from your browser's menu for an app-like experience."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does XFree ensure privacy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed on that tool's page."
+      }
     }
   ]
 }
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     STRUCTURED DATA — BreadcrumbList
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.xfree.in/" },
+    { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://www.xfree.in/dev-tools" },
+    { "@type": "ListItem", "position": 3, "name": "Pillar Hubs", "item": "https://www.xfree.in/pillars" }
+  ]
+}
+</script>
+
 </head>
 <body class="bg-cyber-bg text-cyber-text antialiased">
 
