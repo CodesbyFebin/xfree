@@ -6,7 +6,7 @@ export function generateToolSchema(tool: ToolDefinition) {
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: tool.title,
+    name: `XFree ${tool.title}`,
     description: tool.shortDescription,
     url: `${baseUrl}/tools/${tool.slug}`,
     applicationCategory: 'UtilityApplication',
@@ -87,12 +87,12 @@ export function generatePillarSchema(pillar: PillarDefinition, toolCount: number
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: pillar.name,
+    name: `XFree ${pillar.name}`,
     description: pillar.description,
     url: `${baseUrl}/pillars/${pillar.slug}`,
     about: {
       '@type': 'Thing',
-      name: pillar.name,
+      name: `XFree ${pillar.name}`,
       description: pillar.description,
     },
     numberOfItems: toolCount,

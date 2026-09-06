@@ -56,19 +56,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ].filter(Boolean);
 
     return {
-      title: `${tool.title} | XFree - Free Online Tool`,
+      title: `XFree ${tool.title} | Free Online Tool`,
       description: fullDescription,
       keywords: allKeywords,
       alternates: { canonical },
       openGraph: {
-        title: `${tool.title} | XFree`,
+        title: `XFree ${tool.title}`,
         description: fullDescription,
         url: canonical,
         type: 'article',
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${tool.title} | XFree`,
+        title: `XFree ${tool.title}`,
         description: fullDescription,
       },
       other: {
@@ -206,7 +206,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
                 </div>
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono">
-                    {tool.title}
+                    XFree {tool.title}
                   </h1>
                   <p className="text-cyber-muted mt-1">
                     {categoryInfo?.label}

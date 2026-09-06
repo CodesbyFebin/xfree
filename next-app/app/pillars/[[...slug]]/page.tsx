@@ -53,19 +53,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ].filter(Boolean);
 
       return {
-        title: `${pillar.name} | XFree - Free Tool Hub`,
+        title: `XFree ${pillar.name} | Free Tool Hub`,
         description: pillar.description,
         keywords: allKeywords,
         alternates: { canonical },
         openGraph: {
-          title: `${pillar.name} | XFree`,
+          title: `XFree ${pillar.name}`,
           description: pillar.description,
           url: canonical,
           type: 'article',
         },
         twitter: {
           card: 'summary_large_image',
-          title: `${pillar.name} | XFree`,
+          title: `XFree ${pillar.name}`,
           description: pillar.description,
         },
       };
@@ -85,19 +85,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ].filter(Boolean);
 
       return {
-        title: `${pillar.name} | XFree - ${pillar.toolCount || 0} Free Tools`,
+        title: `XFree ${pillar.name} | ${pillar.toolCount || 0} Free Tools`,
         description: pillar.description,
         keywords: allKeywords,
         alternates: { canonical },
         openGraph: {
-          title: `${pillar.name} | XFree`,
+          title: `XFree ${pillar.name}`,
           description: pillar.description,
           url: canonical,
           type: 'article',
         },
         twitter: {
           card: 'summary_large_image',
-          title: `${pillar.name} | XFree`,
+          title: `XFree ${pillar.name}`,
           description: pillar.description,
         },
       };
@@ -246,7 +246,7 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono">
-                  {pillar.name}
+                  XFree {pillar.name}
                 </h1>
                 <p className="text-cyber-muted mt-1">
                   {categoryInfo?.label} • {pillar.toolCount || pillarTools.length} tools
