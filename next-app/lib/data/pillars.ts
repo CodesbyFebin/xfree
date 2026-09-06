@@ -1,119 +1,108 @@
 import { PillarDefinition } from '@/types';
 
+export type PillarCategory =
+  | "dev-data"
+  | "web-seo"
+  | "ai-auto"
+  | "media-docs"
+  | "security"
+  | "business";
+
+export const PILLAR_CATEGORIES: ReadonlyArray<{
+  id: PillarCategory;
+  label: string;
+  description: string;
+  icon: string;
+}> = [
+  { id: "dev-data", label: "Developer & Data Tools", description: "Formatters, validators, debuggers, regex, encoding, converters", icon: "⚡" },
+  { id: "web-seo", label: "Web & SEO Tools", description: "Sitemaps, meta tags, schema, crawl, performance, accessibility", icon: "🌐" },
+  { id: "ai-auto", label: "AI & Automation Tools", description: "Prompt engineering, LLM tools, agents, RAG, MCP workflows", icon: "🧠" },
+  { id: "media-docs", label: "Media & Documents Tools", description: "Image, video, audio, PDF, documents, spreadsheets, markdown", icon: "📁" },
+  { id: "security", label: "Security & Privacy Tools", description: "Hash, passwords, JWT, DNS, HTTP, certificates, encryption", icon: "🔒" },
+  { id: "business", label: "Business & Productivity Tools", description: "Text, writing, calculators, finance, marketing, productivity", icon: "💼" },
+];
+
 export const PILLARS: PillarDefinition[] = [
-  {
-    slug: 'dev-tools',
-    num: '01',
-    name: 'XFree Developer Tools',
-    description: 'JSON formatters, regex testers, code validators, and developer utilities for everyday tasks.',
-    icon: '⚡',
-    color: 'glow',
-    category: 'developer',
-  },
-  {
-    slug: 'json-data-tools',
-    num: '02',
-    name: 'XFree JSON & Data Tools',
-    description: 'JSON validators, formatters, converters to YAML, CSV, XML for data engineers.',
-    icon: '{}',
-    color: 'glow',
-    category: 'developer',
-  },
-  {
-    slug: 'seo-tools',
-    num: '03',
-    name: 'XFree SEO Tools',
-    description: 'Meta tag generators, sitemap creators, robots.txt editors for digital marketers.',
-    icon: '🌐',
-    color: 'cyan',
-    category: 'seo',
-  },
-  {
-    slug: 'security-tools',
-    num: '04',
-    name: 'XFree Security Tools',
-    description: 'Hash generators, JWT decoders, password generators for cybersecurity professionals.',
-    icon: '🔒',
-    color: 'magenta',
-    category: 'security',
-  },
-  {
-    slug: 'ai-tools',
-    num: '05',
-    name: 'XFree AI Tools',
-    description: 'Prompt engineering tools, token counters, and AI workflow utilities.',
-    icon: '🤖',
-    color: 'purple',
-    category: 'ai',
-  },
-  {
-    slug: 'text-tools',
-    num: '06',
-    name: 'XFree Text Tools',
-    description: 'Word counters, diff checkers, case converters, and text manipulation utilities.',
-    icon: '📝',
-    color: 'amber',
-    category: 'text',
-  },
-  {
-    slug: 'converters',
-    num: '07',
-    name: 'XFree File Converters',
-    description: 'Base64, URL encoding, HTML entities, and format conversion tools.',
-    icon: '🔄',
-    color: 'cyan',
-    category: 'developer',
-  },
-  {
-    slug: 'generators',
-    num: '08',
-    name: 'XFree Online Generators',
-    description: 'UUID, QR code, password, and cron expression generators.',
-    icon: '⚙️',
-    color: 'amber',
-    category: 'developer',
-  },
-  {
-    slug: 'validators',
-    num: '09',
-    name: 'XFree Data Validators',
-    description: 'JSON Schema, HTML, CSS, and JavaScript syntax validators.',
-    icon: '✓',
-    color: 'green',
-    category: 'developer',
-  },
-  {
-    slug: 'business-tools',
-    num: '10',
-    name: 'XFree Business Tools',
-    description: 'Calculators, date/time utilities, and productivity tools for business users.',
-    icon: '💼',
-    color: 'cyan',
-    category: 'business',
-  },
+  { slug: "dev-tools", num: "01", name: "XFree Developer Tools", description: "Formatters, validators, debuggers, regex, encoding, converters, base64, JWT, UUID, cron, SQL, hex, YAML", icon: "⚡", color: "glow", category: "dev-data", keywords: ["developer tools", "json formatter", "regex tester", "base64 encoder", "jwt decoder", "uuid generator", "cron generator", "sql formatter", "yaml validator", "hex to text"] },
+  { slug: "json-data-tools", num: "02", name: "XFree JSON Data Tools", description: "JSON formatter, validator, flattener, sorter, diff, converter", icon: "🧩", color: "glow", category: "dev-data", keywords: ["json formatter", "json validator", "json flattener", "json sorter", "json diff", "json to csv", "json to yaml", "json minify", "json parse"] },
+  { slug: "code-formatting-tools", num: "03", name: "XFree Code Formatting Tools", description: "HTML, CSS, JS, TypeScript, XML, SQL formatter and minifier", icon: "✨", color: "cyan", category: "dev-data", keywords: ["html formatter", "css minifier", "js formatter", "typescript formatter", "xml formatter", "sql formatter", "code beautifier", "code minifier"] },
+  { slug: "api-tools", num: "04", name: "XFree API Development Tools", description: "OpenAPI spec validator, endpoint tester, request builder, curl generator", icon: "🔌", color: "cyan", category: "dev-data", keywords: ["openapi validator", "api tester", "rest client", "curl generator", "swagger validator", "graphql explorer", "endpoint monitor", "request builder"] },
+  { slug: "database-tools", num: "05", name: "XFree Database Tools", description: "SQL formatter, query builder, schema designer, migration generator", icon: "🗄️", color: "glow", category: "dev-data", keywords: ["sql formatter", "sql validator", "query builder", "schema designer", "migration generator", "mongodb formatter", "postgresql utils"] },
+  { slug: "regex-tools", num: "06", name: "XFree Regex Tools", description: "Regex tester, explainer, builder, cheat sheet, pattern library", icon: "🔍", color: "purple", category: "dev-data", keywords: ["regex tester", "regex explainer", "regex builder", "regex cheat sheet", "pattern matcher", "regex debugger", "regex library"] },
+  { slug: "encoding-tools", num: "07", name: "XFree Encoding Tools", description: "Base64, URL, hex, binary, ASCII converter encoder decoder", icon: "🔤", color: "amber", category: "dev-data", keywords: ["base64 encoder", "base64 decoder", "url encoder", "hex converter", "binary converter", "ascii converter", "encoding checker"] },
+  { slug: "converters", num: "08", name: "XFree File Converters", description: "JSON to CSV, YAML to JSON, XML to JSON, CSV to JSON, data format conversion", icon: "🔄", color: "cyan", category: "dev-data", keywords: ["json to csv", "yaml to json", "xml to json", "csv to json", "json to yaml", "data format converter"] },
+  { slug: "validators", num: "09", name: "XFree Data Validators", description: "JSON schema validator, HTML validator, CSS validator, XML validator", icon: "✓", color: "green", category: "dev-data", keywords: ["json schema validator", "html validator", "css validator", "xml validator", "data validator", "syntax checker", "format validator"] },
+  { slug: "generators", num: "10", name: "XFree Online Generators", description: "UUID v4, QR code, password, cron, lorem ipsum, API key, hash generator", icon: "🎲", color: "amber", category: "dev-data", keywords: ["uuid v4 generator", "qr code generator", "password generator", "cron expression generator", "random string generator", "api key generator", "fake data generator"] },
+  { slug: "web-tools", num: "11", name: "XFree Web Tools", description: "HTTP headers, status codes, URL parser, cookies, user agent, redirect checker", icon: "🌐", color: "cyan", category: "web-seo", keywords: ["http header checker", "status code lookup", "url parser", "cookie inspector", "user agent parser", "redirect checker", "web inspector"] },
+  { slug: "seo-tools", num: "12", name: "XFree SEO Tools", description: "Keyword rank tracker, SERP checker, backlink analyzer, meta tags, sitemap", icon: "📈", color: "cyan", category: "web-seo", keywords: ["seo tools", "keyword rank tracker", "serp checker", "backlink analyzer", "meta tag generator", "sitemap generator", "seo audit"] },
+  { slug: "url-tools", num: "13", name: "XFree URL Tools", description: "URL parser, encoder, shortener, redirect checker, UTM builder, slug generator", icon: "🔗", color: "cyan", category: "web-seo", keywords: ["url parser", "url encoder", "url shortener", "redirect checker", "utm builder", "slug generator", "url expander"] },
+  { slug: "schema-tools", num: "14", name: "XFree Schema Markup Tools", description: "JSON-LD generator, schema validator, structured data tester, FAQ, HowTo, Breadcrumb", icon: "🏷️", color: "cyan", category: "web-seo", keywords: ["json-ld generator", "schema markup validator", "structured data tester", "faq schema", "howto schema", "breadcrumb schema", "rich results"] },
+  { slug: "crawl-indexing-tools", num: "15", name: "XFree Crawl & Indexing Tools", description: "Sitemap generator, robots.txt checker, fetch as Google, URL inspection, crawl delay", icon: "🕷️", color: "cyan", category: "web-seo", keywords: ["sitemap generator", "robots.txt checker", "fetch as google", "url inspection", "crawl delay", "indexing tool"] },
+  { slug: "website-audit-tools", num: "16", name: "XFree Website Audit Tools", description: "SEO audit, page speed, mobile-friendly, broken links, meta descriptions, canonical tags", icon: "🔍", color: "cyan", category: "web-seo", keywords: ["website audit", "page speed test", "mobile-friendly test", "broken link checker", "seo audit tool", "canonical checker"] },
+  { slug: "metadata-tools", num: "17", name: "XFree Metadata Tools", description: "Meta tag generator, title/description checker, OG preview, Twitter cards, canonical tags", icon: "📝", color: "cyan", category: "web-seo", keywords: ["meta tag generator", "title checker", "description editor", "og preview", "twitter card generator", "canonical tag", "meta tags"] },
+  { slug: "performance-tools", num: "18", name: "XFree Performance Tools", description: "Page speed, compression, minify, image optimization, lazy load, cache headers", icon: "⚡", color: "glow", category: "web-seo", keywords: ["page speed test", "gzip compression", "minify css js", "image optimization", "lazy loading", "cache headers", "performance audit"] },
+  { slug: "accessibility-tools", num: "19", name: "XFree Accessibility Tools", description: "WCAG checker, alt text generator, contrast ratio, ARIA validator, screen reader test", icon: "♿", color: "cyan", category: "web-seo", keywords: ["wcag checker", "alt text generator", "contrast ratio", "aria validator", "accessibility test", "screen reader simulation"] },
+  { slug: "social-preview-tools", num: "20", name: "XFree Social Preview Tools", description: "OG image preview, Twitter card, Facebook scraper, link preview, embed generator", icon: "📲", color: "cyan", category: "web-seo", keywords: ["og image preview", "twitter card preview", "facebook link preview", "social embed generator", "og tags", "social media preview"] },
+  { slug: "ai-tools", num: "21", name: "XFree AI Tools", description: "AI text generator, image generator, chatbot, code assistant, summarizer, translator", icon: "🧠", color: "purple", category: "ai-auto", keywords: ["ai text generator", "ai image generator", "chatbot", "code assistant", "text summarizer", "ai translator", "ai tools"] },
+  { slug: "prompt-tools", num: "22", name: "XFree Prompt Engineering Tools", description: "Prompt optimizer, A/B tester, chain-of-thought builder, prompt library, token counter", icon: "💬", color: "purple", category: "ai-auto", keywords: ["prompt optimizer", "prompt tester", "chain of thought", "prompt library", "token counter", "prompt engineering"] },
+  { slug: "rag-tools", num: "23", name: "XFree RAG Tools", description: "Document chunking, embedding generator, vector DB tester, retrieval evaluator, knowledge base builder", icon: "📚", color: "purple", category: "ai-auto", keywords: ["document chunking", "embedding generator", "vector database", "retrieval evaluator", "knowledge base builder", "rag tools"] },
+  { slug: "llm-tools", num: "24", name: "XFree LLM Tools", description: "Token counter, model comparator, prompt cost calculator, output parser, temperature tester", icon: "🧮", color: "purple", category: "ai-auto", keywords: ["token counter", "model comparator", "prompt cost calculator", "output parser", "temperature tester"] },
+  { slug: "agent-tools", num: "25", name: "XFree AI Agent Tools", description: "Agent runner, tool use simulator, planning engine, memory builder, action logger", icon: "🤖", color: "purple", category: "ai-auto", keywords: ["ai agent", "agent runner", "tool use simulator", "planning engine", "agent memory"] },
+  { slug: "mcp-tools", num: "26", name: "XFree MCP Tools", description: "MCP server tester, client builder, protocol inspector, spec validator, integration generator", icon: "🔌", color: "purple", category: "ai-auto", keywords: ["mcp tools", "mcp server", "mcp client", "protocol inspector", "mcp spec validator"] },
+  { slug: "agentic-workflows", num: "27", name: "XFree Agentic Workflows", description: "Workflow designer, chain builder, trigger configurator, state manager, output validator", icon: "🔄", color: "purple", category: "ai-auto", keywords: ["agentic workflow", "workflow designer", "chain builder", "trigger configurator", "state manager"] },
+  { slug: "automation-tools", num: "28", name: "XFree Automation Tools", description: "Zapier alternative, webhook tester, API connector, schedule runner, notification builder", icon: "🎛️", color: "purple", category: "ai-auto", keywords: ["automation tools", "zapier alternative", "webhook tester", "api connector", "schedule runner"] },
+  { slug: "ai-evaluation-tools", num: "29", name: "XFree AI Evaluation Tools", description: "Prompt evaluator, output scorer, bias detector, hallucination checker, test case generator", icon: "📊", color: "purple", category: "ai-auto", keywords: ["ai evaluation", "prompt evaluator", "output scorer", "bias detector", "hallucination checker"] },
+  { slug: "ai-data-tools", num: "30", name: "XFree AI Data Tools", description: "Dataset cleaner, prompt dataset builder, data labeler, synthetic data generator, data validator", icon: "📂", color: "purple", category: "ai-auto", keywords: ["ai data tools", "dataset cleaner", "synthetic data generator", "data labeler", "prompt dataset"] },
+  { slug: "image-tools", num: "31", name: "XFree Image Tools", description: "Image resizer, format converter, compressor, watermark, crop, rotate, background remover", icon: "🖼️", color: "magenta", category: "media-docs", keywords: ["image resizer", "image converter", "image compressor", "watermark tool", "image crop", "background remover"] },
+  { slug: "video", num: "32", name: "XFree Video Tools", description: "Video converter, compressor, cutter, gif maker, thumbnail, subtitle adder, mp4 to mp3", icon: "🎬", color: "magenta", category: "media-docs", keywords: ["video converter", "video compressor", "video cutter", "gif maker", "thumbnail generator", "mp4 to mp3"] },
+  { slug: "audio-tools", num: "33", name: "XFree Audio Tools", description: "Audio converter, compressor, cutter, mp3 to wav, voice changer, noise reducer, waveform", icon: "🎵", color: "magenta", category: "media-docs", keywords: ["audio converter", "audio compressor", "audio cutter", "mp3 to wav", "voice changer", "noise reducer"] },
+  { slug: "pdf-tools", num: "34", name: "XFree PDF Tools", description: "Merge, split, compress, rotate, delete pages, extract text, watermark, convert PDF", icon: "📄", color: "magenta", category: "media-docs", keywords: ["pdf merge", "pdf split", "pdf compress", "pdf rotate", "extract pdf text", "pdf watermark", "pdf converter"] },
+  { slug: "document-tools", num: "35", name: "XFree Document Tools", description: "Word to PDF, DOCX editor, text extractor, page counter, format converter, metadata remover", icon: "📝", color: "magenta", category: "media-docs", keywords: ["word to pdf", "docx editor", "text extractor", "page counter", "document converter"] },
+  { slug: "spreadsheet-tools", num: "36", name: "XFree Spreadsheet Tools", description: "Excel editor, CSV manager, formula tester, chart generator, pivot table, data validator", icon: "📊", color: "magenta", category: "media-docs", keywords: ["excel editor", "csv manager", "formula tester", "chart generator", "pivot table"] },
+  { slug: "markdown-tools", num: "37", name: "XFree Markdown Tools", description: "Markdown to HTML, HTML to Markdown, preview, linter, table generator, TOC builder", icon: "📜", color: "magenta", category: "media-docs", keywords: ["markdown to html", "html to markdown", "markdown preview", "markdown linter", "table generator", "toc builder"] },
+  { slug: "subtitle-tools", num: "38", name: "XFree Subtitle Tools", description: "Subtitle converter, editor, translator, synchronizer, format converter, generator", icon: "🎞️", color: "magenta", category: "media-docs", keywords: ["subtitle converter", "subtitle editor", "subtitle translator", "subtitle synchronizer", "srt converter"] },
+  { slug: "file-tools", num: "39", name: "XFree File Tools", description: "File compressor, type detector, size analyzer, extension changer, duplicate finder, merger", icon: "📦", color: "magenta", category: "media-docs", keywords: ["file compressor", "file type detector", "file size analyzer", "extension changer", "duplicate finder"] },
+  { slug: "creative-tools", num: "40", name: "XFree Creative Tools", description: "Color palette, gradient generator, palette extractor, font pairer, SVG editor, icon finder", icon: "🎨", color: "magenta", category: "media-docs", keywords: ["color palette generator", "gradient generator", "palette extractor", "font pairer", "svg editor", "icon finder"] },
+  { slug: "security-tools", num: "41", name: "XFree Security Tools", description: "SSL checker, security headers, port scanner, vulnerability scanner, password strength, CSRF tester", icon: "🛡️", color: "magenta", category: "security", keywords: ["ssl checker", "security headers", "port scanner", "vulnerability scanner", "password strength", "csrf tester"] },
+  { slug: "hash-tools", num: "42", name: "XFree Hash Tools", description: "MD5, SHA1, SHA256, SHA512, CRC32, HMAC generator, hash checker, rainbow table", icon: "🔐", color: "magenta", category: "security", keywords: ["md5 generator", "sha256 hash", "sha512 hash", "hmac generator", "hash checker", "crc32"] },
+  { slug: "password-tools", num: "43", name: "XFree Password Tools", description: "Password generator, strength checker, entropy calculator, breach checker, manager", icon: "🔑", color: "magenta", category: "security", keywords: ["password generator", "password strength", "password entropy", "breach checker", "password manager"] },
+  { slug: "token-tools", num: "44", name: "XFree JWT & Token Tools", description: "JWT decoder, encoder, validator, signature verifier, token generator, OAuth tester", icon: "🎫", color: "magenta", category: "security", keywords: ["jwt decoder", "jwt encoder", "jwt validator", "jwt signature verifier", "oauth tester", "token generator"] },
+  { slug: "privacy-tools", num: "45", name: "XFree Privacy Tools", description: "Cookie consent generator, privacy policy, data mapper, PII detector, GDPR/CCPA compliance", icon: "🔏", color: "magenta", category: "security", keywords: ["cookie consent generator", "privacy policy generator", "pii detector", "gdpr compliance", "ccpa compliance"] },
+  { slug: "network-tools", num: "46", name: "XFree Network Tools", description: "Port scanner, IP lookup, bandwidth tester, latency checker, traceroute, WHOIS lookup", icon: "🌐", color: "magenta", category: "security", keywords: ["ip lookup", "port scanner", "bandwidth test", "latency checker", "traceroute", "whois lookup"] },
+  { slug: "dns-tools", num: "47", name: "XFree DNS Tools", description: "DNS lookup, SPF checker, DKIM validator, DMARC analyzer, record inspector, propagation", icon: "📡", color: "magenta", category: "security", keywords: ["dns lookup", "spf checker", "dkim validator", "dmarc analyzer", "dns record inspector"] },
+  { slug: "http-tools", num: "48", name: "XFree HTTP Tools", description: "HTTP client, request builder, response inspector, status code lookup, header parser, curl converter", icon: "📡", color: "magenta", category: "security", keywords: ["http client", "request builder", "response inspector", "status code lookup", "header parser", "curl converter"] },
+  { slug: "certificate-tools", num: "49", name: "XFree Certificate Tools", description: "SSL cert decoder, CSR generator, expiration checker, chain validator, cert converter", icon: "📜", color: "magenta", category: "security", keywords: ["ssl cert decoder", "csr generator", "certificate expiration", "certificate chain validator"] },
+  { slug: "security-header-tools", num: "50", name: "XFree Security Header Tools", description: "CSP generator, header analyzer, clickjacking tester, XSS filter, HSTS checker, referrer policy", icon: "🛡️", color: "magenta", category: "security", keywords: ["csp generator", "security header analyzer", "clickjacking tester", "xss filter", "hsts checker"] },
+  { slug: "text-tools", num: "51", name: "XFree Text Tools", description: "Word counter, character counter, case converter, line counter, text cleaner, formatter", icon: "📝", color: "amber", category: "business", keywords: ["word counter", "character counter", "case converter", "line counter", "text cleaner", "text formatter"] },
+  { slug: "content-tools", num: "52", name: "XFree Content Tools", description: "Readability checker, keyword density, content analyzer, plagiarism checker, meta desc, title tag", icon: "📚", color: "amber", category: "business", keywords: ["readability checker", "keyword density", "content analyzer", "plagiarism checker", "meta description", "title tag"] },
+  { slug: "writing-tools", num: "53", name: "XFree Writing Tools", description: "Grammar checker, spell checker, style analyzer, tone detector, paraphraser, headline generator", icon: "✍️", color: "amber", category: "business", keywords: ["grammar checker", "spell checker", "style analyzer", "tone detector", "paraphraser", "headline generator"] },
+  { slug: "calculators", num: "54", name: "XFree Calculator Tools", description: "Math calculator, percentage, BMI, age, mortgage, currency converter, ROI, tax calculator", icon: "🧮", color: "amber", category: "business", keywords: ["math calculator", "percentage calculator", "bmi calculator", "mortgage calculator", "currency converter", "roi calculator"] },
+  { slug: "date-time-tools", num: "55", name: "XFree Date & Time Tools", description: "Timestamp converter, date formatter, timezone converter, countdown timer, age calculator, weekday", icon: "📅", color: "amber", category: "business", keywords: ["timestamp converter", "date formatter", "timezone converter", "countdown timer", "age calculator", "weekday calculator"] },
+  { slug: "finance-tools", num: "56", name: "XFree Finance Tools", description: "Currency converter, inflation calculator, loan calculator, compound interest, ROI, budget planner", icon: "💰", color: "amber", category: "business", keywords: ["currency converter", "inflation calculator", "loan calculator", "compound interest", "roi calculator", "budget planner"] },
+  { slug: "marketing-tools", num: "57", name: "XFree Marketing Tools", description: "Email subject line, UTM builder, campaign tracker, social bio, hashtag generator, color palette", icon: "📣", color: "amber", category: "business", keywords: ["utm builder", "email subject line", "campaign tracker", "social bio generator", "hashtag generator", "color palette"] },
+  { slug: "productivity-tools", num: "58", name: "XFree Productivity Tools", description: "To-do list, habit tracker, focus timer, note taker, task scheduler, reminder generator", icon: "⏰", color: "amber", category: "business", keywords: ["to-do list", "habit tracker", "focus timer", "note taker", "task scheduler", "reminder generator"] },
+  { slug: "education-tools", num: "59", name: "XFree Education Tools", description: "Flashcard generator, quiz maker, study planner, grade calculator, timetable builder, note organizer", icon: "🎓", color: "amber", category: "business", keywords: ["flashcard generator", "quiz maker", "study planner", "grade calculator", "timetable builder", "note organizer"] },
+  { slug: "business-tools", num: "60", name: "XFree Business Tools", description: "Invoice generator, business card maker, contract template, pitch deck, valuation calculator, SWOT", icon: "💼", color: "amber", category: "business", keywords: ["invoice generator", "business card maker", "contract template", "pitch deck generator", "valuation calculator", "swot analysis"] },
 ];
 
 export const AUTHORITY_PILLARS: PillarDefinition[] = [
-  {
-    slug: 'xfree-app',
-    num: 'A1',
-    name: 'XFree App - Official Free Developer Tools Platform',
-    description: 'The XFree App is the ultimate free online platform for developers. Access privacy-first micro-tools including JSON formatters, regex testers, and SEO utilities. 100% client-side, no signup required.',
-    icon: '⚡',
-    color: 'glow',
-    category: 'authority',
-  },
-  {
-    slug: 'how-it-works',
-    num: 'A2',
-    name: 'How XFree Works - Privacy-First Local Processing',
-    description: 'XFree tools process your data inside your browser session using JavaScript and WebAssembly. No data is sent to external servers unless clearly disclosed.',
-    icon: '🔒',
-    color: 'cyan',
-    category: 'authority',
-  },
+  { slug: "xfree-app", num: "A1", name: "XFree App", description: "XFree as a Progressive Web App. Installable tool suite.", icon: "📱", color: "glow", category: "authority", keywords: ["xfree app", "pwa", "installable"] },
+  { slug: "how-it-works", num: "A2", name: "XFree How It Works", description: "Local vs Cloud processing explained. Privacy-first architecture.", icon: "🔧", color: "cyan", category: "authority", keywords: ["how it works", "local mode", "cloud mode"] },
+  { slug: "pricing", num: "A3", name: "XFree Pricing", description: "Free, open source, forever. No signup or paywalls.", icon: "💰", color: "amber", category: "authority", keywords: ["pricing", "free", "open source"] },
+  { slug: "roadmap", num: "A4", name: "XFree Roadmap", description: "Public roadmap for XFree micro-tools.", icon: "🗺️", color: "purple", category: "authority", keywords: ["roadmap", "changelog"] },
+  { slug: "about", num: "A5", name: "About XFree", description: "Mission and principles of the XFree project.", icon: "ℹ️", color: "amber", category: "authority", keywords: ["about", "mission"] },
+  { slug: "contact", num: "A6", name: "Contact", description: "Get in touch with the XFree team.", icon: "📧", color: "cyan", category: "authority", keywords: ["contact", "support"] },
+  { slug: "documentation", num: "A7", name: "Documentation", description: "Developer docs and guides for all XFree tools.", icon: "📚", color: "glow", category: "authority", keywords: ["docs", "documentation", "guides"] },
+  { slug: "blog", num: "A8", name: "Blog", description: "Latest articles and updates from the XFree team.", icon: "✍️", color: "amber", category: "authority", keywords: ["blog", "updates"] },
+  { slug: "community", num: "A9", name: "Community", description: "GitHub discussions and contributions.", icon: "👥", color: "glow", category: "authority", keywords: ["community", "github", "contribute"] },
 ];
 
 export function findPillarBySlug(slug: string): PillarDefinition | undefined {
   return [...PILLARS, ...AUTHORITY_PILLARS].find((p) => p.slug === slug);
 }
+
+export function getPillarsByCategory(category: string): PillarDefinition[] {
+  return PILLARS.filter((p) => p.category === category);
+}
+
+export const ALL_PILLARS = [...PILLARS, ...AUTHORITY_PILLARS];

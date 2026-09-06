@@ -1,5 +1,5 @@
 import { INDEXABLE_TOOL_SLUGS } from '@/lib/data/tools';
-import { PILLARS } from '@/lib/data/pillars';
+import { PILLARS, AUTHORITY_PILLARS } from '@/lib/data/pillars';
 
 export interface StaticPage {
   slug: string;
@@ -47,6 +47,16 @@ export function getAllStaticPages(): StaticPage[] {
   PILLARS.forEach((pillar) => {
     pages.push({
       slug: `pillar-${pillar.slug}`,
+      route: `/pillars/${pillar.slug}`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    });
+  });
+
+  AUTHORITY_PILLARS.forEach((pillar) => {
+    pages.push({
+      slug: `authority-${pillar.slug}`,
       route: `/pillars/${pillar.slug}`,
       lastModified: new Date().toISOString(),
       changeFrequency: 'weekly',
@@ -110,7 +120,7 @@ Sitemap: https://www.xfree.in/sitemap.xml
 export function generateLlmsTxt(): string {
   const pages = getAllStaticPages();
   const tools = pages.filter((p) => p.slug.startsWith('tool-'));
-  const pillars = pages.filter((p) => p.slug.startsWith('pillar-'));
+  const pillars = pages.filter((p) => p.slug.startsWith('pillar-') || p.slug.startsWith('authority-'));
 
   const lines = [
     '# XFree App - Free Online Developer & SEO Tools',
@@ -119,7 +129,7 @@ export function generateLlmsTxt(): string {
     'XFree App provides free, privacy-first browser-based tools for developers and SEO professionals.',
     'All tools execute entirely client-side with zero data transmission.',
     '',
-    '## Available Tools',
+    `## Available Tools (${tools.length})`,
   ];
 
   tools.forEach((tool) => {
@@ -127,23 +137,10 @@ export function generateLlmsTxt(): string {
     lines.push(`- [${toolName}](https://www.xfree.in${tool.route})`);
   });
 
-  lines.push('', '## Tool Categories');
-
-  const categories = [
-    { name: 'Developer Tools', slug: '/categories/dev-tools' },
-    { name: 'SEO Tools', slug: '/categories/seo-tools' },
-    { name: 'AI Tools', slug: '/categories/ai-tools' },
-    { name: 'Security Tools', slug: '/categories/security-tools' },
-  ];
-
-  categories.forEach((cat) => {
-    lines.push(`- [${cat.name}](https://www.xfree.in${cat.slug})`);
-  });
-
-  lines.push('', '## Pillar Pages');
+  lines.push('', `## Tool Pillars (${pillars.length})`);
 
   pillars.forEach((pillar) => {
-    const pillarName = pillar.slug.replace('pillar-', '').replace(/-/g, ' ');
+    const pillarName = pillar.slug.replace('pillar-', '').replace('authority-', '').replace(/-/g, ' ');
     lines.push(`- [${pillarName}](https://www.xfree.in${pillar.route})`);
   });
 
