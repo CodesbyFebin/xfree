@@ -79,6 +79,9 @@ const CATEGORY_PATTERNS: Record<ToolCategory, string[]> = {
   "converters": ["convert", "encode", "decode", "transform", "compress", "decompress", "format"],
   "generators": ["generate", "create", "build", "make", "uuid", "hash", "random", "nonce"],
   "validators": ["validate", "check", "verify", "test", "is valid", "syntax check"],
+  "security-tools": ["security", "ssl", "certificate", "password", "hash", "encrypt", "decrypt", "vulnerability", "scan"],
+  "media-docs": ["image", "photo", "video", "audio", "pdf", "document", "edit", "compress", "convert"],
+  "business-tools": ["business", "invoice", "contract", "template", "productivity", "collaboration", "project"],
 };
 
 const PRIVACY_KEYWORDS = ["local", "private", "browser", "offline", "client-side", "no send"];
