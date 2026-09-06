@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Orbitron } from 'next/font/google';
+import { AnalyticsWidgets } from '@/components/analytics/Widgets';
 import './globals.css';
 
 const inter = Inter({
@@ -122,6 +123,7 @@ export default function RootLayout({
       </head>
       <body className="bg-cyber-bg text-cyber-text antialiased min-h-screen">
         {children}
+        <AnalyticsWidgets />
       </body>
     </html>
   );
