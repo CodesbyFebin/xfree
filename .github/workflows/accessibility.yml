@@ -1,0 +1,43 @@
+name: Accessibility
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  axe:
+    name: axe-core Accessibility Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browsers and serve dist
+        run: |
+          npx playwright install --with-deps chromium
+          npm install -g serve
+
+      - name: Serve dist directory
+        run: serve -s dist -l 3000 &
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000/health.json
+
+      - name: Run axe-core CLI
+        run: |
+          npx axe http://localhost:3000/ --exit --tags wcag2a,wcag2aa,wcag21a,wcag21aa
+        env:
+          CI: true
