@@ -235,7 +235,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Can it push the extracted URLs straight into a sitemap?", answer: "Yes. Toggle 'Wrap as sitemap' and the tool emits a sitemapindex or urlset XML you can paste into a valid <?xml?> wrapper. For canonical sitemap generation from an authoritative registry, use the dedicated XML Sitemap Generator instead." },
       { question: "Does the input leave my browser?", answer: "No. Extraction runs locally in the browser tab. The site as a whole loads Google AdSense which sets advertising cookies (see the Privacy page), but the pasted text you extract from is never sent to XFree.in or any AI backend." }
     ],
-    relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator"]
+    relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator", "wetransfer-free", "best-free-cloud-storage", "free-vpn"]
   },
   {
     id: "xml-sitemap-generator",
@@ -321,7 +321,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
         answer: "N is the byte offset from the start of the input. The three most common causes are trailing commas, smart quotes copy-pasted from a document, and unescaped newlines inside string values. Look at the exact byte and the character just before it."
       }
     ],
-    relatedToolIds: ["regex-tester", "base64-encoder-decoder"]
+    relatedToolIds: ["regex-tester", "base64-encoder-decoder", "ai-detector", "coding-practice"]
   },
   {
     id: "regex-tester",
@@ -353,7 +353,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "How large a test string can I paste?", answer: "The engine handles millions of characters, but a single catastrophic-backtracking pattern on a long input will still hang. Start with a small representative sample, verify the pattern behaves, then scale up." },
       { question: "Does my input leave the browser?", answer: "No. The regex engine is your browser's built-in RegExp. The site loads Google AdSense which sets cookies (see the Privacy page), but your pattern and test string never go to XFree.in or any AI backend." }
     ],
-    relatedToolIds: ["json-formatter", "cron-expression-generator"]
+    relatedToolIds: ["json-formatter", "cron-expression-generator", "coding-practice", "free-coding-practice-sites"]
   },
   {
     id: "cron-expression-generator",
@@ -417,7 +417,7 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Facebook still shows my old preview after I updated the tags — why?", answer: "Facebook, LinkedIn, and Twitter all cache OG data per URL. Force a refresh in their respective debuggers: Facebook Sharing Debugger, LinkedIn Post Inspector, Twitter Card Validator. The tool itself only generates the markup — it can't invalidate their caches." },
       { question: "Does the tool upload my image?", answer: "No. Everything renders locally, including the SERP and social card previews. The site loads Google AdSense which sets cookies (see the Privacy page), but neither your metadata nor your OG image URL is transmitted to XFree.in." }
     ],
-    relatedToolIds: ["schema-markup-generator", "robots-txt-generator"]
+    relatedToolIds: ["schema-markup-generator", "robots-txt-generator", "free-mobile", "video-downloader"]
   },
   {
     id: "robots-txt-generator",
@@ -588,7 +588,7 @@ The detector supports multiple analysis modes including overall AI probability s
       { question: "Can I use this for student essay verification?", answer: "Yes, educators use our tool to spot-check student submissions. Combine it with other assessment methods for best results. Remember that false positives are possible, especially with short texts under 100 words. Always give students the benefit of the doubt and use detection as one factor among many in your assessment process." },
       { question: "Does it work on translated text?", answer: "Translated text can trigger false positives because translation smoothing algorithms introduce similar patterns to AI generation. Similarly, AI-assisted translation (where AI refines human translation) may be flagged. For translation verification, use the tool as a general indicator rather than definitive proof." }
     ],
-    relatedToolIds: ["text-diff-checker", "json-formatter", "regex-tester"]
+    relatedToolIds: ["pdf-editor", "photo-editor", "convert-jpg-to-pdf-free", "best-free-password-manager", "free-vpn"]
   },
   {
     id: "pdf-editor",
@@ -629,7 +629,7 @@ Privacy is paramount when handling documents. Our PDF editor processes everythin
       { question: "Will my PDF be watermarked?", answer: "No watermarks ever. The PDF you download is identical to what you uploaded, just with your annotations added. We believe in providing genuinely free tools without branding requirements. Your annotated documents belong to you completely." },
       { question: "Is my document secure?", answer: "Absolutely. All processing happens locally in your browser using the PDF.js library. Your file is never uploaded to any server. The moment you close the browser tab, the document is cleared from memory. This makes our editor safe for confidential documents, protected health information (PHI), or any sensitive content." }
     ],
-    relatedToolIds: ["jpg-to-pdf-converter", "text-diff-checker", "meta-tag-generator"]
+    relatedToolIds: ["jpg-to-pdf", "photo-editor", "convert-jpg-to-pdf-free", "wetransfer-free", "canva-free"]
   },
   {
     id: "video-downloader",
@@ -670,7 +670,7 @@ This approach also means unlimited downloads with no daily caps or waiting perio
       { question: "The tool says no videos found — why?", answer: "This happens when a platform uses non-standard streaming protocols, protected content (DRM), geo-restricted videos, or has changed their video page structure recently. Our tool analyzes page HTML and available endpoints — some platforms use proprietary players that don't expose downloadable content." },
       { question: "Can I download entire playlists?", answer: "Individual video URLs are supported. Playlist downloading requires iterating through each video's available formats, which is more complex and time-consuming. Our tool focuses on single video URL analysis to keep the service fast and reliable for all users." }
     ],
-    relatedToolIds: ["bulk-url-extractor", "meta-tag-generator", "ai-detector-free"]
+    relatedToolIds: ["ai-detector", "meta-tag-generator", "bulk-url-extractor", "free-online-games", "free-mobile"]
   },
   {
     id: "photo-editor",
@@ -713,7 +713,7 @@ When you're satisfied with your edits, download your photo in JPG, PNG, or WebP 
       { question: "Do edits affect original image quality?", answer: "Edits are non-destructive until you export. The original image data is preserved, so you can always undo changes or start over. When you download, the exported file reflects your current edits at the quality you specify. Repeated save/export cycles can accumulate quality loss in JPG format, but PNG export maintains full quality." },
       { question: "Can I remove backgrounds or unwanted objects?", answer: "Basic background removal isn't currently supported — that requires more advanced AI-based tools. However, you can crop the image to remove unwanted edges, adjust colors to de-emphasize elements, or use blur effects on specific areas. For professional background removal, consider dedicated tools like remove.bg." }
     ],
-    relatedToolIds: ["jpg-to-pdf-converter", "pdf-editor", "text-diff-checker"]
+    relatedToolIds: ["jpg-to-pdf", "pdf-editor", "canva-free", "convert-jpg-to-pdf-free", "ai-detector"]
   },
   {
     id: "jpg-to-pdf",
@@ -756,7 +756,7 @@ Unlike paid conversion services that impose daily limits, add watermarks, or req
       { question: "Will the PDF work on all devices?", answer: "The generated PDF uses standard ISO PDF 1.4 specification that's universally supported. It opens in Adobe Acrobat, Apple Preview, Google Drive viewer, Microsoft Edge, web browsers, mobile PDF apps, and virtually any other PDF reader on Windows, Mac, Linux, iOS, and Android." },
       { question: "Can I set custom page sizes?", answer: "Yes, the converter lets you choose from standard sizes including Letter (8.5x11 inches), A4, Legal, and custom dimensions. You can also set margins and choose whether images should fit within the page boundaries or overflow onto multiple pages for large photos." }
     ],
-    relatedToolIds: ["pdf-editor", "photo-editor", "bulk-url-extractor"]
+    relatedToolIds: ["pdf-editor", "photo-editor", "wetransfer-free", "best-free-cloud-storage", "free-online-games"]
   },
   {
     id: "password-generator",
@@ -799,7 +799,7 @@ The tool also provides practical advice for password management including recomm
       { question: "How does two-factor authentication (2FA) improve security?", answer: "2FA adds a second verification step — typically a code from your phone or a hardware key — that attackers can't bypass without stealing your physical device. Even if your password is compromised through a breach or phishing, 2FA prevents unauthorized access in most cases. We strongly recommend enabling 2FA on any service that offers it, especially email, banking, and social media." },
       { question: "Why do you recommend password managers?", answer: "Humans can only remember a handful of complex passwords before resorting to reuse or simple patterns. Password managers solve this by storing encrypted vaults that remember hundreds of unique complex passwords for you. The master password is the only one you need to remember. Popular options include Bitwarden (free and open source), 1Password, and Dashlane. Browser-built password managers work but may not sync across devices or offer the same security features." }
     ],
-    relatedToolIds: ["base64-encoder-decoder", "ai-detector-free", "schema-markup-generator"]
+    relatedToolIds: ["vpn-guide", "ai-detector", "free-vpn", "coding-practice", "best-free-cloud-storage"]
   },
   {
     id: "coding-practice",
@@ -842,7 +842,7 @@ Community features let you share solutions after completing exercises, compare a
       { question: "How are solutions verified?", answer: "Each exercise has a set of test cases — input values paired with expected correct outputs. Your code receives the same inputs, and its outputs are compared against expected values. All tests must pass for the exercise to be marked complete. Test cases include typical scenarios as well as edge cases that catch incomplete solutions. The specific inputs aren't revealed before you submit, preventing solutions tuned to the tests rather than the problem." },
       { question: "Can I save my progress without an account?", answer: "Yes! Progress is stored in your browser's local storage, so it persists across sessions on the same device without requiring any account creation. However, local storage is device-specific — you won't see your progress if accessing from a different computer, browser, or after clearing browser data. Creating a free account (email only, no verification required) enables cross-device sync." }
     ],
-    relatedToolIds: ["regex-tester", "json-formatter", "base64-encoder-decoder"]
+    relatedToolIds: ["regex-tester", "json-formatter", "mobile-tester", "ai-detector", "free-online-games"]
   },
   {
     id: "cloud-storage-guide",
@@ -883,7 +883,7 @@ Practical guidance covers strategies that maximize free storage: combining multi
       { question: "Can I access files offline?", answer: "Most services offer desktop applications that create local sync folders — any files you mark for offline access download automatically and remain available without internet. Mobile apps typically cache recently accessed files. However, truly offline-first services like Dropbox Paper or Notion have robust offline support because their core use case assumes intermittent connectivity. Check specific app settings to configure offline availability." },
       { question: "How do referral programs work?", answer: "Many services reward you with additional free storage when you invite friends. Dropbox gives 500MB per successful referral (both parties get bonus). Google Drive doesn't have referrals anymore but education accounts often get unlimited storage. pCloud offers lifetime storage upgrades for referral milestones. Our comparison guide includes current referral bonus structures for all major services." }
     ],
-    relatedToolIds: ["bulk-url-extractor", "meta-tag-generator", "pdf-editor"]
+    relatedToolIds: ["wetransfer-free", "pdf-editor", "canva-free", "vpn-guide", "free-mobile"]
   },
   {
     id: "mobile-tester",
@@ -926,7 +926,7 @@ The tool respects your privacy — no tracking pixels, no usage analytics, no ac
       { question: "What mobile audit checks are performed?", answer: "Automated checks include: viewport meta tag presence and configuration, tap target size analysis (flagging targets under 44x44px), font size verification (body text should be at least 16px), color contrast checking for accessibility compliance, viewport overflow detection to catch horizontal scroll issues, and identification of content trapped behind fixed headers or overlapping elements." },
       { question: "Can I test protected or login-gated pages?", answer: "You can test pages behind authentication by first logging into the site in a browser where you have access, then copying cookies or session storage into our simulator. Alternatively, enter the URL after authentication is complete and the simulator will inherit your logged-in session state. This lets you test member areas, dashboards, and other restricted content without workarounds." }
     ],
-    relatedToolIds: ["meta-tag-generator", "regex-tester", "json-formatter"]
+    relatedToolIds: ["meta-tag-generator", "regex-tester", "json-formatter", "ai-detector", "coding-practice"]
   },
   {
     id: "online-games",
@@ -967,7 +967,7 @@ Privacy-conscious users appreciate that our games track nothing externally. Scor
       { question: "Why do my scores sometimes differ between devices?", answer: "Scores are stored only in local storage on each specific device and browser. If you play on your work computer and then switch to your phone, they have separate local storage that doesn't sync. There's no cloud account to unify progress. This privacy-preserving approach means your gaming history stays private to each device but also means no cross-device continuity unless you use the same device and browser." },
       { question: "Can I suggest new games to add?", answer: "We welcome suggestions! While we can't guarantee implementation of specific requests, popular demand influences which games we develop next. Focus on games that are simple to explain, work in browsers without plugins, and provide engaging short-session gameplay. Classic arcade concepts, word puzzles, and reaction-based challenges translate well to browser environments. Avoid games requiring persistent servers, real-time multiplayer, or complex 3D graphics that exceed browser capabilities." }
     ],
-    relatedToolIds: ["coding-practice", "password-generator", "meta-tag-generator"]
+    relatedToolIds: ["coding-practice", "password-generator", "ai-detector", "free-mobile", "free-vpn"]
   },
   {
     id: "vpn-guide",
@@ -1008,7 +1008,7 @@ The guide includes a decision framework for evaluating whether you actually need
       { question: "Is using a VPN legal?", answer: "VPNs are legal in most countries including the US, UK, Canada, EU members, Australia, and Japan. However, some countries restrict or ban VPN usage: China, Russia, Iran, UAE, Turkey, and others require government-approved VPN services. Using unauthorized VPNs in these countries can result in fines or worse. Additionally, while VPN usage itself may be legal, activities conducted through VPNs remain subject to the same laws as without — VPNs don't make illegal activities permissible." },
       { question: "What's the difference between VPN protocols?", answer: "OpenVPN is the long-standing open-source standard with strong security and broad compatibility but moderate speed. WireGuard is newer, dramatically faster with simpler code (easier to audit), and gaining rapid adoption. IKEv2 is fast and stable, especially on mobile when switching networks. PPTP is obsolete and insecure — avoid it entirely. Most quality providers let you choose between protocols; WireGuard generally offers the best balance of security and performance for most users." }
     ],
-    relatedToolIds: ["password-generator", "base64-encoder-decoder", "ai-detector-free"]
+    relatedToolIds: ["password-generator", "best-free-cloud-storage", "ai-detector", "free-online-games", "free-vpn"]
   },
   {
     id: "wetransfer-alternative",
@@ -1049,7 +1049,7 @@ Practical tips include strategies to maximize free tiers: using browser-based se
       { question: "Can I send files to multiple recipients for free?", answer: "Most free services are one-to-one: one sender, one receiver. Services like WeTransfer's free tier support one email address per transfer. Multi-recipient sharing typically requires paid plans. Workarounds include compressing multiple files into an archive and uploading once, using cloud storage links with sharing permissions (Google Drive, OneDrive), or using collaboration-focused services like Dropbox Paper or Notion that support file attachments." },
       { question: "What happens to my files after expiration?", answer: "On server-based services, files are typically deleted from storage when they expire. However, there's no guarantee about backups or logging retention — some services may have copies in backups for legal compliance. Peer-to-peer services leave no server traces but also provide no retrieval if the recipient misses the window. For archival needs, use dedicated cloud storage services rather than temporary transfer services." }
     ],
-    relatedToolIds: ["bulk-url-extractor", "pdf-editor", "cloud-storage-guide"]
+    relatedToolIds: ["bulk-url-extractor", "pdf-editor", "cloud-storage-guide", "convert-jpg-to-pdf-free", "free-online-games"]
   },
   {
     id: "canva-alternative",
@@ -1090,7 +1090,7 @@ Privacy analysis matters when designing company logos, branded materials, or any
       { question: "What about Canva vs professional tools like Photoshop?", answer: "Photoshop costs significantly more but offers vastly superior capabilities for photo editing, digital painting, and print production. For simple social media graphics, presentations, and basic layouts, Canva and its alternatives are more efficient. The question isn't which is 'best' absolutely, but which matches your actual needs — paying for Photoshop to make Instagram posts is overkill, but trying to do professional photo retouching in Canva is frustrating limitation." },
       { question: "Are there good free options for presentations?", answer: "Yes, several strong options exist. Google Slides (free with Google account) offers solid presentation creation with real-time collaboration. LibreOffice Impress (completely free, downloadable) provides traditional presentation software without subscription. For browser-based simplicity, Canva has presentation templates, though export quality may be limited on free tiers. Zoho Show offers surprisingly capable free tier with collaboration features." }
     ],
-    relatedToolIds: ["photo-editor", "pdf-editor", "cloud-storage-guide"]
+    relatedToolIds: ["photo-editor", "pdf-editor", "cloud-storage-guide", "convert-jpg-to-pdf-free", "wetransfer-free"]
   }
 ];
 
