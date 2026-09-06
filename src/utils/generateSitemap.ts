@@ -207,6 +207,11 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = cleanOrigin(baseUrl);
   let text = `# XFree.in — Free Developer, SEO & AI Micro-Tools\n\n`;
   text += `> XFree.in publishes focused browser-based developer utilities, technical SEO tools, formatters, converters, and clearly disclosed AI assistants.\n\n`;
+  text += `## Meta\n`;
+  text += `- Version: 1.0.0\n`;
+  text += `- Last Updated: ${new Date().toISOString().split("T")[0]}\n`;
+  text += `- Capability Schema: ${cleanBase}/capabilities.json\n`;
+  text += `- Full Corpus: ${cleanBase}/llms-full.txt\n\n`;
   text += `## Primary Sections\n\n`;
   text += `- [Home](${cleanBase}/): Search and browse the published tool directory.\n`;
   text += `- [Guides](${cleanBase}/guides): Reviewed documentation connected to published tools.\n`;
@@ -264,5 +269,59 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
 
 export function generateRobotsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = cleanOrigin(baseUrl);
-  return `# XFree.in crawl policy\nUser-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\n# Search and answer-engine crawlers\nUser-agent: Googlebot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: Bingbot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: ChatGPT-User\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\nUser-agent: PerplexityBot\nAllow: /\nDisallow: /api/\nDisallow: /_app-shell\n\n# Canonical discovery entry point\nSitemap: ${cleanBase}/sitemap-index.xml\n`;
+  return `# XFree.in crawl policy
+# 10/10 standard for Search, Answer, and Generative Engine Optimization
+
+User-agent: *
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 1
+
+# Search and answer-engine crawlers
+User-agent: Googlebot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+# Canonical discovery entry point
+Sitemap: ${cleanBase}/sitemap-index.xml
+`;
 }

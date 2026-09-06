@@ -2,6 +2,12 @@
 
 > XFree.in publishes focused browser-based developer utilities, technical SEO tools, formatters, converters, and clearly disclosed AI assistants.
 
+## Meta
+- Version: 1.0.0
+- Last Updated: 2026-09-06
+- Capability Schema: https://www.xfree.in/capabilities.json
+- Full Corpus: https://www.xfree.in/llms-full.txt
+
 ## Primary Sections
 
 - [Home](https://www.xfree.in/): Search and browse the published tool directory.

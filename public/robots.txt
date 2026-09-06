@@ -1,34 +1,54 @@
 # XFree.in crawl policy
+# 10/10 standard for Search, Answer, and Generative Engine Optimization
+
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Crawl-delay: 1
 
 # Search and answer-engine crawlers
 User-agent: Googlebot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Crawl-delay: 0
 
 User-agent: Bingbot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Crawl-delay: 0
 
 User-agent: OAI-SearchBot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Crawl-delay: 0
 
 User-agent: ChatGPT-User
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Crawl-delay: 0
 
 User-agent: PerplexityBot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Crawl-delay: 0
 
 # Canonical discovery entry point
 Sitemap: https://www.xfree.in/sitemap-index.xml

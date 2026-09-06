@@ -19,7 +19,6 @@ import {
 } from "./schemas";
 import { deliverMessage } from "./delivery";
 import { securityHeadersMiddleware } from "../middleware/security-headers";
-import { canonicalDomainMiddleware } from "../middleware/canonical-domain";
 import {
   generateSitemapXml,
   generateRssXml,
@@ -48,11 +47,6 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
 
   app.set("trust proxy", config.TRUST_PROXY);
   app.disable("x-powered-by");
-
-  // Canonical domain redirects (apex -> www, /studio -> app) and internal
-  // shell protection. Must run before any other route or middleware that
-  // inspects req.url so redirects happen on the very first request.
-  app.use(canonicalDomainMiddleware);
 
   app.use((req, _res, next) => {
     (req as any).requestId = crypto.randomUUID();
