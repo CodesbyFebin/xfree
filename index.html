@@ -97,6 +97,8 @@ tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','syst
 </script>
 
 <style>
+html.js #static-shell{display:none}#root{position:fixed;top:0;left:0;width:100%;height:100vh;overflow-y:auto;z-index:100;background:#050508}.mobile-menu{display:none}.mobile-overlay{display:none}
+
 *{scrollbar-width:thin;scrollbar-color:#1a1a2e #050508}
 *::-webkit-scrollbar{width:5px;height:5px}
 *::-webkit-scrollbar-track{background:#050508}
@@ -381,6 +383,11 @@ details[open]{background:#0d0d14;border-color:rgba(0,255,65,.3)}
 </script>
 </head>
 <body class="bg-cyber-bg text-cyber-text antialiased">
+
+<!-- React root — Vite SPA mounts here, overlaying static shell when JS is active -->
+<script>document.documentElement.classList.add('js')</script>
+<div id="root"></div>
+<div id="static-shell">
 
 <!-- OVERLAYS -->
 <div class="scanlines" aria-hidden="true"></div>
@@ -848,6 +855,10 @@ details[open]{background:#0d0d14;border-color:rgba(0,255,65,.3)}
 
 })();
 </script>
+</div>
+
+<!-- Vite React entry point -->
+<script type="module" src="/src/main.tsx"></script>
 
 </body>
 </html>
