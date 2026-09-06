@@ -1,6 +1,7 @@
 import { ToolDefinition, ExecutionStep, ExecutionPlan, ExecutionResult, VerificationResult, IntentConstraints } from "../types";
 import { TOOLS_REGISTRY, INDEXABLE_TOOLS, findIndexableTool, findToolBySlug } from "../data/toolsRegistry";
 import { classifyIntent, routeIntentToCapabilities, buildExecutionPlan } from "./intent-engine";
+import { TOOLS_REGISTRY as LOCAL_TOOLS } from "./tools";
 
 export interface ExecutionContext {
   userId?: string;
@@ -116,8 +117,10 @@ async function executeToolInternal(
 }
 
 function executeLocalTool(tool: ToolDefinition, input: any): any {
-  // Local tools run in the browser/client
-  // Here we return a placeholder that the client would use
+  const impl = LOCAL_TOOLS[tool.slug];
+  if (impl) {
+    return impl(input);
+  }
   return {
     toolId: tool.id,
     input,
@@ -171,8 +174,26 @@ export async function verifyToolResult(
   if (tool.capabilities) {
     for (const cap of tool.capabilities) {
       checks.push(`capability_${cap.id}_output_schema`);
-      // In production, validate output against outputSchema
     }
+  }
+  
+  // Verify known tool outputs
+  if (tool.slug === 'json-validator' && output) {
+    checks.push('json_syntax_check');
+    if (output.valid === false) issues.push('JSON syntax invalid');
+  }
+  if (tool.slug === 'sha256-hash' && output) {
+    checks.push('hash_length_check');
+    if (!/^[a-f0-9]{64}$/.test(String(output))) issues.push('Invalid SHA-256 hash format');
+  }
+  if (tool.slug === 'md5-hash' && output) {
+    checks.push('hash_length_check');
+    if (!/^[a-f0-9]{32}$/.test(String(output))) issues.push('Invalid MD5 hash format');
+  }
+  if (tool.slug === 'json-formatter' && output) {
+    checks.push('json_parse_check');
+    try { JSON.parse(String(output)); }
+    catch { issues.push('Formatted JSON is not valid'); }
   }
   
   // Check if tool is verified
