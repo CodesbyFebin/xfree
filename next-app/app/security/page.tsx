@@ -72,7 +72,7 @@ export default function SecurityPage() {
             <p className="text-cyber-muted text-sm">
               For AI-powered features, input data is transmitted to our AI backend. 
               These tools are clearly marked with privacy notices. Data is processed 
-              according to our AI provider's security practices and is not stored 
+              according to our AI provider&apos;s security practices and is not stored 
               after processing.
             </p>
           </div>

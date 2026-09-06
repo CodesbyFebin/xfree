@@ -166,7 +166,7 @@
   }
 
   .sticky-nav {
-    @apply transition-all duration-250;
+    @apply transition-all duration-200;
   }
 
   .sticky-nav.scrolled {

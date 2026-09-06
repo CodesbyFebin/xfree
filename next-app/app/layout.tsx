@@ -65,12 +65,10 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    maxImagePreview: 'large',
-    maxSnippet: -1,
-  },
-  googleBot: {
-    index: true,
-    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
   openGraph: {
     type: 'website',
@@ -98,15 +96,9 @@ export const metadata: Metadata = {
     description: 'XFree is the ultimate free online app for developers. Privacy-first tools. 100% client-side, no signup.',
     images: ['/og-image.png'],
   },
-  geo: {
-    region: 'IN',
-    placename: 'India',
-  },
   verification: {
     google: 'google-site-verification-code',
   },
-  aiContentFormat: 'markdown',
-  aiIndex: 'yes',
 };
 
 export default function RootLayout({

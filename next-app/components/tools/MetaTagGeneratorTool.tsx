@@ -154,7 +154,7 @@ export function MetaTagGeneratorTool() {
           <a href="https://socialsharepreview.com" target="_blank" rel="noopener noreferrer" className="text-cyber-glow hover:underline">
             socialsharepreview.com
           </a>{" "}
-          or Twitter's{" "}
+          or Twitter&apos;s{" "}
           <a href="https://cards-dev.twitter.com/validator" target="_blank" rel="noopener noreferrer" className="text-cyber-glow hover:underline">
             Card Validator
           </a>

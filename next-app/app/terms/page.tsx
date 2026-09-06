@@ -50,7 +50,7 @@ export default function TermsPage() {
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white">Disclaimer</h2>
               <p>
-                XFree.in provides tools "as is" without warranties. While we strive for accuracy, 
+                XFree.in provides tools &quot;as is&quot; without warranties. While we strive for accuracy, 
                 we do not guarantee error-free operation. Users should verify results for critical applications.
               </p>
             </section>

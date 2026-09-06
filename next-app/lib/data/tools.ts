@@ -1,16 +1,16 @@
 import { ToolDefinition } from '@/types';
 
 export const CATEGORIES = [
-  { id: 'seo-tools', label: 'SEO & URL Tools', slug: 'seo-url-tools', icon: '🌐' },
-  { id: 'developer-tools', label: 'Developer Tools', slug: 'developer-tools', icon: '⚡' },
-  { id: 'ai-tools', label: 'Single-Purpose AI Tools', slug: 'ai-tools', icon: '🧠' },
-  { id: 'text-tools', label: 'Text & Diff Tools', slug: 'text-tools', icon: '📝' },
-  { id: 'converters', label: 'Converters & Encoders', slug: 'converters', icon: '🔄' },
-  { id: 'generators', label: 'Generators', slug: 'generators', icon: '🎲' },
-  { id: 'validators', label: 'Validators', slug: 'validators', icon: '✓' },
-  { id: 'security-tools', label: 'Security & Privacy Tools', slug: 'security-tools', icon: '🔒' },
-  { id: 'media-docs', label: 'Media & Documents Tools', slug: 'media-docs', icon: '📁' },
-  { id: 'business-tools', label: 'Business & Productivity Tools', slug: 'business-tools', icon: '💼' },
+  { id: 'seo-tools', label: 'SEO & URL Tools', slug: 'seo-url-tools', icon: '🌐', description: 'Sitemaps, meta tags, schema, crawl, URL tools' },
+  { id: 'developer-tools', label: 'Developer Tools', slug: 'developer-tools', icon: '⚡', description: 'Formatters, validators, debuggers, regex, encoding' },
+  { id: 'ai-tools', label: 'Single-Purpose AI Tools', slug: 'ai-tools', icon: '🧠', description: 'Prompt tools, token counters, LLM utilities' },
+  { id: 'text-tools', label: 'Text & Diff Tools', slug: 'text-tools', icon: '📝', description: 'Word count, diff, case conversion' },
+  { id: 'converters', label: 'Converters & Encoders', slug: 'converters', icon: '🔄', description: 'JSON, CSV, Base64, YAML converters' },
+  { id: 'generators', label: 'Generators', slug: 'generators', icon: '🎲', description: 'UUID, QR, password, cron generators' },
+  { id: 'validators', label: 'Validators', slug: 'validators', icon: '✓', description: 'JSON Schema, HTML, CSS validators' },
+  { id: 'security-tools', label: 'Security & Privacy Tools', slug: 'security-tools', icon: '🔒', description: 'Hash, encrypt, JWT, HMAC tools' },
+  { id: 'media-docs', label: 'Media & Documents Tools', slug: 'media-docs', icon: '📁', description: 'Image, video, PDF, document utilities' },
+  { id: 'business-tools', label: 'Business & Productivity Tools', slug: 'business-tools', icon: '💼', description: 'Finance, marketing, productivity tools' },
 ] as const;
 
 export const TOOLS: ToolDefinition[] = [

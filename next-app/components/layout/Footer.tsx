@@ -40,7 +40,7 @@ export function Footer() {
           <nav aria-label="XFree footer navigation" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 xl:grid-cols-6">
             <section aria-labelledby="footer-categories">
               <h2 id="footer-categories" className="text-sm font-semibold text-cyber-glow font-mono">
-                // Categories
+                {'// Categories'}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
@@ -68,7 +68,7 @@ export function Footer() {
 
             <section aria-labelledby="footer-popular">
               <h2 id="footer-popular" className="text-sm font-semibold text-cyber-cyan font-mono">
-                // Popular
+                {'// Popular'}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 {FOOTER_TOOLS.map((tool) => (
@@ -86,7 +86,7 @@ export function Footer() {
 
             <section aria-labelledby="footer-pillars">
               <h2 id="footer-pillars" className="text-sm font-semibold text-cyber-magenta font-mono">
-                // Tool Hubs
+                {'// Tool Hubs'}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
@@ -109,7 +109,7 @@ export function Footer() {
 
             <section aria-labelledby="footer-resources">
               <h2 id="footer-resources" className="text-sm font-semibold text-cyber-amber font-mono">
-                // Resources
+                {'// Resources'}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
@@ -132,7 +132,7 @@ export function Footer() {
 
             <section aria-labelledby="footer-legal">
               <h2 id="footer-legal" className="text-sm font-semibold text-white font-mono">
-                // Company
+                {'// Company'}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>

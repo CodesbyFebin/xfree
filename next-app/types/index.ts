@@ -31,6 +31,7 @@ export interface PillarDefinition {
   color: string;
   category: string;
   toolCount?: number;
+  keywords?: string[];
 }
 
 export interface ClusterDefinition {

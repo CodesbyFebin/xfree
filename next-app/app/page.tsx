@@ -50,7 +50,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-lg sm:text-xl text-cyber-cyan font-mono mb-2">
-              // Get X Done for Free — Fast, Private, No Sign-Up
+              {'// Get X Done for Free — Fast, Private, No Sign-Up'}
             </p>
 
             <p className="text-base text-cyber-muted max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -148,7 +148,7 @@ export default function HomePage() {
                   <span className="text-cyber-glow">$</span> Featured XFree Tools
                 </h2>
                 <p className="text-sm text-cyber-muted mt-1 font-mono">
-                  // Working tools available now
+                  {'// Working tools available now'}
                 </p>
               </div>
               <Link
@@ -201,7 +201,7 @@ export default function HomePage() {
                 <span className="text-cyber-glow">ls</span> XFree Tool Categories
               </h2>
               <p className="text-cyber-muted font-mono text-sm">
-                // Find the right XFree tool in the right category.
+                {'// Find the right XFree tool in the right category.'}
               </p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -218,8 +218,8 @@ export default function HomePage() {
                     {cat.label}
                   </h3>
                   <p className="text-[11px] text-cyber-muted mt-1">
-                    {cat.slug === 'dev-tools' && 'Formatters, validators, debuggers'}
-                    {cat.slug === 'seo-tools' && 'Sitemaps, meta tags, schema'}
+                    {cat.slug === 'developer-tools' && 'Formatters, validators, debuggers'}
+                    {cat.slug === 'seo-url-tools' && 'Sitemaps, meta tags, schema'}
                     {cat.slug === 'ai-tools' && 'Prompt tools, token counters'}
                     {cat.slug === 'text-tools' && 'Word count, diff, case convert'}
                     {cat.slug === 'converters' && 'JSON, CSV, Base64, YAML'}
@@ -238,7 +238,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-block px-3 py-1 rounded border border-cyber-cyan/30 bg-cyber-cyan/5 text-cyber-cyan text-xs font-mono mb-4 neon-box-cyan">
-                // XFree Knowledge Graph
+                {'// XFree Knowledge Graph'}
               </span>
               <h2 id="pillars-heading" className="text-3xl font-black text-white mb-3 font-mono">
                 The XFree Tool Directory: <span className="text-cyber-glow">{PILLARS.length}</span>{' '}
@@ -300,7 +300,7 @@ export default function HomePage() {
               Ready to Get <span className="text-cyber-glow neon-green">X</span> Done with XFree?
             </h2>
             <p className="text-cyber-muted mb-8 max-w-lg mx-auto font-mono text-sm">
-              // Fast, privacy-first browser micro-tools for developers, SEO professionals,
+              {'// Fast, privacy-first browser micro-tools for developers, SEO professionals,'}
               creators, and AI builders. No sign-up required.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

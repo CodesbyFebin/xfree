@@ -40,7 +40,7 @@ export default function XFreeAppPage() {
               <ol className="list-decimal list-inside space-y-2 text-cyber-muted text-sm">
                 <li>Open XFree in Chrome, Edge, or Firefox</li>
                 <li>Click the install icon in the address bar</li>
-                <li>Or click the menu → "Install XFree"</li>
+                <li>Or click the menu → &quot;Install XFree&quot;</li>
               </ol>
             </div>
 
@@ -49,7 +49,7 @@ export default function XFreeAppPage() {
               <ol className="list-decimal list-inside space-y-2 text-cyber-muted text-sm">
                 <li>Open XFree in Safari or Chrome</li>
                 <li>Tap the Share button</li>
-                <li>Select "Add to Home Screen"</li>
+                <li>Select &quot;Add to Home Screen&quot;</li>
               </ol>
             </div>
           </div>
