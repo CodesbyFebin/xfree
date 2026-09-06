@@ -5,34 +5,34 @@ import { useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
   {
-    label: 'XFree Dev & Data',
-    href: '/categories/dev-tools',
+    label: 'Tools',
+    href: '/pillars',
     children: [
+      { label: 'All Pillars', href: '/pillars' },
       { label: 'Developer Tools', href: '/categories/dev-tools' },
-      { label: 'JSON & Data Tools', href: '/categories/json-data-tools' },
-      { label: 'Code Formatting', href: '/categories/code-formatting' },
-      { label: 'API Tools', href: '/categories/api-tools' },
-      { label: 'Regex Tools', href: '/categories/regex-tools' },
-    ],
-  },
-  {
-    label: 'XFree Web & SEO',
-    href: '/categories/seo-tools',
-    children: [
       { label: 'SEO Tools', href: '/categories/seo-tools' },
-      { label: 'Schema Tools', href: '/categories/schema-tools' },
-      { label: 'Meta Tag Generator', href: '/tools/meta-tag-generator' },
-      { label: 'Sitemap Generator', href: '/tools/xml-sitemap-generator' },
+      { label: 'AI Tools', href: '/categories/ai-tools' },
+      { label: 'Security Tools', href: '/categories/security-tools' },
     ],
   },
   {
-    label: 'XFree Security',
-    href: '/categories/security-tools',
+    label: 'Resources',
+    href: '/guides',
     children: [
-      { label: 'Security Tools', href: '/categories/security-tools' },
-      { label: 'JWT Decoder', href: '/tools/jwt-decoder' },
-      { label: 'Hash Generator', href: '/tools/hash-generator' },
-      { label: 'Password Generator', href: '/tools/password-generator' },
+      { label: 'All Guides', href: '/guides' },
+      { label: 'FAQ', href: '/faq' },
+      { label: 'How It Works', href: '/how-it-works' },
+      { label: 'Use Cases', href: '/use-cases' },
+    ],
+  },
+  {
+    label: 'About',
+    href: '/about',
+    children: [
+      { label: 'About XFree', href: '/about' },
+      { label: 'Security', href: '/security' },
+      { label: 'Roadmap', href: '/roadmap' },
+      { label: 'XFree App', href: '/xfree-app' },
     ],
   },
 ];
@@ -70,7 +70,7 @@ export function Header() {
               XFree<span className="text-cyber-glow">.in</span>
             </span>
             <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-2">
-              // XFree App · Free Developer Tools
+              Free Developer Tools
             </span>
           </div>
         </Link>
@@ -99,20 +99,19 @@ export function Header() {
             </div>
           ))}
           <Link
-            href="/pillars"
+            href="/contact"
             className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all"
           >
-            Pillars
+            Contact
           </Link>
         </nav>
 
         <div className="flex items-center gap-3">
           <Link
-            href="https://app.xfree.in/"
+            href="/pillars"
             className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded"
-            rel="noopener"
           >
-            <span>Launch Studio →</span>
+            <span>All Tools</span>
           </Link>
         </div>
       </div>
