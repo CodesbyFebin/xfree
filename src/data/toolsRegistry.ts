@@ -141,7 +141,10 @@ const CATEGORY_LABEL_MAP: Record<string, string> = {
   "text-tools": "Text & Diff Tools",
   "converters": "Converters & Encoders",
   "generators": "Generators",
-  "validators": "Validators"
+  "validators": "Validators",
+  "security-tools": "Security & Privacy Tools",
+  "media-docs": "Media & Documents Tools",
+  "business-tools": "Business & Productivity Tools",
 };
 
 const CATEGORY_ICON_MAP: Record<string, string> = {
@@ -151,7 +154,10 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   "text-tools": "FileText",
   "converters": "ArrowLeftRight",
   "generators": "Wand2",
-  "validators": "CheckCircle2"
+  "validators": "CheckCircle2",
+  "security-tools": "Shield",
+  "media-docs": "Image",
+  "business-tools": "Briefcase",
 };
 
 // Map seed entries into ToolDefinition objects.

@@ -5,7 +5,10 @@ export type ToolCategory =
   | "text-tools"
   | "converters"
   | "generators"
-  | "validators";
+  | "validators"
+  | "security-tools"
+  | "media-docs"
+  | "business-tools";
 
 export type ToolExecutionMode = "local" | "ai" | "workflow";
 export type ToolStatus = "published" | "draft" | "roadmap" | "retired";
