@@ -22,3 +22,7 @@ export function getPublishedToolsForPillar(pillarSlug: string): typeof INDEXABLE
     return toolTags.includes(pillarSlug) || tool.category === pillarSlug;
   });
 }
+
+export const INDEXABLE_PILLARS = PILLARS_60.filter(
+  (p) => p.indexable === true && p.contentApproved === true,
+);

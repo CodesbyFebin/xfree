@@ -24,7 +24,7 @@ export interface PillarDefinition {
   name: string;
   tagline: string;
   description: string;
-  fullDescription: string;
+  fullDescription?: string;
   icon: string;
   emoji: string;
   category: PillarCategory;

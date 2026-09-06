@@ -455,6 +455,12 @@ export function serveMinimalFallback() {
   };
 }
 
+export function fallbackStatusForToolStatus(status?: string): number {
+  if (!status || status === "draft" || status === "roadmap") return 404;
+  if (status === "retired") return 410;
+  return 200;
+}
+
 export function serveStaticFallback(distPath: string) {
   return async function attach(app: Express) {
     app.use(express.static(distPath, {

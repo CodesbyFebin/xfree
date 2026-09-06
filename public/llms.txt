@@ -1,39 +1,100 @@
-# XFree.in — Free Online Developer, SEO, AI & Converter Micro-Tools Suite
+# XFree.in — Free Developer, SEO & AI Micro-Tools
 
-> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with browser-based execution for local tools.
+> XFree.in publishes focused browser-based developer utilities, technical SEO tools, formatters, converters, and clearly disclosed AI assistants.
 
-## Primary Sections & Hubs
+## Primary Sections
 
-- [Home Page](https://www.xfree.in/): Complete registry search and grid view of indexable micro-tools.
-- [100 Keyword Clusters Hub](https://www.xfree.in/clusters): Programmatic SEO directory mapping 100 search intent clusters and supporting keywords.
-- [Gemini Deep Thinking Mode](https://www.xfree.in/api/ai/thinking): Server-side high-reasoning Gemini 3.1 Pro endpoint for complex SQL, Regex, and SEO architectural analysis.
+- [Home](https://www.xfree.in/): Search and browse the published tool directory.
+- [Guides](https://www.xfree.in/guides): Reviewed documentation connected to published tools.
+- [How It Works](https://www.xfree.in/how-it-works): Processing modes, browser execution, and optional cloud handoffs.
+- [Pillars](https://www.xfree.in/pillars): 50 developer and SEO topic pillars; only pillars backed by published tools enter the sitemap.
+- [Roadmap](https://www.xfree.in/roadmap): 600 planned concepts on a noindex discovery page; this is not a count of live tools.
+- [Contribute](https://www.xfree.in/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.
+- [InstaServer](https://www.xfree.in/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.
+- [JSON Tools](https://www.xfree.in/json-tools): Hub of 18 free browser-based JSON tools — format, validate, minify, convert, sort, and inspect.
+- [OpenAPI](https://www.xfree.in/openapi.json): Machine-readable description of the public XFree API surface.
 
 ## Categories
 
-- [SEO & URL Tools](https://www.xfree.in/category/seo-tools): Bulk extraction, XML sitemaps, Meta OpenGraph previews, Robots.txt, and Schema markup
-- [Developer Tools](https://www.xfree.in/category/developer-tools): Format, validate, diff, and convert JSON, XML, YAML, Regex, Cron, JWT, and SQL
-- [Single-Purpose AI Tools](https://www.xfree.in/category/ai-tools): Narrow, deterministic AI assistants for Regex, SQL, JSON Repair, SEO Meta, and Commit Messages
-- [Text & Diff Tools](https://www.xfree.in/category/text-tools): Text diffing, line sorting, word count, slugifier, and regex replacements
-- [Converters & Encoders](https://www.xfree.in/category/converters): Base64, URL encoding, Unix Timestamps, Color space conversion, and CSS units
-- [Generators](https://www.xfree.in/category/generators): UUID v4, Cron schedules, Hash generation (SHA-256/MD5), and UTM campaign links
-- [Validators](https://www.xfree.in/category/validators): JSON, XML, Sitemap, Schema.org, and Robots.txt rule validators
+- [Developer & Data Tools](https://www.xfree.in/dev-data): Formatters, validators, debuggers, regex, encoding, converters
+- [Web & SEO Tools](https://www.xfree.in/web-seo): Sitemaps, meta tags, schema, crawl, performance, accessibility
+- [AI & Automation Tools](https://www.xfree.in/ai-auto): Prompt engineering, LLM tools, agents, RAG, MCP workflows
+- [Media & Documents Tools](https://www.xfree.in/media-docs): Image, video, audio, PDF, documents, spreadsheets, markdown
+- [Security & Privacy Tools](https://www.xfree.in/security): Hash, passwords, JWT, DNS, HTTP, certificates, encryption
+- [Business & Productivity Tools](https://www.xfree.in/business): Text, writing, calculators, finance, marketing, productivity
 
-## Core API Endpoints for Developers & AI Agents
+## Published Pillars
 
-- `POST /api/ai`: Single-purpose AI proxy (ai-regex, ai-json-repair, ai-meta-optimizer, ai-sql-generator, ai-search-intent, ai-code-explainer, ai-commit-generator, ai-schema-generator).
-- `POST /api/ai/batch`: Batch processing endpoint for bulk CSV/TXT items.
-- `POST /api/ai/thinking`: Deep reasoning endpoint powered by Google Gemini reasoning model (configurable via GEMINI_THINKING_MODEL) with high thinking budget.
-- `POST /api/ai/chat`: Multi-turn conversational developer AI assistant.
+- [XFree Developer Tools](https://www.xfree.in/pillar/dev-tools): XFree developer tools: format, validate, debug, and convert structured data without signup. 100% client-side.
+- [XFree JSON Data Tools](https://www.xfree.in/pillar/json-data-tools): XFree JSON data tools: format, validate, flatten, sort, diff, and convert JSON data. No server, no signup.
+- [XFree Code Formatting Tools](https://www.xfree.in/pillar/code-formatting-tools): XFree code formatting tools: beautify, minify, and lint HTML, CSS, JS, TypeScript, XML, SQL, and more.
+- [XFree API Development Tools](https://www.xfree.in/pillar/api-tools): XFree API tools: validate OpenAPI specs, test endpoints, build requests, and generate curl commands.
+- [XFree Database Tools](https://www.xfree.in/pillar/database-tools): XFree database tools: format SQL, build queries, design schemas, and generate migrations.
+- [XFree Regex Tools](https://www.xfree.in/pillar/regex-tools): XFree regex tools: test, explain, and build regex patterns with match groups and explanations.
+- [XFree Encoding Tools](https://www.xfree.in/pillar/encoding-tools): XFree encoding tools: convert between Base64, URL, hex, binary, ASCII, and more formats.
+- [XFree File Converters](https://www.xfree.in/pillar/converters): XFree file converters: transform between JSON, CSV, YAML, XML, and other data formats.
+- [XFree Data Validators](https://www.xfree.in/pillar/validators): XFree validators: validate JSON Schema, HTML, CSS, XML, and other structured documents.
+- [XFree Online Generators](https://www.xfree.in/pillar/generators): XFree generators: create UUIDs, QR codes, passwords, cron expressions, and other random data.
+- [XFree Web Tools](https://www.xfree.in/pillar/web-tools): XFree web tools: inspect HTTP headers, status codes, URLs, cookies, and user agents.
+- [XFree SEO Tools](https://www.xfree.in/pillar/seo-tools): XFree SEO tools: check keyword rankings, SERP positions, backlinks, meta tags, and sitemaps.
+- [XFree URL Tools](https://www.xfree.in/pillar/url-tools): XFree URL tools: parse, encode, shorten, and check redirects for URLs.
+- [XFree Schema Markup Tools](https://www.xfree.in/pillar/schema-tools): XFree schema tools: generate and validate JSON-LD structured data markup for SEO.
+- [XFree Crawl & Indexing Tools](https://www.xfree.in/pillar/crawl-indexing-tools): XFree crawl and indexing tools: generate sitemaps, check robots.txt, and simulate fetch.
+- [XFree Website Audit Tools](https://www.xfree.in/pillar/website-audit-tools): XFree website audit tools: analyze SEO performance, page speed, mobile-friendliness, and broken links.
+- [XFree Metadata Tools](https://www.xfree.in/pillar/metadata-tools): XFree metadata tools: generate and preview meta tags for search and social.
+- [XFree Performance Tools](https://www.xfree.in/pillar/performance-tools): XFree performance tools: analyze and optimize page load speed, compression, and caching.
+- [XFree Accessibility Tools](https://www.xfree.in/pillar/accessibility-tools): XFree accessibility tools: check WCAG compliance, generate alt text, and validate ARIA markup.
+- [XFree Social Preview Tools](https://www.xfree.in/pillar/social-preview-tools): XFree social preview tools: generate and preview Open Graph images and social card metadata.
+- [XFree AI Tools](https://www.xfree.in/pillar/ai-tools): XFree AI tools: generate text, images, code, and summaries using AI models.
+- [XFree Prompt Engineering Tools](https://www.xfree.in/pillar/prompt-tools): XFree prompt tools: optimize, test, and build prompts for AI models.
+- [XFree RAG Tools](https://www.xfree.in/pillar/rag-tools): XFree RAG tools: chunk documents, generate embeddings, and build retrieval systems.
+- [XFree LLM Tools](https://www.xfree.in/pillar/llm-tools): XFree LLM tools: count tokens, compare models, and calculate costs for AI inference.
+- [XFree AI Agent Tools](https://www.xfree.in/pillar/agent-tools): XFree agent tools: run, simulate, and debug AI agents with tool use and planning.
+- [XFree MCP Tools](https://www.xfree.in/pillar/mcp-tools): XFree MCP tools: test, build, and inspect Model Context Protocol servers.
+- [XFree Agentic Workflows](https://www.xfree.in/pillar/agentic-workflows): XFree agentic workflow tools: design, build, and manage automated AI workflows.
+- [XFree Automation Tools](https://www.xfree.in/pillar/automation-tools): XFree automation tools: create automations, test webhooks, and connect APIs.
+- [XFree AI Evaluation Tools](https://www.xfree.in/pillar/ai-evaluation-tools): XFree AI evaluation tools: test, score, and audit AI model outputs for quality and bias.
+- [XFree AI Data Tools](https://www.xfree.in/pillar/ai-data-tools): XFree AI data tools: clean, generate, and validate datasets for AI training.
+- [XFree Image Tools](https://www.xfree.in/pillar/image-tools): XFree image tools: resize, convert, compress, and edit images directly in the browser.
+- [XFree Video Tools](https://www.xfree.in/pillar/video): XFree video tools: convert, compress, cut, and edit videos in the browser.
+- [XFree Audio Tools](https://www.xfree.in/pillar/audio-tools): XFree audio tools: convert, compress, cut, and edit audio files in the browser.
+- [XFree PDF Tools](https://www.xfree.in/pillar/pdf-tools): XFree PDF tools: merge, split, compress, and edit PDF documents in the browser.
+- [XFree Document Tools](https://www.xfree.in/pillar/document-tools): XFree document tools: edit, convert, and extract text from Word, DOCX, and other documents.
+- [XFree Spreadsheet Tools](https://www.xfree.in/pillar/spreadsheet-tools): XFree spreadsheet tools: edit CSV/Excel files, test formulas, and generate charts.
+- [XFree Markdown Tools](https://www.xfree.in/pillar/markdown-tools): XFree markdown tools: convert between Markdown and HTML, preview, and lint Markdown files.
+- [XFree Subtitle Tools](https://www.xfree.in/pillar/subtitle-tools): XFree subtitle tools: convert, edit, translate, and synchronize subtitle files.
+- [XFree File Tools](https://www.xfree.in/pillar/file-tools): XFree file tools: compress, detect types, analyze sizes, and manage files in the browser.
+- [XFree Creative Tools](https://www.xfree.in/pillar/creative-tools): XFree creative tools: generate color palettes, gradients, and pair fonts for design projects.
+- [XFree Security Tools](https://www.xfree.in/pillar/security-tools): XFree security tools: check SSL, scan headers, and test for vulnerabilities.
+- [XFree Hash Tools](https://www.xfree.in/pillar/hash-tools): XFree hash tools: generate and compare MD5, SHA1, SHA256, SHA512, and other hashes.
+- [XFree Password Tools](https://www.xfree.in/pillar/password-tools): XFree password tools: generate secure passwords and check their strength and breach status.
+- [XFree JWT & Token Tools](https://www.xfree.in/pillar/token-tools): XFree JWT tools: decode, encode, validate, and verify JSON Web Tokens.
+- [XFree Privacy Tools](https://www.xfree.in/pillar/privacy-tools): XFree privacy tools: generate cookie consent, detect PII, and ensure GDPR/CCPA compliance.
+- [XFree Network Tools](https://www.xfree.in/pillar/network-tools): XFree network tools: look up IPs, scan ports, and test network performance.
+- [XFree DNS Tools](https://www.xfree.in/pillar/dns-tools): XFree DNS tools: look up DNS records, check SPF/DKIM/DMARC, and inspect propagation.
+- [XFree HTTP Tools](https://www.xfree.in/pillar/http-tools): XFree HTTP tools: build, send, and inspect HTTP requests and responses.
+- [XFree Certificate Tools](https://www.xfree.in/pillar/certificate-tools): XFree certificate tools: decode, generate, and validate SSL/TLS certificates.
+- [XFree Security Header Tools](https://www.xfree.in/pillar/security-header-tools): XFree security header tools: analyze and generate security headers for your website.
+- [XFree Text Tools](https://www.xfree.in/pillar/text-tools): XFree text tools: count words, convert cases, and clean up text.
+- [XFree Content Tools](https://www.xfree.in/pillar/content-tools): XFree content tools: analyze readability, check keyword density, and optimize content for SEO.
+- [XFree Writing Tools](https://www.xfree.in/pillar/writing-tools): XFree writing tools: check grammar, spelling, and style to improve your writing.
+- [XFree Calculator Tools](https://www.xfree.in/pillar/calculators): XFree calculators: calculate math, percentages, mortgages, currency, and more.
+- [XFree Date & Time Tools](https://www.xfree.in/pillar/date-time-tools): XFree date and time tools: convert timestamps, format dates, and convert timezones.
+- [XFree Finance Tools](https://www.xfree.in/pillar/finance-tools): XFree finance tools: convert currencies and calculate loans, investments, and budgets.
+- [XFree Marketing Tools](https://www.xfree.in/pillar/marketing-tools): XFree marketing tools: build UTM links, generate hashtags, and track campaigns.
+- [XFree Productivity Tools](https://www.xfree.in/pillar/productivity-tools): XFree productivity tools: manage tasks, track habits, and stay focused.
+- [XFree Education Tools](https://www.xfree.in/pillar/education-tools): XFree education tools: create flashcards, quizzes, and study plans.
+- [XFree Business Tools](https://www.xfree.in/pillar/business-tools): XFree business tools: generate invoices, business cards, and contracts.
 
-## Complete Index of Indexable Micro-Tools
+## Published Tools
 
-- [XML Sitemap Generator & Validator](https://www.xfree.in/tools/xml-sitemap-generator): Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets. (Pillar: XML Sitemap Generator)
-- [Robots.txt Generator & User-Agent Rule Tester](https://www.xfree.in/tools/robots-txt-generator): Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps. (Pillar: Robots.txt Generator)
-- [Meta Tag & Open Graph Social Card Preview](https://www.xfree.in/tools/meta-tag-generator): Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews. (Pillar: Meta Tag Generator)
-- [Schema Markup Generator (JSON-LD Structured Data)](https://www.xfree.in/tools/schema-markup-generator): Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs. (Pillar: Schema Markup Generator)
-- [JSON / XML Formatter, Validator & Tree Viewer](https://www.xfree.in/tools/json-formatter): Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics. (Pillar: JSON Formatter and Validator)
-- [Regex Tester & Interactive Match Explainer](https://www.xfree.in/tools/regex-tester): Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m). (Pillar: Regex Tester)
-- [Bulk URL Extractor & Sitemap Generator](https://www.xfree.in/tools/bulk-url-extractor): Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting. (Pillar: Free Bulk URL Extractor & Sitemap Generator Online)
-- [Cron Expression Generator & Human Translator](https://www.xfree.in/tools/cron-expression-generator): Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times. (Pillar: Cron Expression Generator)
-- [Base64 Encoder/Decoder & JWT Token Inspector](https://www.xfree.in/tools/base64-encoder-decoder): Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims. (Pillar: Base64 & JWT Decoder)
-- [URL Slug Generator & Campaign UTM Parameter Builder](https://www.xfree.in/tools/url-slug-utm-builder): Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content). (Pillar: URL Slug Generator)
+- [XML Sitemap Generator & Validator](https://www.xfree.in/tools/xml-sitemap-generator): Generate valid Google & Bing XML sitemaps with priority, changefreq, lastmod, and automatic chunking for large link sets.
+- [Robots.txt Generator & User-Agent Rule Tester](https://www.xfree.in/tools/robots-txt-generator): Create valid robots.txt directives for search engine crawlers, test path allowance rules, and specify XML sitemaps.
+- [Meta Tag & Open Graph Social Card Preview](https://www.xfree.in/tools/meta-tag-generator): Generate meta title tags, meta descriptions, and Open Graph / Twitter Cards with real-time Google SERP and social card previews.
+- [Schema Markup Generator (JSON-LD Structured Data)](https://www.xfree.in/tools/schema-markup-generator): Generate valid Schema.org JSON-LD structured data for WebSite, Organization, SoftwareApplication, FAQPage, Article, and Breadcrumbs.
+- [JSON / XML Formatter, Validator & Tree Viewer](https://www.xfree.in/tools/json-formatter): Format, validate, repair, minify, and inspect JSON/XML data with interactive tree views and error location diagnostics.
+- [Regex Tester & Interactive Match Explainer](https://www.xfree.in/tools/regex-tester): Test regular expressions live with match group breakdown, string replacement previews, and flags (g, i, m).
+- [Bulk URL Extractor & Sitemap Generator](https://www.xfree.in/tools/bulk-url-extractor): Extract URLs from massive raw text or HTML, clean, deduplicate, filter by domain, and generate valid XML Sitemaps with Sitemap-Index splitting.
+- [Cron Expression Generator & Human Translator](https://www.xfree.in/tools/cron-expression-generator): Generate standard 5-part cron schedule expressions, view plain-English explanations, and calculate upcoming execution times.
+- [Base64 Encoder/Decoder & JWT Token Inspector](https://www.xfree.in/tools/base64-encoder-decoder): Safely encode and decode Base64 strings, UTF-8 text, Base64URL parameters, and inspect OAuth JWT headers, payloads, and claims.
+- [URL Slug Generator & Campaign UTM Parameter Builder](https://www.xfree.in/tools/url-slug-utm-builder): Clean title strings into SEO-friendly URL slugs, and build campaign URLs with UTM parameters (source, medium, campaign, term, content).

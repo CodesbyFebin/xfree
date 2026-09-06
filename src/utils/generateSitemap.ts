@@ -101,11 +101,14 @@ export function getToolSitemapEntries(): SitemapEntry[] {
   }
 
   for (const artifact of Object.values(GENERATED_PUBLISHED_CONTENT)) {
-    if (!artifact.slug || seen.has(artifact.slug)) continue;
-    seen.add(artifact.slug);
+    const a = artifact as Record<string, unknown>;
+    if (!a.slug || typeof a.slug !== "string" || seen.has(a.slug)) continue;
+    seen.add(a.slug);
+    const approval = (a.approval || {}) as Record<string, unknown>;
+    const reviewedAt = typeof approval.reviewedAt === "string" ? approval.reviewedAt : SITE_CONTENT_LASTMOD;
     entries.push({
-      path: `/tools/${artifact.slug}`,
-      lastmod: normalizeDate(artifact.approval.reviewedAt),
+      path: `/tools/${a.slug}`,
+      lastmod: normalizeDate(reviewedAt),
     });
   }
 

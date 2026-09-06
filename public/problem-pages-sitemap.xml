@@ -1,0 +1,8 @@
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "XFree Problem Pages",
+  "description": "Machine-readable index of problem-solving pages for AI answer engines",
+  "url": "https://www.xfree.in/problems",
+  "itemListElement": []
+}

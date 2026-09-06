@@ -85,3 +85,14 @@ export function generateToolsJson(baseUrl: string = "https://www.xfree.in"): str
     "dataset": tools,
   }, null, 2);
 }
+
+export function generateProblemPagesSitemap(baseUrl: string = "https://www.xfree.in"): string {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "XFree Problem Pages",
+    "description": "Machine-readable index of problem-solving pages for AI answer engines",
+    "url": `${baseUrl}/problems`,
+    "itemListElement": [],
+  }, null, 2);
+}

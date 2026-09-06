@@ -10,8 +10,8 @@ export interface WorkflowStep {
   engineId: string;
   name: string;
   description?: string;
-  inputMapping?: Record;
-  outputMapping?: Record;
+  inputMapping?: Record<string, unknown>;
+  outputMapping?: Record<string, unknown>;
   input?: unknown;
   output?: unknown;
   status: StepStatus;
@@ -54,7 +54,7 @@ export interface WorkflowExecution {
   totalSteps: number;
   startedAt: number;
   completedAt?: number;
-  context: Record;
+  context: Record<string, unknown>;
   stepResults: StepExecutionResult[];
 }
 
@@ -98,20 +98,20 @@ export type WorkflowEventListener = (event: WorkflowEvent) => void;
 type EngineRunner = (
   engineId: string,
   input: unknown,
-  context: Record
-) => Promise;
+  context: Record<string, unknown>
+) => Promise<unknown>;
 
 const STORAGE_KEY = 'xfree:workflows';
-const EXECUTIONSTORAGEKEY = 'xfree:workflow-executions';
-const MAXEXECUTIONHISTORY = 50;
+const EXECUTIONS_STORAGE_KEY = 'xfree:workflow-executions';
+const MAX_EXECUTION_HISTORY = 50;
 
 function generateId(prefix: string): string {
   const ts = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 8);
-  return \${prefix}\${ts}\${rand};
+  return `${prefix}${ts}${rand}`;
 }
 
-function safeParse(raw: string | null, fallback: T): T {
+function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
   try {
     return JSON.parse(raw) as T;
@@ -122,7 +122,7 @@ function safeParse(raw: string | null, fallback: T): T {
 
 function validateWorkflow(data: unknown): data is Workflow {
   if (!data || typeof data !== 'object') return false;
-  const w = data as Record;
+  const w = data as Record<string, unknown>;
   return (
     typeof w.id === 'string' &&
     typeof w.name === 'string' &&
@@ -135,9 +135,9 @@ function validateWorkflow(data: unknown): data is Workflow {
 }
 
 export class WorkflowEngine {
-  private workflows: Map = new Map();
-  private executions: Map = new Map();
-  private listeners: Set = new Set();
+  private workflows: Map<string, Workflow> = new Map();
+  private executions: Map<string, WorkflowExecution> = new Map();
+  private listeners: Set<WorkflowEventListener> = new Set();
   private engineRunner: EngineRunner | null = null;
   private activeExecutionId: string | null = null;
   private abortController: AbortController | null = null;
@@ -161,7 +161,7 @@ export class WorkflowEngine {
     };
   }
 
-  private emit(event: Omit): void {
+  private emit(event: Omit<WorkflowEvent, 'timestamp'>): void {
     const full: WorkflowEvent = { ...event, timestamp: Date.now() };
     this.listeners.forEach((fn) => {
       try {
@@ -177,7 +177,7 @@ export class WorkflowEngine {
   private loadFromStorage(): void {
     if (typeof localStorage === 'undefined') return;
 
-    const rawWorkflows = safeParse(
+    const rawWorkflows = safeParse<string[]>(
       localStorage.getItem(STORAGE_KEY),
       []
     );
@@ -190,8 +190,8 @@ export class WorkflowEngine {
       }
     }
 
-    const rawExecutions = safeParse(
-      localStorage.getItem(EXECUTIONSTORAGEKEY),
+    const rawExecutions = safeParse<WorkflowExecution[]>(
+      localStorage.getItem(EXECUTIONS_STORAGE_KEY),
       []
     );
     this.executions.clear();
@@ -223,8 +223,8 @@ export class WorkflowEngine {
     try {
       const all = Array.from(this.executions.values())
         .sort((a, b) => b.startedAt - a.startedAt)
-        .slice(0, MAXEXECUTIONHISTORY);
-      localStorage.setItem(EXECUTIONSTORAGEKEY, JSON.stringify(all));
+        .slice(0, MAX_EXECUTION_HISTORY);
+      localStorage.setItem(EXECUTIONS_STORAGE_KEY, JSON.stringify(all));
     } catch {
       // silent
     }
@@ -302,7 +302,7 @@ export class WorkflowEngine {
 
   updateWorkflow(
     id: string,
-    updates: Partial>
+    updates: Partial<Workflow>
   ): Workflow | null {
     const workflow = this.workflows.get(id);
     if (!workflow) return null;
@@ -354,7 +354,7 @@ export class WorkflowEngine {
     const dup: Workflow = {
       ...structuredClone(source),
       id: generateId('wf'),
-      name: \${source.name} (copy),
+      name: `${source.name} (copy)`,
       status: source.steps.length > 0 ? 'ready' : 'draft',
       createdAt: now,
       updatedAt: now,
@@ -382,7 +382,7 @@ export class WorkflowEngine {
 
   addStep(
     workflowId: string,
-    step: { engineId: string; name: string; description?: string; inputMapping?: Record }
+    step: { engineId: string; name: string; description?: string; inputMapping?: Record<string, unknown> }
   ): WorkflowStep | null {
     const workflow = this.workflows.get(workflowId);
     if (!workflow || workflow.status === 'running') return null;
@@ -393,13 +393,7 @@ export class WorkflowEngine {
       name: step.name,
       description: step.description,
       inputMapping: step.inputMapping,
-      outputMapping: step.outputMapping,
-      input?: unknown,
-      output?: unknown,
-      error?: string,
-      startedAt?: number,
-      completedAt?: number,
-      duration?: number,
+      status: 'pending',
     };
 
     workflow.steps.push(newStep);
@@ -436,8 +430,8 @@ export class WorkflowEngine {
   reorderSteps(workflowId: string, fromIndex: number, toIndex: number): boolean {
     const workflow = this.workflows.get(workflowId);
     if (!workflow || workflow.status === 'running') return false;
-    if (fromIndex = workflow.steps.length) return false;
-    if (toIndex = workflow.steps.length) return false;
+    if (fromIndex >= workflow.steps.length) return false;
+    if (toIndex >= workflow.steps.length) return false;
     if (fromIndex === toIndex) return true;
 
     const [moved] = workflow.steps.splice(fromIndex, 1);
@@ -453,8 +447,8 @@ export class WorkflowEngine {
 
   async executeWorkflow(
     workflowId: string,
-    initialInput?: Record
-  ): Promise {
+    initialInput?: Record<string, unknown>
+  ): Promise<WorkflowExecution | null> {
     const workflow = this.workflows.get(workflowId);
     if (!workflow) return null;
     if (workflow.steps.length === 0) return null;
@@ -495,77 +489,134 @@ export class WorkflowEngine {
     const signal = this.abortController.signal;
 
     try {
-      for (let i = 0; i <= workflow.steps.length; i++) {
+      for (let i = 0; i < workflow.steps.length; i++) {
+        if (signal.aborted) {
+          execution.status = 'cancelled';
+          break;
+        }
+
         const step = workflow.steps[i];
-        if (!step) break;
+        const stepStart = Date.now();
+        execution.currentStepIndex = i;
 
-        await runner(engineId: step.engineId, input: step.input, context: step.context);
+        this.emit({
+          type: 'workflow:execution:step-started',
+          workflowId,
+          executionId,
+          data: { stepIndex: i, stepId: step.id },
+        });
+
+        try {
+          const input = this.resolveStepInput(step, execution.context);
+          const output = await runner(step.engineId, input, execution.context);
+
+          step.status = 'completed';
+          step.output = output;
+          step.completedAt = Date.now();
+          step.duration = Date.now() - stepStart;
+
+          execution.stepResults.push({
+            stepId: step.id,
+            engineId: step.engineId,
+            status: 'completed',
+            input,
+            output,
+            duration: step.duration!,
+          });
+
+          if (output !== undefined && step.outputMapping) {
+            for (const [targetKey, sourceKey] of Object.entries(step.outputMapping)) {
+              const val = (output as Record<string, unknown>)?.[String(sourceKey)];
+              if (val !== undefined) {
+                execution.context[targetKey] = val;
+              }
+            }
+          }
+
+          this.persistWorkflows();
+          this.persistExecutions();
+
+          this.emit({
+            type: 'workflow:execution:step-completed',
+            workflowId,
+            executionId,
+            data: { stepIndex: i, stepId: step.id, output, duration: step.duration! },
+          });
+        } catch (err) {
+          const duration = Date.now() - stepStart;
+          const errorMsg = err instanceof Error ? err.message : String(err);
+
+          step.status = 'failed';
+          step.error = errorMsg;
+          step.completedAt = Date.now();
+          step.duration = duration;
+
+          execution.stepResults.push({
+            stepId: step.id,
+            engineId: step.engineId,
+            status: 'failed',
+            input: step.input,
+            error: errorMsg,
+            duration,
+          });
+
+          this.persistWorkflows();
+          this.persistExecutions();
+
+          this.emit({
+            type: 'workflow:execution:step-failed',
+            workflowId,
+            executionId,
+            data: { stepIndex: i, stepId: step.id, error: errorMsg },
+          });
+
+          execution.status = 'failed';
+          execution.completedAt = Date.now();
+          break;
+        }
       }
-    } catch (err) {
-      const duration = Date.now() - step.startedAt;
-      const errorMsg = err instanceof Error ? err.message : String(err);
 
-      step.status = 'failed';
-      step.error = errorMsg;
-      step.completedAt = Date.now();
-      step.duration = duration;
-
-      execution.stepResults.push({
-        stepId: step.id,
-        engineId: step.engineId,
-        status: 'failed',
-        input: step.input,
-        error: errorMsg,
-        duration,
-      });
-
+      if (execution.status === 'running') {
+        execution.status = 'completed';
+        execution.completedAt = Date.now();
+        workflow.status = 'ready';
+        this.emit({ type: 'workflow:execution:completed', workflowId, executionId, data: execution });
+      } else if (execution.status === 'failed') {
+        workflow.status = 'ready';
+        this.emit({ type: 'workflow:execution:failed', workflowId, executionId, data: execution });
+      } else if (execution.status === 'cancelled') {
+        workflow.status = 'ready';
+        this.emit({ type: 'workflow:execution:cancelled', workflowId, executionId, data: execution });
+      }
+    } finally {
       this.persistWorkflows();
       this.persistExecutions();
-
-      this.emit({
-        type: 'workflow:execution:step-failed',
-        workflowId,
-        executionId,
-        data: { stepIndex: i, stepId: step.id, error: errorMsg },
-      });
-
-      execution.status = 'failed';
-      execution.completedAt = Date.now();
-      break;
+      this.activeExecutionId = null;
+      this.abortController = null;
     }
 
-    if (execution.status === 'running') {
-      execution.status = 'completed';
-      execution.completedAt = Date.now();
-      workflow.status = 'ready';
-      this.emit({ type: 'workflow:execution:completed', workflowId, executionId, data: execution });
-    } else if (execution.status === 'failed') {
-      workflow.status = 'ready';
-      this.emit({ type: 'workflow:execution:failed', workflowId, executionId, data: execution });
-    } else if (execution.status === 'cancelled') {
-      workflow.status = 'ready';
-      this.emit({ type: 'workflow:execution:cancelled', workflowId, executionId, data: execution });
-    }
+    return execution;
   }
 
   private resolveStepInput(
     step: WorkflowStep,
-    context: Record
+    context: Record<string, unknown>
   ): unknown {
     if (!step.inputMapping || Object.keys(step.inputMapping).length === 0) {
       return step.input ?? context;
     }
 
-    const resolved: Record = {};
+    const resolved: Record<string, unknown> = {};
     for (const [targetKey, sourceExpr] of Object.entries(step.inputMapping)) {
-      if (sourceExpr.startsWith('literal:')) {
-        resolved[targetKey] = sourceExpr.slice(8);
-      } else if (sourceExpr.includes('.')) {
-        const parts = sourceExpr.split('.');
+      const expr = String(sourceExpr);
+      if (expr.startsWith('literal:')) {
+        resolved[targetKey] = expr.slice(8);
+      } else if (expr.includes('.')) {
+        const parts = expr.split('.');
         let val: unknown = context;
         for (const part of parts) {
           if (val && typeof val === 'object') {
-            val = (val as Record)[part];
+            val = (val as Record<string, unknown>)[part];
           } else {
             val = undefined;
             break;
@@ -573,13 +624,13 @@ export class WorkflowEngine {
         }
         resolved[targetKey] = val;
       } else {
-        resolved[targetKey] = context[sourceExpr];
+        resolved[targetKey] = context[expr];
       }
     }
     return resolved;
   }
 
-  private waitForResume(executionId: string, signal: AbortSignal): Promise {
+  private waitForResume(executionId: string, signal: AbortSignal): Promise<void> {
     return new Promise((resolve, reject) => {
       const check = () => {
         if (signal.aborted) {
@@ -593,6 +644,7 @@ export class WorkflowEngine {
         }
         setTimeout(check, 100);
       };
+      check();
     });
   }
 
@@ -749,7 +801,7 @@ export class WorkflowEngine {
 
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(EXECUTIONSTORAGEKEY);
+      localStorage.removeItem(EXECUTIONS_STORAGE_KEY);
     }
   }
 }

@@ -1,11 +1,14 @@
 import { ToolDefinition } from "../types";
 import { TOOLS_REGISTRY } from "./toolsRegistry";
+import { PILLAR_CATEGORIES } from "./pillarRegistry";
 
 export const PUBLIC_TOOLS: ToolDefinition[] = TOOLS_REGISTRY.filter(
   (tool) =>
     tool.status === "published" &&
     tool.indexable === true
 );
+
+export const PUBLIC_CATEGORIES = PILLAR_CATEGORIES;
 
 export const PUBLIC_TOOL_SLUGS: Set<string> = new Set(
   PUBLIC_TOOLS.map((t) => t.slug)

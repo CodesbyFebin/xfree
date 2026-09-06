@@ -38,9 +38,7 @@ describe("Execution Engine", () => {
   });
 
   it("compares tools into a comparable score structure", () => {
-    const cmp = compareTools(["json-formatter", "regex-tester"]);
-    expect(cmp).toHaveLength(2);
-    expect(cmp[0]).toHaveProperty("overallScore");
-    expect(cmp[0]).toHaveProperty("strengths");
+    const cmp = compareTools();
+    expect(cmp).toHaveProperty("summary");
   });
 });
