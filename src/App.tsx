@@ -9,6 +9,7 @@ import {
   type PillarCategory,
   getRelatedPillars,
 } from "./data/pillarRegistry";
+import { INDEXABLE_TOOLS, INDEXABLE_TOOL_SLUGS } from "./data/toolsRegistry";
 
 // ===== SEO / AEO / GEO — dynamic document meta tag injection =====
 interface MetaOptions {
@@ -129,6 +130,7 @@ type Route =
   | { type: "pillars-list" }
   | { type: "pillar-detail"; slug: string }
   | { type: "category-hub"; categoryId: string }
+  | { type: "tool-detail"; slug: string }
   | { type: "not-found" };
 
 function getRouteFromPath(pathname: string): Route {
@@ -138,6 +140,10 @@ function getRouteFromPath(pathname: string): Route {
   const pillarMatch = normalizedPath.match(/^\/pillars\/(.+)$/);
   if (pillarMatch && PILLAR_BY_SLUG.has(pillarMatch[1])) {
     return { type: "pillar-detail", slug: pillarMatch[1] };
+  }
+  const toolMatch = normalizedPath.match(/^\/tools\/(.+)$/);
+  if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) {
+    return { type: "tool-detail", slug: toolMatch[1] };
   }
   const catMatch = CATEGORIES.find((c) => normalizedPath === `/${c.id}`);
   if (catMatch) return { type: "category-hub", categoryId: catMatch.id };
@@ -1230,6 +1236,123 @@ const PillarDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, on
   );
 };
 
+// ===== Tool Detail Page =====
+const ToolDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, onBack }) => {
+  const tool = INDEXABLE_TOOLS.find((t) => t.slug === slug);
+  if (!tool) {
+    return (
+      <section className="py-16 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">Tool not found</h2>
+          <p className="text-cyber-muted">The tool <code className="text-cyber-glow">{slug}</code> does not exist.</p>
+          <button onClick={onBack} className="cyber-btn cyber-btn-cyan mt-4 text-sm px-6 py-2 rounded focus-ring">
+            ← Back
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  const pageTitle = `${tool.title} — XFree.in`;
+  const pageDesc = tool.shortDescription;
+  const canonical = `https://www.xfree.in/tools/${tool.slug}`;
+
+  useDocumentMeta({
+    title: pageTitle,
+    description: pageDesc,
+    canonical,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: tool.title,
+        applicationCategory: "UtilityApplication",
+        operatingSystem: "Any (browser)",
+        description: pageDesc,
+        url: canonical,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: (tool.faqs || []).slice(0, 6).map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      },
+    ],
+  });
+
+  return (
+    <article className="prose prose-invert max-w-3xl mx-auto py-12 px-4">
+      <div className="cyber-card p-6 sm:p-9 rounded-xl mb-8">
+        <button onClick={onBack} className="cyber-btn text-xs px-4 py-2 mb-4 rounded focus-ring">
+          ← Back
+        </button>
+
+        <header className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-14 h-14 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-3xl" aria-hidden="true">
+              ⚡
+            </div>
+            <div>
+              <span className="inline-block px-3 py-1 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-xs font-mono mb-2 neon-box-green">
+                {tool.categoryLabel}
+              </span>
+              <h1 className="text-3xl font-black text-white font-mono">{tool.title}</h1>
+            </div>
+          </div>
+          <p className="text-cyber-cyan font-mono text-sm">// {tool.shortDescription}</p>
+        </header>
+
+        <p className="text-lg text-cyber-text leading-relaxed mb-6">{tool.explanation}</p>
+
+        <div className="space-y-8">
+          <section>
+            <h2 className="text-xl font-bold text-white font-mono mb-3">
+              <span className="text-cyber-glow">{'input>'}</span> How to Use
+            </h2>
+            <ol className="space-y-2">
+              {(tool.howToUse || []).map((step, i) => (
+                <li key={i} className="text-cyber-muted flex items-start gap-2">
+                  <span className="w-6 h-6 rounded-full bg-cyber-glow/10 border border-cyber-glow/30 flex items-center justify-center flex-shrink-0 text-xs text-cyber-glow font-bold">{i + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-white font-mono mb-3">
+              <span className="text-cyber-cyan">🔒</span> Privacy
+            </h2>
+            <p className="text-cyber-muted leading-relaxed">{tool.privacyNotice}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-white font-mono mb-3">
+              <span className="text-cyber-glow">man</span> FAQ
+            </h2>
+            <div className="space-y-2">
+              {(tool.faqs || []).map((f, i) => (
+                <details key={i} className="cyber-card details overflow-hidden" open={i === 0}>
+                  <summary className="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono">
+                    {f.question}
+                  </summary>
+                  <div className="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">
+                    {f.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </article>
+  );
+};
+
 // ===== Main App Component =====
 const App: React.FC = () => {
   const [route, setRoute] = useState<Route>(() => {
@@ -1239,6 +1362,10 @@ const App: React.FC = () => {
     const pillarMatch = path.match(/^\/pillars\/(.+)$/);
     if (pillarMatch && PILLAR_BY_SLUG.has(pillarMatch[1])) {
       return { type: "pillar-detail", slug: pillarMatch[1] };
+    }
+    const toolMatch = path.match(/^\/tools\/(.+)$/);
+    if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) {
+      return { type: "tool-detail", slug: toolMatch[1] };
     }
     const catMatch = CATEGORIES.find((c) => path === `/${c.id}`);
     if (catMatch) return { type: "category-hub", categoryId: catMatch.id };
@@ -1283,6 +1410,9 @@ const App: React.FC = () => {
 
       case "category-hub":
         return <CategoryHub categoryId={route.categoryId} onBack={() => navigate("/")} onSelect={(slug) => navigate(`/pillars/${slug}`)} />;
+
+      case "tool-detail":
+        return <ToolDetail slug={route.slug} onBack={() => navigate("/")} />;
 
       case "not-found":
         return (
