@@ -4,5 +4,684 @@
   "name": "XFree Capabilities",
   "description": "Structured capability definitions for all tools in the XFree registry",
   "url": "https://www.xfree.in",
-  "itemListElement": []
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "url": "https://www.xfree.in/capabilities/xml-sitemap-generator",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/xml-sitemap-generator",
+        "name": "XML Sitemap Generation & Validation",
+        "description": "Convert a line-separated list of URLs into a schema-compliant XML sitemap, splitting into a sitemap index above the 50,000-URL / 50 MB limit.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "urls": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "priority": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "changefreq": {
+              "type": "string",
+              "enum": [
+                "always",
+                "hourly",
+                "daily",
+                "weekly",
+                "monthly",
+                "yearly",
+                "never"
+              ]
+            }
+          },
+          "required": [
+            "urls"
+          ]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "sitemapXml": {
+              "type": "string"
+            },
+            "sitemapIndexXml": {
+              "type": "string",
+              "nullable": true
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "xml-sitemap-generator",
+              "toolTitle": "XML Sitemap Generator & Validator",
+              "toolUrl": "https://www.xfree.in/tools/xml-sitemap-generator",
+              "requiredAuth": false,
+              "supportsBatch": true,
+              "estimatedLatencyMs": 50
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "url": "https://www.xfree.in/capabilities/robots-txt-generator",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/robots-txt-generator",
+        "name": "Robots.txt Generation & Rule Testing",
+        "description": "Compose RFC 9309 robots.txt rule groups by user-agent and test whether a given path would be allowed or disallowed.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "userAgent": {
+                    "type": "string"
+                  },
+                  "allow": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "disallow": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "sitemapUrls": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "testPath": {
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "robotsTxt": {
+              "type": "string"
+            },
+            "testResult": {
+              "type": "string",
+              "enum": [
+                "allowed",
+                "disallowed"
+              ],
+              "nullable": true
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "robots-txt-generator",
+              "toolTitle": "Robots.txt Generator & User-Agent Rule Tester",
+              "toolUrl": "https://www.xfree.in/tools/robots-txt-generator",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "url": "https://www.xfree.in/capabilities/meta-tag-generator",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/meta-tag-generator",
+        "name": "Meta Tag & Open Graph Generation",
+        "description": "Build title, description, canonical, Open Graph, and Twitter Card meta tags with live SERP and social-card previews.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "maxLength": 60
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "canonicalUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "ogImageUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "twitterCardType": {
+              "type": "string",
+              "enum": [
+                "summary",
+                "summary_large_image"
+              ]
+            }
+          },
+          "required": [
+            "title",
+            "description"
+          ]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "htmlSnippet": {
+              "type": "string"
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "meta-tag-generator",
+              "toolTitle": "Meta Tag & Open Graph Social Card Preview",
+              "toolUrl": "https://www.xfree.in/tools/meta-tag-generator",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "url": "https://www.xfree.in/capabilities/schema-markup-generator",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/schema-markup-generator",
+        "name": "Schema.org JSON-LD Generation",
+        "description": "Generate valid JSON-LD structured data for Organization, WebSite, WebPage, SoftwareApplication, Article, BreadcrumbList, FAQPage, HowTo, and Product schema types.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "schemaType": {
+              "type": "string",
+              "enum": [
+                "Organization",
+                "WebSite",
+                "WebPage",
+                "SoftwareApplication",
+                "Article",
+                "BreadcrumbList",
+                "FAQPage",
+                "HowTo",
+                "Product"
+              ]
+            },
+            "fields": {
+              "type": "object",
+              "description": "Type-specific field values"
+            }
+          },
+          "required": [
+            "schemaType",
+            "fields"
+          ]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "jsonLd": {
+              "type": "string"
+            },
+            "valid": {
+              "type": "boolean"
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "schema-markup-generator",
+              "toolTitle": "Schema Markup Generator (JSON-LD Structured Data)",
+              "toolUrl": "https://www.xfree.in/tools/schema-markup-generator",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "url": "https://www.xfree.in/capabilities/json-formatter",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/json-formatter",
+        "name": "JSON/XML Formatting & Validation",
+        "description": "Format, minify, validate, and repair JSON or XML with line/column-accurate error diagnostics and a tree view.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "payload": {
+              "type": "string",
+              "description": "Raw JSON or XML text"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "format",
+                "minify",
+                "tree"
+              ]
+            }
+          },
+          "required": [
+            "payload"
+          ]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "valid": {
+              "type": "boolean"
+            },
+            "formatted": {
+              "type": "string"
+            },
+            "errors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "line": {
+                    "type": "number"
+                  },
+                  "column": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "json-formatter",
+              "toolTitle": "JSON / XML Formatter, Validator & Tree Viewer",
+              "toolUrl": "https://www.xfree.in/tools/json-formatter",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 30
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "url": "https://www.xfree.in/capabilities/regex-tester",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/regex-tester",
+        "name": "Regex Testing & Match Explanation",
+        "description": "Evaluate a JavaScript regular expression against test text, returning match groups, indices, and replacement previews.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string"
+            },
+            "flags": {
+              "type": "string"
+            },
+            "testString": {
+              "type": "string"
+            },
+            "replacement": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pattern",
+            "testString"
+          ]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "matches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "match": {
+                    "type": "string"
+                  },
+                  "index": {
+                    "type": "number"
+                  },
+                  "groups": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "replaced": {
+              "type": "string",
+              "nullable": true
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "regex-tester",
+              "toolTitle": "Regex Tester & Interactive Match Explainer",
+              "toolUrl": "https://www.xfree.in/tools/regex-tester",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 20
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 7,
+      "url": "https://www.xfree.in/capabilities/bulk-url-sitemap",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/bulk-url-sitemap",
+        "name": "Bulk URL Extraction & Sitemap Export",
+        "description": "Extract, deduplicate, and domain-filter URLs from pasted text or HTML, then export as an XML sitemap or sitemap index.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "Raw text or HTML to scan for URLs"
+            },
+            "dedupe": {
+              "type": "boolean",
+              "default": true
+            },
+            "stripQueryParams": {
+              "type": "boolean",
+              "default": false
+            },
+            "domainFilter": {
+              "type": "string",
+              "description": "Optional domain to restrict results to"
+            }
+          },
+          "required": [
+            "text"
+          ]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "urls": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "sitemapXml": {
+              "type": "string"
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "bulk-url-sitemap",
+              "toolTitle": "Bulk URL Extractor & Sitemap Generator",
+              "toolUrl": "https://www.xfree.in/tools/bulk-url-extractor",
+              "requiredAuth": false,
+              "supportsBatch": true,
+              "estimatedLatencyMs": 50
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 8,
+      "url": "https://www.xfree.in/capabilities/cron-expression-generator",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/cron-expression-generator",
+        "name": "Cron Expression Generation & Translation",
+        "description": "Build a 5-field Unix cron expression from minute/hour/day/month/weekday fields, translate it to plain English, and compute upcoming run times.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "minute": {
+              "type": "string"
+            },
+            "hour": {
+              "type": "string"
+            },
+            "dayOfMonth": {
+              "type": "string"
+            },
+            "month": {
+              "type": "string"
+            },
+            "dayOfWeek": {
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "expression": {
+              "type": "string"
+            },
+            "humanReadable": {
+              "type": "string"
+            },
+            "nextRuns": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "cron-expression-generator",
+              "toolTitle": "Cron Expression Generator & Human Translator",
+              "toolUrl": "https://www.xfree.in/tools/cron-expression-generator",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 9,
+      "url": "https://www.xfree.in/capabilities/base64-encoder-decoder",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/base64-encoder-decoder",
+        "name": "Base64/Base64URL Encoding & JWT Inspection",
+        "description": "Encode/decode UTF-8 safe Base64 and Base64URL strings, and decode JWT headers and payload claims without signature verification.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "base64-encode",
+                "base64-decode",
+                "base64url-encode",
+                "base64url-decode",
+                "jwt-decode"
+              ]
+            },
+            "input": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode",
+            "input"
+          ]
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "output": {
+              "type": "string"
+            },
+            "jwtHeader": {
+              "type": "object",
+              "nullable": true
+            },
+            "jwtPayload": {
+              "type": "object",
+              "nullable": true
+            },
+            "expired": {
+              "type": "boolean",
+              "nullable": true
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "base64-encoder-decoder",
+              "toolTitle": "Base64 Encoder/Decoder & JWT Token Inspector",
+              "toolUrl": "https://www.xfree.in/tools/base64-encoder-decoder",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 10
+            }
+          ]
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 10,
+      "url": "https://www.xfree.in/capabilities/url-slug-utm-builder",
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": "https://www.xfree.in/capabilities/url-slug-utm-builder",
+        "name": "URL Slug & UTM Parameter Building",
+        "description": "Convert a title string into a clean URL slug and append standard Google Analytics UTM parameters to a destination URL.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "destinationUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "utmSource": {
+              "type": "string"
+            },
+            "utmMedium": {
+              "type": "string"
+            },
+            "utmCampaign": {
+              "type": "string"
+            },
+            "utmTerm": {
+              "type": "string"
+            },
+            "utmContent": {
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string"
+            },
+            "taggedUrl": {
+              "type": "string"
+            }
+          }
+        },
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "toolCount": 1,
+          "tools": [
+            {
+              "toolId": "url-slug-utm-builder",
+              "toolTitle": "URL Slug Generator & Campaign UTM Parameter Builder",
+              "toolUrl": "https://www.xfree.in/tools/url-slug-utm-builder",
+              "requiredAuth": false,
+              "supportsBatch": false,
+              "estimatedLatencyMs": 10
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

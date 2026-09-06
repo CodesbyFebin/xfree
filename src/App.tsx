@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { PUBLIC_TOOLS, getPublicToolBySlug } from "./data/publicTools";
 import { GENERATED_PUBLISHED_CONTENT } from "./data/generatedPublishedContent";
 import { isStaticRoute as isKnownStaticRoute, categorySlugFromPath, guideSlugFromPath } from "./data/routes";
@@ -25,38 +25,50 @@ import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
 import { CategoryHubView } from "./components/CategoryHubView";
 import { useMetaTags } from "./hooks/useMetaTags";
 
-// Import Static Pages
-import { HowItWorksPage } from "./components/pages/HowItWorksPage";
-import { UseCasesPage } from "./components/pages/UseCasesPage";
-import { DocsHubPage } from "./components/pages/DocsHubPage";
-import { BlogPage } from "./components/pages/BlogPage";
-import { FaqPage } from "./components/pages/FaqPage";
-import { AboutPage } from "./components/pages/AboutPage";
-import { ContactPage } from "./components/pages/ContactPage";
-import { PrivacyPage } from "./components/pages/PrivacyPage";
-import { TermsPage } from "./components/pages/TermsPage";
-import { SecurityPage } from "./components/pages/SecurityPage";
+// Static pages and tool components are route-gated (only one renders at a
+// time), so they're lazy-loaded into their own chunks instead of bloating the
+// initial bundle every visitor downloads just to see the homepage.
+// prerender.ts injects meta/JSON-LD into a static HTML shell without
+// server-rendering these components, so there's no SSR/Suspense hazard here.
 import { NotFoundPage } from "./components/pages/NotFoundPage";
-import { XFreeAppPage } from "./components/pages/XFreeAppPage";
-import { GuideIndexPage } from "./components/pages/GuideIndexPage";
-import { GuidePage } from "./components/pages/GuidePage";
-import { StudioPage } from "./components/pages/StudioPage";
-import { GeneratedToolPage } from "./components/pages/GeneratedToolPage";
 import { LeadFunnelPopup } from "./components/LeadFunnelPopup";
 
-// Import Micro-Tools
-import { BulkUrlExtractorSitemap } from "./components/tools/BulkUrlExtractorSitemap";
-import { RobotsTxtGenerator } from "./components/tools/RobotsTxtGenerator";
-import { MetaTagOpenGraphPreview } from "./components/tools/MetaTagOpenGraphPreview";
-import { SchemaMarkupGenerator } from "./components/tools/SchemaMarkupGenerator";
-import { UrlSlugUtmBuilder } from "./components/tools/UrlSlugUtmBuilder";
-import { JsonFormatterValidatorDiff } from "./components/tools/JsonFormatterValidatorDiff";
-import { RegexTesterExplainer } from "./components/tools/RegexTesterExplainer";
-import { CronExpressionGenerator } from "./components/tools/CronExpressionGenerator";
-import { Base64JwtDecoder } from "./components/tools/Base64JwtDecoder";
-import { TimestampColorConverter } from "./components/tools/TimestampColorConverter";
-import { TextDiffChecker } from "./components/tools/TextDiffChecker";
-import { AiMicroToolComponent } from "./components/tools/AiMicroToolComponent";
+const HowItWorksPage = lazy(() => import("./components/pages/HowItWorksPage").then((m) => ({ default: m.HowItWorksPage })));
+const UseCasesPage = lazy(() => import("./components/pages/UseCasesPage").then((m) => ({ default: m.UseCasesPage })));
+const DocsHubPage = lazy(() => import("./components/pages/DocsHubPage").then((m) => ({ default: m.DocsHubPage })));
+const BlogPage = lazy(() => import("./components/pages/BlogPage").then((m) => ({ default: m.BlogPage })));
+const FaqPage = lazy(() => import("./components/pages/FaqPage").then((m) => ({ default: m.FaqPage })));
+const AboutPage = lazy(() => import("./components/pages/AboutPage").then((m) => ({ default: m.AboutPage })));
+const ContactPage = lazy(() => import("./components/pages/ContactPage").then((m) => ({ default: m.ContactPage })));
+const PrivacyPage = lazy(() => import("./components/pages/PrivacyPage").then((m) => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import("./components/pages/TermsPage").then((m) => ({ default: m.TermsPage })));
+const SecurityPage = lazy(() => import("./components/pages/SecurityPage").then((m) => ({ default: m.SecurityPage })));
+const XFreeAppPage = lazy(() => import("./components/pages/XFreeAppPage").then((m) => ({ default: m.XFreeAppPage })));
+const GuideIndexPage = lazy(() => import("./components/pages/GuideIndexPage").then((m) => ({ default: m.GuideIndexPage })));
+const GuidePage = lazy(() => import("./components/pages/GuidePage").then((m) => ({ default: m.GuidePage })));
+const StudioPage = lazy(() => import("./components/pages/StudioPage").then((m) => ({ default: m.StudioPage })));
+const GeneratedToolPage = lazy(() => import("./components/pages/GeneratedToolPage").then((m) => ({ default: m.GeneratedToolPage })));
+
+const BulkUrlExtractorSitemap = lazy(() => import("./components/tools/BulkUrlExtractorSitemap").then((m) => ({ default: m.BulkUrlExtractorSitemap })));
+const RobotsTxtGenerator = lazy(() => import("./components/tools/RobotsTxtGenerator").then((m) => ({ default: m.RobotsTxtGenerator })));
+const MetaTagOpenGraphPreview = lazy(() => import("./components/tools/MetaTagOpenGraphPreview").then((m) => ({ default: m.MetaTagOpenGraphPreview })));
+const SchemaMarkupGenerator = lazy(() => import("./components/tools/SchemaMarkupGenerator").then((m) => ({ default: m.SchemaMarkupGenerator })));
+const UrlSlugUtmBuilder = lazy(() => import("./components/tools/UrlSlugUtmBuilder").then((m) => ({ default: m.UrlSlugUtmBuilder })));
+const JsonFormatterValidatorDiff = lazy(() => import("./components/tools/JsonFormatterValidatorDiff").then((m) => ({ default: m.JsonFormatterValidatorDiff })));
+const RegexTesterExplainer = lazy(() => import("./components/tools/RegexTesterExplainer").then((m) => ({ default: m.RegexTesterExplainer })));
+const CronExpressionGenerator = lazy(() => import("./components/tools/CronExpressionGenerator").then((m) => ({ default: m.CronExpressionGenerator })));
+const Base64JwtDecoder = lazy(() => import("./components/tools/Base64JwtDecoder").then((m) => ({ default: m.Base64JwtDecoder })));
+const TimestampColorConverter = lazy(() => import("./components/tools/TimestampColorConverter").then((m) => ({ default: m.TimestampColorConverter })));
+const TextDiffChecker = lazy(() => import("./components/tools/TextDiffChecker").then((m) => ({ default: m.TextDiffChecker })));
+const AiMicroToolComponent = lazy(() => import("./components/tools/AiMicroToolComponent").then((m) => ({ default: m.AiMicroToolComponent })));
+
+function PageLoadingFallback() {
+  return (
+    <div className="flex items-center justify-center py-24 text-slate-400 text-sm" role="status" aria-live="polite">
+      Loading…
+    </div>
+  );
+}
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -339,11 +351,13 @@ export default function App() {
         ) : isStaticRoute ? (
           /* Render Static Page View */
           <div className="p-4 sm:p-8 flex-1 max-w-7xl mx-auto w-full">
-            {renderStaticPage()}
+            <Suspense fallback={<PageLoadingFallback />}>{renderStaticPage()}</Suspense>
           </div>
         ) : activeGeneratedPage ? (
           <div className="flex-1 p-4 sm:p-8">
-            <GeneratedToolPage page={activeGeneratedPage} />
+            <Suspense fallback={<PageLoadingFallback />}>
+              <GeneratedToolPage page={activeGeneratedPage} />
+            </Suspense>
           </div>
         ) : activeTool ? (
           /* Tool Detail Screen */
@@ -357,7 +371,7 @@ export default function App() {
               allTools={PUBLIC_TOOLS}
               onSaveWorkspace={handleSaveWorkspace}
             >
-              {renderToolComponent(activeTool)}
+              <Suspense fallback={<PageLoadingFallback />}>{renderToolComponent(activeTool)}</Suspense>
             </ToolPageLayout>
           </div>
         ) : activeView === "category-hub" ? (

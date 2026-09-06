@@ -229,7 +229,43 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Can it push the extracted URLs straight into a sitemap?", answer: "Yes. Toggle 'Wrap as sitemap' and the tool emits a sitemapindex or urlset XML you can paste into a valid <?xml?> wrapper. For canonical sitemap generation from an authoritative registry, use the dedicated XML Sitemap Generator instead." },
       { question: "Does the input leave my browser?", answer: "No. Extraction runs locally in the browser tab. The site as a whole loads Google AdSense which sets advertising cookies (see the Privacy page), but the pasted text you extract from is never sent to XFree.in or any AI backend." }
     ],
-    relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator"]
+    relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator"],
+    keyFeatures: [
+      "Regex-based URL extraction from raw text or HTML",
+      "Deduplication and per-domain filtering",
+      "Optional tracking-parameter stripping",
+      "Sitemap-index export with automatic chunking",
+    ],
+    supportedInputs: ["text/plain", "text/html"],
+    supportedOutputs: ["text/plain", "application/xml"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "bulk-url-sitemap",
+        name: "Bulk URL Extraction & Sitemap Export",
+        description: "Extract, deduplicate, and domain-filter URLs from pasted text or HTML, then export as an XML sitemap or sitemap index.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: { type: "string", description: "Raw text or HTML to scan for URLs" },
+            dedupe: { type: "boolean", default: true },
+            stripQueryParams: { type: "boolean", default: false },
+            domainFilter: { type: "string", description: "Optional domain to restrict results to" },
+          },
+          required: ["text"],
+        },
+        outputSchema: {
+          type: "object",
+          properties: {
+            urls: { type: "array", items: { type: "string", format: "uri" } },
+            sitemapXml: { type: "string" },
+          },
+        },
+        requiredAuth: false,
+        supportsBatch: true,
+        estimatedLatencyMs: 50,
+      },
+    ],
   },
   {
     id: "xml-sitemap-generator",
@@ -261,7 +297,39 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Does it validate URLs before including them?", answer: "It rejects malformed URLs, non-http(s) schemes, and duplicates in the same list. It does NOT fetch each URL to check for 200 — that's a separate crawl step. Google will drop URLs from your sitemap that 404, redirect, or noindex." },
       { question: "Does my URL list leave the browser?", answer: "No. Sitemap XML is generated locally in your browser tab. The site loads Google AdSense which sets cookies (see the Privacy page), but the URLs you paste are never uploaded." }
     ],
-    relatedToolIds: ["bulk-url-sitemap", "robots-txt-generator"]
+    relatedToolIds: ["bulk-url-sitemap", "robots-txt-generator"],
+    keyFeatures: [
+      "Google/Bing-compliant XML sitemap generation",
+      "Priority and changefreq configuration per URL",
+      "Automatic sitemap-index chunking above 50,000 URLs",
+      "Proper XML escaping and validation",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["application/xml"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "xml-sitemap-generator",
+        name: "XML Sitemap Generation & Validation",
+        description: "Convert a line-separated list of URLs into a schema-compliant XML sitemap, splitting into a sitemap index above the 50,000-URL / 50 MB limit.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            urls: { type: "array", items: { type: "string", format: "uri" } },
+            priority: { type: "number", minimum: 0, maximum: 1 },
+            changefreq: { type: "string", enum: ["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"] },
+          },
+          required: ["urls"],
+        },
+        outputSchema: {
+          type: "object",
+          properties: { sitemapXml: { type: "string" }, sitemapIndexXml: { type: "string", nullable: true } },
+        },
+        requiredAuth: false,
+        supportsBatch: true,
+        estimatedLatencyMs: 50,
+      },
+    ],
   },
   {
     id: "json-formatter",
@@ -315,7 +383,42 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
         answer: "N is the byte offset from the start of the input. The three most common causes are trailing commas, smart quotes copy-pasted from a document, and unescaped newlines inside string values. Look at the exact byte and the character just before it."
       }
     ],
-    relatedToolIds: ["regex-tester", "base64-encoder-decoder"]
+    relatedToolIds: ["regex-tester", "base64-encoder-decoder"],
+    keyFeatures: [
+      "Strict RFC 8259 JSON validation with line/column error markers",
+      "JSON and well-formed XML formatting and minification",
+      "Interactive tree viewer",
+      "Auto-fix for minor syntax repairs",
+    ],
+    supportedInputs: ["application/json", "application/xml"],
+    supportedOutputs: ["application/json", "application/xml"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "json-formatter",
+        name: "JSON/XML Formatting & Validation",
+        description: "Format, minify, validate, and repair JSON or XML with line/column-accurate error diagnostics and a tree view.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            payload: { type: "string", description: "Raw JSON or XML text" },
+            mode: { type: "string", enum: ["format", "minify", "tree"] },
+          },
+          required: ["payload"],
+        },
+        outputSchema: {
+          type: "object",
+          properties: {
+            valid: { type: "boolean" },
+            formatted: { type: "string" },
+            errors: { type: "array", items: { type: "object", properties: { message: { type: "string" }, line: { type: "number" }, column: { type: "number" } } } },
+          },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 30,
+      },
+    ],
   },
   {
     id: "regex-tester",
@@ -347,7 +450,43 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "How large a test string can I paste?", answer: "The engine handles millions of characters, but a single catastrophic-backtracking pattern on a long input will still hang. Start with a small representative sample, verify the pattern behaves, then scale up." },
       { question: "Does my input leave the browser?", answer: "No. The regex engine is your browser's built-in RegExp. The site loads Google AdSense which sets cookies (see the Privacy page), but your pattern and test string never go to XFree.in or any AI backend." }
     ],
-    relatedToolIds: ["json-formatter", "cron-expression-generator"]
+    relatedToolIds: ["json-formatter", "cron-expression-generator"],
+    keyFeatures: [
+      "Live JavaScript (ECMAScript) RegExp evaluation",
+      "Match group and index breakdown",
+      "String replacement preview",
+      "g/i/m flag support with named capture groups",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["text/plain"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "regex-tester",
+        name: "Regex Testing & Match Explanation",
+        description: "Evaluate a JavaScript regular expression against test text, returning match groups, indices, and replacement previews.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            pattern: { type: "string" },
+            flags: { type: "string" },
+            testString: { type: "string" },
+            replacement: { type: "string" },
+          },
+          required: ["pattern", "testString"],
+        },
+        outputSchema: {
+          type: "object",
+          properties: {
+            matches: { type: "array", items: { type: "object", properties: { match: { type: "string" }, index: { type: "number" }, groups: { type: "object" } } } },
+            replaced: { type: "string", nullable: true },
+          },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 20,
+      },
+    ],
   },
   {
     id: "cron-expression-generator",
@@ -379,7 +518,44 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Does GitHub Actions accept these expressions?", answer: "Yes for the 5-field format, but GitHub Actions cron always runs in UTC — there's no way to specify a timezone in the workflow. Convert accordingly." },
       { question: "Does the tool store my schedules?", answer: "No. Everything is local to your browser tab. The site loads Google AdSense which sets cookies (see the Privacy page), but the cron expressions you build never leave the browser." }
     ],
-    relatedToolIds: ["regex-tester", "url-slug-utm-builder"]
+    relatedToolIds: ["regex-tester", "url-slug-utm-builder"],
+    keyFeatures: [
+      "Standard 5-field Unix cron expression builder",
+      "Plain-English schedule translation",
+      "Upcoming execution time calculator",
+      "DST and timezone-aware next-run preview",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["text/plain"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "cron-expression-generator",
+        name: "Cron Expression Generation & Translation",
+        description: "Build a 5-field Unix cron expression from minute/hour/day/month/weekday fields, translate it to plain English, and compute upcoming run times.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            minute: { type: "string" },
+            hour: { type: "string" },
+            dayOfMonth: { type: "string" },
+            month: { type: "string" },
+            dayOfWeek: { type: "string" },
+          },
+        },
+        outputSchema: {
+          type: "object",
+          properties: {
+            expression: { type: "string" },
+            humanReadable: { type: "string" },
+            nextRuns: { type: "array", items: { type: "string", format: "date-time" } },
+          },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 15,
+      },
+    ],
   },
   {
     id: "meta-tag-generator",
@@ -411,7 +587,41 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Facebook still shows my old preview after I updated the tags — why?", answer: "Facebook, LinkedIn, and Twitter all cache OG data per URL. Force a refresh in their respective debuggers: Facebook Sharing Debugger, LinkedIn Post Inspector, Twitter Card Validator. The tool itself only generates the markup — it can't invalidate their caches." },
       { question: "Does the tool upload my image?", answer: "No. Everything renders locally, including the SERP and social card previews. The site loads Google AdSense which sets cookies (see the Privacy page), but neither your metadata nor your OG image URL is transmitted to XFree.in." }
     ],
-    relatedToolIds: ["schema-markup-generator", "robots-txt-generator"]
+    relatedToolIds: ["schema-markup-generator", "robots-txt-generator"],
+    keyFeatures: [
+      "Title/description meta tags with character-length warnings",
+      "Open Graph and Twitter Card markup generation",
+      "Live Google SERP snippet preview",
+      "Live social share card preview",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["text/html"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "meta-tag-generator",
+        name: "Meta Tag & Open Graph Generation",
+        description: "Build title, description, canonical, Open Graph, and Twitter Card meta tags with live SERP and social-card previews.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            title: { type: "string", maxLength: 60 },
+            description: { type: "string", maxLength: 160 },
+            canonicalUrl: { type: "string", format: "uri" },
+            ogImageUrl: { type: "string", format: "uri" },
+            twitterCardType: { type: "string", enum: ["summary", "summary_large_image"] },
+          },
+          required: ["title", "description"],
+        },
+        outputSchema: {
+          type: "object",
+          properties: { htmlSnippet: { type: "string" } },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 15,
+      },
+    ],
   },
   {
     id: "robots-txt-generator",
@@ -443,7 +653,38 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "How is case sensitivity handled?", answer: "User-agent tokens are case-insensitive (`Googlebot` = `googlebot`). Path values are case-sensitive per the spec, matching URL case exactly. `/Admin/` and `/admin/` are different paths." },
       { question: "Does the URL-tester store my rules?", answer: "No. Rule editing and URL testing happen entirely in your browser. The site loads Google AdSense which sets cookies (see the Privacy page), but nothing you type here is uploaded." }
     ],
-    relatedToolIds: ["bulk-url-sitemap", "meta-tag-generator"]
+    relatedToolIds: ["bulk-url-sitemap", "meta-tag-generator"],
+    keyFeatures: [
+      "RFC 9309 compliant robots.txt generation",
+      "Per-user-agent Allow/Disallow rule groups",
+      "URL path crawl-permission tester",
+      "Sitemap directive support",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["text/plain"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "robots-txt-generator",
+        name: "Robots.txt Generation & Rule Testing",
+        description: "Compose RFC 9309 robots.txt rule groups by user-agent and test whether a given path would be allowed or disallowed.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            groups: { type: "array", items: { type: "object", properties: { userAgent: { type: "string" }, allow: { type: "array", items: { type: "string" } }, disallow: { type: "array", items: { type: "string" } } } } },
+            sitemapUrls: { type: "array", items: { type: "string", format: "uri" } },
+            testPath: { type: "string" },
+          },
+        },
+        outputSchema: {
+          type: "object",
+          properties: { robotsTxt: { type: "string" }, testResult: { type: "string", enum: ["allowed", "disallowed"], nullable: true } },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 15,
+      },
+    ],
   },
   {
     id: "schema-markup-generator",
@@ -475,7 +716,38 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Where do I put the generated <script> tag?", answer: "Anywhere in the HTML — <head> or <body>, either works. Most sites put it in <head> for consistency. The important part is that the schema fields match visible content on the page." },
       { question: "Does my input data get sent anywhere?", answer: "No. The generator builds JSON-LD locally in your browser tab. The site loads Google AdSense which sets cookies (see the Privacy page), but the values you enter (names, URLs, prices, etc.) never leave the browser." }
     ],
-    relatedToolIds: ["meta-tag-generator", "bulk-url-sitemap"]
+    relatedToolIds: ["meta-tag-generator", "bulk-url-sitemap"],
+    keyFeatures: [
+      "JSON-LD generation for 9 Schema.org types",
+      "Form-based required-field validation",
+      "Google Rich Results compliance checks",
+      "@graph multi-schema combination support",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["application/ld+json"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "schema-markup-generator",
+        name: "Schema.org JSON-LD Generation",
+        description: "Generate valid JSON-LD structured data for Organization, WebSite, WebPage, SoftwareApplication, Article, BreadcrumbList, FAQPage, HowTo, and Product schema types.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            schemaType: { type: "string", enum: ["Organization", "WebSite", "WebPage", "SoftwareApplication", "Article", "BreadcrumbList", "FAQPage", "HowTo", "Product"] },
+            fields: { type: "object", description: "Type-specific field values" },
+          },
+          required: ["schemaType", "fields"],
+        },
+        outputSchema: {
+          type: "object",
+          properties: { jsonLd: { type: "string" }, valid: { type: "boolean" } },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 15,
+      },
+    ],
   },
   {
     id: "base64-encoder-decoder",
@@ -507,7 +779,43 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Can I paste a token with 4 or 5 segments (JWE)?", answer: "The decoder handles the JWT/JWS 3-segment format (header.payload.signature). JWE (encrypted JWT) has 5 segments and requires the recipient's private key to decrypt — the tool won't and shouldn't try." },
       { question: "Where does my token go?", answer: "Nowhere. Decoding is your browser splitting on '.' and Base64URL-decoding two segments. The site loads Google AdSense which sets cookies (see the Privacy page), but the token you paste stays in the tab. Close the tab when you're done for extra safety." }
     ],
-    relatedToolIds: ["json-formatter", "url-slug-utm-builder"]
+    relatedToolIds: ["json-formatter", "url-slug-utm-builder"],
+    keyFeatures: [
+      "UTF-8 safe Base64 and Base64URL encode/decode",
+      "JWT header and payload decoding",
+      "Standard claim highlighting (iss, sub, aud, exp, iat, nbf, jti)",
+      "Expired-token detection",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["text/plain", "application/json"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "base64-encoder-decoder",
+        name: "Base64/Base64URL Encoding & JWT Inspection",
+        description: "Encode/decode UTF-8 safe Base64 and Base64URL strings, and decode JWT headers and payload claims without signature verification.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            mode: { type: "string", enum: ["base64-encode", "base64-decode", "base64url-encode", "base64url-decode", "jwt-decode"] },
+            input: { type: "string" },
+          },
+          required: ["mode", "input"],
+        },
+        outputSchema: {
+          type: "object",
+          properties: {
+            output: { type: "string" },
+            jwtHeader: { type: "object", nullable: true },
+            jwtPayload: { type: "object", nullable: true },
+            expired: { type: "boolean", nullable: true },
+          },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 10,
+      },
+    ],
   },
   {
     id: "url-slug-utm-builder",
@@ -539,7 +847,42 @@ const HAND_CRAFTED_TOOLS: ToolDefinition[] = [
       { question: "Does UTM tagging affect SEO?", answer: "It shouldn't, if your canonical tags are correct. Google folds parameterized variants into the canonical URL when the tag points at the clean version. Verify canonical is set on the destination page before running a big campaign." },
       { question: "Does the URL leave the browser?", answer: "No. Slug generation and UTM append are pure string operations in your browser tab. The site loads Google AdSense which sets cookies (see the Privacy page), but the URLs you build here are never sent anywhere." }
     ],
-    relatedToolIds: ["bulk-url-sitemap", "base64-encoder-decoder"]
+    relatedToolIds: ["bulk-url-sitemap", "base64-encoder-decoder"],
+    keyFeatures: [
+      "Lowercase hyphenated slug generation with special-character stripping",
+      "Optional non-ASCII transliteration",
+      "UTM parameter builder (source/medium/campaign/term/content)",
+      "Existing query-string merging",
+    ],
+    supportedInputs: ["text/plain"],
+    supportedOutputs: ["text/plain"],
+    pricing: { model: "free", currency: "USD" },
+    capabilities: [
+      {
+        id: "url-slug-utm-builder",
+        name: "URL Slug & UTM Parameter Building",
+        description: "Convert a title string into a clean URL slug and append standard Google Analytics UTM parameters to a destination URL.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            destinationUrl: { type: "string", format: "uri" },
+            utmSource: { type: "string" },
+            utmMedium: { type: "string" },
+            utmCampaign: { type: "string" },
+            utmTerm: { type: "string" },
+            utmContent: { type: "string" },
+          },
+        },
+        outputSchema: {
+          type: "object",
+          properties: { slug: { type: "string" }, taggedUrl: { type: "string" } },
+        },
+        requiredAuth: false,
+        supportsBatch: false,
+        estimatedLatencyMs: 10,
+      },
+    ],
   }
 ];
 

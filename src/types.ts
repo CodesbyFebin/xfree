@@ -130,15 +130,7 @@ export interface VerificationResult {
   issues: string[];
   checksPerformed: string[];
   confidence: number;
-    evidence?: any[];
-}
-
-export interface ExecutionPlan {
-  steps: ExecutionStep[];
-  primaryToolId: string;
-  fallbackToolIds?: string[];
-  constraints: IntentConstraints;
-  confidence: number;
+  evidence?: any[];
 }
 
 export interface IntentConstraints {

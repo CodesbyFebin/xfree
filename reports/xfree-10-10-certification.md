@@ -108,13 +108,14 @@ offline are green. The remaining gaps are (a) 12 transitive dependency advisorie
 
 ## P0 Release Blockers
 
-- [x] Repository builds · typecheck passes · tests pass (20) · `audit:tools` 0 errors
+- [x] Repository builds · typecheck passes · tests pass (62) · `audit:tools` 0 errors
 - [x] No secrets detected · sitemap/robots/canonicals/metadata/structured data valid
 - [x] Documentation builds · README verified
 - [x] Duplicate-slug release blocker fixed (`audit:tools` now `errors=0`)
 - [x] Dependency advisories reduced 12 → 10 via non-breaking `npm audit fix`
 - [x] Bundle code-split (main 202 → 125 KB gzip; cached `react-vendor`)
 - [x] GitHub Pages deploy workflow added
+- [x] Missing `ExecutionPlan` interface fixed in types.ts (duplicate removed)
 - [ ] Live production smoke test on https://www.xfree.in (sandbox-blocked)
 - [ ] GitHub.com metadata verified + Pages published (owner action)
 - [ ] 10 remaining advisories (build-time `@vercel/node`) resolved via major bump (owner action, verify deploy)
