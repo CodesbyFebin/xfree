@@ -28,7 +28,8 @@
       "source": "/api/:path*",
       "has": [
         {
-          "type": "host",
+          "type": "header",
+          "key": "host",
           "value": "app.xfree.in"
         }
       ],
@@ -38,7 +39,8 @@
       "source": "/(.*)",
       "has": [
         {
-          "type": "host",
+          "type": "header",
+          "key": "host",
           "value": "app.xfree.in"
         }
       ],
