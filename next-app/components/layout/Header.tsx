@@ -2,10 +2,31 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { Locale, LOCALES, LOCALE_LABELS } from '@/lib/i18n';
+
+interface HeaderProps {
+  dict: {
+    nav: {
+      home: string;
+      tools: string;
+      pillars: string;
+      guides: string;
+      faq: string;
+      about: string;
+      contact: string;
+      roadmap: string;
+      useCases: string;
+    };
+    common: {
+      language: string;
+    };
+  };
+  locale: Locale;
+}
 
 const NAV_ITEMS = [
   {
-    label: 'Tools',
+    label: 'tools',
     href: '/pillars',
     children: [
       { label: 'All Pillars', href: '/pillars' },
@@ -16,7 +37,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Resources',
+    label: 'resources',
     href: '/guides',
     children: [
       { label: 'All Guides', href: '/guides' },
@@ -26,7 +47,7 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'About',
+    label: 'about',
     href: '/about',
     children: [
       { label: 'About XFree', href: '/about' },
@@ -37,7 +58,7 @@ const NAV_ITEMS = [
   },
 ];
 
-export function Header() {
+export function Header({ dict, locale }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -56,7 +77,7 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link
-          href="/"
+          href={`/${locale}`}
           className="flex items-center gap-2.5 group"
           aria-label="XFree homepage"
         >
@@ -79,17 +100,17 @@ export function Header() {
           {NAV_ITEMS.map((item) => (
             <div key={item.label} className="relative group">
               <Link
-                href={item.href}
+                href={`/${locale}${item.href}`}
                 className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all flex items-center gap-1"
               >
-                {item.label}
+                {dict.nav[item.label as keyof typeof dict.nav]}
                 <span aria-hidden="true">▾</span>
               </Link>
               <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-cyber-surface border border-cyber-border rounded-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl z-50">
                 {item.children.map((child) => (
                   <Link
                     key={child.href}
-                    href={child.href}
+                    href={`/${locale}${child.href}`}
                     className="block px-3 py-2 text-sm text-cyber-muted hover:text-cyber-glow hover:bg-cyber-glow/5 rounded transition-all"
                   >
                     {child.label}
@@ -99,19 +120,39 @@ export function Header() {
             </div>
           ))}
           <Link
-            href="/contact"
+            href={`/${locale}/contact`}
             className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all"
           >
-            Contact
+            {dict.nav.contact}
           </Link>
         </nav>
 
         <div className="flex items-center gap-3">
+          <div className="relative group">
+            <button
+              className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all flex items-center gap-1"
+              aria-label={dict.common.language}
+            >
+              {locale.toUpperCase()}
+              <span aria-hidden="true">▾</span>
+            </button>
+            <div className="absolute top-full right-0 mt-2 min-w-[120px] bg-cyber-surface border border-cyber-border rounded-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl z-50">
+              {LOCALES.map((l) => (
+                <Link
+                  key={l}
+                  href={`/${l}`}
+                  className="block px-3 py-2 text-sm text-cyber-muted hover:text-cyber-glow hover:bg-cyber-glow/5 rounded transition-all"
+                >
+                  {LOCALE_LABELS[l]}
+                </Link>
+              ))}
+            </div>
+          </div>
           <Link
-            href="/pillars"
+            href={`/${locale}/pillars`}
             className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded"
           >
-            <span>All Tools</span>
+            <span>{dict.nav.tools}</span>
           </Link>
         </div>
       </div>

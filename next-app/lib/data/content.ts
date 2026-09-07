@@ -159,15 +159,7 @@ export const FAQ_DATA = [
   },
 ];
 
-export const STATISTICS = [
-  { label: 'Free Tools', value: '150+' },
-  { label: 'Monthly Users', value: '500K+' },
-  { label: 'Tools Launched', value: '55' },
-  { label: 'User Reviews', value: '12K+' },
-  { label: 'Uptime', value: '99.9%' },
-  { label: 'Countries', value: '120+' },
-];
-
+export const STATISTICS = { tools: "57", pillars: "10", languages: "6", privacy: "100%", uptime: "99.9%", users: "500K+", countries: "120+" };
 export const FEATURED_TOOLS: ToolDefinition[] = [
   {
     id: 'json-formatter',
