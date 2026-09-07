@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { TOOLS as ALL_TOOLS } from '@/lib/data/tools';
+import { PILLARS as ALL_PILLARS } from '@/lib/data/pillars';
 
 interface Tool {
   slug: string;
@@ -22,13 +24,6 @@ interface Pillar {
 interface FAQ {
   q: string;
   a: string;
-}
-
-interface Testimonial {
-  name: string;
-  role: string;
-  content: string;
-  rating: number;
 }
 
 interface Stat {
@@ -67,9 +62,13 @@ const PUBLIC_PILLARS: Pillar[] = [
   { slug: 'mobile-development', num: '12', title: 'Mobile Development Tools', desc: 'iOS, Android, React Native' },
 ];
 
+// Real counts (ALL_TOOLS.length / ALL_PILLARS.length), not hardcoded
+// literals — this replaced a fabricated "100K+ Monthly Users" (no real
+// analytics backing it) and "270+ Tools Available" (real count is under
+// 60) that shipped here before.
 const STATS: Stat[] = [
-  { value: '100K+', label: 'Monthly Users' },
-  { value: '270+', label: 'Tools Available' },
+  { value: `${ALL_TOOLS.length}+`, label: 'Tools Available' },
+  { value: `${ALL_PILLARS.length}`, label: 'Pillar Hubs' },
   { value: '0', label: 'Sign-ups Required' },
   { value: '100%', label: 'Client-Side' },
   { value: 'MIT', label: 'Open Source' },
@@ -83,13 +82,6 @@ const FAQS: FAQ[] = [
   { q: 'What is XFree alternative to CodeBeautify?', a: 'XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs 100% client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit.' },
   { q: 'Can I use XFree offline?', a: 'Yes. Because XFree tools are static HTML with embedded JavaScript, you can save any tool page and use it completely offline without an internet connection.' },
   { q: 'Is XFree open source?', a: 'Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our GitHub repository.' },
-];
-
-const TESTIMONIALS: Testimonial[] = [
-  { name: 'Sarah Chen', role: 'Senior Developer at Stripe', content: 'XFree JSON Formatter is my go-to tool for debugging APIs. The tree view is incredibly useful.', rating: 5 },
-  { name: 'Marcus Rodriguez', role: 'DevOps Engineer', content: 'The Cron Generator saves me hours every week. Clean interface, accurate output.', rating: 5 },
-  { name: 'Emma Thompson', role: 'SEO Specialist', content: 'Finally an SEO tool that respects privacy. The sitemap generator works perfectly.', rating: 5 },
-  { name: 'David Kim', role: 'Freelance Developer', content: 'No signup required, works offline, open source. XFree is how all tools should be built.', rating: 5 },
 ];
 
 const USE_CASES: UseCase[] = [
@@ -627,35 +619,6 @@ export default function HomePage() {
             </div>
             <div className="text-center mt-8">
               <Link href="/pillars" className="cyber-btn text-sm px-6 py-3 rounded inline-block"><span>View All XFree Pillars →</span></Link>
-            </div>
-          </div>
-        </section>
-
-        {/* TESTIMONIALS */}
-        <section className="py-16 px-4 bg-cyber-surface/50" aria-labelledby="testimonials-heading">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10">
-              <h2 id="testimonials-heading" className="text-2xl font-bold text-white mb-2 font-mono"><span className="text-cyber-glow">"</span> What XFree Users Say</h2>
-              <p className="text-cyber-muted font-mono text-sm">// Real feedback from developers who use XFree daily.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {TESTIMONIALS.map((t, i) => (
-                <div key={i} className="cyber-card p-5">
-                  <div className="flex gap-1 mb-3">
-                    {Array.from({ length: t.rating }).map((_, j) => (
-                      <span key={j} className="text-cyber-amber">★</span>
-                    ))}
-                  </div>
-                  <p className="text-sm text-cyber-muted mb-4">"{t.content}"</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-cyber-glow/20 flex items-center justify-center text-xs font-bold text-cyber-glow">{t.name[0]}</div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">{t.name}</p>
-                      <p className="text-[10px] text-cyber-muted">{t.role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>

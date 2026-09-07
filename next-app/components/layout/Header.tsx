@@ -3,14 +3,19 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
+// Category hrefs verified against lib/data/tools.ts's CATEGORIES.slug (what
+// app/categories/[category]/page.tsx actually matches against) — two of
+// these were previously wrong (/categories/dev-tools and /categories/seo-tools
+// match no real category slug; the real ones are developer-tools and
+// seo-url-tools).
 const NAV_ITEMS = [
   {
     label: 'Tools',
     href: '/pillars',
     children: [
       { label: 'All Pillars', href: '/pillars' },
-      { label: 'Developer Tools', href: '/categories/dev-tools' },
-      { label: 'SEO Tools', href: '/categories/seo-tools' },
+      { label: 'Developer Tools', href: '/categories/developer-tools' },
+      { label: 'SEO Tools', href: '/categories/seo-url-tools' },
       { label: 'AI Tools', href: '/categories/ai-tools' },
       { label: 'Security Tools', href: '/categories/security-tools' },
     ],
@@ -55,24 +60,20 @@ export function Header() {
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 group"
-          aria-label="XFree homepage"
-        >
-          <div className="w-9 h-9 rounded-lg border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 group-hover:bg-cyber-glow/10 transition-all neon-box-green">
-            <span className="text-sm font-black text-cyber-glow tracking-tighter font-cyber">
-              X
-            </span>
-          </div>
-          <div>
-            <span className="text-base font-bold text-white tracking-tight">
-              XFree<span className="text-cyber-glow">.in</span>
-            </span>
-            <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-2">
-              Free Developer Tools
-            </span>
-          </div>
+        <Link href="/" className="flex items-center gap-2 group" aria-label="XFree homepage">
+          {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size logo, next/image's srcset generation isn't a fit for a hand-built 1x/2x pair */}
+          <picture className="shrink-0">
+            <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
+            <img
+              src="/logo-wordmark-80.png"
+              srcSet="/logo-wordmark-80.png 1x, /logo-wordmark-160.png 2x"
+              alt="XFree"
+              width={160}
+              height={80}
+              decoding="async"
+              style={{ height: '36px', width: '72px' }}
+            />
+          </picture>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
