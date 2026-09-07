@@ -11,6 +11,8 @@ import {
 } from "./data/pillarRegistry";
 import { INDEXABLE_TOOLS, INDEXABLE_TOOL_SLUGS } from "./data/toolsRegistry";
 
+const [darkMode, setDarkMode] = useState(false);
+
 // ===== SEO / AEO / GEO — dynamic document meta tag injection =====
 interface MetaOptions {
   title?: string;
@@ -241,22 +243,29 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden xl:flex items-center gap-1 lang-switcher-desktop" role="navigation" aria-label="Language selector">
-              <a href="/" className="lang-switcher active" aria-label="English">EN</a>
-              <a href="/es/" className="lang-switcher" aria-label="Español">ES</a>
-              <a href="/fr/" className="lang-switcher" aria-label="Français">FR</a>
-              <a href="/pt/" className="lang-switcher" aria-label="Português">PT</a>
-              <a href="/de/" className="lang-switcher" aria-label="Deutsch">DE</a>
-              <a href="/ja/" className="lang-switcher" aria-label="日本語">JA</a>
-            </div>
-            <a
-              href="https://app.xfree.in/"
-              className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring"
-              rel="noopener"
-            >
-              <span>Launch Studio →</span>
-            </a>
+           <div className="flex items-center gap-3">
+             <div className="hidden xl:flex items-center gap-1 lang-switcher-desktop" role="navigation" aria-label="Language selector">
+               <a href="/" className="lang-switcher active" aria-label="English">EN</a>
+               <a href="/es/" className="lang-switcher" aria-label="Español">ES</a>
+               <a href="/fr/" className="lang-switcher" aria-label="Français">FR</a>
+               <a href="/pt/" className="lang-switcher" aria-label="Português">PT</a>
+               <a href="/de/" className="lang-switcher" aria-label="Deutsch">DE</a>
+               <a href="/ja/" className="lang-switcher" aria-label="日本語">JA</a>
+             </div>
+             <button
+               onClick={() => setDarkMode(!darkMode)}
+               className="p-2 rounded-lg hover:bg-cyber-cyan/20 transition-colors focus-ring"
+               aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+             >
+               {darkMode ? "🌙 Light Mode" : "☀️ Dark Mode"}
+             </button>
+             <a
+               href="https://app.xfree.in/"
+               className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring"
+               rel="noopener"
+             >
+               <span>Launch Studio →</span>
+             </a>
             <button
               className="mobile-menu-btn"
               onClick={toggleMobile}
