@@ -12,7 +12,7 @@ import { generateToolSchema, generateFAQSchema, generateHowToSchema, generateBre
 import { USE_CASES, USER_TESTIMONIALS } from '@/lib/data/content';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
 
-interface Props { params: Promise<{ locale: string; slug?: string[] }>; }
+interface Props { params: { locale: string; slug?: string[] } | Promise<{ locale: string; slug?: string[] }>; }
 
 export async function generateStaticParams() {
   const params: { locale: string; slug: string[] }[] = [];
@@ -25,8 +25,12 @@ export async function generateStaticParams() {
   return params;
 }
 
+async function resolveParams(params: Props['params']) {
+  return params instanceof Promise ? await params : params;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, slug } = await params;
+  const { locale, slug } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   if (!slug || slug.length === 0) {
     return { title: `${dict.nav.tools} | XFree`, description: `Browse all XFree developer and SEO tools.`, keywords: ['free developer tools', 'seo tools', 'json formatter', 'regex tester', 'XFree'], openGraph: { title: `${dict.nav.tools} | XFree`, description: 'Browse all XFree tools.', type: 'website' } };
@@ -43,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ToolPage({ params }: Props) {
-  const { locale, slug } = await params;
+  const { locale, slug } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   if (!slug || slug.length === 0) return <ToolsIndex dict={dict} locale={currentLocale} />;

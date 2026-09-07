@@ -9,7 +9,7 @@ import { buildCanonical } from '@/lib/canonical';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
 
-interface Props { params: Promise<{ locale: string; category: string }>; }
+interface Props { params: { locale: string; category: string } | Promise<{ locale: string; category: string }>; }
 
 export async function generateStaticParams() {
   const params: { locale: string; category: string }[] = [];
@@ -21,15 +21,19 @@ export async function generateStaticParams() {
   return params;
 }
 
+async function resolveParams(params: Props['params']) {
+  return params instanceof Promise ? await params : params;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, category } = await params;
+  const { locale, category } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const categoryInfo = PILLARS.find(p => p.category === category);
   return { title: `XFree ${categoryInfo?.name || category} | Tools`, description: categoryInfo?.description || `XFree ${category} tools`, keywords: ['XFree', category, 'tools', 'free'], alternates: { canonical: buildCanonical(`/categories/${category}`, { language: locale }) }, openGraph: { title: `XFree ${categoryInfo?.name || category}`, description: categoryInfo?.description || `XFree ${category} tools`, type: 'website', url: buildCanonical(`/categories/${category}`, { language: locale }) } };
 }
 
 export default async function CategoryPage({ params }: Props) {
-  const { locale, category } = await params;
+  const { locale, category } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   const categoryPillars = PILLARS.filter(p => p.category === category);

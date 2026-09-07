@@ -5,17 +5,21 @@ import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
 
-interface Props { params: Promise<{ locale: string }>; }
+interface Props { params: { locale: string } | Promise<{ locale: string }>; }
 
 export async function generateStaticParams() { return LOCALES.map(locale => ({ locale })); }
 
+async function resolveParams(params: Props['params']) {
+  return params instanceof Promise ? await params : params;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   return { title: `XFree Privacy Policy`, description: 'XFree privacy policy — your data stays on your device.', keywords: ['XFree privacy', 'privacy policy', 'data protection'], alternates: { canonical: `https://www.xfree.in/${locale}/privacy` }, openGraph: { title: 'XFree Privacy', description: 'Privacy policy.', type: 'website', url: `https://www.xfree.in/${locale}/privacy` } };
 }
 
 export default async function PrivacyPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   const breadcrumbItems = [{ name: 'Home', href: `/${locale}` }, { name: 'Privacy', href: `/${locale}/privacy` }];

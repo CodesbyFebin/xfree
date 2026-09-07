@@ -5,17 +5,22 @@ import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
 
-interface Props { params: Promise<{ locale: string }>; }
+interface Props { params: { locale: string } | Promise<{ locale: string }>; }
 
 export async function generateStaticParams() { return LOCALES.map(locale => ({ locale })); }
 
+async function resolveParams(params: Props['params']) {
+  if (!params) return { locale: 'en' };
+  return params instanceof Promise ? await params : params;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   return { title: `XFree Contact | Get in Touch`, description: 'Contact XFree for support, feedback, or partnerships.', keywords: ['XFree contact', 'support', 'feedback', 'developer tools'], alternates: { canonical: `https://www.xfree.in/${locale}/contact` }, openGraph: { title: 'XFree Contact', description: 'Get in touch.', type: 'website', url: `https://www.xfree.in/${locale}/contact` } };
 }
 
 export default async function ContactPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   const breadcrumbItems = [{ name: 'Home', href: `/${locale}` }, { name: 'Contact', href: `/${locale}/contact` }];

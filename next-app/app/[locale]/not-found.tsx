@@ -3,10 +3,14 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
 
-interface Props { params: Promise<{ locale: string }>; }
+interface Props { params: { locale: string } | Promise<{ locale: string }>; }
+
+async function resolveParams(params: Props['params']) {
+  return params instanceof Promise ? await params : params;
+}
 
 export default async function NotFound({ params }: Props) {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   const currentLocale = (locale && LOCALES.includes(locale as Locale)) ? locale : 'en';
   const dict = getDictionary(currentLocale as Locale);
   return (

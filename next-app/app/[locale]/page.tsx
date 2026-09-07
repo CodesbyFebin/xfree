@@ -4,18 +4,21 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { PILLARS } from '@/lib/data/pillars';
-import { TOOLS } from '@/lib/data/toolsWithSEO';
 import { USER_TESTIMONIALS, USE_CASES, FAQ_DATA, STATISTICS } from '@/lib/data/content';
-import { buildCanonical } from '@/lib/canonical';
 import { generateSoftwareApplicationSchema, generateFAQSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
+import { InteractiveHero } from '@/components/home/InteractiveHero';
 
-interface Props { params: Promise<{ locale: string }>; }
+interface Props { params: { locale: string } | Promise<{ locale: string }>; }
 
 export async function generateStaticParams() { return LOCALES.map(locale => ({ locale })); }
 
+async function resolveParams(params: Props['params']) {
+  return params instanceof Promise ? await params : params;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   return {
     title: 'XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup',
     description: 'XFree is the ultimate free online app for developers. Access privacy-first SEO tools, JSON formatters, HTML minifiers, and crypto utilities. 100% client-side, no signup required.',
@@ -30,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function HomePage({ params }: Props) {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   const schema = generateSoftwareApplicationSchema();
@@ -49,15 +52,7 @@ export default async function HomePage({ params }: Props) {
       <main id="main-content" className="pt-20">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <Breadcrumbs items={[{ name: 'Home', href: `/${locale}` }]} />
-          <section className="text-center py-16 sm:py-24">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-xs font-mono mb-6"><span className="w-2 h-2 rounded-full bg-cyber-glow animate-pulse" /> v1.0 — 58 Tools Live</div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white font-mono mb-6 leading-tight"><span className="text-cyber-glow">$</span> XFree<span className="block text-2xl sm:text-3xl md:text-4xl font-bold text-cyber-muted mt-2">{dict.hero.title}</span></h1>
-            <p className="text-cyber-muted max-w-2xl mx-auto text-base sm:text-lg mb-8">{dict.hero.subtitle}</p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Link href={`/${locale}/pillars`} className="cyber-btn cyber-btn-filled px-6 py-3 rounded text-sm font-mono">{dict.hero.cta}</Link>
-              <Link href={`/${locale}/tools`} className="cyber-btn cyber-btn-outline px-6 py-3 rounded text-sm font-mono">Browse All Tools</Link>
-            </div>
-          </section>
+          <InteractiveHero pillars={PILLARS} locale={currentLocale} dict={dict} />
           <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
             <div className="cyber-card p-4 text-center"><div className="text-2xl font-black text-cyber-glow font-mono">{STATISTICS.tools}</div><div className="text-xs text-cyber-muted font-mono mt-1">{dict.hero.stats.tools}</div></div>
             <div className="cyber-card p-4 text-center"><div className="text-2xl font-black text-cyber-glow font-mono">{STATISTICS.pillars}</div><div className="text-xs text-cyber-muted font-mono mt-1">{dict.hero.stats.pillars}</div></div>
@@ -73,23 +68,6 @@ export default async function HomePage({ params }: Props) {
               ))}
             </div>
             <div className="text-center mt-6"><Link href={`/${locale}/pillars`} className="text-cyber-glow text-sm font-mono hover:underline">{dict.pillars.viewAll} →</Link></div>
-          </section>
-          <section className="mb-16"><h2 className="text-2xl font-bold text-white font-mono mb-6"><span className="text-cyber-glow">$</span> {dict.nav.tools}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {TOOLS.filter(t => t.indexable).slice(0, 9).map(tool => (
-                <Link key={tool.id} href={`/${locale}/tools/${tool.slug}`} className="cyber-card p-4 group block">
-                  <h3 className="text-sm font-semibold text-white group-hover:text-cyber-glow transition-colors font-mono mb-1">XFree {tool.title}</h3><p className="text-xs text-cyber-muted line-clamp-2 mb-3">{tool.shortDescription}</p><div className="flex items-center justify-between"><span className="text-[10px] text-cyber-dim font-mono">{tool.tags.slice(0, 3).join(', ')}</span><span className="text-cyber-glow text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity">{dict.tools.useFree}</span></div>
-                </Link>
-              ))}
-            </div>
-          </section>
-          <section className="mb-16"><h2 className="text-2xl font-bold text-white font-mono mb-6"><span className="text-cyber-glow">$</span> {dict.nav.useCases}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {USE_CASES.slice(0, 6).map(uc => (
-                <div key={uc.id} className="cyber-card p-5"><h3 className="text-sm font-semibold text-white font-mono mb-2">{uc.title}</h3><p className="text-xs text-cyber-muted">{uc.description}</p><div className="flex flex-wrap gap-2 mt-3">{uc.tools.slice(0, 3).map(tSlug => { const t = TOOLS.find(x => x.id === tSlug); return t ? (<Link key={tSlug} href={`/${locale}/tools/${tSlug}`} className="text-[10px] px-2 py-1 rounded bg-cyber-bg border border-cyber-border text-cyber-glow hover:text-white transition-colors font-mono">{t.title}</Link>) : null; })}</div>
-                </div>
-              ))}
-            </div>
           </section>
           <section className="mb-16"><h2 className="text-2xl font-bold text-white font-mono mb-6"><span className="text-cyber-glow">$</span> What Users Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

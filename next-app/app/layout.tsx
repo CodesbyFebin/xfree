@@ -342,7 +342,6 @@ export default function RootLayout({
       </head>
       <body className="bg-cyber-bg text-cyber-text antialiased min-h-screen">
         {children}
-        <AnalyticsWidgets />
       </body>
     </html>
   );

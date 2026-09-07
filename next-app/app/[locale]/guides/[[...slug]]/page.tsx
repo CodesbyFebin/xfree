@@ -11,7 +11,7 @@ import { buildCanonical } from '@/lib/canonical';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
 
-interface Props { params: Promise<{ locale: string; slug?: string[] }>; }
+interface Props { params: { locale: string; slug?: string[] } | Promise<{ locale: string; slug?: string[] }>; }
 
 export async function generateStaticParams() {
   const params: { locale: string; slug: string[] }[] = [];
@@ -23,8 +23,12 @@ export async function generateStaticParams() {
   return params;
 }
 
+async function resolveParams(params: Props['params']) {
+  return params instanceof Promise ? await params : params;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, slug } = await params;
+  const { locale, slug } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   if (!slug || slug.length === 0) {
     return { title: 'XFree Guides | Developer Tutorials', description: 'Tutorials and documentation for using XFree tools effectively.', keywords: ['XFree guides', 'developer tutorials', 'JSON formatting', 'regex patterns'], alternates: { canonical: buildCanonical('/guides', { language: locale }) } };
@@ -38,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function GuidePage({ params }: Props) {
-  const { locale, slug } = await params;
+  const { locale, slug } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   if (!slug || slug.length === 0) return <GuidesIndex dict={dict} locale={currentLocale} />;

@@ -5,7 +5,11 @@ import { Metadata } from 'next';
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: { locale: string } | Promise<{ locale: string }>;
+}
+
+async function resolveParams(params: LocaleLayoutProps['params']) {
+  return params instanceof Promise ? await params : params;
 }
 
 export async function generateStaticParams() {
@@ -13,7 +17,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: LocaleLayoutProps): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   return {
     title: dict.seo.pillarsTitle,
@@ -27,7 +31,7 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
 }
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   return (

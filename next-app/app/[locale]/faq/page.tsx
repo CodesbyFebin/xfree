@@ -6,17 +6,21 @@ import { FAQ_DATA } from '@/lib/data/content';
 import { generateFAQSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { Locale, LOCALES, getDictionary } from '@/lib/i18n';
 
-interface Props { params: Promise<{ locale: string }>; }
+interface Props { params: { locale: string } | Promise<{ locale: string }>; }
 
 export async function generateStaticParams() { return LOCALES.map(locale => ({ locale })); }
 
+async function resolveParams(params: Props['params']) {
+  return params instanceof Promise ? await params : params;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   return { title: `XFree FAQ | Frequently Asked Questions`, description: 'Frequently asked questions about XFree free developer tools.', keywords: ['XFree FAQ', 'frequently asked questions', 'free tools', 'developer tools'], alternates: { canonical: `https://www.xfree.in/${locale}/faq` }, openGraph: { title: 'XFree FAQ', description: 'Frequently asked questions.', type: 'website', url: `https://www.xfree.in/${locale}/faq` } };
 }
 
 export default async function FAQPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale } = await resolveParams(params);
   const dict = getDictionary(locale as Locale);
   const currentLocale = locale as Locale;
   const schema = generateFAQSchema(FAQ_DATA);
