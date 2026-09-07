@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { Inter, JetBrains_Mono, Orbitron } from 'next/font/google';
+import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import { AnalyticsWidgets } from '@/components/analytics/Widgets';
 import { PWARegister } from '@/components/PWARegister';
 import { routing, type Locale } from '@/i18n/routing';
@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
-const orbitron = Orbitron({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-orbitron',
   display: 'swap',
@@ -190,7 +190,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir="ltr"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}
     >
       <head>
         <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />

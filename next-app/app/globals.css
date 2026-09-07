@@ -23,7 +23,7 @@
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background: #00ff41;
+    background: #39ff14;
   }
 
   body {
@@ -60,7 +60,7 @@
     background: #1a1a2e;
     border: 1px solid #2a2a3e;
     border-radius: 4px;
-    color: #00ff41;
+    color: #39ff14;
   }
 
   details summary {
@@ -76,7 +76,7 @@
     content: '+';
     font-size: 1.25rem;
     font-weight: 300;
-    color: #00ff41;
+    color: #39ff14;
     transition: transform 0.2s;
     flex-shrink: 0;
     font-family: 'JetBrains Mono', monospace;
@@ -109,7 +109,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, #00ff41, transparent);
+    background: linear-gradient(90deg, transparent, #39ff14, transparent);
     opacity: 0;
     transition: opacity 0.3s;
   }
@@ -132,8 +132,8 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border: 1px solid #00ff41;
-    color: #00ff41;
+    border: 1px solid #39ff14;
+    color: #39ff14;
     background: transparent;
     cursor: pointer;
     transition: all 0.2s;
@@ -146,7 +146,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: #00ff41;
+    background: #39ff14;
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s;
@@ -167,9 +167,9 @@
   }
 
   .cyber-btn-filled {
-    background: #00ff41;
+    background: #39ff14;
     color: #050508;
-    border-color: #00ff41;
+    border-color: #39ff14;
   }
 
   .cyber-btn-filled::before {
@@ -177,7 +177,7 @@
   }
 
   .cyber-btn-filled:hover {
-    color: #00ff41;
+    color: #39ff14;
   }
 
   .cyber-btn-cyan {
@@ -194,7 +194,7 @@
   }
 
   .neon-green {
-    text-shadow: 0 0 7px #00ff41, 0 0 10px #00ff41, 0 0 21px #00ff41;
+    text-shadow: 0 0 7px #39ff14, 0 0 10px #39ff14, 0 0 21px #39ff14;
   }
 
   .neon-cyan {
@@ -262,7 +262,7 @@
   }
 
   .cmd-bar:focus-within {
-    border-color: #00ff41 !important;
+    border-color: #39ff14 !important;
     box-shadow: 0 0 0 4px rgba(0, 255, 65, 0.1), 0 10px 40px -10px rgba(0, 255, 65, 0.15);
   }
 
@@ -313,7 +313,7 @@
 
   .badge-local {
     background: rgba(0, 255, 65, 0.1);
-    color: #00ff41;
+    color: #39ff14;
     border: 1px solid rgba(0, 255, 65, 0.3);
   }
 
@@ -330,7 +330,7 @@
   }
 
   .focus-ring:focus-visible {
-    outline: 2px solid #00ff41;
+    outline: 2px solid #39ff14;
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -339,7 +339,7 @@
     position: absolute;
     top: -50px;
     left: 0;
-    background: #00ff41;
+    background: #39ff14;
     color: #050508;
     padding: 8px 16px;
     z-index: 10000;
@@ -395,7 +395,7 @@
     position: absolute;
     width: 12px;
     height: 12px;
-    border-color: #00ff41;
+    border-color: #39ff14;
     opacity: 0.5;
   }
 
@@ -415,7 +415,7 @@
 
   .data-line {
     height: 1px;
-    background: linear-gradient(90deg, transparent, #00ff41, transparent);
+    background: linear-gradient(90deg, transparent, #39ff14, transparent);
     opacity: 0.3;
   }
 
@@ -432,7 +432,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, #00ff41, transparent);
+    background: linear-gradient(90deg, transparent, #39ff14, transparent);
     opacity: 0;
     transition: opacity 0.2s;
   }
@@ -464,18 +464,18 @@
 
   .lang-switcher:hover {
     background: #1a1a2e;
-    color: #00ff41;
+    color: #39ff14;
     border-color: rgba(0, 255, 65, 0.3);
   }
 
   .lang-switcher.active {
     background: rgba(0, 255, 65, 0.1);
-    color: #00ff41;
-    border-color: #00ff41;
+    color: #39ff14;
+    border-color: #39ff14;
   }
 
   .hex-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L55 20v20L30 55 5 40V20z' fill='none' stroke='%2300ff41' stroke-width='.3' opacity='.05'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L55 20v20L30 55 5 40V20z' fill='none' stroke='%2339ff14' stroke-width='.3' opacity='.05'/%3E%3C/svg%3E");
   }
 
   .nav-dropdown {
@@ -519,7 +519,7 @@
   .nav-dropdown-item:hover,
   .nav-dropdown-item:focus {
     background: rgba(0, 255, 65, 0.05);
-    color: #00ff41;
+    color: #39ff14;
     padding-left: 20px;
     outline: none;
   }
@@ -562,7 +562,7 @@
     display: none;
     background: transparent;
     border: 1px solid #1a1a2e;
-    color: #00ff41;
+    color: #39ff14;
     width: 44px;
     height: 44px;
     border-radius: 8px;
@@ -717,6 +717,11 @@
     left: 0;
     width: 100%;
     height: 100%;
+    /* data-text can carry a literal newline to mirror a multi-line
+       title (e.g. hero h1's <br/>) - without this, the generated
+       content collapses it to a space and wraps differently than the
+       real text, so the "glitch" reads as duplicated/ghosted text. */
+    white-space: pre-line;
   }
 
   .glitch::before {

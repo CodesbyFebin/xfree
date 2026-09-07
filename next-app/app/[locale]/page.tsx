@@ -231,7 +231,7 @@ export default function HomePage() {
               <span>$ {t('badge')}</span>
             </div>
 
-            <h1 id="hero-heading" className="hero-title text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4 glitch anim-slide-up" data-text="XFree: The Ultimate Free Developer, SEO & Privacy Micro-Tools App" style={{ animationDelay: '0.1s' }}>
+            <h1 id="hero-heading" className="hero-title text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4 glitch anim-slide-up" data-text={`${t('titleLine1')}\n${t('titleLine2')}`} style={{ animationDelay: '0.1s' }}>
               {t('titleLine1')}<br />
               <span className="text-cyber-glow neon-green">{t('titleLine2')}</span>
             </h1>
@@ -590,7 +590,7 @@ export default function HomePage() {
         <section className="py-16 px-4 relative overflow-hidden" aria-labelledby="cta-heading">
           <div className="absolute inset-0 matrix-grid opacity-50" aria-hidden="true" />
           <div className="relative max-w-3xl mx-auto text-center">
-            <h2 id="cta-heading" className="text-3xl sm:text-4xl font-black text-white mb-4 font-mono glitch" data-text="Ready to Get X Done with XFree?">
+            <h2 id="cta-heading" className="text-3xl sm:text-4xl font-black text-white mb-4 font-mono glitch" data-text={t('ctaHeading')}>
               {t('ctaHeading')}
             </h2>
             <p className="text-cyber-muted mb-8 max-w-lg mx-auto font-mono text-sm">// {t('ctaSubheading')}</p>

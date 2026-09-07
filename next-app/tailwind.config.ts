@@ -10,6 +10,8 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-jetbrains)', 'monospace'],
+        // Variable name kept as --font-orbitron to avoid touching every
+        // call site; it now loads Space Grotesk (next-app/[locale]/layout.tsx).
         cyber: ['var(--font-orbitron)', 'sans-serif'],
       },
       colors: {
@@ -18,7 +20,7 @@ const config: Config = {
           surface: '#0a0a10',
           card: '#0d0d14',
           border: '#1a1a2e',
-          glow: '#00ff41',
+          glow: '#39ff14',
           cyan: '#00f0ff',
           magenta: '#ff00aa',
           purple: '#a855f7',
