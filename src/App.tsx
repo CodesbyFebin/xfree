@@ -13,6 +13,7 @@ import { INDEXABLE_TOOLS, INDEXABLE_TOOL_SLUGS } from "./data/toolsRegistry";
 import { STATIC_ROUTES } from "./data/routes";
 import { GUIDES, findGuide } from "./data/guides";
 import type { ToolDefinition } from "./types";
+import { CommandPalette } from "./components/CommandPalette";
 
 // Only these 10 tools have a real, dedicated interactive component (see
 // src/components/tools/). Everything else renders ToolDetail's informational
@@ -434,14 +435,12 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
 };
 
 // ===== Hero Section =====
-const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
+const Hero: React.FC<{ onNavigate: (path: string) => void; onOpenSearch: (query?: string) => void }> = ({ onOpenSearch }) => {
   const [search, setSearch] = useState("");
 
-  const handleKeydown = (e: React.KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-      e.preventDefault();
-      document.getElementById("heroSearch")?.focus();
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onOpenSearch(search);
   };
 
   return (
@@ -525,7 +524,7 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
               className="anim-slide-up max-w-2xl mx-auto lg:mx-0 scroll-mt-24"
               style={{ animationDelay: ".45s" }}
             >
-              <form action="/search" method="get" role="search" onKeyDown={handleKeydown}>
+              <form role="search" onSubmit={handleSubmit}>
                 <div className="cmd-bar relative flex items-center bg-cyber-card rounded-lg p-1.5 border border-cyber-border transition-all duration-300 corner-brackets">
                   <div className="pl-4 pr-2 text-cyber-glow" aria-hidden="true">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -544,6 +543,7 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
                     autoComplete="off"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    onFocus={() => onOpenSearch(search)}
                   />
                   <div className="flex items-center gap-2 pr-2 shrink-0">
                     <kbd aria-hidden="true" className="hidden sm:inline-flex">⌘K</kbd>
@@ -2352,10 +2352,17 @@ const StaticPage: React.FC<{ path: string; onNavigate: (path: string) => void }>
 // ===== Main App Component =====
 const App: React.FC = () => {
   const [route, setRoute] = useState<Route>(() => getRouteFromPath(window.location.pathname));
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchInitialQuery, setSearchInitialQuery] = useState("");
 
   const navigate = useCallback((path: string) => {
     setRoute(getRouteFromPath(path));
     window.history.pushState({}, "", path);
+  }, []);
+
+  const openSearch = useCallback((query = "") => {
+    setSearchInitialQuery(query);
+    setSearchOpen(true);
   }, []);
 
   useEffect(() => {
@@ -2368,12 +2375,25 @@ const App: React.FC = () => {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
+  // Global ⌘K / Ctrl+K: works from anywhere on the site, not just while a
+  // page-local search input has focus.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   const renderContent = useCallback(() => {
     switch (route.type) {
       case "home":
         return (
           <>
-            <Hero onNavigate={navigate} />
+            <Hero onNavigate={navigate} onOpenSearch={openSearch} />
             <MetricsTicker />
             <CategoriesSection />
             <FeaturedTools />
@@ -2463,6 +2483,14 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-cyber-bg text-cyber-text">
       <Header onNavigate={navigate} currentPath={window.location.pathname} />
+
+      <CommandPalette
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        initialQuery={searchInitialQuery}
+        tools={INDEXABLE_TOOLS}
+        onSelectTool={(slug) => navigate(`/tools/${slug}`)}
+      />
 
       <main id="main-content" className="relative">
         {renderContent()}
