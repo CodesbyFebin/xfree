@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { TOOLS } from '@/lib/data/tools';
+import { PILLARS } from '@/lib/data/pillars';
 
 const FOOTER_TOOLS = TOOLS.slice(0, 6);
 
@@ -9,13 +10,21 @@ export function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_3fr]">
           <section aria-labelledby="footer-brand">
-            <Link href="/" className="inline-flex items-center gap-3" aria-label="XFree homepage">
-              <div className="w-10 h-10 rounded-xl border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 neon-box-green">
-                <span className="text-sm font-black text-cyber-glow font-cyber">X</span>
-              </div>
-              <span id="footer-brand" className="text-xl font-bold text-white">
-                XFree<span className="text-cyber-glow">.in</span>
-              </span>
+            <Link href="/" className="inline-flex items-center gap-2" aria-label="XFree homepage">
+              {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size logo, see Header.tsx */}
+              <picture className="shrink-0">
+                <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
+                <img
+                  src="/logo-wordmark-80.png"
+                  srcSet="/logo-wordmark-80.png 1x, /logo-wordmark-160.png 2x"
+                  alt="XFree"
+                  width={160}
+                  height={80}
+                  decoding="async"
+                  style={{ height: '40px', width: '80px' }}
+                />
+              </picture>
+              <span id="footer-brand" className="sr-only">XFree.in</span>
             </Link>
 
             <p className="mt-4 max-w-sm text-sm leading-6 text-cyber-muted">
@@ -33,7 +42,7 @@ export function Footer() {
             </Link>
 
             <p className="mt-4 text-xs leading-5 text-cyber-dim font-mono">
-              {TOOLS.length} published tools and {10} approved discovery hubs are currently available.
+              {TOOLS.length} published tools and {PILLARS.length} approved discovery hubs are currently available.
             </p>
           </section>
 
@@ -44,12 +53,12 @@ export function Footer() {
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <Link href="/categories/dev-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/categories/developer-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
                     XFree Developer Tools
                   </Link>
                 </li>
                 <li>
-                  <Link href="/categories/seo-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/categories/seo-url-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
                     XFree SEO Tools
                   </Link>
                 </li>
@@ -95,12 +104,12 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pillars/seo-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/pillars/seo-audit-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
                     XFree SEO Tools
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pillars/security-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/pillars/password-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
                     XFree Security Tools
                   </Link>
                 </li>
