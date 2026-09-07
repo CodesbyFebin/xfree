@@ -181,7 +181,7 @@ const CATEGORIES = PILLAR_CATEGORIES.map((cat) => ({
   count: ALL_PILLARS.filter((p) => p.def.category === cat.id).length,
 }));
 
-const TOOL_COUNT = 47;
+const TOOL_COUNT = INDEXABLE_TOOLS.length;
 const PILLAR_COUNT = ALL_PILLARS.length;
 
 // ===== Navigation routing =====
@@ -478,27 +478,27 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
 
         <h1
           id="hero-heading"
-          className="hero-title anim-slide-up text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4 glitch"
-          data-text="XFree: The Ultimate Free Developer, SEO & Privacy Micro-Tools App"
+          className="hero-title anim-slide-up text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4"
           style={{ animationDelay: ".2s" }}
         >
-          XFree: The Ultimate Free<br />
-          Developer, SEO &amp; <span className="text-cyber-glow neon-green">Privacy Micro-Tools App</span>
+          XFree App: Free Developer,<br />
+          SEO &amp; <span className="text-cyber-glow">Privacy Micro-Tools</span>
         </h1>
 
-        <p
-          className="anim-slide-up text-lg sm:text-xl text-cyber-cyan font-mono mb-2"
+        <h2
+          id="hero-subheading"
+          className="anim-slide-up text-lg sm:text-xl text-cyber-cyan font-mono mb-2 font-medium"
           style={{ animationDelay: ".25s" }}
         >
-          // Get X Done for Free — Fast, Private, No Sign-Up
-        </p>
+          XFree is a free, browser-based toolkit for developers, SEO professionals &amp; privacy-conscious builders
+        </h2>
 
         <p
           className="anim-slide-up text-base text-cyber-muted max-w-2xl mx-auto mb-10 leading-relaxed"
           style={{ animationDelay: ".3s" }}
         >
-          XFree is the ultimate free online app for developers. Access privacy-first SEO tools,
-          JSON formatters, HTML minifiers, and crypto utilities. 100% client-side, no signup required.
+          {TOOL_COUNT} published tools — JSON formatters, sitemap generators, password checkers, and more —
+          run entirely in Local Mode inside your browser. No account, no installs, no cost.
         </p>
 
         {/* Search */}
@@ -728,9 +728,9 @@ const MetricsTicker: React.FC = () => {
 
 // ===== Featured Tools =====
 const featuredTools = [
-  { slug: "json-formatter", title: "XFree JSON Formatter", desc: "Format, validate, repair, and minify JSON data with instant tree inspect.", category: "Developer", badge: "✕ FLAGSHIP", badgeClass: "badge-flagship", color: "cyber-glow", href: "/tools/json-formatter" },
+  { slug: "json-formatter", title: "XFree JSON Formatter", desc: "Format, validate, repair, and minify JSON data with instant tree inspect.", category: "Developer", badge: "FLAGSHIP", badgeClass: "badge-flagship", color: "cyber-glow", href: "/tools/json-formatter" },
   { slug: "regex-tester", title: "XFree Regex Tester", desc: "Test JS regex patterns live with match group tables and replacements.", category: "Developer", badge: "POPULAR", badgeClass: "badge-popular", color: "cyber-cyan", href: "/tools/regex-tester" },
-  { slug: "xml-sitemap-generator", title: "XFree Sitemap Generator", desc: "Extract links from HTML and generate Google XML sitemaps with priority.", category: "SEO & URL", badge: "✕ FLAGSHIP", badgeClass: "badge-flagship", color: "cyber-glow", href: "/tools/xml-sitemap-generator" },
+  { slug: "xml-sitemap-generator", title: "XFree Sitemap Generator", desc: "Extract links from HTML and generate Google XML sitemaps with priority.", category: "SEO & URL", badge: "FLAGSHIP", badgeClass: "badge-flagship", color: "cyber-glow", href: "/tools/xml-sitemap-generator" },
   { slug: "meta-tag-generator", title: "XFree Meta Tag Generator", desc: "Generate meta titles, descriptions, and preview social cards.", category: "SEO & URL", badge: "ESSENTIAL", badgeClass: "badge-essential", color: "cyber-magenta", href: "/tools/meta-tag-generator" },
   { slug: "jwt-decoder", title: "XFree JWT Decoder", desc: "Decode OAuth JWT tokens and convert Base64 strings safely.", category: "Security", badge: "POPULAR", badgeClass: "badge-popular", color: "cyber-cyan", href: "/tools/jwt-decoder" },
   { slug: "cron-generator", title: "XFree Cron Generator", desc: "Generate cron expressions the easy way with human-readable output.", category: "Developer", badge: "NEW", badgeClass: "badge-new", color: "cyber-purple", href: "/tools/cron-generator" },
@@ -910,8 +910,8 @@ const HowItWorks: React.FC = () => (
 );
 
 // ===== Pillars Directory =====
-const PillarsDirectory: React.FC<{ onSelect: (slug: string) => void }> = ({ onSelect }) => {
-  const gridItems = ALL_PILLARS.map((p) => ({
+const PillarsDirectory: React.FC<{ onSelect: (slug: string) => void; limit?: number; onViewAll?: () => void }> = ({ onSelect, limit, onViewAll }) => {
+  const allItems = ALL_PILLARS.map((p) => ({
     slug: p.def.slug,
     num: p.def.num,
     title: p.def.name,
@@ -920,6 +920,7 @@ const PillarsDirectory: React.FC<{ onSelect: (slug: string) => void }> = ({ onSe
     category: p.def.category,
     categoryLabel: CATEGORIES.find((c) => c.id === p.def.category)?.label ?? p.def.category,
   }));
+  const gridItems = limit ? allItems.slice(0, limit) : allItems;
 
   return (
     <section className="py-16 px-4 bg-cyber-surface/50" aria-labelledby="pillars-heading">
@@ -959,6 +960,13 @@ const PillarsDirectory: React.FC<{ onSelect: (slug: string) => void }> = ({ onSe
             </button>
           ))}
         </div>
+        {limit && limit < allItems.length && onViewAll && (
+          <div className="text-center mt-8">
+            <button onClick={onViewAll} className="cyber-btn cyber-btn-cyan text-sm px-6 py-2.5 rounded focus-ring">
+              <span>View All {allItems.length} Pillars →</span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -1427,6 +1435,111 @@ const ToolDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, onBa
   );
 };
 
+// Adds/updates a single, uniquely-IDed JSON-LD <script>, without touching
+// any other script tags (unlike useDocumentMeta, which wipes and replaces
+// every ld+json script on the page — safe for tool/pillar detail pages that
+// own their entire schema set, but not for a section that should coexist
+// with the Organization/WebSite schema prerender.ts already injected for
+// the home route). Removes its own tag on unmount so it never leaks onto
+// another route.
+function useAppendJsonLd(id: string, schema: Record<string, unknown>) {
+  useEffect(() => {
+    let script = document.getElementById(id) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = id;
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(schema);
+    return () => {
+      document.getElementById(id)?.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+}
+
+const HOME_FAQS = [
+  {
+    q: "What is XFree?",
+    a: `XFree is a free, browser-based toolkit of ${TOOL_COUNT} published developer, SEO, and privacy micro-tools. Every published tool runs in Local Mode by default, processing your input inside your own browser.`,
+  },
+  {
+    q: "Is XFree really free, with no signup?",
+    a: "Yes. Every published XFree tool is free to use with no account, no signup, and no usage cap. The project is MIT-licensed and open source.",
+  },
+  {
+    q: "Does XFree send my data anywhere?",
+    a: "Published tools run in Local Mode: your input is processed by JavaScript inside your browser tab and is not uploaded to XFree's servers. Where a tool explicitly uses a cloud AI provider, that is disclosed on the tool's own page before you submit anything.",
+  },
+  {
+    q: "What's a \"pillar\" on XFree?",
+    a: `A pillar is a topic hub that groups related tools — for example, JSON & Data Tools or Security & Privacy Tools. XFree organizes ${PILLAR_COUNT} pillars across its tool taxonomy; not every pillar has a published, working tool yet.`,
+  },
+  {
+    q: "Can I use XFree tools on mobile?",
+    a: "Yes. Every published tool is built with a responsive layout for phones, tablets, and desktop browsers.",
+  },
+];
+
+const FAQSection: React.FC = () => {
+  useAppendJsonLd("home-faq-jsonld", {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: HOME_FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  });
+
+  return (
+    <section className="py-16 px-4" aria-labelledby="faq-heading">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-10">
+          <h2 id="faq-heading" className="text-3xl font-black text-white mb-3 font-mono">
+            <span className="text-cyber-glow">man</span> xfree — FAQ
+          </h2>
+          <p className="text-cyber-muted font-mono text-sm">// Common questions about the XFree app</p>
+        </div>
+        <div className="space-y-2">
+          {HOME_FAQS.map((f, i) => (
+            <details key={i} className="cyber-card details overflow-hidden" open={i === 0}>
+              <summary className="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center focus-ring font-mono cursor-pointer">
+                {f.q}
+              </summary>
+              <div className="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">
+                {f.a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ClosingCta: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => (
+  <section className="py-16 px-4 border-t border-cyber-border" aria-labelledby="closing-cta-heading">
+    <div className="max-w-2xl mx-auto text-center">
+      <h2 id="closing-cta-heading" className="text-2xl sm:text-3xl font-black text-white mb-3 font-mono">
+        Ready to get X done with XFree?
+      </h2>
+      <p className="text-cyber-muted mb-8 font-mono text-sm">
+        // {TOOL_COUNT} free tools, {PILLAR_COUNT} pillars, zero signup.
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <a href="https://app.xfree.in/" className="cyber-btn cyber-btn-filled text-sm px-6 py-3 rounded focus-ring" rel="noopener">
+          <span>Launch XFree Studio →</span>
+        </a>
+        <button onClick={() => onNavigate("/pillars")} className="cyber-btn cyber-btn-cyan text-sm px-6 py-3 rounded focus-ring">
+          <span>Browse All Pillars</span>
+        </button>
+      </div>
+    </div>
+  </section>
+);
+
 // ===== Main App Component =====
 const App: React.FC = () => {
   const [route, setRoute] = useState<Route>(() => {
@@ -1472,7 +1585,13 @@ const App: React.FC = () => {
             <CategoriesSection />
             <WhyXFree />
             <HowItWorks />
-            <PillarsDirectory onSelect={(slug) => navigate(`/pillars/${slug}`)} />
+            <PillarsDirectory
+              onSelect={(slug) => navigate(`/pillars/${slug}`)}
+              limit={16}
+              onViewAll={() => navigate("/pillars")}
+            />
+            <FAQSection />
+            <ClosingCta onNavigate={navigate} />
           </>
         );
 
