@@ -269,14 +269,19 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
     <>
       <header className={`sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all ${scrolled ? "scrolled" : ""}`} role="banner">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2.5 group focus-ring" aria-label="XFree homepage">
-            <div className="w-9 h-9 rounded-lg border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 group-hover:bg-cyber-glow/10 transition-all neon-box-green">
-              <span className="text-sm font-black text-cyber-glow tracking-tighter font-cyber">X</span>
-            </div>
-            <div>
-              <span className="text-base font-bold text-white tracking-tight">XFree<span className="text-cyber-glow">.in</span></span>
-              <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-2">// Free Dev Tools</span>
-            </div>
+          <a href="/" className="flex items-center gap-2 group focus-ring" aria-label="XFree homepage">
+            <picture className="shrink-0">
+              <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
+              <img
+                src="/logo-wordmark-80.png"
+                srcSet="/logo-wordmark-80.png 1x, /logo-wordmark-160.png 2x"
+                alt="XFree"
+                width={160}
+                height={80}
+                decoding="async"
+                style={{ height: "36px", width: "72px" }}
+              />
+            </picture>
           </a>
 
           <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
@@ -420,44 +425,9 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
 
 // ===== Hero Section =====
 const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
-  const [input, setInput] = useState('{"name":"xfree","type":"micro-tool","fast":true}');
-  const [output, setOutput] = useState(JSON.stringify(JSON.parse('{"name":"xfree","type":"micro-tool","fast":true}'), null, 2));
-  const [valid, setValid] = useState(true);
-  const [execTime, setExecTime] = useState("0.1");
-  const [copied, setCopied] = useState(false);
   const [search, setSearch] = useState("");
 
-  const runDemo = useCallback(() => {
-    const t0 = performance.now();
-    try {
-      const parsed = JSON.parse(input);
-      const formatted = JSON.stringify(parsed, null, 2);
-      setOutput(formatted);
-      setValid(true);
-      setExecTime((performance.now() - t0).toFixed(1));
-    } catch {
-      setOutput("Error: Invalid JSON syntax");
-      setValid(false);
-      setExecTime("0.0");
-    }
-  }, [input]);
-
-  useEffect(() => {
-    runDemo();
-  }, [runDemo]);
-
-  const copyOutput = () => {
-    navigator.clipboard.writeText(output).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
   const handleKeydown = (e: React.KeyboardEvent) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-      e.preventDefault();
-      runDemo();
-    }
     if ((e.metaKey || e.ctrlKey) && e.key === "k") {
       e.preventDefault();
       document.getElementById("heroSearch")?.focus();
@@ -472,23 +442,23 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <picture>
           <source
-            srcSet="/hero-banner-800.webp 800w, /hero-banner-1200.webp 1200w, /hero-banner-1920.webp 1920w"
+            srcSet="/hero-main-800.webp 800w, /hero-main-1200.webp 1200w, /hero-main-1448.webp 1448w"
             sizes="100vw"
             type="image/webp"
           />
           <img
-            src="/hero-banner-1200.jpg"
-            srcSet="/hero-banner-800.jpg 800w, /hero-banner-1200.jpg 1200w, /hero-banner-1920.jpg 1920w"
+            src="/hero-main-1200.jpg"
+            srcSet="/hero-main-800.jpg 800w, /hero-main-1200.jpg 1200w, /hero-main-1448.jpg 1448w"
             sizes="100vw"
             alt=""
-            width={1920}
-            height={800}
+            width={1448}
+            height={1086}
             fetchPriority="high"
             decoding="async"
-            className="w-full h-full object-cover object-left md:object-center opacity-35"
+            className="w-full h-full object-cover object-center opacity-25"
           />
         </picture>
-        <div className="absolute inset-0 bg-cyber-bg/70" />
+        <div className="absolute inset-0 bg-cyber-bg/75" />
       </div>
       <div className="hero-orb w-[500px] h-[500px] bg-cyber-glow -top-40 -left-40" aria-hidden="true" />
       <div className="hero-orb w-[400px] h-[400px] bg-cyber-magenta top-1/4 -right-32" aria-hidden="true" />
@@ -620,7 +590,7 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
             </a>
           </nav>
           <small className="block mt-3 text-[10px] text-cyber-dim font-mono">
-            Pro-tip: Press <kbd>Ctrl+Enter</kbd> to process, <kbd>Ctrl+Shift+C</kbd> to copy.
+            Pro-tip: Press <kbd>⌘K</kbd> to jump to search from anywhere.
           </small>
         </div>
 
@@ -639,85 +609,6 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
           <span className="flex items-center gap-1.5">
             <span className="text-cyber-magenta" aria-hidden="true">🚀</span> <span className="text-cyber-magenta">ZERO</span> Sign-Up
           </span>
-        </div>
-
-        {/* Live JSON demo */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 mt-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="terminal">
-              <div className="terminal-header">
-                <div className="terminal-dot bg-cyber-red" />
-                <div className="terminal-dot bg-cyber-amber" />
-                <div className="terminal-dot bg-cyber-glow" />
-                <span className="text-xs font-mono text-cyber-muted ml-2">xfree@json-formatter ~ $</span>
-                <span className="text-[10px] px-2 py-0.5 rounded badge-local font-mono ml-auto">LOCAL</span>
-              </div>
-              <div className="p-4">
-                <label
-                  htmlFor="demoInput"
-                  className="text-[10px] uppercase tracking-wider text-cyber-glow font-mono font-semibold mb-2 block"
-                >
-                  &gt; Raw Input JSON:
-                </label>
-                <textarea
-                  id="demoInput"
-                  className="live-demo-input w-full h-36 bg-cyber-bg border border-cyber-border rounded p-3 text-cyber-glow focus:border-cyber-glow focus:outline-none transition-colors"
-                  aria-label="JSON input"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeydown}
-                />
-                <div className="flex items-center gap-2 mt-2">
-                  <span
-                    className={`flex items-center gap-1 text-[10px] font-mono ${valid ? "text-cyber-glow" : "text-cyber-red"}`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${valid ? "bg-cyber-glow" : "bg-cyber-red"}`} />{" "}
-                    {valid ? "Valid Syntax" : "Invalid JSON"}
-                  </span>
-                  <span className="text-[10px] text-cyber-dim">·</span>
-                  <span className="text-[10px] text-cyber-muted font-mono">Execution: {execTime}ms</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="terminal">
-              <div className="terminal-header">
-                <div className="terminal-dot bg-cyber-red" />
-                <div className="terminal-dot bg-cyber-amber" />
-                <div className="terminal-dot bg-cyber-glow" />
-                <span className="text-xs font-mono text-cyber-muted ml-2">output ~ formatted</span>
-                <button
-                  id="demoCopyBtn"
-                  onClick={copyOutput}
-                  className="text-[10px] text-cyber-glow hover:text-white transition-colors flex items-center gap-1 focus-ring font-mono ml-auto"
-                  aria-label="Copy output to clipboard"
-                >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  <span className="copy-label">{copied ? "✓ COPIED" : "COPY"}</span>
-                </button>
-              </div>
-              <div className="p-4">
-                <pre
-                  id="demoOutput"
-                  className="live-demo-input h-36 bg-cyber-bg border border-cyber-border rounded p-3 text-cyber-glow overflow-auto whitespace-pre-wrap"
-                  aria-label="JSON output"
-                >
-                  {output}
-                </pre>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[10px] text-cyber-muted font-mono">In-browser · No server</span>
-                  <a
-                    href="/tools/json-formatter"
-                    className="text-[10px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
-                  >
-                    Open Full XFree JSON Formatter →
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
