@@ -8,18 +8,18 @@ Free browser-based developer, SEO, and single-purpose AI micro-tools. Live at [h
 
 ## What this actually is
 
-- **10 hand-authored tools** (JSON formatter, regex tester, cron generator, base64/JWT decoder, URL/UTM builder, meta-tag preview, schema-markup generator, robots.txt generator, XML sitemap generator, bulk URL extractor). Each has a real React component, unique long-form guide, and per-page JSON-LD.
+- **23 indexable tools**, of which **16 have a real, working interactive component** (JSON formatter, regex tester, cron generator, base64/JWT decoder, URL/UTM builder, meta-tag preview, schema-markup generator, robots.txt generator, XML sitemap generator, bulk URL extractor, password generator, JPG→PDF converter, AI text detector, mobile device preview, three browser games, photo editor). The other 7: 4 are intentionally informational/comparison pages (not meant to be interactive — e.g. a VPN or cloud-storage comparison guide), and **3 are known gaps** (`pdf-editor`, `video-downloader`, `coding-practice`) that `npm run audit:tools` fails on until they get real implementations — tracked honestly rather than hidden.
 - **4 published guides** at `/guides/*` (regex cheat sheet, cron examples, common JSON errors, canonical vs 301).
 - **A `/xfree-app/` PWA-install page** — the site is installable as a Progressive Web App via `site.webmanifest`.
-- **A server-side proxy to Google Gemini** for the AI-flavored variants of the tools above. The API key never touches the browser. AI tools are opt-in and clearly labelled.
+- **A server-side proxy to Google Gemini** for the AI-flavored variants of the tools above, plus a separate **NVIDIA NIM Cloud Mode gateway** (`POST /api/nvidia/chat`, `GET /api/nvidia/models`) with task-based model routing and cascading fallback across NVIDIA's free-tier catalog — see [AI endpoints](#ai-endpoints). Both API keys stay server-side; AI/Cloud features are opt-in and clearly labelled.
 - **A `/api/contact`, `/api/feedback`, `/api/lead` set** with Zod validation, honeypot fields, and per-IP rate limits. Delivery via Resend when `RESEND_API_KEY` is set, otherwise logged.
 - **A ~400-entry seed registry of tool ideas** (`src/scripts/tools-seed.json`). These are `status: "draft"` — they have no working component and their routes return HTTP 404 until they're implemented. They are **not** in the sitemap and **not** claimed as live tools anywhere.
 
 ## What this deliberately isn't
 
-- **Not "400+ working tools."** Ten. The rest are stubs excluded from every public surface.
-- **Not fully client-side.** Local tools process input in-browser; AI tools proxy to Gemini; the site itself loads Google AdSense which sets advertising cookies. The Privacy page is honest about all of this.
-- **Not a Next.js app.** Vite + React on the client, Express on the server, deployed as a Vercel serverless function plus prerendered static HTML.
+- **Not "400+ working tools."** 16 with real widgets, 23 indexable total. The rest are stubs excluded from every public surface.
+- **Not fully client-side.** Local tools process input in-browser; AI/Cloud tools proxy to Gemini or NVIDIA NIM; the site itself loads Google AdSense which sets advertising cookies. The Privacy page is honest about all of this.
+- **The deployed site is not a Next.js app.** The root of this repo (what you're reading now) is Vite + React on the client, Express on the server, deployed as a Vercel serverless function plus prerendered static HTML — that's what serves `www.xfree.in`. `next-app/` is a separate, **not-yet-deployed** Next.js rewrite living alongside it in the same repo — see the layout note below before you go looking for the live site's code in there.
 
 ## Stack
 
@@ -42,6 +42,11 @@ public/                   ads.txt, robots.txt (build-generated), sitemap.xml (bu
                           site.webmanifest, favicon set, IndexNow key file
 docs/                     production-readiness.md, deploy-vercel.md, indexing.md, content.md
 vercel.json               Build command, cleanUrls, function config, static-file security headers
+next-app/                 Separate, standalone Next.js project — its own package.json, tsconfig,
+                          and node_modules. NOT part of the root npm workspace, NOT deployed, and
+                          NOT typechecked by the root `npm run typecheck` (excluded in tsconfig.json).
+                          An in-progress rewrite explored alongside the live app; treat it as its
+                          own repo-in-a-repo — `cd next-app && npm install` before touching it.
 ```
 
 ## Local dev
@@ -63,7 +68,9 @@ Every var is defined and validated in [`src/server/env.ts`](src/server/env.ts). 
 
 - `PUBLIC_SITE_URL` — canonical base for prerender + sitemap + IndexNow. Production is `https://www.xfree.in`.
 - `GEMINI_API_KEY` — optional. When unset, AI endpoints cleanly return `503 { error: "ai_not_configured" }` instead of crashing.
+- `NVIDIA_API_KEY` — optional. Enables the `/api/nvidia/*` Cloud Mode gateway (see [AI endpoints](#ai-endpoints)); unset returns `503 { error: "nvidia_not_configured" }`. Get a free-tier key at [build.nvidia.com](https://build.nvidia.com).
 - `RESEND_API_KEY` — optional. When unset, contact / feedback / lead submissions are logged to stdout for review.
+- A present-but-blank var (e.g. `GEMINI_API_KEY=` with nothing after the `=`) is treated the same as unset — `loadConfig()` normalizes empty strings to `undefined` before validation. (This used to silently break the *entire* config on any one blank optional var; fixed.)
 - `AI_RATE_LIMIT_PER_MINUTE`, `AI_RATE_LIMIT_PER_DAY`, `AI_GLOBAL_DAILY_LIMIT`, `AI_THINKING_LIMIT_PER_DAY` — per-IP + global buckets on the in-memory limiter.
 - `TRUST_PROXY` — Express proxy hops. `1` for Vercel.
 
@@ -74,7 +81,7 @@ Every var is defined and validated in [`src/server/env.ts`](src/server/env.ts). 
 | `npm run dev` | Local dev server + Vite HMR |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run test` | Vitest — `src/lib/__tests__/*` (intent engine, execution engine, agents) |
-| `npm run audit:tools` | Fails the build if any `indexable` tool has no matching `case` in `App.tsx` |
+| `npm run audit:tools` | Fails if any `indexable` tool (besides the explicit informational-page exemption list) has no matching `case` in `App.tsx`'s `renderInteractiveTool` — i.e. it would render as a "tool" page with no actual widget. Currently 3 known, tracked failures — see "What this actually is" above |
 | `npm run lint:noindex` | Fails the build if any non-404 prerendered HTML carries `noindex` |
 | `npm run generate:sitemap` | Emits `public/sitemap.xml`, `rss.xml`, `robots.txt`, `llms.txt` |
 | `npm run prerender` | Emits `dist/<route>/index.html` for every static route + `dist/404.html` |
@@ -107,6 +114,14 @@ Server-side task allowlist in [`src/server/tasks.ts`](src/server/tasks.ts). The 
 Task IDs currently defined: `general`, `ai-regex`, `ai-json-repair`, `ai-meta-optimizer`, `ai-sql-generator`, `ai-search-intent`, `ai-code-explainer`, `ai-commit-generator`, `ai-schema-generator`.
 
 All AI calls run through `generateWithTimeout` (30 s default via `GEMINI_REQUEST_TIMEOUT_MS`). Rate limits: per-minute + per-day per IP, plus a global daily cap.
+
+### NVIDIA NIM Cloud Mode gateway
+
+A second, independent AI backend at `POST /api/nvidia/chat` and `GET /api/nvidia/models` ([`src/server/nvidia/`](src/server/nvidia/)), built for XFree Studio's Local/Cloud mode toggle:
+
+- `taskType` (`code` | `json` | `sql` | `summarization` | `reasoning` | `general`) picks a scoring heuristic in [`router.ts`](src/server/nvidia/router.ts) that ranks NVIDIA's free-tier model catalog for that kind of request; `model: "auto"` (the default) lets it choose, or pass an explicit model ID.
+- **Cascading fallback, for real:** NVIDIA's `/v1/models` catalog lists models beyond what's actually invocable on a given free-tier account — confirmed empirically, not theoretical. [`client.ts`](src/server/nvidia/client.ts) walks the ranked candidate list (up to 12 attempts) rather than trusting the top pick, isolates a timeout or 404 on one candidate so it doesn't abort the rest of the chain, and caches confirmed-dead model IDs for 30 minutes so repeat requests skip straight to a working model.
+- The API key never reaches the browser — this exists specifically because a client-side "paste your API key into localStorage" pattern is not safe, regardless of how convenient it looks in a prototype.
 
 ## SEO / indexing
 
