@@ -2,35 +2,39 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { TOOLS } from '@/lib/data/tools';
 
 export const metadata: Metadata = {
   title: 'Use Cases | XFree',
   description: 'See how developers, SEO professionals, and creators use XFree tools.',
 };
 
+// Tool names verified against lib/data/tools.ts TOOLS.title - this
+// replaced two fabricated names ("Schema Markup Generator", "Text
+// Cleaner") that matched no real tool in the catalog.
 const useCases = [
   {
     icon: '👨‍💻',
     title: 'For Developers',
     description: 'Format JSON, test regex patterns, encode URLs, generate UUIDs, and debug APIs.',
-    tools: ['JSON Formatter', 'Regex Tester', 'Base64 Encoder', 'UUID Generator'],
+    tools: ['JSON Formatter', 'Regex Tester', 'Base64 Encoder', 'UUID v4 Generator'],
   },
   {
     icon: '📈',
     title: 'For SEO Professionals',
-    description: 'Generate sitemaps, create meta tags, validate schema markup, and build robots.txt files.',
-    tools: ['XML Sitemap Generator', 'Meta Tag Generator', 'Schema Markup Generator', 'Robots.txt Generator'],
+    description: 'Generate sitemaps, create meta tags, build UTM links, and build robots.txt files.',
+    tools: ['XML Sitemap Generator', 'Meta Tag Generator', 'UTM Builder', 'robots.txt Generator'],
   },
   {
     icon: '✍️',
     title: 'For Content Creators',
-    description: 'Clean text, count words, convert case, and format content for publishing.',
-    tools: ['Word Counter', 'Case Converter', 'Text Cleaner'],
+    description: 'Write in Markdown, count words, convert case, and diff text for publishing.',
+    tools: ['Word Counter', 'Case Converter', 'Markdown Editor'],
   },
   {
     icon: '🔒',
     title: 'For Security',
-    description: 'Generate secure passwords, hash data, decode JWTs, and check security headers.',
+    description: 'Generate secure passwords, hash data, and decode JWTs.',
     tools: ['Password Generator', 'Hash Generator', 'JWT Decoder'],
   },
 ];
@@ -75,7 +79,7 @@ export default function UseCasesPage() {
           <div className="cyber-card p-8 text-center space-y-4">
             <h2 className="text-xl font-bold text-white">Ready to get started?</h2>
             <p className="text-cyber-muted text-sm">
-              Browse our {60}+ free tools and find what you need.
+              Browse our {TOOLS.length}+ free tools and find what you need.
             </p>
             <Link
               href="/pillars"

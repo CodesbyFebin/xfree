@@ -10,7 +10,6 @@ import { TOOLS } from '@/lib/data/toolsWithSEO';
 import { buildCanonical } from '@/lib/canonical';
 import { generatePillarSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { PillarCategory } from '@/lib/data/pillarCategories';
-import { USER_TESTIMONIALS, USE_CASES } from '@/lib/data/content';
 
 interface Props {
   params: Promise<{ slug?: string[] }>;

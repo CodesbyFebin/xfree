@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { TOOLS } from '@/lib/data/tools';
 
 export const metadata: Metadata = {
   title: 'FAQ - Frequently Asked Questions | XFree',

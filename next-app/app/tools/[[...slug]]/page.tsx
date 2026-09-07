@@ -9,7 +9,7 @@ import { TOOLS, CATEGORIES, findToolById } from '@/lib/data/toolsWithSEO';
 import { findPillarBySlug, PILLARS } from '@/lib/data/pillars';
 import { buildCanonical } from '@/lib/canonical';
 import { generateToolSchema, generateFAQSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema';
-import { USE_CASES, USER_TESTIMONIALS } from '@/lib/data/content';
+import { USE_CASES } from '@/lib/data/content';
 
 interface Props {
   params: Promise<{ slug?: string[] }>;
@@ -130,7 +130,6 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
   const relatedTools = tool.relatedToolIds.map(id => findToolById(id)).filter(Boolean).slice(0, 6);
   const sameCategoryTools = TOOLS.filter(t => t.category === tool.category && t.id !== tool.id && t.indexable).slice(0, 4);
   const toolUseCases = USE_CASES.filter(uc => uc.tools.includes(tool.id)).slice(0, 2);
-  const toolTestimonials = USER_TESTIMONIALS.filter(t => t.toolSlug === tool.id).slice(0, 2);
 
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
@@ -236,7 +235,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
               )}
 
               {/* FAQ */}
-              {(tool.faqs.length > 0 || toolTestimonials.length > 0) && (
+              {tool.faqs.length > 0 && (
                 <section className="cyber-card p-6" aria-labelledby="faq-heading">
                   <h2 id="faq-heading" className="text-lg font-bold text-white font-mono mb-4"><span className="text-cyber-glow">$</span> Questions & Answers</h2>
                   <div className="space-y-4">
@@ -244,13 +243,6 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
                       <div key={i} className="border-b border-cyber-border pb-4 last:border-0">
                         <h3 className="text-sm font-semibold text-white mb-2">{faq.question}</h3>
                         <p className="text-sm text-cyber-muted">{faq.answer}</p>
-                      </div>
-                    ))}
-                    {toolTestimonials.map(t => (
-                      <div key={t.id} className="border-b border-cyber-border pb-4 last:border-0">
-                        <div className="flex items-center gap-1 mb-2">{[...Array(t.rating)].map((_, i) => (<span key={i} className="text-cyber-glow text-sm">★</span>))}</div>
-                        <p className="text-sm text-cyber-muted italic">&ldquo;{t.content}&rdquo;</p>
-                        <p className="text-xs text-cyber-dim mt-2">— {t.name}, {t.role}</p>
                       </div>
                     ))}
                   </div>
