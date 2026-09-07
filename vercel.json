@@ -25,28 +25,6 @@
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "has": [
-        {
-          "type": "header",
-          "key": "host",
-          "value": "app.xfree.in"
-        }
-      ],
-      "destination": "/api"
-    },
-    {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "host",
-          "value": "app.xfree.in"
-        }
-      ],
-      "destination": "/studio/index.html"
-    },
-    {
       "source": "/(.*)",
       "destination": "/api"
     }
