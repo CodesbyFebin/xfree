@@ -1,14 +1,19 @@
 # XFree.in
+<img width="2038" height="772" alt="head" src="https://github.com/user-attachments/assets/f515699c-f45a-4820-aaab-5280fea8a48b" />
 
 [![CI](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml/badge.svg)](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](tsconfig.json)
+<img width="1942" height="809" alt="her8u" src="https://github.com/user-attachments/assets/87693707-36d5-4db1-804f-1a3a3acf87f7" />
 
 Free browser-based developer, SEO, and single-purpose AI micro-tools. Live at [https://www.xfree.in](https://www.xfree.in).
 
 ## What this actually is
 
-- **23 indexable tools**, of which **16 have a real, working interactive component** (JSON formatter, regex tester, cron generator, base64/JWT decoder, URL/UTM builder, meta-tag preview, schema-markup generator, robots.txt generator, XML sitemap generator, bulk URL extractor, password generator, JPG→PDF converter, AI text detector, mobile device preview, three browser games, photo editor). The other 7: 4 are intentionally informational/comparison pages (not meant to be interactive — e.g. a VPN or cloud-storage comparison guide), and **3 are known gaps** (`pdf-editor`, `video-downloader`, `coding-practice`) that `npm run audit:tools` fails on until they get real implementations — tracked honestly rather than hidden.
+<img width="941" height="1672" alt="finn" src="https://github.com/user-attachments/assets/c8a2be92-1130-4851-94e7-a6efd670ebea" />
+
+
+a real, working interactive component** (JSON formatter, regex tester, cron generator, base64/JWT decoder, URL/UTM builder, meta-tag preview, schema-markup generator, robots.txt generator, XML sitemap generator, bulk URL extractor, password generator, JPG→PDF converter, AI text detector, mobile device preview, three browser games, photo editor). The other 7: 4 are intentionally informational/comparison pages (not meant to be interactive — e.g. a VPN or cloud-storage comparison guide), and **3 are known gaps** (`pdf-editor`, `video-downloader`, `coding-practice`) that `npm run audit:tools` fails on until they get real implementations — tracked honestly rather than hidden.
 - **4 published guides** at `/guides/*` (regex cheat sheet, cron examples, common JSON errors, canonical vs 301).
 - **A `/xfree-app/` PWA-install page** — the site is installable as a Progressive Web App via `site.webmanifest`.
 - **A server-side proxy to Google Gemini** for the AI-flavored variants of the tools above, plus a separate **NVIDIA NIM Cloud Mode gateway** (`POST /api/nvidia/chat`, `GET /api/nvidia/models`) with task-based model routing and cascading fallback across NVIDIA's free-tier catalog — see [AI endpoints](#ai-endpoints). Both API keys stay server-side; AI/Cloud features are opt-in and clearly labelled.
@@ -48,6 +53,7 @@ next-app/                 Separate, standalone Next.js project — its own packa
                           An in-progress rewrite explored alongside the live app; treat it as its
                           own repo-in-a-repo — `cd next-app && npm install` before touching it.
 ```
+<img width="1254" height="1254" alt="dre" src="https://github.com/user-attachments/assets/b0c4e104-5e87-48a6-a342-b06690861255" />
 
 ## Local dev
 
@@ -116,6 +122,7 @@ Task IDs currently defined: `general`, `ai-regex`, `ai-json-repair`, `ai-meta-op
 All AI calls run through `generateWithTimeout` (30 s default via `GEMINI_REQUEST_TIMEOUT_MS`). Rate limits: per-minute + per-day per IP, plus a global daily cap.
 
 ### NVIDIA NIM Cloud Mode gateway
+<img width="1254" height="1254" alt="stdi" src="https://github.com/user-attachments/assets/7cdd5948-05f3-466d-8892-66da7998d412" />
 
 A second, independent AI backend at `POST /api/nvidia/chat` and `GET /api/nvidia/models` ([`src/server/nvidia/`](src/server/nvidia/)), built for XFree Studio's Local/Cloud mode toggle:
 
@@ -141,7 +148,8 @@ A second, independent AI backend at `POST /api/nvidia/chat` and `GET /api/nvidia
 - Graceful `SIGTERM` / `SIGINT` on the standalone-Node deploy path.
 - `GeminiNotConfiguredError` maps to `503`, not `500`, when the API key is absent — so a missing key doesn't crash the whole function.
 
-## Contributing
+## Contributing<img width="1254" height="1254" alt="dre" src="https://github.com/user-attachments/assets/10a58a1a-f929-4074-9006-6183bed82e1d" />
+
 
 See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md). Short version:
 
@@ -159,3 +167,5 @@ CI (`.github/workflows/ci.yml`) runs typecheck → test → `audit:tools` → bu
 ## Status
 
 Live. `www.xfree.in` serves prerendered HTML plus the function-backed API. Deployment health, SEO check-ins, and the readiness punch-list live in [`docs/`](docs/).
+
+<img width="2048" height="768" alt="ftr" src="https://github.com/user-attachments/assets/a43db23d-e93d-4772-8929-9ccc0ca90a90" />
