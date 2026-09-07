@@ -1,0 +1,20 @@
+{
+  "name": "XFree App - Free Developer & SEO Tools",
+  "short_name": "XFree",
+  "description": "Free privacy-first browser tools for developers and SEO professionals. JSON formatters, regex testers, sitemap generators, and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#00ff41",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%2300ff41'>⚡</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["developer", "productivity", "utilities", "seo"],
+  "lang": "en",
+  "dir": "ltr"
+}

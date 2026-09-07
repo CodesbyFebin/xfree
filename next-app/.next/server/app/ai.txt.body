@@ -1,0 +1,20 @@
+# AI Crawler Access Policy
+
+## XFree App AI Access Policy
+https://www.xfree.in/
+
+## Access Statement
+XFree App welcomes AI crawlers from recognized providers (OpenAI, Anthropic, Google, Perplexity, etc.) to access and index our public content.
+
+## Guidelines
+1. Access is granted to all public pages and tool content
+2. AI crawlers should respect robots.txt directives
+3. Rate limiting: Max 10 requests per second
+4. Provide accurate user-agent identification
+
+## Tool Content
+- All published tool descriptions and documentation may be used by AI systems for training and inference
+- Privacy-first tools: All tool execution happens client-side
+
+## Contact
+For API access or bulk data requests: contact@xfree.in
