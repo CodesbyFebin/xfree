@@ -905,40 +905,121 @@ const CategoryHub: React.FC<{ categoryId: string; onBack: () => void; onSelect: 
   const cat = CATEGORIES.find((c) => c.id === categoryId);
   if (!cat) return null;
 
+  const otherCategories = CATEGORIES.filter((c) => c.id !== cat.id);
+
   return (
-    <section className="py-16 px-4 bg-cyber-surface/50" aria-labelledby={`cat-${cat.id}`}>
-      <div className="max-w-7xl mx-auto">
-        <button onClick={onBack} className="cyber-btn text-xs px-4 py-2 mb-4 rounded focus-ring">
-          ← Back to All Categories
-        </button>
-        <div className="text-center mb-10">
-          <h2 id={`cat-${cat.id}`} className="text-3xl font-black text-white mb-3 font-mono">
-            <span className="text-cyber-glow">{cat.icon}</span> {cat.label}
-          </h2>
-          <p className="text-cyber-muted font-mono text-sm">{cat.description}</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {cat.pillars.map((p) => (
-            <a
-              key={p.def.slug}
-              href={`/pillars/${p.def.slug}`}
-              className="pillar-card cyber-card p-4 block focus-ring"
-              aria-label={p.def.name}
-            >
-              <div className="flex items-start gap-2.5">
-                <div className="w-10 h-10 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">
-                  {p.def.emoji}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-white mb-1 font-mono">{p.def.name}</h3>
-                  <p className="text-xs text-cyber-muted leading-relaxed">{p.def.tagline}</p>
-                </div>
+    <>
+      {/* Category hero */}
+      <section className="relative overflow-hidden border-b border-cyber-border" aria-labelledby={`cat-${cat.id}`}>
+        <div className="absolute inset-0 matrix-grid hex-pattern opacity-40" aria-hidden="true" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-14 lg:py-20">
+          <nav aria-label="Breadcrumb" className="mb-6 text-xs font-mono text-cyber-muted">
+            <button onClick={onBack} className="hover:text-cyber-glow transition-colors focus-ring">Home</button>
+            <span className="mx-2 text-cyber-dim" aria-hidden="true">/</span>
+            <span className="text-cyber-glow">{cat.label}</span>
+          </nav>
+
+          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
+            <div>
+              <p className="text-xs font-mono tracking-[0.2em] text-cyber-glow mb-3">
+                XFREE / {cat.label.toUpperCase()}
+              </p>
+              <h1 id={`cat-${cat.id}`} className="text-4xl sm:text-5xl font-black text-white leading-[1.05] tracking-tight mb-4">
+                {cat.label}
+              </h1>
+              <p className="text-cyber-muted max-w-xl leading-relaxed mb-8">{cat.description}</p>
+
+              <div className="flex flex-wrap items-center gap-3 mb-8">
+                <a
+                  href="#category-tools"
+                  className="cyber-btn cyber-btn-filled text-sm px-5 py-2.5 rounded focus-ring"
+                >
+                  Explore {cat.count} {cat.count === 1 ? "Topic" : "Topics"} →
+                </a>
+                <a
+                  href="https://app.xfree.in/"
+                  rel="noopener"
+                  className="cyber-btn text-sm px-5 py-2.5 rounded focus-ring"
+                >
+                  Open XFree Studio
+                </a>
               </div>
-            </a>
-          ))}
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl text-xs font-mono text-cyber-muted">
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🔒</span> 100% Private</span>
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">⚡</span> Browser Based</span>
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🔓</span> Open Source</span>
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">👥</span> For Everyone</span>
+              </div>
+            </div>
+
+            <img
+              src="/favicon-512x512.png"
+              alt=""
+              width={180}
+              height={180}
+              className="hidden lg:block w-44 h-44 opacity-90"
+              aria-hidden="true"
+              decoding="async"
+            />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Topics in this category */}
+      <section id="category-tools" className="py-16 px-4 bg-cyber-surface/50 scroll-mt-20" aria-label={`${cat.label} topics`}>
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-xl font-bold text-white font-mono mb-6">
+            <span className="text-cyber-glow">{cat.icon}</span> {cat.label} — {cat.count} {cat.count === 1 ? "topic" : "topics"}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {cat.pillars.map((p) => (
+              <a
+                key={p.def.slug}
+                href={`/pillars/${p.def.slug}`}
+                className="pillar-card cyber-card p-4 block focus-ring"
+                aria-label={p.def.name}
+              >
+                <div className="flex items-start gap-2.5">
+                  <div className="w-10 h-10 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">
+                    {p.def.emoji}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-white mb-1 font-mono">{p.def.name}</h3>
+                    <p className="text-xs text-cyber-muted leading-relaxed">{p.def.tagline}</p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Other categories */}
+      <section className="py-14 px-4" aria-label="Explore other categories">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold text-white font-mono">Explore Other Categories</h2>
+            <a href="/pillars" className="text-xs text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+              View All Pillars →
+            </a>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+            {otherCategories.map((c) => (
+              <a
+                key={c.id}
+                href={`/${c.id}`}
+                className="cyber-card p-4 text-center focus-ring hover:border-cyber-glow/40 transition-colors"
+              >
+                <span className="text-2xl block mb-2" aria-hidden="true">{c.icon}</span>
+                <span className="text-xs font-semibold text-white font-mono block">{c.label}</span>
+                <span className="text-[10px] text-cyber-muted font-mono">{c.count} topics</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 
