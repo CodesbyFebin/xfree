@@ -2,7 +2,7 @@ import { PUBLIC_TOOLS, PUBLIC_CATEGORIES } from "../data/publicTools";
 import { GUIDES } from "../data/guides";
 import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
 import { CANONICAL_ORIGIN, SITE_CONTENT_LASTMOD } from "../data/siteConfig";
-import { INDEXABLE_PILLARS } from "../data/pillarPublishing";
+import { PILLARS_60 } from "../data/pillarRegistry";
 import { ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
 
 const DEFAULT_BASE_URL = CANONICAL_ORIGIN;
@@ -80,9 +80,17 @@ export function getPageSitemapEntries(): SitemapEntry[] {
       path: `/${category.id}`,
       lastmod: SITE_CONTENT_LASTMOD,
     })),
-    ...INDEXABLE_PILLARS.map((pillar) => ({
-      path: `/pillar/${pillar.slug}`,
-      lastmod: SITE_CONTENT_LASTMOD,
+    // Was gated on pillar.indexable/contentApproved, both undefined on every
+    // entry in PILLARS_60 — this silently excluded all 60 pillars from the
+    // sitemap even though every one of them is linked from the header nav
+    // and (as of the prerender.ts fix) has a real prerendered page. Also
+    // fixed the path: this used "/pillar/:slug" (singular), but the actual
+    // client router (src/App.tsx's getRouteFromPath) only recognizes
+    // "/pillars/:slug" (plural) — the sitemap was pointing at URLs the app
+    // itself would 404 on.
+    ...PILLARS_60.map((pillar) => ({
+      path: `/pillars/${pillar.slug}`,
+      lastmod: pillar.lastReviewed || SITE_CONTENT_LASTMOD,
     })),
   ];
 }
@@ -216,7 +224,7 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   text += `- [Home](${cleanBase}/): Search and browse the published tool directory.\n`;
   text += `- [Guides](${cleanBase}/guides): Reviewed documentation connected to published tools.\n`;
   text += `- [How It Works](${cleanBase}/how-it-works): Processing modes, browser execution, and optional cloud handoffs.\n`;
-  text += `- [Pillars](${cleanBase}/pillars): 50 developer and SEO topic pillars; only pillars backed by published tools enter the sitemap.\n`;
+  text += `- [Pillars](${cleanBase}/pillars): ${PILLARS_60.length} developer and SEO topic pillars.\n`;
   text += `- [Roadmap](${cleanBase}/roadmap): ${ROADMAP_CONCEPT_COUNT.toLocaleString()} planned concepts on a noindex discovery page; this is not a count of live tools.\n`;
   text += `- [Contribute](${cleanBase}/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.\n`;
   text += `- [InstaServer](${cleanBase}/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.\n`;
@@ -229,8 +237,8 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   }
 
   text += `\n## Published Pillars\n\n`;
-  for (const pillar of INDEXABLE_PILLARS) {
-    text += `- [${pillar.name}](${cleanBase}/pillar/${pillar.slug}): ${pillar.description}\n`;
+  for (const pillar of PILLARS_60) {
+    text += `- [${pillar.name}](${cleanBase}/pillars/${pillar.slug}): ${pillar.description}\n`;
   }
 
   text += `\n## Published Tools\n\n`;

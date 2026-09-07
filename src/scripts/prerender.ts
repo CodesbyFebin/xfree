@@ -13,6 +13,7 @@ import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
 import { STATIC_ROUTES } from "../data/routes";
 import { guideForSlug } from "../data/toolGuides";
 import { GUIDES } from "../data/guides";
+import { PILLARS_60, PILLAR_CATEGORIES } from "../data/pillarRegistry";
 
 const DIST = path.join(process.cwd(), "dist");
 const BASE = (process.env.PUBLIC_SITE_URL || "https://www.xfree.in").replace(/\/$/, "");
@@ -294,6 +295,69 @@ function main() {
     }
 
     writeRoute(route, injectMeta(template, { route, title, description, h1: tool.title, intro, jsonLd, guide }));
+    count++;
+  }
+
+  // Pillars: the header nav's 60 category-dropdown links (`/pillars/:slug`)
+  // and the `/pillars` list page. These weren't prerendered at all — in
+  // production, src/vercel-handler.ts's serveMinimalFallback() returns a
+  // hard 404 for any path that isn't a real static file (it never touches
+  // the filesystem, by design, for serverless cold-start reasons), so every
+  // one of these links 404'd before React ever got a chance to render them
+  // client-side. See src/App.tsx's PILLAR_BY_SLUG-driven routing.
+  const pillarCategoryLabel = (categoryId: string) =>
+    PILLAR_CATEGORIES.find((c) => c.id === categoryId)?.label || categoryId;
+
+  writeRoute("/pillars", injectMeta(template, {
+    route: "/pillars",
+    title: "All Pillars — XFree.in",
+    description: `Browse all ${PILLARS_60.length} XFree.in tool pillars across ${PILLAR_CATEGORIES.length} categories: developer & data, web & SEO, AI & automation, media & documents, security & privacy, and business & productivity.`,
+    h1: "All pillars",
+    intro: `${PILLARS_60.length} topic pillars organizing the XFree.in tool catalogue.`,
+    jsonLd: [
+      organizationJsonLd(),
+      siteJsonLd(),
+      breadcrumbs([{ name: "Home", url: `${BASE}/` }, { name: "Pillars", url: `${BASE}/pillars` }]),
+      {
+        "@type": "CollectionPage",
+        name: "XFree Pillars",
+        url: `${BASE}/pillars`,
+        hasPart: PILLARS_60.map((p) => ({
+          "@type": "CollectionPage",
+          name: p.name,
+          url: `${BASE}/pillars/${p.slug}`,
+        })),
+      },
+    ],
+  }));
+  count++;
+
+  for (const pillar of PILLARS_60) {
+    const route = `/pillars/${pillar.slug}`;
+    writeRoute(route, injectMeta(template, {
+      route,
+      title: `${pillar.name} — XFree.in`,
+      description: pillar.description,
+      h1: pillar.name,
+      intro: pillar.fullDescription || pillar.description,
+      jsonLd: [
+        organizationJsonLd(),
+        siteJsonLd(),
+        breadcrumbs([
+          { name: "Home", url: `${BASE}/` },
+          { name: "Pillars", url: `${BASE}/pillars` },
+          { name: pillarCategoryLabel(pillar.category), url: `${BASE}/${pillar.category}` },
+          { name: pillar.name, url: `${BASE}${route}` },
+        ]),
+        {
+          "@type": "CollectionPage",
+          name: pillar.name,
+          description: pillar.description,
+          url: `${BASE}${route}`,
+          keywords: pillar.keywords.join(", "),
+        },
+      ],
+    }));
     count++;
   }
 

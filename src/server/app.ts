@@ -44,6 +44,7 @@ import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
 import { PUBLIC_TOOLS } from "../data/publicTools";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
+import { PILLARS_60 } from "../data/pillarRegistry";
 
 export interface AppOptions {
   attachStatic?: (app: Express) => void | Promise<void>;
@@ -456,14 +457,18 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
   const staticRouteSet = new Set<string>(STATIC_ROUTES);
   const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/category/${s}`));
   const guideSlugSet = new Set<string>(GUIDES.map((g) => g.slug));
+  const pillarSlugSet = new Set<string>(PILLARS_60.map((p) => p.slug));
 
   (app as any)._classifyPath = function classifyPath(pathname: string): "known" | "unknown" {
     if (staticRouteSet.has(pathname)) return "known";
     if (categoryRouteSet.has(pathname)) return "known";
+    if (pathname === "/pillars") return "known";
     const toolMatch = pathname.match(/^\/tools\/([^/]+)\/?$/);
     if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) return "known";
     const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
     if (guideMatch && guideSlugSet.has(guideMatch[1])) return "known";
+    const pillarMatch = pathname.match(/^\/pillars\/([^/]+)\/?$/);
+    if (pillarMatch && pillarSlugSet.has(pillarMatch[1])) return "known";
     return "unknown";
   };
 
