@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 
 export interface BreadcrumbItem {

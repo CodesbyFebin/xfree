@@ -2,64 +2,78 @@ import { MetadataRoute } from 'next';
 import { TOOLS, CATEGORIES } from '@/lib/data/toolsWithSEO';
 import { PILLARS } from '@/lib/data/pillars';
 import { GUIDES } from '@/lib/data/guides';
+import { routing } from '@/i18n/routing';
 
 const BASE_URL = 'https://www.xfree.in';
 
+function localizedUrl(path: string, locale: string): string {
+  const prefix = locale === routing.defaultLocale ? '' : `/${locale}`;
+  return `${BASE_URL}${prefix}${path}`;
+}
+
+// One sitemap entry per (path, locale) pair, each carrying the full set of
+// hreflang alternates (including itself and x-default) so search engines
+// can discover every real translated page and its siblings in one pass.
+function localizedEntries(
+  path: string,
+  options: { changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number; lastModified?: string }
+): MetadataRoute.Sitemap {
+  const languages: Record<string, string> = { 'x-default': localizedUrl(path, routing.defaultLocale) };
+  for (const locale of routing.locales) {
+    languages[locale] = localizedUrl(path, locale);
+  }
+
+  return routing.locales.map((locale) => ({
+    url: localizedUrl(path, locale),
+    lastModified: options.lastModified ?? new Date().toISOString().split('T')[0],
+    changeFrequency: options.changeFrequency,
+    priority: options.priority,
+    alternates: { languages },
+  }));
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const today = new Date().toISOString().split('T')[0];
-
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/`, lastModified: today, changeFrequency: 'daily', priority: 1 },
-    { url: `${BASE_URL}/pillars`, lastModified: today, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${BASE_URL}/tools`, lastModified: today, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${BASE_URL}/guides`, lastModified: today, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/about`, lastModified: today, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/blog`, lastModified: today, changeFrequency: 'weekly', priority: 0.6 },
-    { url: `${BASE_URL}/contact`, lastModified: today, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${BASE_URL}/faq`, lastModified: today, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/how-it-works`, lastModified: today, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/privacy`, lastModified: today, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/terms`, lastModified: today, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/security`, lastModified: today, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${BASE_URL}/roadmap`, lastModified: today, changeFrequency: 'weekly', priority: 0.4 },
-    { url: `${BASE_URL}/use-cases`, lastModified: today, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/xfree-app`, lastModified: today, changeFrequency: 'monthly', priority: 0.4 },
+  const staticPaths: { path: string; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number }[] = [
+    { path: '/', changeFrequency: 'daily', priority: 1 },
+    { path: '/pillars', changeFrequency: 'weekly', priority: 0.9 },
+    { path: '/tools', changeFrequency: 'daily', priority: 0.9 },
+    { path: '/guides', changeFrequency: 'weekly', priority: 0.8 },
+    { path: '/about', changeFrequency: 'monthly', priority: 0.5 },
+    { path: '/blog', changeFrequency: 'weekly', priority: 0.6 },
+    { path: '/contact', changeFrequency: 'monthly', priority: 0.4 },
+    { path: '/faq', changeFrequency: 'monthly', priority: 0.5 },
+    { path: '/how-it-works', changeFrequency: 'monthly', priority: 0.5 },
+    { path: '/privacy', changeFrequency: 'yearly', priority: 0.3 },
+    { path: '/terms', changeFrequency: 'yearly', priority: 0.3 },
+    { path: '/security', changeFrequency: 'monthly', priority: 0.4 },
+    { path: '/roadmap', changeFrequency: 'weekly', priority: 0.4 },
+    { path: '/use-cases', changeFrequency: 'monthly', priority: 0.5 },
+    { path: '/xfree-app', changeFrequency: 'monthly', priority: 0.4 },
   ];
+  const staticRoutes = staticPaths.flatMap((p) => localizedEntries(p.path, p));
 
-  const toolRoutes: MetadataRoute.Sitemap = TOOLS.filter(t => t.indexable).map(tool => ({
-    url: `${BASE_URL}/tools/${tool.slug}`,
-    lastModified: today,
-    changeFrequency: 'weekly',
-    priority: tool.searchVolume ? Math.min(0.9, 0.7 + (tool.searchVolume / 1000000)) : 0.8,
-    images: tool.exampleInput ? [
-      {
-        url: `${BASE_URL}/og-image.png`,
-        title: tool.title,
-        caption: tool.shortDescription,
-      }
-    ] : undefined,
-  }));
+  const toolRoutes = TOOLS.filter((t) => t.indexable).flatMap((tool) =>
+    localizedEntries(`/tools/${tool.slug}`, {
+      changeFrequency: 'weekly',
+      priority: tool.searchVolume ? Math.min(0.9, 0.7 + tool.searchVolume / 1000000) : 0.8,
+    })
+  );
 
-  const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.map(cat => ({
-    url: `${BASE_URL}/categories/${cat.slug}`,
-    lastModified: today,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
+  const categoryRoutes = CATEGORIES.flatMap((cat) =>
+    localizedEntries(`/categories/${cat.slug}`, { changeFrequency: 'weekly', priority: 0.7 })
+  );
 
-  const pillarRoutes: MetadataRoute.Sitemap = PILLARS.map(pillar => ({
-    url: `${BASE_URL}/pillars/${pillar.slug}`,
-    lastModified: today,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
+  const pillarRoutes = PILLARS.flatMap((pillar) =>
+    localizedEntries(`/pillars/${pillar.slug}`, { changeFrequency: 'weekly', priority: 0.7 })
+  );
 
-  const guideRoutes: MetadataRoute.Sitemap = GUIDES.map(guide => ({
-    url: `${BASE_URL}/guides/${guide.slug}`,
-    lastModified: guide.lastReviewed,
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }));
+  const guideRoutes = GUIDES.flatMap((guide) =>
+    localizedEntries(`/guides/${guide.slug}`, {
+      changeFrequency: 'monthly',
+      priority: 0.6,
+      lastModified: guide.lastReviewed,
+    })
+  );
 
   return [...staticRoutes, ...toolRoutes, ...categoryRoutes, ...pillarRoutes, ...guideRoutes];
 }

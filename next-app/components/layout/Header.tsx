@@ -1,48 +1,48 @@
 'use client';
 
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { LocaleSwitcher } from './LocaleSwitcher';
 
 // Category hrefs verified against lib/data/tools.ts's CATEGORIES.slug (what
-// app/categories/[category]/page.tsx actually matches against) — two of
-// these were previously wrong (/categories/dev-tools and /categories/seo-tools
-// match no real category slug; the real ones are developer-tools and
-// seo-url-tools).
+// app/[locale]/categories/[category]/page.tsx actually matches against).
 const NAV_ITEMS = [
   {
-    label: 'Tools',
+    labelKey: 'toolsMenu',
     href: '/pillars',
     children: [
-      { label: 'All Pillars', href: '/pillars' },
-      { label: 'Developer Tools', href: '/categories/developer-tools' },
-      { label: 'SEO Tools', href: '/categories/seo-url-tools' },
-      { label: 'AI Tools', href: '/categories/ai-tools' },
-      { label: 'Security Tools', href: '/categories/security-tools' },
+      { labelKey: 'allPillars', href: '/pillars' },
+      { labelKey: 'developerTools', href: '/categories/developer-tools' },
+      { labelKey: 'seoTools', href: '/categories/seo-url-tools' },
+      { labelKey: 'aiTools', href: '/categories/ai-tools' },
+      { labelKey: 'securityTools', href: '/categories/security-tools' },
     ],
   },
   {
-    label: 'Resources',
+    labelKey: 'resourcesMenu',
     href: '/guides',
     children: [
-      { label: 'All Guides', href: '/guides' },
-      { label: 'FAQ', href: '/faq' },
-      { label: 'How It Works', href: '/how-it-works' },
-      { label: 'Use Cases', href: '/use-cases' },
+      { labelKey: 'allGuides', href: '/guides' },
+      { labelKey: 'faq', href: '/faq' },
+      { labelKey: 'howItWorks', href: '/how-it-works' },
+      { labelKey: 'useCases', href: '/use-cases' },
     ],
   },
   {
-    label: 'About',
+    labelKey: 'aboutMenu',
     href: '/about',
     children: [
-      { label: 'About XFree', href: '/about' },
-      { label: 'Security', href: '/security' },
-      { label: 'Roadmap', href: '/roadmap' },
-      { label: 'XFree App', href: '/xfree-app' },
+      { labelKey: 'aboutXfree', href: '/about' },
+      { labelKey: 'security', href: '/security' },
+      { labelKey: 'roadmap', href: '/roadmap' },
+      { labelKey: 'xfreeApp', href: '/xfree-app' },
     ],
   },
-];
+] as const;
 
 export function Header() {
+  const t = useTranslations('Header');
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -55,6 +55,7 @@ export function Header() {
 
   return (
     <header
+      id="mainNav"
       className={`sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3 ${
         scrolled ? 'scrolled' : ''
       }`}
@@ -78,44 +79,50 @@ export function Header() {
 
         <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
           {NAV_ITEMS.map((item) => (
-            <div key={item.label} className="relative group">
-              <Link
-                href={item.href}
-                className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all flex items-center gap-1"
-              >
-                {item.label}
-                <span aria-hidden="true">▾</span>
-              </Link>
-              <div className="absolute top-full left-0 mt-2 min-w-[200px] bg-cyber-surface border border-cyber-border rounded-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 shadow-xl z-50">
-                {item.children.map((child) => (
-                  <Link
-                    key={child.href}
-                    href={child.href}
-                    className="block px-3 py-2 text-sm text-cyber-muted hover:text-cyber-glow hover:bg-cyber-glow/5 rounded transition-all"
-                  >
-                    {child.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <NavDropdown
+              key={item.labelKey}
+              label={t(item.labelKey)}
+              links={item.children.map((c) => ({ href: c.href, label: t(c.labelKey) }))}
+            />
           ))}
           <Link
             href="/contact"
             className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all"
           >
-            Contact
+            {t('contact')}
           </Link>
         </nav>
 
         <div className="flex items-center gap-3">
+          <LocaleSwitcher />
           <Link
             href="/pillars"
             className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded"
           >
-            <span>All Tools</span>
+            <span>{t('allTools')}</span>
           </Link>
         </div>
       </div>
     </header>
+  );
+}
+
+function NavDropdown({ label, links }: { label: string; links: { href: string; label: string }[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="nav-dropdown" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all flex items-center gap-1" aria-haspopup="true" aria-expanded={open}>
+        {label} <span aria-hidden="true">▾</span>
+      </button>
+      {/* Always rendered — visibility is CSS-driven (:hover/:focus-within on
+          .nav-dropdown, see globals.css). */}
+      <div className="nav-dropdown-menu" role="menu">
+        {links.map((link) => (
+          <Link key={link.href} href={link.href} className="nav-dropdown-item" role="menuitem">
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

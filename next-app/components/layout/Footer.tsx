@@ -1,10 +1,14 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { TOOLS } from '@/lib/data/tools';
 import { PILLARS } from '@/lib/data/pillars';
 
 const FOOTER_TOOLS = TOOLS.slice(0, 6);
 
 export function Footer() {
+  const t = useTranslations('Footer');
+
   return (
     <footer className="border-t border-cyber-border bg-cyber-surface py-14 px-4" role="contentinfo">
       <div className="max-w-7xl mx-auto">
@@ -28,8 +32,7 @@ export function Footer() {
             </Link>
 
             <p className="mt-4 max-w-sm text-sm leading-6 text-cyber-muted">
-              XFree provides privacy-first browser tools for developers, technical teams and creators.
-              Local Mode is used by default for supported operations, with no signup required.
+              {t('tagline')}
             </p>
 
             <Link
@@ -37,39 +40,39 @@ export function Footer() {
               className="mt-6 cyber-btn cyber-btn-filled text-sm px-5 py-3 rounded inline-flex items-center gap-2"
               rel="noopener"
             >
-              <span>Open XFree Studio</span>
+              <span>{t('openStudio')}</span>
               <span aria-hidden="true">→</span>
             </Link>
 
             <p className="mt-4 text-xs leading-5 text-cyber-dim font-mono">
-              {TOOLS.length} published tools and {PILLARS.length} approved discovery hubs are currently available.
+              {t('availableStats', { tools: TOOLS.length, pillars: PILLARS.length })}
             </p>
           </section>
 
           <nav aria-label="XFree footer navigation" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 xl:grid-cols-6">
             <section aria-labelledby="footer-categories">
               <h2 id="footer-categories" className="text-sm font-semibold text-cyber-glow font-mono">
-                {'// Categories'}
+                {t('categoriesHeading')}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
                   <Link href="/categories/developer-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree Developer Tools
+                    {t('developerTools')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/categories/seo-url-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree SEO Tools
+                    {t('seoTools')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/categories/ai-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree AI Tools
+                    {t('aiTools')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/categories/security-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree Security Tools
+                    {t('securityTools')}
                   </Link>
                 </li>
               </ul>
@@ -77,7 +80,7 @@ export function Footer() {
 
             <section aria-labelledby="footer-popular">
               <h2 id="footer-popular" className="text-sm font-semibold text-cyber-cyan font-mono">
-                {'// Popular'}
+                {t('popularHeading')}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 {FOOTER_TOOLS.map((tool) => (
@@ -95,22 +98,22 @@ export function Footer() {
 
             <section aria-labelledby="footer-pillars">
               <h2 id="footer-pillars" className="text-sm font-semibold text-cyber-magenta font-mono">
-                {'// Tool Hubs'}
+                {t('toolHubsHeading')}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
                   <Link href="/pillars/json-data-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree JSON & Data Tools
+                    {t('jsonDataTools')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/pillars/seo-audit-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree SEO Tools
+                    {t('seoTools')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/pillars/password-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree Security Tools
+                    {t('securityTools')}
                   </Link>
                 </li>
               </ul>
@@ -118,45 +121,46 @@ export function Footer() {
 
             <section aria-labelledby="footer-resources">
               <h2 id="footer-resources" className="text-sm font-semibold text-cyber-amber font-mono">
-                {'// Resources'}
+                {t('resourcesHeading')}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
                   <Link href="/pillars" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XFree Pillar Hubs
+                    {t('pillarHubs')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/sitemap.xml" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    XML Sitemap
-                  </Link>
+                  {/* Not locale-prefixed: lives at app root, not under app/[locale]/ */}
+                  <NextLink href="/sitemap.xml" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                    {t('xmlSitemap')}
+                  </NextLink>
                 </li>
                 <li>
-                  <Link href="/robots.txt" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    robots.txt
-                  </Link>
+                  <NextLink href="/robots.txt" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                    {t('robotsTxt')}
+                  </NextLink>
                 </li>
               </ul>
             </section>
 
             <section aria-labelledby="footer-legal">
               <h2 id="footer-legal" className="text-sm font-semibold text-white font-mono">
-                {'// Company'}
+                {t('companyHeading')}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
                   <Link href="/about" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    About XFree
+                    {t('about')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/privacy" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    Privacy Policy
+                    {t('privacy')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/terms" className="text-sm text-cyber-muted transition-colors hover:text-white">
-                    Terms of Service
+                    {t('terms')}
                   </Link>
                 </li>
               </ul>
@@ -168,10 +172,10 @@ export function Footer() {
 
         <div className="flex flex-col gap-4 border-t border-cyber-border pt-6 text-xs text-cyber-dim sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono">
-            © {new Date().getFullYear()} XFree. Open-source software released under the MIT License.
+            {t('copyright', { year: new Date().getFullYear() })}
           </p>
           <p className="font-mono">
-            Marketing: <a href="https://www.xfree.in/" className="text-cyber-muted hover:text-white">www.xfree.in</a> · Application:{' '}
+            {t('marketing')}: <a href="https://www.xfree.in/" className="text-cyber-muted hover:text-white">www.xfree.in</a> · {t('application')}:{' '}
             <a href="https://app.xfree.in/" className="text-cyber-muted hover:text-white" rel="noopener">
               app.xfree.in
             </a>
