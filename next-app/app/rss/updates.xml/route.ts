@@ -1,43 +1,40 @@
 import { NextResponse } from 'next/server';
+import { TOOLS } from '@/lib/data/tools';
 
 export const runtime = 'edge';
 
 export async function GET() {
+  const toolCount = TOOLS.filter((t) => t.indexable).length;
+
+  // Dated feature-announcement entries with no real source-of-truth
+  // changelog behind them (invented sequential placeholder dates, a
+  // link to a "schema-generator" tool that was never built) have been
+  // removed. Keep only entries that describe real, currently-live
+  // features, without asserting a specific historical publish date we
+  // can't back.
   const updates = [
     {
-      title: 'XFree Launch',
-      description: 'XFree app launched with 26 free developer and SEO tools',
-      pubDate: '2026-01-01',
+      title: 'XFree Tools',
+      description: `${toolCount} free, privacy-first developer and SEO tools, all running client-side in your browser.`,
+      pubDate: new Date().toISOString(),
       link: 'https://www.xfree.in',
     },
     {
-      title: 'Pillar System Introduction',
-      description: 'New organized pillar system for grouping related tools',
-      pubDate: '2026-02-15',
+      title: 'Pillar System',
+      description: 'Tools are organized into thematic pillars for easier discovery.',
+      pubDate: new Date().toISOString(),
       link: 'https://www.xfree.in/pillars',
     },
     {
-      title: 'AI Tools Category Added',
-      description: 'New category for AI-powered tools including prompt engineering and token counting',
-      pubDate: '2026-03-01',
-      link: 'https://www.xfree.in/categories/ai-tools',
-    },
-    {
-      title: 'Developer Guides Section',
-      description: 'In-depth technical guides on regex, cron expressions, JSON formatting, and SEO',
-      pubDate: '2026-04-01',
+      title: 'Developer Guides',
+      description: 'In-depth technical guides on regex, cron expressions, JSON formatting, and SEO.',
+      pubDate: new Date().toISOString(),
       link: 'https://www.xfree.in/guides',
     },
     {
-      title: 'Schema Markup Tools',
-      description: 'New JSON-LD generator and schema validator for structured data SEO',
-      pubDate: '2026-05-01',
-      link: 'https://www.xfree.in/tools/schema-generator',
-    },
-    {
       title: 'Machine-Readable API',
-      description: 'New /tools.json, /capabilities.json, and API endpoints for AI agents',
-      pubDate: '2026-06-01',
+      description: '/tools.json, /capabilities.json, and API endpoints for AI agents.',
+      pubDate: new Date().toISOString(),
       link: 'https://www.xfree.in/capabilities.json',
     },
   ];
