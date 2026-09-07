@@ -46,7 +46,7 @@ export function ContactForm() {
       {status === 'success' ? (
         <div className="text-center py-8 space-y-4">
           <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-          <h3 className="text-xl font-bold text-white">Message sent</h3>
+          <h3 className="text-xl font-bold text-cyber-text">Message sent</h3>
           <p className="text-cyber-muted text-xs">Thanks — we will review it and follow up if you left an email.</p>
           <button
             onClick={() => { setStatus('idle'); setMessage(''); setEmail(''); }}
@@ -65,7 +65,7 @@ export function ContactForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-2.5 bg-cyber-bg border border-cyber-border rounded-xl text-white text-xs focus:outline-none focus:border-cyber-glow"
+              className="w-full px-4 py-2.5 bg-cyber-bg border border-cyber-border rounded-xl text-cyber-text text-xs focus:outline-none focus:border-cyber-glow"
             />
           </div>
           <div className="space-y-1">
@@ -78,7 +78,7 @@ export function ContactForm() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Describe the tool feature, bug, or feedback..."
-              className="w-full px-4 py-2.5 bg-cyber-bg border border-cyber-border rounded-xl text-white text-xs focus:outline-none focus:border-cyber-glow resize-none"
+              className="w-full px-4 py-2.5 bg-cyber-bg border border-cyber-border rounded-xl text-cyber-text text-xs focus:outline-none focus:border-cyber-glow resize-none"
             />
           </div>
           {status === 'error' && (

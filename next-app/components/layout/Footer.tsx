@@ -56,22 +56,22 @@ export function Footer() {
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <Link href="/categories/developer-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/categories/developer-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('developerTools')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/categories/seo-url-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/categories/seo-url-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('seoTools')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/categories/ai-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/categories/ai-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('aiTools')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/categories/security-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/categories/security-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('securityTools')}
                   </Link>
                 </li>
@@ -87,7 +87,7 @@ export function Footer() {
                   <li key={tool.id}>
                     <Link
                       href={`/tools/${tool.slug}`}
-                      className="text-sm text-cyber-muted transition-colors hover:text-white"
+                      className="text-sm text-cyber-muted transition-colors hover:text-cyber-text"
                     >
                       XFree {tool.title.replace('XFree ', '')}
                     </Link>
@@ -102,17 +102,17 @@ export function Footer() {
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <Link href="/pillars/json-data-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/pillars/json-data-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('jsonDataTools')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pillars/seo-audit-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/pillars/seo-audit-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('seoTools')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pillars/password-tools" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/pillars/password-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('securityTools')}
                   </Link>
                 </li>
@@ -125,18 +125,18 @@ export function Footer() {
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <Link href="/pillars" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/pillars" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('pillarHubs')}
                   </Link>
                 </li>
                 <li>
                   {/* Not locale-prefixed: lives at app root, not under app/[locale]/ */}
-                  <NextLink href="/sitemap.xml" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <NextLink href="/sitemap.xml" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('xmlSitemap')}
                   </NextLink>
                 </li>
                 <li>
-                  <NextLink href="/robots.txt" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <NextLink href="/robots.txt" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('robotsTxt')}
                   </NextLink>
                 </li>
@@ -144,22 +144,22 @@ export function Footer() {
             </section>
 
             <section aria-labelledby="footer-legal">
-              <h2 id="footer-legal" className="text-sm font-semibold text-white font-mono">
+              <h2 id="footer-legal" className="text-sm font-semibold text-cyber-text font-mono">
                 {t('companyHeading')}
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <Link href="/about" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/about" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('about')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/privacy" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/privacy" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('privacy')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href="/terms" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('terms')}
                   </Link>
                 </li>
@@ -175,8 +175,8 @@ export function Footer() {
             {t('copyright', { year: new Date().getFullYear() })}
           </p>
           <p className="font-mono">
-            {t('marketing')}: <a href="https://www.xfree.in/" className="text-cyber-muted hover:text-white">www.xfree.in</a> · {t('application')}:{' '}
-            <a href="https://app.xfree.in/" className="text-cyber-muted hover:text-white" rel="noopener">
+            {t('marketing')}: <a href="https://www.xfree.in/" className="text-cyber-muted hover:text-cyber-text">www.xfree.in</a> · {t('application')}:{' '}
+            <a href="https://app.xfree.in/" className="text-cyber-muted hover:text-cyber-text" rel="noopener">
               app.xfree.in
             </a>
           </p>

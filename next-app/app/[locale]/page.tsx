@@ -7,6 +7,7 @@ import { TOOLS as ALL_TOOLS, CATEGORIES } from '@/lib/data/tools';
 import { PILLARS as ALL_PILLARS } from '@/lib/data/pillars';
 import { Footer } from '@/components/layout/Footer';
 import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface Tool {
   slug: string;
@@ -182,6 +183,7 @@ export default function HomePage() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <LocaleSwitcher />
             <Link href="https://app.xfree.in/" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded" rel="noopener">
               <span>{tHeader('launchStudio')} →</span>
@@ -231,7 +233,7 @@ export default function HomePage() {
               <span>$ {t('badge')}</span>
             </div>
 
-            <h1 id="hero-heading" className="hero-title text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4 glitch anim-slide-up" data-text={`${t('titleLine1')}\n${t('titleLine2')}`} style={{ animationDelay: '0.1s' }}>
+            <h1 id="hero-heading" className="hero-title text-4xl sm:text-5xl lg:text-7xl font-black text-cyber-text leading-[1.05] tracking-tight mb-4 glitch anim-slide-up" data-text={`${t('titleLine1')}\n${t('titleLine2')}`} style={{ animationDelay: '0.1s' }}>
               {t('titleLine1')}<br />
               <span className="text-cyber-glow neon-green">{t('titleLine2')}</span>
             </h1>
@@ -255,15 +257,15 @@ export default function HomePage() {
               </form>
               <nav className="flex items-center justify-center gap-2 mt-3 flex-wrap" aria-label="Popular searches">
                 <span className="text-[11px] text-cyber-muted font-mono">{t('popular')}</span>
-                <Link href="/tools/json-formatter" className="text-[11px] text-cyber-glow hover:text-white font-mono">XFree JSON Formatter</Link>
+                <Link href="/tools/json-formatter" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree JSON Formatter</Link>
                 <span className="text-cyber-dim">·</span>
-                <Link href="/tools/regex-tester" className="text-[11px] text-cyber-glow hover:text-white font-mono">XFree Regex Tester</Link>
+                <Link href="/tools/regex-tester" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree Regex Tester</Link>
                 <span className="text-cyber-dim">·</span>
-                <Link href="/tools/xml-sitemap-generator" className="text-[11px] text-cyber-glow hover:text-white font-mono">XFree Sitemap Generator</Link>
+                <Link href="/tools/xml-sitemap-generator" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree Sitemap Generator</Link>
                 <span className="text-cyber-dim">·</span>
-                <Link href="/tools/meta-tag-generator" className="text-[11px] text-cyber-glow hover:text-white font-mono">XFree Meta Tags</Link>
+                <Link href="/tools/meta-tag-generator" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree Meta Tags</Link>
                 <span className="text-cyber-dim">·</span>
-                <Link href="/tools/jwt-decoder" className="text-[11px] text-cyber-glow hover:text-white font-mono">XFree JWT Decoder</Link>
+                <Link href="/tools/jwt-decoder" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree JWT Decoder</Link>
               </nav>
               <small className="block mt-3 text-[10px] text-cyber-dim font-mono">Pro-tip: Press <kbd>Ctrl+Enter</kbd> to process, <kbd>Ctrl+Shift+C</kbd> to copy.</small>
             </div>
@@ -297,7 +299,7 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8">
               <span className="inline-block px-3 py-1 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-xs font-mono mb-3 neon-box-green">// {t('liveDemoBadge')}</span>
-              <h2 id="playground-heading" className="text-2xl font-bold text-white mb-2">{t('liveDemoTitle')}</h2>
+              <h2 id="playground-heading" className="text-2xl font-bold text-cyber-text mb-2">{t('liveDemoTitle')}</h2>
               <p className="text-cyber-muted text-sm font-mono">$ {t('liveDemoDescription')}</p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -335,7 +337,7 @@ export default function HomePage() {
                   <div className="terminal-dot bg-cyber-amber" />
                   <div className="terminal-dot bg-cyber-glow" />
                   <span className="text-xs font-mono text-cyber-muted ml-2">output ~ formatted</span>
-                  <button onClick={copyDemo} className="text-[10px] text-cyber-glow hover:text-white transition-colors flex items-center gap-1 font-mono ml-auto" aria-label="Copy output">
+                  <button onClick={copyDemo} className="text-[10px] text-cyber-glow hover:text-cyber-text transition-colors flex items-center gap-1 font-mono ml-auto" aria-label="Copy output">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                     {demoCopied ? '✓ COPIED' : 'COPY'}
                   </button>
@@ -346,7 +348,7 @@ export default function HomePage() {
                   </pre>
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-[10px] text-cyber-muted font-mono">In-browser · No server</span>
-                    <Link href="/tools/json-formatter" className="text-[10px] text-cyber-glow hover:text-white font-mono">Open Full XFree JSON Formatter →</Link>
+                    <Link href="/tools/json-formatter" className="text-[10px] text-cyber-glow hover:text-cyber-text font-mono">Open Full XFree JSON Formatter →</Link>
                   </div>
                 </div>
               </div>
@@ -361,10 +363,10 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 id="featured-heading" className="text-xl font-bold text-white font-mono"><span className="text-cyber-glow">$</span> {t('featuredHeading')}</h2>
-                <p className="text-sm text-cyber-muted mt-1 font-mono">// {t('featuredSubheading')} <Link href="https://app.xfree.in/" className="text-cyber-cyan hover:text-white underline focus-ring" rel="noopener">{t('featuredStudioLink')}</Link></p>
+                <h2 id="featured-heading" className="text-xl font-bold text-cyber-text font-mono"><span className="text-cyber-glow">$</span> {t('featuredHeading')}</h2>
+                <p className="text-sm text-cyber-muted mt-1 font-mono">// {t('featuredSubheading')} <Link href="https://app.xfree.in/" className="text-cyber-cyan hover:text-cyber-text underline focus-ring" rel="noopener">{t('featuredStudioLink')}</Link></p>
               </div>
-              <Link href="/tools" className="text-xs text-cyber-glow hover:text-white font-mono">{t('viewAll')} →</Link>
+              <Link href="/tools" className="text-xs text-cyber-glow hover:text-cyber-text font-mono">{t('viewAll')} →</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {PUBLIC_TOOLS.slice(0, 6).map((tool) => (
@@ -375,7 +377,7 @@ export default function HomePage() {
                     </div>
                     {tool.badge && <span className="text-[9px] px-1.5 py-0.5 rounded badge-flagship font-mono">{tool.badge}</span>}
                   </div>
-                  <h3 className="text-sm font-semibold text-white mb-1 group-hover:text-cyber-glow font-mono">XFree {tool.title}</h3>
+                  <h3 className="text-sm font-semibold text-cyber-text mb-1 group-hover:text-cyber-glow font-mono">XFree {tool.title}</h3>
                   <p className="text-xs text-cyber-muted leading-relaxed mb-3">{tool.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-cyber-dim font-mono">Category: <span className="text-cyber-muted">{tool.category}</span></span>
@@ -401,14 +403,14 @@ export default function HomePage() {
         <section className="py-14 px-4" aria-labelledby="categories-heading">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-10">
-              <h2 id="categories-heading" className="text-2xl font-bold text-white mb-2 font-mono"><span className="text-cyber-glow">ls</span> {t('categoriesHeading')}</h2>
+              <h2 id="categories-heading" className="text-2xl font-bold text-cyber-text mb-2 font-mono"><span className="text-cyber-glow">ls</span> {t('categoriesHeading')}</h2>
               <p className="text-cyber-muted font-mono text-sm">// {t('categoriesSubheading')}</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {CATEGORIES.map((cat) => (
                 <Link key={cat.slug} href={`/categories/${cat.slug}`} className="cyber-card p-4 text-center block focus-ring">
                   <div className="text-2xl mb-2" aria-hidden="true">{cat.icon}</div>
-                  <h3 className="text-sm font-semibold text-white font-mono">{cat.label}</h3>
+                  <h3 className="text-sm font-semibold text-cyber-text font-mono">{cat.label}</h3>
                   <p className="text-[11px] text-cyber-muted mt-1">{cat.description}</p>
                 </Link>
               ))}
@@ -422,7 +424,7 @@ export default function HomePage() {
         <section className="py-16 px-4 bg-cyber-surface/50" aria-labelledby="why-heading">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
-              <h2 id="why-heading" className="text-3xl font-black text-white mb-3 font-mono"><span className="text-cyber-glow">&gt;</span> {t('whyHeading')}</h2>
+              <h2 id="why-heading" className="text-3xl font-black text-cyber-text mb-3 font-mono"><span className="text-cyber-glow">&gt;</span> {t('whyHeading')}</h2>
               <p className="text-cyber-muted max-w-xl mx-auto font-mono text-sm">// {t('whySubheading')}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -435,7 +437,7 @@ export default function HomePage() {
                   <div className={`w-14 h-14 rounded-xl bg-${item.color}/5 border border-${item.color}/20 flex items-center justify-center mx-auto mb-4 neon-box-${item.color}`}>
                     <span className="text-2xl">{item.icon}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2 font-mono">XFree <span className={`text-${item.color}`}>{item.title}</span></h3>
+                  <h3 className="text-lg font-bold text-cyber-text mb-2 font-mono">XFree <span className={`text-${item.color}`}>{item.title}</span></h3>
                   <p className="text-sm text-cyber-muted">{item.desc}</p>
                 </article>
               ))}
@@ -447,7 +449,7 @@ export default function HomePage() {
         <section className="py-16 px-4" aria-labelledby="how-heading">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
-              <h2 id="how-heading" className="text-3xl font-black text-white mb-3 font-mono"><span className="text-cyber-glow">./</span>how_xfree_works.sh</h2>
+              <h2 id="how-heading" className="text-3xl font-black text-cyber-text mb-3 font-mono"><span className="text-cyber-glow">./</span>how_xfree_works.sh</h2>
               <p className="text-cyber-muted font-mono text-sm">{t('howHeading')}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -459,7 +461,7 @@ export default function HomePage() {
                 <article key={i} className="cyber-card p-6 text-center">
                   <div className="w-14 h-14 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center mx-auto mb-4"><span className="text-2xl">{item.icon}</span></div>
                   <div className="text-xs font-mono text-cyber-glow mb-2">STEP {item.step}</div>
-                  <h3 className="text-lg font-bold text-white mb-2 font-mono">{item.title}</h3>
+                  <h3 className="text-lg font-bold text-cyber-text mb-2 font-mono">{item.title}</h3>
                   <p className="text-sm text-cyber-muted">{item.desc}</p>
                 </article>
               ))}
@@ -482,13 +484,13 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-block px-3 py-1 rounded border border-cyber-magenta/30 bg-cyber-magenta/5 text-cyber-magenta text-xs font-mono mb-4">// Popular Workflows</span>
-              <h2 id="usecases-heading" className="text-2xl font-bold text-white mb-2 font-mono">XFree Tool Combinations for Common Tasks</h2>
+              <h2 id="usecases-heading" className="text-2xl font-bold text-cyber-text mb-2 font-mono">XFree Tool Combinations for Common Tasks</h2>
               <p className="text-cyber-muted font-mono text-sm">// Chain multiple XFree tools together for powerful workflows.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {USE_CASES.map((uc, i) => (
                 <div key={i} className="cyber-card p-5">
-                  <h3 className="text-base font-bold text-white mb-3 font-mono">{uc.title}</h3>
+                  <h3 className="text-base font-bold text-cyber-text mb-3 font-mono">{uc.title}</h3>
                   <p className="text-xs text-cyber-muted mb-3">{uc.description}</p>
                   <div className="flex flex-wrap gap-2">
                     {uc.tools.map((tool, j) => (
@@ -506,7 +508,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-block px-3 py-1 rounded border border-cyber-cyan/30 bg-cyber-cyan/5 text-cyber-cyan text-xs font-mono mb-4 neon-box-cyan">// XFree Knowledge Graph</span>
-              <h2 id="pillars-heading" className="text-3xl font-black text-white mb-3 font-mono">{t('pillarsHeading')}: <span className="text-cyber-glow">{ALL_PILLARS.length}</span> Pillars, <span className="text-cyber-cyan">Approved</span> Discovery Hubs</h2>
+              <h2 id="pillars-heading" className="text-3xl font-black text-cyber-text mb-3 font-mono">{t('pillarsHeading')}: <span className="text-cyber-glow">{ALL_PILLARS.length}</span> Pillars, <span className="text-cyber-cyan">Approved</span> Discovery Hubs</h2>
               <p className="text-cyber-muted max-w-2xl mx-auto font-mono text-sm">{t('pillarsSubheading')}</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -519,7 +521,7 @@ export default function HomePage() {
                         <span className="text-[9px] font-mono text-cyber-glow">#{pillar.num}</span>
                         <span className="text-[9px] text-cyber-dim font-mono">hub</span>
                       </div>
-                      <h3 className="text-xs font-semibold text-white leading-tight truncate font-mono">XFree {pillar.name}</h3>
+                      <h3 className="text-xs font-semibold text-cyber-text leading-tight truncate font-mono">XFree {pillar.name}</h3>
                       <p className="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">{pillar.description}</p>
                     </div>
                   </div>
@@ -535,7 +537,7 @@ export default function HomePage() {
         {/* ROADMAP */}
         <section className="py-12 px-4" aria-labelledby="roadmap-heading">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 id="roadmap-heading" className="text-2xl font-bold text-white mb-3 font-mono"><span className="text-cyber-glow">&gt;</span> {t('roadmapHeading')}</h2>
+            <h2 id="roadmap-heading" className="text-2xl font-bold text-cyber-text mb-3 font-mono"><span className="text-cyber-glow">&gt;</span> {t('roadmapHeading')}</h2>
             <p className="text-cyber-muted mb-6 max-w-2xl mx-auto font-mono text-sm">The XFree taxonomy maps a growing catalog of micro-tool concepts. Tools that are not yet built are tracked on our <Link href="/roadmap" className="text-cyber-glow hover:underline focus-ring">public XFree roadmap</Link>.</p>
             <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
               <div className="cyber-card p-3 text-center corner-brackets">
@@ -560,13 +562,13 @@ export default function HomePage() {
         <section className="py-16 px-4 bg-cyber-surface/50" aria-labelledby="faq-heading">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <h2 id="faq-heading" className="text-3xl font-black text-white mb-3 font-mono"><span className="text-cyber-glow">man</span> xfree — FAQ</h2>
+              <h2 id="faq-heading" className="text-3xl font-black text-cyber-text mb-3 font-mono"><span className="text-cyber-glow">man</span> xfree — FAQ</h2>
               <p className="text-cyber-muted font-mono text-sm">// {t('faqHeading')}</p>
             </div>
             <div className="space-y-2">
               {FAQS.map((faq, i) => (
                 <details key={i} className="cyber-card overflow-hidden" open={i === 0}>
-                  <summary className="px-5 py-4 font-semibold text-white text-sm flex justify-between items-center cursor-pointer font-mono">
+                  <summary className="px-5 py-4 font-semibold text-cyber-text text-sm flex justify-between items-center cursor-pointer font-mono">
                     {faq.q}
                   </summary>
                   <div className="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">{faq.a}</div>
@@ -590,7 +592,7 @@ export default function HomePage() {
         <section className="py-16 px-4 relative overflow-hidden" aria-labelledby="cta-heading">
           <div className="absolute inset-0 matrix-grid opacity-50" aria-hidden="true" />
           <div className="relative max-w-3xl mx-auto text-center">
-            <h2 id="cta-heading" className="text-3xl sm:text-4xl font-black text-white mb-4 font-mono glitch" data-text={t('ctaHeading')}>
+            <h2 id="cta-heading" className="text-3xl sm:text-4xl font-black text-cyber-text mb-4 font-mono glitch" data-text={t('ctaHeading')}>
               {t('ctaHeading')}
             </h2>
             <p className="text-cyber-muted mb-8 max-w-lg mx-auto font-mono text-sm">// {t('ctaSubheading')}</p>

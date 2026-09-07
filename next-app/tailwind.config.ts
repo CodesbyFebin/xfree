@@ -15,20 +15,24 @@ const config: Config = {
         cyber: ['var(--font-orbitron)', 'sans-serif'],
       },
       colors: {
+        // RGB-triplet CSS vars (see globals.css :root / [data-theme="light"])
+        // so `bg-cyber-bg`, `text-cyber-glow/50`, etc. re-theme instantly
+        // without touching every call site - the <alpha-value> placeholder
+        // is Tailwind's own convention for keeping opacity modifiers working.
         cyber: {
-          bg: '#050508',
-          surface: '#0a0a10',
-          card: '#0d0d14',
-          border: '#1a1a2e',
-          glow: '#39ff14',
-          cyan: '#00f0ff',
-          magenta: '#ff00aa',
-          purple: '#a855f7',
-          amber: '#fbbf24',
-          red: '#ff3333',
-          dim: '#6b7280',
-          text: '#c8c8d4',
-          muted: '#9ca3af',
+          bg: 'rgb(var(--cyber-bg) / <alpha-value>)',
+          surface: 'rgb(var(--cyber-surface) / <alpha-value>)',
+          card: 'rgb(var(--cyber-card) / <alpha-value>)',
+          border: 'rgb(var(--cyber-border) / <alpha-value>)',
+          glow: 'rgb(var(--cyber-glow) / <alpha-value>)',
+          cyan: 'rgb(var(--cyber-cyan) / <alpha-value>)',
+          magenta: 'rgb(var(--cyber-magenta) / <alpha-value>)',
+          purple: 'rgb(var(--cyber-purple) / <alpha-value>)',
+          amber: 'rgb(var(--cyber-amber) / <alpha-value>)',
+          red: 'rgb(var(--cyber-red) / <alpha-value>)',
+          dim: 'rgb(var(--cyber-dim) / <alpha-value>)',
+          text: 'rgb(var(--cyber-text) / <alpha-value>)',
+          muted: 'rgb(var(--cyber-muted) / <alpha-value>)',
         },
       },
     },

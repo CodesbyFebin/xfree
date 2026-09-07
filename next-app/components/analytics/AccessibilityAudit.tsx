@@ -115,7 +115,7 @@ export function AccessibilityAudit() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 left-4 px-3 py-2 rounded-lg bg-cyber-surface border border-cyber-border text-xs font-mono text-cyber-muted hover:text-white transition-colors z-40 flex items-center gap-2"
+        className="fixed bottom-4 left-4 px-3 py-2 rounded-lg bg-cyber-surface border border-cyber-border text-xs font-mono text-cyber-muted hover:text-cyber-text transition-colors z-40 flex items-center gap-2"
       >
         ♿ <span>Accessibility</span>
         {errorCount > 0 && (
@@ -128,7 +128,7 @@ export function AccessibilityAudit() {
   return (
     <div className="fixed bottom-4 left-4 w-96 max-h-96 overflow-y-auto p-4 rounded-lg bg-cyber-surface border border-cyber-border shadow-xl z-40">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-white font-mono flex items-center gap-2">
+        <h3 className="text-sm font-bold text-cyber-text font-mono flex items-center gap-2">
           ♿ Accessibility Audit
           {isAuditing && <span className="animate-pulse">Running...</span>}
         </h3>
@@ -142,7 +142,7 @@ export function AccessibilityAudit() {
           </button>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-cyber-muted hover:text-white text-xs"
+            className="text-cyber-muted hover:text-cyber-text text-xs"
           >
             ✕
           </button>

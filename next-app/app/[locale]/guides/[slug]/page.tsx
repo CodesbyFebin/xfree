@@ -49,7 +49,7 @@ export default async function GuideDetailPage({ params }: Props) {
 
           <article className="cyber-card p-8 space-y-8">
             <header className="space-y-4 border-b border-cyber-border pb-6">
-              <h1 className="text-2xl sm:text-3xl font-black text-white font-mono">{guide.title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-black text-cyber-text font-mono">{guide.title}</h1>
               <p className="text-cyber-muted">{guide.intro}</p>
               <div className="flex items-center gap-4 text-xs text-cyber-dim font-mono">
                 <span>Last reviewed: {guide.lastReviewed}</span>
@@ -58,7 +58,7 @@ export default async function GuideDetailPage({ params }: Props) {
 
             {guide.sections.map((section, i) => (
               <section key={i} className="space-y-4">
-                <h2 className="text-xl font-bold text-white">{section.heading}</h2>
+                <h2 className="text-xl font-bold text-cyber-text">{section.heading}</h2>
                 {section.paragraphs?.map((p, j) => (
                   <p key={j} className="text-cyber-muted text-sm leading-relaxed">{p}</p>
                 ))}
@@ -81,7 +81,7 @@ export default async function GuideDetailPage({ params }: Props) {
           <div className="text-center">
             <Link
               href="/guides"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-white transition-colors text-sm font-mono"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-cyber-text transition-colors text-sm font-mono"
             >
               <ArrowLeft className="w-4 h-4" />
               More Guides

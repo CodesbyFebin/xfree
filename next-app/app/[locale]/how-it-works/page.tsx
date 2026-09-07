@@ -23,7 +23,7 @@ export default function HowItWorksPage() {
       <main id="main-content" className="pt-20">
         <div className="max-w-4xl mx-auto py-10 px-4 space-y-10">
           <header className="text-center space-y-4">
-            <h1 className="text-3xl sm:text-4xl font-black text-white font-mono">How XFree Works</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text font-mono">How XFree Works</h1>
             <p className="text-cyber-muted max-w-2xl mx-auto">
               Privacy-first architecture where all tool processing happens in your browser.
             </p>
@@ -34,7 +34,7 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 rounded-xl bg-cyber-glow/10 border border-cyber-glow/20 flex items-center justify-center">
                 <span className="text-2xl">1</span>
               </div>
-              <h3 className="text-lg font-bold text-white">You Load the Page</h3>
+              <h3 className="text-lg font-bold text-cyber-text">You Load the Page</h3>
               <p className="text-cyber-muted text-sm">
                 The tool page loads in your browser along with all necessary JavaScript code.
               </p>
@@ -44,7 +44,7 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 rounded-xl bg-cyber-glow/10 border border-cyber-glow/20 flex items-center justify-center">
                 <span className="text-2xl">2</span>
               </div>
-              <h3 className="text-lg font-bold text-white">You Enter Data</h3>
+              <h3 className="text-lg font-bold text-cyber-text">You Enter Data</h3>
               <p className="text-cyber-muted text-sm">
                 Input is typed or pasted directly into the browser interface.
               </p>
@@ -54,7 +54,7 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 rounded-xl bg-cyber-glow/10 border border-cyber-glow/20 flex items-center justify-center">
                 <span className="text-2xl">3</span>
               </div>
-              <h3 className="text-lg font-bold text-white">Local Processing</h3>
+              <h3 className="text-lg font-bold text-cyber-text">Local Processing</h3>
               <p className="text-cyber-muted text-sm">
                 JavaScript processes your data entirely within the browser sandbox.
               </p>
@@ -64,7 +64,7 @@ export default function HowItWorksPage() {
               <div className="w-12 h-12 rounded-xl bg-cyber-glow/10 border border-cyber-glow/20 flex items-center justify-center">
                 <span className="text-2xl">4</span>
               </div>
-              <h3 className="text-lg font-bold text-white">Instant Results</h3>
+              <h3 className="text-lg font-bold text-cyber-text">Instant Results</h3>
               <p className="text-cyber-muted text-sm">
                 Output appears immediately without server communication.
               </p>
@@ -72,7 +72,7 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-6">
-            <h2 className="text-2xl font-bold text-white text-center">Local Mode</h2>
+            <h2 className="text-2xl font-bold text-cyber-text text-center">Local Mode</h2>
             <p className="text-cyber-muted text-sm text-center max-w-xl mx-auto">
               Every published tool today runs in Local Mode - there is no
               server-side or AI processing step to opt into. If that changes
@@ -89,7 +89,7 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-4 border-cyber-cyan/30">
-            <h2 className="text-xl font-bold text-white">Security Notes</h2>
+            <h2 className="text-xl font-bold text-cyber-text">Security Notes</h2>
             <p className="text-cyber-muted text-sm">
               Even in Local Mode, we recommend:
             </p>
@@ -102,7 +102,7 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-4 text-center">
-            <h2 className="text-xl font-bold text-white">Try It Yourself</h2>
+            <h2 className="text-xl font-bold text-cyber-text">Try It Yourself</h2>
             <p className="text-cyber-muted text-sm">
               The best way to see local processing in action is to open a tool and watch the network tab stay empty. Start with the{' '}
               <Link href="/tools/json-formatter" className="text-cyber-glow hover:underline">JSON Formatter</Link>, or read the{' '}

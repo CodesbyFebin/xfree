@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { LocaleSwitcher } from './LocaleSwitcher';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 // Category hrefs verified against lib/data/tools.ts's CATEGORIES.slug (what
 // app/[locale]/categories/[category]/page.tsx actually matches against).
@@ -94,6 +95,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <LocaleSwitcher />
           <Link
             href="/pillars"

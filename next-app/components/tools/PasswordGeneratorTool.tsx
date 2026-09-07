@@ -115,7 +115,7 @@ export function PasswordGeneratorTool() {
 
       <div className="p-6 rounded-2xl bg-cyber-surface border border-cyber-border space-y-4">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-bold text-white uppercase tracking-wider font-mono">Length</label>
+          <label className="text-xs font-bold text-cyber-text uppercase tracking-wider font-mono">Length</label>
           <span className="text-cyber-glow font-mono font-bold text-lg">{length}</span>
         </div>
         <input
@@ -134,7 +134,7 @@ export function PasswordGeneratorTool() {
       </div>
 
       <div className="p-6 rounded-2xl bg-cyber-surface border border-cyber-border space-y-4">
-        <label className="text-xs font-bold text-white uppercase tracking-wider font-mono">Character Sets</label>
+        <label className="text-xs font-bold text-cyber-text uppercase tracking-wider font-mono">Character Sets</label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { key: 'uppercase', label: 'Uppercase (A-Z)', value: includeUppercase, onChange: setIncludeUppercase, example: 'ABC' },

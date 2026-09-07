@@ -115,7 +115,7 @@ export function MetaTagGeneratorTool() {
                   className={`px-4 py-2 text-xs font-mono rounded transition-all ${
                     twitterCard === card
                       ? 'bg-cyber-glow text-cyber-bg'
-                      : 'bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-white'
+                      : 'bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-cyber-text'
                   }`}
                 >
                   {card}
@@ -132,7 +132,7 @@ export function MetaTagGeneratorTool() {
             </label>
             <button
               onClick={() => handleCopy('all', metaTags())}
-              className="text-[10px] text-cyber-glow hover:text-white font-mono transition-colors flex items-center gap-1"
+              className="text-[10px] text-cyber-glow hover:text-cyber-text font-mono transition-colors flex items-center gap-1"
             >
               {copied === 'all' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
               {copied === 'all' ? 'COPIED' : 'COPY ALL'}

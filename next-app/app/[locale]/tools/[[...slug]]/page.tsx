@@ -105,13 +105,13 @@ function ToolsIndex() {
       <main id="main-content" className="pt-20">
         <div className="max-w-5xl mx-auto px-4 py-8">
           <header className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl font-black text-white font-mono mb-4"><span className="text-cyber-glow">$</span> XFree Tools</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text font-mono mb-4"><span className="text-cyber-glow">$</span> XFree Tools</h1>
             <p className="text-cyber-muted max-w-2xl mx-auto">{TOOLS.filter(t => t.indexable).length} free privacy-first tools for developers and SEO professionals.</p>
           </header>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {TOOLS.filter(t => t.indexable).map(tool => (
               <Link key={tool.id} href={`/tools/${tool.slug}`} className="cyber-card p-4 group block">
-                <h3 className="text-sm font-semibold text-white group-hover:text-cyber-glow transition-colors font-mono mb-1">XFree {tool.title}</h3>
+                <h3 className="text-sm font-semibold text-cyber-text group-hover:text-cyber-glow transition-colors font-mono mb-1">XFree {tool.title}</h3>
                 <p className="text-xs text-cyber-muted line-clamp-2 mb-3">{tool.shortDescription}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-cyber-dim font-mono">{tool.tags.slice(0, 2).join(', ')}</span>
@@ -166,7 +166,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
                   <span className="text-3xl">{tool.id === 'json-formatter' ? '{ }' : tool.id === 'regex-tester' ? '.*' : '⚡'}</span>
                 </div>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono">XFree {tool.title}</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">XFree {tool.title}</h1>
                   <p className="text-cyber-muted mt-1">{categoryInfo?.label}</p>
                 </div>
               </div>
@@ -184,7 +184,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
             <div className="lg:col-span-2 space-y-6">
               {/* How to Use */}
               <section className="cyber-card p-6" aria-labelledby="howto-heading">
-                <h2 id="howto-heading" className="text-lg font-bold text-white font-mono mb-4"><span className="text-cyber-glow">$</span> How to Use XFree {tool.title}</h2>
+                <h2 id="howto-heading" className="text-lg font-bold text-cyber-text font-mono mb-4"><span className="text-cyber-glow">$</span> How to Use XFree {tool.title}</h2>
                 <ol className="space-y-3">
                   {tool.howToUse.map((step, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm">
@@ -198,7 +198,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
               {/* Example */}
               {tool.exampleInput && (
                 <section className="cyber-card p-6" aria-labelledby="example-heading">
-                  <h2 id="example-heading" className="text-lg font-bold text-white font-mono mb-4"><span className="text-cyber-glow">$</span> Example</h2>
+                  <h2 id="example-heading" className="text-lg font-bold text-cyber-text font-mono mb-4"><span className="text-cyber-glow">$</span> Example</h2>
                   <div className="mb-3">
                     <span className="text-xs text-cyber-dim font-mono block mb-2">INPUT:</span>
                     <pre className="p-3 rounded bg-cyber-bg border border-cyber-border overflow-x-auto text-xs font-mono text-cyber-glow">{tool.exampleInput}</pre>
@@ -209,7 +209,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
               {/* Privacy */}
               {tool.privacyNotice && (
                 <section className="cyber-card p-6 border-green-500/20" aria-labelledby="privacy-heading">
-                  <h2 id="privacy-heading" className="text-lg font-bold text-white font-mono mb-3 flex items-center gap-2"><span className="text-green-400">🔒</span> Privacy Guarantee</h2>
+                  <h2 id="privacy-heading" className="text-lg font-bold text-cyber-text font-mono mb-3 flex items-center gap-2"><span className="text-green-400">🔒</span> Privacy Guarantee</h2>
                   <p className="text-sm text-cyber-muted">{tool.privacyNotice}</p>
                 </section>
               )}
@@ -217,17 +217,17 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
               {/* Use Cases */}
               {toolUseCases.length > 0 && (
                 <section className="cyber-card p-6" aria-labelledby="usecases-heading">
-                  <h2 id="usecases-heading" className="text-lg font-bold text-white font-mono mb-4"><span className="text-cyber-glow">$</span> Common Use Cases</h2>
+                  <h2 id="usecases-heading" className="text-lg font-bold text-cyber-text font-mono mb-4"><span className="text-cyber-glow">$</span> Common Use Cases</h2>
                   <div className="space-y-4">
                     {toolUseCases.map(uc => (
                       <div key={uc.id} className="border-b border-cyber-border pb-4 last:border-0">
-                        <h3 className="text-sm font-semibold text-white mb-2">{uc.title}</h3>
+                        <h3 className="text-sm font-semibold text-cyber-text mb-2">{uc.title}</h3>
                         <p className="text-sm text-cyber-muted">{uc.description}</p>
                         <div className="flex flex-wrap gap-2 mt-2">
                           {uc.tools.filter(t => t !== tool.id).slice(0, 3).map(tSlug => {
                             const t = TOOLS.find(x => x.id === tSlug);
                             return t ? (
-                              <Link key={tSlug} href={`/tools/${tSlug}`} className="text-[10px] px-2 py-1 rounded bg-cyber-bg border border-cyber-border text-cyber-glow hover:text-white transition-colors font-mono">{t.title}</Link>
+                              <Link key={tSlug} href={`/tools/${tSlug}`} className="text-[10px] px-2 py-1 rounded bg-cyber-bg border border-cyber-border text-cyber-glow hover:text-cyber-text transition-colors font-mono">{t.title}</Link>
                             ) : null;
                           })}
                         </div>
@@ -240,11 +240,11 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
               {/* FAQ */}
               {tool.faqs.length > 0 && (
                 <section className="cyber-card p-6" aria-labelledby="faq-heading">
-                  <h2 id="faq-heading" className="text-lg font-bold text-white font-mono mb-4"><span className="text-cyber-glow">$</span> Questions & Answers</h2>
+                  <h2 id="faq-heading" className="text-lg font-bold text-cyber-text font-mono mb-4"><span className="text-cyber-glow">$</span> Questions & Answers</h2>
                   <div className="space-y-4">
                     {tool.faqs.map((faq, i) => (
                       <div key={i} className="border-b border-cyber-border pb-4 last:border-0">
-                        <h3 className="text-sm font-semibold text-white mb-2">{faq.question}</h3>
+                        <h3 className="text-sm font-semibold text-cyber-text mb-2">{faq.question}</h3>
                         <p className="text-sm text-cyber-muted">{faq.answer}</p>
                       </div>
                     ))}
@@ -261,12 +261,12 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
                   <Link href={`/pillars/${pillar.slug}`} className="flex items-center gap-3 group">
                     <span className="text-2xl">{pillar.icon}</span>
                     <div>
-                      <span className="text-sm text-white group-hover:text-cyber-glow transition-colors block">XFree {pillar.name}</span>
+                      <span className="text-sm text-cyber-text group-hover:text-cyber-glow transition-colors block">XFree {pillar.name}</span>
                       <span className="text-[10px] text-cyber-dim">{pillar.toolCount} tools</span>
                     </div>
                   </Link>
                   <p className="text-xs text-cyber-muted mt-2 line-clamp-2">{pillar.description}</p>
-                  <Link href={`/pillars/${pillar.slug}`} className="text-xs text-cyber-glow hover:text-white transition-colors font-mono mt-2 block">View All Pillar Tools →</Link>
+                  <Link href={`/pillars/${pillar.slug}`} className="text-xs text-cyber-glow hover:text-cyber-text transition-colors font-mono mt-2 block">View All Pillar Tools →</Link>
                 </div>
               )}
 
@@ -295,7 +295,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
                       </Link>
                     ))}
                   </div>
-                  <Link href={`/categories/${categoryInfo?.slug}`} className="text-xs text-cyber-glow hover:text-white transition-colors font-mono mt-2 block">View All →</Link>
+                  <Link href={`/categories/${categoryInfo?.slug}`} className="text-xs text-cyber-glow hover:text-cyber-text transition-colors font-mono mt-2 block">View All →</Link>
                 </div>
               )}
 

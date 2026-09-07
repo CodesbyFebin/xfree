@@ -23,7 +23,7 @@ export default function ContactPage() {
       <main id="main-content" className="pt-20">
         <div className="max-w-2xl mx-auto py-10 px-4 space-y-8">
           <div className="text-center space-y-3">
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight font-mono">Contact Support & Feedback</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text tracking-tight font-mono">Contact Support & Feedback</h1>
             <p className="text-cyber-muted text-sm sm:text-base">
               Have a tool request, bug report, or partnership inquiry? Reach out directly.
             </p>

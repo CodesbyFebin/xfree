@@ -75,7 +75,7 @@ export function RegexTesterTool() {
             {output.length > 0 && (
               <button
                 onClick={handleCopy}
-                className="text-[10px] text-cyber-glow hover:text-white font-mono transition-colors"
+                className="text-[10px] text-cyber-glow hover:text-cyber-text font-mono transition-colors"
               >
                 COPY ALL
               </button>

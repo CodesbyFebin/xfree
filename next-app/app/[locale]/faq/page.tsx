@@ -58,7 +58,7 @@ export default function FaqPage() {
       <main id="main-content" className="pt-20">
         <div className="max-w-3xl mx-auto py-10 px-4 space-y-8">
           <header className="text-center space-y-4">
-            <h1 className="text-3xl sm:text-4xl font-black text-white font-mono">Frequently Asked Questions</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text font-mono">Frequently Asked Questions</h1>
             <p className="text-cyber-muted max-w-xl mx-auto">
               Everything you need to know about XFree tools.
             </p>
@@ -67,14 +67,14 @@ export default function FaqPage() {
           <div className="space-y-4">
             {faqs.map((faq, i) => (
               <div key={i} className="cyber-card p-6">
-                <h3 className="text-white font-semibold mb-2">{faq.question}</h3>
+                <h3 className="text-cyber-text font-semibold mb-2">{faq.question}</h3>
                 <p className="text-cyber-muted text-sm">{faq.answer}</p>
               </div>
             ))}
           </div>
 
           <div className="cyber-card p-8 text-center space-y-4 border-cyber-cyan/30">
-            <h2 className="text-xl font-bold text-white">Still have questions?</h2>
+            <h2 className="text-xl font-bold text-cyber-text">Still have questions?</h2>
             <p className="text-cyber-muted text-sm">
               Contact us and we will get back to you as soon as possible.
             </p>

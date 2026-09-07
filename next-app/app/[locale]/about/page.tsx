@@ -47,7 +47,7 @@ export default function AboutPage() {
       <main id="main-content" className="pt-20">
         <div className="max-w-4xl mx-auto py-10 px-4 space-y-10">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight font-mono">
+            <h1 className="text-4xl sm:text-5xl font-black text-cyber-text tracking-tight font-mono">
               About XFree.in
             </h1>
             <p className="text-cyber-muted text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
@@ -56,7 +56,7 @@ export default function AboutPage() {
           </div>
 
           <div className="space-y-6 text-cyber-muted text-sm sm:text-base leading-relaxed cyber-card p-8">
-            <h2 className="text-2xl font-bold text-white">Our Mission</h2>
+            <h2 className="text-2xl font-bold text-cyber-text">Our Mission</h2>
             <p>
               We created XFree.in because existing online converter and formatting sites are slow, cluttered with invasive ads, and upload sensitive user code to unknown backend servers.
             </p>
@@ -84,14 +84,14 @@ export default function AboutPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-6">
-            <h2 className="text-2xl font-bold text-white">Core Principles</h2>
+            <h2 className="text-2xl font-bold text-cyber-text">Core Principles</h2>
             <div className="space-y-4 text-cyber-muted">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-cyber-glow/10 border border-cyber-glow/20 flex items-center justify-center flex-shrink-0">
                   <span className="text-lg">⚡</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white mb-1">Zero Latency</h3>
+                  <h3 className="font-semibold text-cyber-text mb-1">Zero Latency</h3>
                   <p className="text-sm">All tools run instantly in your browser. No server round-trips, no loading spinners.</p>
                 </div>
               </div>
@@ -100,7 +100,7 @@ export default function AboutPage() {
                   <span className="text-lg">🔒</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white mb-1">Complete Privacy</h3>
+                  <h3 className="font-semibold text-cyber-text mb-1">Complete Privacy</h3>
                   <p className="text-sm">Your data never leaves your browser. No logs, no analytics on your input, no data collection.</p>
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function AboutPage() {
                   <span className="text-lg">✕</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white mb-1">Ad-Free Tools</h3>
+                  <h3 className="font-semibold text-cyber-text mb-1">Ad-Free Tools</h3>
                   <p className="text-sm">Every tool page is free of advertising. The homepage carries a small number of placements to help fund hosting.</p>
                 </div>
               </div>
@@ -117,11 +117,11 @@ export default function AboutPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-4">
-            <h2 className="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+            <h2 className="text-2xl font-bold text-cyber-text">Frequently Asked Questions</h2>
             <div className="space-y-2">
               {ABOUT_FAQS.map((faq, i) => (
                 <details key={i} className="border-b border-cyber-border last:border-0 py-3" open={i === 0}>
-                  <summary className="font-semibold text-white text-sm cursor-pointer">{faq.q}</summary>
+                  <summary className="font-semibold text-cyber-text text-sm cursor-pointer">{faq.q}</summary>
                   <p className="text-sm text-cyber-muted mt-2 leading-relaxed">{faq.a}</p>
                 </details>
               ))}
@@ -129,7 +129,7 @@ export default function AboutPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-4 text-center">
-            <h2 className="text-xl font-bold text-white">Go Deeper</h2>
+            <h2 className="text-xl font-bold text-cyber-text">Go Deeper</h2>
             <p className="text-sm text-cyber-muted">
               Read the <Link href="/how-it-works" className="text-cyber-glow hover:underline">technical breakdown</Link> of how local processing works, browse the <Link href="/guides" className="text-cyber-glow hover:underline">{GUIDES.length} developer guides</Link>, or jump straight into the <Link href="/pillars" className="text-cyber-glow hover:underline">full tool directory</Link>.
             </p>

@@ -82,7 +82,7 @@ export function WorkflowsLibrary() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white font-mono">Saved Workflows</h2>
+        <h2 className="text-xl font-bold text-cyber-text font-mono">Saved Workflows</h2>
         <button
           onClick={() => setShowForm(!showForm)}
           className="px-3 py-1.5 rounded text-xs font-mono bg-cyber-glow text-black hover:bg-cyber-glow/90 transition-colors"
@@ -98,7 +98,7 @@ export function WorkflowsLibrary() {
             placeholder="Workflow name..."
             value={newWorkflow.name}
             onChange={e => setNewWorkflow(prev => ({ ...prev, name: e.target.value }))}
-            className="w-full px-3 py-2 rounded bg-cyber-bg border border-cyber-border text-white font-mono text-sm focus:border-cyber-glow focus:outline-none"
+            className="w-full px-3 py-2 rounded bg-cyber-bg border border-cyber-border text-cyber-text font-mono text-sm focus:border-cyber-glow focus:outline-none"
           />
 
           {newWorkflow.steps.map((step, i) => (
@@ -110,7 +110,7 @@ export function WorkflowsLibrary() {
                   steps[i].toolId = e.target.value;
                   setNewWorkflow(prev => ({ ...prev, steps }));
                 }}
-                className="flex-1 px-3 py-2 rounded bg-cyber-bg border border-cyber-border text-white font-mono text-sm focus:border-cyber-glow focus:outline-none"
+                className="flex-1 px-3 py-2 rounded bg-cyber-bg border border-cyber-border text-cyber-text font-mono text-sm focus:border-cyber-glow focus:outline-none"
               >
                 <option value="">Select tool...</option>
                 {TOOLS.filter(t => t.indexable).map(tool => (
@@ -155,7 +155,7 @@ export function WorkflowsLibrary() {
             <div key={workflow.id} className="cyber-card p-4 group">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-white font-mono">{workflow.name}</h3>
+                  <h3 className="text-sm font-semibold text-cyber-text font-mono">{workflow.name}</h3>
                   <p className="text-xs text-cyber-muted mt-1">
                     {workflow.steps.length} step{workflow.steps.length !== 1 ? 's' : ''}
                   </p>

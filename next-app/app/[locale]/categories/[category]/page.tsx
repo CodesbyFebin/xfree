@@ -73,7 +73,7 @@ export default async function CategoryPage({ params }: Props) {
                 <span className="text-2xl">{cat.icon}</span>
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text mb-2">
                   {cat.label}
                 </h1>
                 <p className="text-cyber-muted">{cat.description}</p>
@@ -83,7 +83,7 @@ export default async function CategoryPage({ params }: Props) {
 
           {/* Tools Grid */}
           <section>
-            <h2 className="text-xl font-bold text-white mb-6 font-mono">
+            <h2 className="text-xl font-bold text-cyber-text mb-6 font-mono">
               <span className="text-cyber-glow">$</span> Available Tools (
               {categoryTools.length})
             </h2>
@@ -96,7 +96,7 @@ export default async function CategoryPage({ params }: Props) {
                     href={`/tools/${tool.slug}`}
                     className="cyber-card p-4 group"
                   >
-                    <h3 className="text-sm font-semibold text-white group-hover:text-cyber-glow transition-colors font-mono mb-1">
+                    <h3 className="text-sm font-semibold text-cyber-text group-hover:text-cyber-glow transition-colors font-mono mb-1">
                       {tool.title}
                     </h3>
                     <p className="text-xs text-cyber-muted line-clamp-2 mb-3">
@@ -124,7 +124,7 @@ export default async function CategoryPage({ params }: Props) {
 
           {/* Other Categories */}
           <section className="mt-12">
-            <h2 className="text-xl font-bold text-white mb-6 font-mono">
+            <h2 className="text-xl font-bold text-cyber-text mb-6 font-mono">
               <span className="text-cyber-glow">$</span> Browse Other Categories
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -135,7 +135,7 @@ export default async function CategoryPage({ params }: Props) {
                   className="cyber-card p-4 text-center group"
                 >
                   <span className="text-xl mb-1 block">{c.icon}</span>
-                  <span className="text-xs text-cyber-muted group-hover:text-white transition-colors font-mono">
+                  <span className="text-xs text-cyber-muted group-hover:text-cyber-text transition-colors font-mono">
                     {c.label}
                   </span>
                 </Link>

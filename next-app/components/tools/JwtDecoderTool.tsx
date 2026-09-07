@@ -87,7 +87,7 @@ export function JwtDecoderTool() {
               </label>
               <button
                 onClick={() => handleCopy('header')}
-                className="text-[10px] text-cyber-cyan hover:text-white font-mono transition-colors"
+                className="text-[10px] text-cyber-cyan hover:text-cyber-text font-mono transition-colors"
               >
                 COPY
               </button>
@@ -103,7 +103,7 @@ export function JwtDecoderTool() {
               </label>
               <button
                 onClick={() => handleCopy('payload')}
-                className="text-[10px] text-cyber-glow hover:text-white font-mono transition-colors"
+                className="text-[10px] text-cyber-glow hover:text-cyber-text font-mono transition-colors"
               >
                 COPY
               </button>

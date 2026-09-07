@@ -19,7 +19,7 @@ export default function OfflinePage() {
       <main id="main-content" className="pt-20">
         <div className="max-w-2xl mx-auto py-20 px-4 text-center">
           <div className="text-6xl mb-6">📡</div>
-          <h1 className="text-3xl font-bold text-white font-mono mb-4">You&apos;re Offline</h1>
+          <h1 className="text-3xl font-bold text-cyber-text font-mono mb-4">You&apos;re Offline</h1>
           <p className="text-cyber-muted mb-8">
             XFree tools that don&apos;t require AI processing will continue to work offline.
             Some features may be unavailable until you reconnect.

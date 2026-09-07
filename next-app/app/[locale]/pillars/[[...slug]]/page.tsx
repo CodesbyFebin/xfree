@@ -116,7 +116,7 @@ function PillarsIndex() {
           <Breadcrumbs items={breadcrumbItems} />
 
           <header className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl font-black text-white font-mono mb-4">
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text font-mono mb-4">
               <span className="text-cyber-glow">$</span> XFree Tool Pillars
             </h1>
             <p className="text-cyber-muted max-w-2xl mx-auto">
@@ -131,7 +131,7 @@ function PillarsIndex() {
 
               return (
                 <section key={cat.id}>
-                  <h2 className="text-xl font-bold text-white font-mono mb-4 flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-cyber-text font-mono mb-4 flex items-center gap-2">
                     <span className="text-2xl">{cat.icon}</span>
                     {cat.label}
                     <span className="text-xs text-cyber-dim font-normal">({categoryPillars.length} hubs)</span>
@@ -146,7 +146,7 @@ function PillarsIndex() {
                               <span className="text-[10px] font-mono text-cyber-glow">#{pillar.num}</span>
                               <span className="text-[10px] text-cyber-dim font-mono">hub</span>
                             </div>
-                            <h3 className="text-sm font-semibold text-white group-hover:text-cyber-glow transition-colors font-mono truncate">
+                            <h3 className="text-sm font-semibold text-cyber-text group-hover:text-cyber-glow transition-colors font-mono truncate">
                               XFree {pillar.name}
                             </h3>
                             <p className="text-xs text-cyber-muted mt-1 line-clamp-2">{pillar.description}</p>
@@ -201,7 +201,7 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
                 <span className="text-3xl">{pillar.icon}</span>
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono">XFree {pillar.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">XFree {pillar.name}</h1>
                 <p className="text-cyber-muted mt-1">{categoryInfo?.label} • {pillar.toolCount || pillarTools.length} tools</p>
               </div>
             </div>
@@ -215,11 +215,11 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
 
           {pillarTools.length > 0 ? (
             <section className="mb-12">
-              <h2 className="text-xl font-bold text-white font-mono mb-6"><span className="text-cyber-glow">$</span> Tools in this Pillar</h2>
+              <h2 className="text-xl font-bold text-cyber-text font-mono mb-6"><span className="text-cyber-glow">$</span> Tools in this Pillar</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {pillarTools.map(tool => (
                   <Link key={tool.id} href={`/tools/${tool.slug}`} className="cyber-card p-4 group block">
-                    <h3 className="text-sm font-semibold text-white group-hover:text-cyber-glow transition-colors font-mono mb-1">XFree {tool.title}</h3>
+                    <h3 className="text-sm font-semibold text-cyber-text group-hover:text-cyber-glow transition-colors font-mono mb-1">XFree {tool.title}</h3>
                     <p className="text-xs text-cyber-muted line-clamp-2 mb-3">{tool.shortDescription}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-cyber-dim font-mono">{tool.tags.slice(0, 3).join(', ')}</span>
@@ -237,14 +237,14 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
 
           {categoryPillars.length > 1 && (
             <section className="mb-12">
-              <h2 className="text-xl font-bold text-white font-mono mb-6"><span className="text-cyber-glow">$</span> Related {categoryInfo?.label} Pillars</h2>
+              <h2 className="text-xl font-bold text-cyber-text font-mono mb-6"><span className="text-cyber-glow">$</span> Related {categoryInfo?.label} Pillars</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {categoryPillars.filter(p => p.slug !== pillar.slug).slice(0, 6).map(related => (
                   <Link key={related.slug} href={`/pillars/${related.slug}`} className="cyber-card p-4 group block">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{related.icon}</span>
                       <div>
-                        <h3 className="text-sm font-semibold text-white group-hover:text-cyber-glow transition-colors font-mono">XFree {related.name}</h3>
+                        <h3 className="text-sm font-semibold text-cyber-text group-hover:text-cyber-glow transition-colors font-mono">XFree {related.name}</h3>
                         <p className="text-xs text-cyber-muted mt-1">{related.toolCount} tools</p>
                       </div>
                     </div>
@@ -255,22 +255,22 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
           )}
 
           <section className="mb-12">
-            <h2 className="text-xl font-bold text-white font-mono mb-6"><span className="text-cyber-glow">$</span> Why Use XFree {pillar.name}?</h2>
+            <h2 className="text-xl font-bold text-cyber-text font-mono mb-6"><span className="text-cyber-glow">$</span> Why Use XFree {pillar.name}?</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="cyber-card p-5">
-                <h3 className="text-sm font-semibold text-white font-mono mb-2">🔒 Privacy-First</h3>
+                <h3 className="text-sm font-semibold text-cyber-text font-mono mb-2">🔒 Privacy-First</h3>
                 <p className="text-xs text-cyber-muted">All tools in this pillar run 100% in your browser. Your data never leaves your device.</p>
               </div>
               <div className="cyber-card p-5">
-                <h3 className="text-sm font-semibold text-white font-mono mb-2">⚡ Instant Results</h3>
+                <h3 className="text-sm font-semibold text-cyber-text font-mono mb-2">⚡ Instant Results</h3>
                 <p className="text-xs text-cyber-muted">Get formatted, validated, or converted output immediately without waiting or server processing.</p>
               </div>
               <div className="cyber-card p-5">
-                <h3 className="text-sm font-semibold text-white font-mono mb-2">💯 100% Free</h3>
+                <h3 className="text-sm font-semibold text-cyber-text font-mono mb-2">💯 100% Free</h3>
                 <p className="text-xs text-cyber-muted">No signup, no usage limits, no premium tiers. All tools are completely free forever.</p>
               </div>
               <div className="cyber-card p-5">
-                <h3 className="text-sm font-semibold text-white font-mono mb-2">🔗 Interconnected</h3>
+                <h3 className="text-sm font-semibold text-cyber-text font-mono mb-2">🔗 Interconnected</h3>
                 <p className="text-xs text-cyber-muted">Tools in this pillar link to related tools for seamless workflows and better results.</p>
               </div>
             </div>

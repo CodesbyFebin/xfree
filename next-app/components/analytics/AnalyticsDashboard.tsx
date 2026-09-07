@@ -21,7 +21,7 @@ export function AnalyticsDashboard() {
     return (
       <button
         onClick={() => setIsVisible(true)}
-        className="fixed bottom-4 right-4 px-3 py-2 rounded-lg bg-cyber-surface border border-cyber-border text-xs font-mono text-cyber-muted hover:text-white transition-colors z-40"
+        className="fixed bottom-4 right-4 px-3 py-2 rounded-lg bg-cyber-surface border border-cyber-border text-xs font-mono text-cyber-muted hover:text-cyber-text transition-colors z-40"
       >
         📊 Analytics
       </button>
@@ -31,10 +31,10 @@ export function AnalyticsDashboard() {
   return (
     <div className="fixed bottom-4 right-4 w-80 p-4 rounded-lg bg-cyber-surface border border-cyber-border shadow-xl z-40">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-white font-mono">📊 Your XFree Stats</h3>
+        <h3 className="text-sm font-bold text-cyber-text font-mono">📊 Your XFree Stats</h3>
         <button
           onClick={() => setIsVisible(false)}
-          className="text-cyber-muted hover:text-white text-xs"
+          className="text-cyber-muted hover:text-cyber-text text-xs"
         >
           ✕
         </button>
@@ -73,7 +73,7 @@ export function AnalyticsDashboard() {
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {stats.recentUses.slice(-5).reverse().map((use, i) => (
                 <div key={i} className="text-xs font-mono flex items-center justify-between">
-                  <span className="text-white truncate flex-1">{use.toolSlug}</span>
+                  <span className="text-cyber-text truncate flex-1">{use.toolSlug}</span>
                   <span className={`ml-2 ${use.success ? 'text-green-400' : 'text-red-400'}`}>
                     {use.success ? '✓' : '✕'}
                   </span>

@@ -56,7 +56,7 @@ export function HashGeneratorTool() {
             className={`px-4 py-2 text-xs font-mono rounded transition-all ${
               algorithm === alg
                 ? 'bg-cyber-glow text-cyber-bg'
-                : 'bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-white'
+                : 'bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-cyber-text'
             }`}
           >
             {alg}
@@ -90,7 +90,7 @@ export function HashGeneratorTool() {
               {output && (
                 <button
                   onClick={handleCopy}
-                  className="text-[10px] text-cyber-glow hover:text-white font-mono transition-colors"
+                  className="text-[10px] text-cyber-glow hover:text-cyber-text font-mono transition-colors"
                 >
                   COPY
                 </button>

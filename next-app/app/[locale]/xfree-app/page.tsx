@@ -27,14 +27,14 @@ export default function XFreeAppPage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyber-glow/10 border border-cyber-glow/20 text-cyber-glow text-sm font-mono">
               📱 Installable App
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-white font-mono">XFree PWA</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text font-mono">XFree PWA</h1>
             <p className="text-cyber-muted max-w-2xl mx-auto">
               Install XFree as a Progressive Web App on your device for offline-capable, quick-access tools.
             </p>
           </header>
 
           <div className="cyber-card p-8 space-y-6">
-            <h2 className="text-xl font-bold text-white">What is a PWA?</h2>
+            <h2 className="text-xl font-bold text-cyber-text">What is a PWA?</h2>
             <p className="text-cyber-muted text-sm">
               A Progressive Web App is a website that can be installed on your device like a native app. 
               It appears in your app drawer, has an icon on your home screen, and can even work offline.
@@ -43,7 +43,7 @@ export default function XFreeAppPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="cyber-card p-6 space-y-4">
-              <h3 className="text-lg font-bold text-white">Install on Desktop</h3>
+              <h3 className="text-lg font-bold text-cyber-text">Install on Desktop</h3>
               <ol className="list-decimal list-inside space-y-2 text-cyber-muted text-sm">
                 <li>Open XFree in Chrome, Edge, or Firefox</li>
                 <li>Click the install icon in the address bar</li>
@@ -52,7 +52,7 @@ export default function XFreeAppPage() {
             </div>
 
             <div className="cyber-card p-6 space-y-4">
-              <h3 className="text-lg font-bold text-white">Install on Mobile</h3>
+              <h3 className="text-lg font-bold text-cyber-text">Install on Mobile</h3>
               <ol className="list-decimal list-inside space-y-2 text-cyber-muted text-sm">
                 <li>Open XFree in Safari or Chrome</li>
                 <li>Tap the Share button</li>
@@ -62,33 +62,33 @@ export default function XFreeAppPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-4">
-            <h2 className="text-xl font-bold text-white">Benefits of the PWA</h2>
+            <h2 className="text-xl font-bold text-cyber-text">Benefits of the PWA</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-start gap-3">
                 <span className="text-emerald-400">✓</span>
                 <div>
-                  <h3 className="font-semibold text-white text-sm">Offline Support</h3>
+                  <h3 className="font-semibold text-cyber-text text-sm">Offline Support</h3>
                   <p className="text-cyber-muted text-xs">Use tools even without internet</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-emerald-400">✓</span>
                 <div>
-                  <h3 className="font-semibold text-white text-sm">Quick Access</h3>
+                  <h3 className="font-semibold text-cyber-text text-sm">Quick Access</h3>
                   <p className="text-cyber-muted text-xs">Launch from home screen instantly</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-emerald-400">✓</span>
                 <div>
-                  <h3 className="font-semibold text-white text-sm">App-Like Experience</h3>
+                  <h3 className="font-semibold text-cyber-text text-sm">App-Like Experience</h3>
                   <p className="text-cyber-muted text-xs">Full-screen, immersive interface</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-emerald-400">✓</span>
                 <div>
-                  <h3 className="font-semibold text-white text-sm">Auto Updates</h3>
+                  <h3 className="font-semibold text-cyber-text text-sm">Auto Updates</h3>
                   <p className="text-cyber-muted text-xs">Always have the latest version</p>
                 </div>
               </div>

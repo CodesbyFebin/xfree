@@ -53,7 +53,7 @@ export function JsonFormatterTool() {
             className={`px-4 py-2 text-xs font-mono rounded transition-all ${
               mode === m
                 ? 'bg-cyber-glow text-cyber-bg'
-                : 'bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-white'
+                : 'bg-cyber-surface border border-cyber-border text-cyber-muted hover:text-cyber-text'
             }`}
           >
             {m.charAt(0).toUpperCase() + m.slice(1)}
@@ -87,7 +87,7 @@ export function JsonFormatterTool() {
               {output && (
                 <button
                   onClick={handleCopy}
-                  className="text-[10px] text-cyber-glow hover:text-white font-mono transition-colors"
+                  className="text-[10px] text-cyber-glow hover:text-cyber-text font-mono transition-colors"
                 >
                   COPY
                 </button>

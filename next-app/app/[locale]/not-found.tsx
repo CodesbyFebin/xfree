@@ -16,7 +16,7 @@ export default function NotFound() {
           <div className="text-8xl font-black text-cyber-glow font-cyber mb-4 neon-green">
             404
           </div>
-          <h1 className="text-2xl font-bold text-white mb-4">
+          <h1 className="text-2xl font-bold text-cyber-text mb-4">
             {t('title')}
           </h1>
           <p className="text-cyber-muted mb-8 max-w-md mx-auto">

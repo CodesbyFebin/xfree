@@ -72,7 +72,7 @@ export function UuidGeneratorTool() {
               </label>
               <button
                 onClick={handleCopyAll}
-                className="text-[10px] text-cyber-glow hover:text-white font-mono transition-colors flex items-center gap-1"
+                className="text-[10px] text-cyber-glow hover:text-cyber-text font-mono transition-colors flex items-center gap-1"
               >
                 {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                 COPY ALL

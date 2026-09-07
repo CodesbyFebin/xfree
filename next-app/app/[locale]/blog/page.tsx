@@ -29,7 +29,7 @@ export default function BlogPage() {
               <BookOpen className="w-4 h-4" />
               <span>Blog</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight font-mono">Blog</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text tracking-tight font-mono">Blog</h1>
             <p className="text-cyber-muted text-sm">
               Long-form articles will land here at their own URLs. Our current published writing lives
               under <Link href="/guides" className="text-cyber-cyan underline">Guides</Link> —
@@ -38,7 +38,7 @@ export default function BlogPage() {
           </header>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-bold text-white">Published guides</h2>
+            <h2 className="text-lg font-bold text-cyber-text">Published guides</h2>
             <ul className="space-y-2 text-sm">
               {GUIDES.map((g) => (
                 <li key={g.slug}>

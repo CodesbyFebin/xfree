@@ -149,7 +149,7 @@ export function CronGeneratorTool() {
         <h3 className="text-xs uppercase tracking-wider text-cyber-glow font-mono font-semibold mb-2">
           Schedule Description
         </h3>
-        <p className="text-white font-mono">{humanReadable}</p>
+        <p className="text-cyber-text font-mono">{humanReadable}</p>
       </div>
 
       <div>

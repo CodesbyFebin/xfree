@@ -54,7 +54,7 @@ export default function UseCasesPage() {
       <main id="main-content" className="pt-20">
         <div className="max-w-4xl mx-auto py-10 px-4 space-y-10">
           <header className="text-center space-y-4">
-            <h1 className="text-3xl sm:text-4xl font-black text-white font-mono">Use Cases</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-cyber-text font-mono">Use Cases</h1>
             <p className="text-cyber-muted max-w-2xl mx-auto">
               See how different professionals use XFree tools in their daily work.
             </p>
@@ -65,7 +65,7 @@ export default function UseCasesPage() {
               <div key={i} className="cyber-card p-6 space-y-4">
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{useCase.icon}</span>
-                  <h2 className="text-xl font-bold text-white">{useCase.title}</h2>
+                  <h2 className="text-xl font-bold text-cyber-text">{useCase.title}</h2>
                 </div>
                 <p className="text-cyber-muted text-sm">{useCase.description}</p>
                 <div className="flex flex-wrap gap-2">
@@ -83,7 +83,7 @@ export default function UseCasesPage() {
           </div>
 
           <div className="cyber-card p-8 text-center space-y-4">
-            <h2 className="text-xl font-bold text-white">Ready to get started?</h2>
+            <h2 className="text-xl font-bold text-cyber-text">Ready to get started?</h2>
             <p className="text-cyber-muted text-sm">
               Browse our {TOOLS.length}+ free tools and find what you need.
             </p>
