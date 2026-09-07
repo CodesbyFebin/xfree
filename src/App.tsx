@@ -469,6 +469,27 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
       className="relative min-h-[92vh] flex items-center justify-center pt-20 pb-12 overflow-hidden matrix-grid hex-pattern"
       aria-labelledby="hero-heading"
     >
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+        <picture>
+          <source
+            srcSet="/hero-banner-800.webp 800w, /hero-banner-1200.webp 1200w, /hero-banner-1920.webp 1920w"
+            sizes="100vw"
+            type="image/webp"
+          />
+          <img
+            src="/hero-banner-1200.jpg"
+            srcSet="/hero-banner-800.jpg 800w, /hero-banner-1200.jpg 1200w, /hero-banner-1920.jpg 1920w"
+            sizes="100vw"
+            alt=""
+            width={1920}
+            height={800}
+            fetchPriority="high"
+            decoding="async"
+            className="w-full h-full object-cover object-left md:object-center opacity-35"
+          />
+        </picture>
+        <div className="absolute inset-0 bg-cyber-bg/70" />
+      </div>
       <div className="hero-orb w-[500px] h-[500px] bg-cyber-glow -top-40 -left-40" aria-hidden="true" />
       <div className="hero-orb w-[400px] h-[400px] bg-cyber-magenta top-1/4 -right-32" aria-hidden="true" />
       <div className="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" aria-hidden="true" />
@@ -479,7 +500,7 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
         <div className="absolute top-60 right-[40%] w-1 h-1 rounded-full bg-cyber-glow/30 anim-float" style={{ animationDelay: "3s" }} />
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+      <div className="relative z-10 w-full min-w-0 max-w-5xl mx-auto px-4 text-center">
         <div
           className="anim-slide-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-8 neon-box-green"
           style={{ animationDelay: ".1s" }}
@@ -537,14 +558,14 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
                 type="text"
                 id="heroSearch"
                 name="q"
-                placeholder="search> XFree tools — JSON, Regex, Sitemap, JWT, Hash..."
-                className="flex-1 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono"
+                placeholder="search> JSON, Regex, Sitemap, JWT, Hash..."
+                className="flex-1 min-w-0 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono"
                 autoComplete="off"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <div className="flex items-center gap-2 pr-2">
-                <kbd aria-hidden="true">⌘K</kbd>
+              <div className="flex items-center gap-2 pr-2 shrink-0">
+                <kbd aria-hidden="true" className="hidden sm:inline-flex">⌘K</kbd>
                 <button type="submit" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring">
                   <span>EXECUTE</span>
                 </button>
