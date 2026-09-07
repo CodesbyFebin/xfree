@@ -1,4 +1,7 @@
 import { ToolDefinition } from "../types";
+import { classifyIntent, routeIntentToCapabilities, buildExecutionPlan } from "./intent-engine";
+import { executeTool, verifyToolResult, solveProblem } from "./execution-engine";
+import { findToolBySlug } from "../data/toolsRegistry";
 
 export type AgentType = 
   | "intent"
@@ -280,24 +283,21 @@ export async function executeAgent(
   }
 
   if (operation === "classify-intent") {
-    const query = typeof input === "string" ? input : "unknown query";
+    const query = typeof input === "string" ? input : "";
+    const classification = classifyIntent(query);
+    const route = routeIntentToCapabilities(classification);
     return {
       success: true,
-      output: {
-        classification: { intent: "unknown", confidence: 0.5 },
-        route: { toolIds: [] },
-      },
+      output: { classification, route },
     };
   }
 
   if (operation === "solve") {
+    const problem = typeof input === "string" ? input : "";
+    const result = await solveProblem(problem);
     return {
       success: true,
-      output: {
-        intent: { id: "intent_1", primaryIntent: "unknown" },
-        plan: { steps: [] },
-        results: [],
-      },
+      output: result,
     };
   }
 
@@ -306,23 +306,39 @@ export async function executeAgent(
     if (!toolId) {
       return { success: false, error: "execute requires toolId and input in object form" };
     }
+    const toolInput = (input as Record<string, unknown>).input;
+    const result = await executeTool({ toolId, input: toolInput });
     return {
-      success: true,
-      output: { toolExecuted: toolId, output: "ok" },
+      success: result.success,
+      error: result.error,
+      output: result,
     };
   }
 
   if (operation === "verify") {
+    const req = (typeof input === "object" && input ? input : {}) as Record<string, unknown>;
+    const toolId = typeof req.toolId === "string" ? req.toolId : undefined;
+    if (!toolId) {
+      return { success: false, error: "verify requires toolId in object form" };
+    }
+    const tool = findToolBySlug(toolId);
+    if (!tool) {
+      return { success: false, error: `Tool not found: ${toolId}` };
+    }
+    const verification = await verifyToolResult(tool, req.input, req.output);
     return {
       success: true,
-      output: { valid: true, checksPerformed: ["syntax"], issues: [] },
+      output: { verification },
     };
   }
 
   if (operation === "build-workflow") {
+    const query = typeof input === "string" ? input : "";
+    const classification = classifyIntent(query);
+    const plan = buildExecutionPlan(classification);
     return {
       success: true,
-      output: { plan: { steps: [] } },
+      output: { plan },
     };
   }
 

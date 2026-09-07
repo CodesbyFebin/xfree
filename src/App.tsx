@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
 import { PILLAR_EDITORIAL, type PillarEditorialContent } from "./data/pillarEditorial";
 import {
   PILLARS_60,
@@ -10,6 +10,66 @@ import {
   getRelatedPillars,
 } from "./data/pillarRegistry";
 import { INDEXABLE_TOOLS, INDEXABLE_TOOL_SLUGS } from "./data/toolsRegistry";
+import type { ToolDefinition } from "./types";
+
+// Only these 10 tools have a real, dedicated interactive component (see
+// src/components/tools/). Everything else renders ToolDetail's informational
+// content only, with no working widget, until it gets a real implementation —
+// see auditTools.ts's GUIDE_STYLE_TOOL_IDS exemption list, which must stay in
+// sync with this switch.
+const BulkUrlExtractorSitemap = lazy(() => import("./components/tools/BulkUrlExtractorSitemap").then((m) => ({ default: m.BulkUrlExtractorSitemap })));
+const RobotsTxtGenerator = lazy(() => import("./components/tools/RobotsTxtGenerator").then((m) => ({ default: m.RobotsTxtGenerator })));
+const MetaTagOpenGraphPreview = lazy(() => import("./components/tools/MetaTagOpenGraphPreview").then((m) => ({ default: m.MetaTagOpenGraphPreview })));
+const SchemaMarkupGenerator = lazy(() => import("./components/tools/SchemaMarkupGenerator").then((m) => ({ default: m.SchemaMarkupGenerator })));
+const UrlSlugUtmBuilder = lazy(() => import("./components/tools/UrlSlugUtmBuilder").then((m) => ({ default: m.UrlSlugUtmBuilder })));
+const JsonFormatterValidatorDiff = lazy(() => import("./components/tools/JsonFormatterValidatorDiff").then((m) => ({ default: m.JsonFormatterValidatorDiff })));
+const RegexTesterExplainer = lazy(() => import("./components/tools/RegexTesterExplainer").then((m) => ({ default: m.RegexTesterExplainer })));
+const CronExpressionGenerator = lazy(() => import("./components/tools/CronExpressionGenerator").then((m) => ({ default: m.CronExpressionGenerator })));
+const Base64JwtDecoder = lazy(() => import("./components/tools/Base64JwtDecoder").then((m) => ({ default: m.Base64JwtDecoder })));
+const PasswordGenerator = lazy(() => import("./components/tools/PasswordGenerator").then((m) => ({ default: m.PasswordGenerator })));
+const JpgToPdf = lazy(() => import("./components/tools/JpgToPdf").then((m) => ({ default: m.JpgToPdf })));
+const AiDetector = lazy(() => import("./components/tools/AiDetector").then((m) => ({ default: m.AiDetector })));
+const MobileTester = lazy(() => import("./components/tools/MobileTester").then((m) => ({ default: m.MobileTester })));
+const OnlineGames = lazy(() => import("./components/tools/OnlineGames").then((m) => ({ default: m.OnlineGames })));
+const PhotoEditor = lazy(() => import("./components/tools/PhotoEditor").then((m) => ({ default: m.PhotoEditor })));
+
+function renderInteractiveTool(tool: ToolDefinition, onSaveHistory: (input: string, output: string) => void): React.ReactNode | null {
+  switch (tool.id) {
+    case "password-generator":
+      return <PasswordGenerator tool={tool} onSaveHistory={onSaveHistory} />;
+    case "photo-editor":
+      return <PhotoEditor tool={tool} onSaveHistory={onSaveHistory} />;
+    case "jpg-to-pdf":
+      return <JpgToPdf tool={tool} onSaveHistory={onSaveHistory} />;
+    case "ai-detector":
+      return <AiDetector tool={tool} onSaveHistory={onSaveHistory} />;
+    case "mobile-tester":
+      return <MobileTester tool={tool} onSaveHistory={onSaveHistory} />;
+    case "online-games":
+      return <OnlineGames tool={tool} onSaveHistory={onSaveHistory} />;
+    case "bulk-url-sitemap":
+    case "xml-sitemap-generator":
+      return <BulkUrlExtractorSitemap tool={tool} onSaveHistory={onSaveHistory} />;
+    case "robots-txt-generator":
+      return <RobotsTxtGenerator tool={tool} onSaveHistory={onSaveHistory} />;
+    case "meta-tag-generator":
+      return <MetaTagOpenGraphPreview tool={tool} onSaveHistory={onSaveHistory} />;
+    case "schema-markup-generator":
+      return <SchemaMarkupGenerator tool={tool} onSaveHistory={onSaveHistory} />;
+    case "url-slug-utm-builder":
+      return <UrlSlugUtmBuilder tool={tool} onSaveHistory={onSaveHistory} />;
+    case "json-formatter":
+      return <JsonFormatterValidatorDiff tool={tool} onSaveHistory={onSaveHistory} />;
+    case "regex-tester":
+      return <RegexTesterExplainer tool={tool} onSaveHistory={onSaveHistory} />;
+    case "cron-expression-generator":
+      return <CronExpressionGenerator tool={tool} onSaveHistory={onSaveHistory} />;
+    case "base64-encoder-decoder":
+      return <Base64JwtDecoder tool={tool} onSaveHistory={onSaveHistory} />;
+    default:
+      return null;
+  }
+}
 
 // ===== SEO / AEO / GEO — dynamic document meta tag injection =====
 interface MetaOptions {
@@ -1284,6 +1344,9 @@ const ToolDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, onBa
     ],
   });
 
+  const noopSaveHistory = () => {};
+  const interactiveTool = renderInteractiveTool(tool, noopSaveHistory);
+
   return (
     <article className="prose prose-invert max-w-3xl mx-auto py-12 px-4">
       <div className="cyber-card p-6 sm:p-9 rounded-xl mb-8">
@@ -1305,6 +1368,17 @@ const ToolDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, onBa
           </div>
           <p className="text-cyber-cyan font-mono text-sm">// {tool.shortDescription}</p>
         </header>
+
+        {interactiveTool && (
+          <section className="not-prose mb-8 rounded-xl border border-cyber-glow/30 bg-cyber-surface/40 p-4 sm:p-6" aria-label="Interactive tool">
+            <h2 className="text-lg font-bold text-white font-mono mb-4">
+              <span className="text-cyber-glow">{'run>'}</span> Try it now
+            </h2>
+            <Suspense fallback={<div className="py-12 text-center text-sm text-cyber-muted">Loading…</div>}>
+              {interactiveTool}
+            </Suspense>
+          </section>
+        )}
 
         <p className="text-lg text-cyber-text leading-relaxed mb-6">{tool.explanation}</p>
 

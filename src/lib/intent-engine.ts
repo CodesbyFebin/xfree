@@ -270,29 +270,17 @@ export function routeIntentToCapabilities(intent: IntentClassification): IntentR
     }
   }
 
-  // Also check by entity matching
-  for (const entity of intent.entities) {
-    for (const tool of INDEXABLE_TOOLS) {
-      if (tool.tags.some(tag => tag.toLowerCase().includes(entity)) || 
-          tool.title.toLowerCase().includes(entity.replace(/-/g, " "))) {
-        matchingTools.push(tool);
-      }
-    }
-  }
+  // NOTE: deliberately no bare-entity or free-text substring matching here.
+  // An entity like "pdf" or "image" is just a noun the user mentioned — it says
+  // nothing about which ACTION they need (compress vs convert vs edit vs merge).
+  // Matching any tool that happens to share that noun in its tags/title/description
+  // over-claims capability (e.g. recommending a JPG-to-PDF converter for "compress
+  // this PDF") and is exactly the dishonest routing this engine must not do. Only
+  // the curated PROBLEM_TO_TOOL_MAP (capability-based) and per-intent INTENT_KEYWORDS
+  // (intent-keyword-based) matches above are precise enough to recommend a tool.
 
   // Deduplicate
   const allMatched = Array.from(new Map(matchingTools.map(t => [t.id, t])).values());
-
-  if (allMatched.length === 0) {
-    // Fallback: match by query terms in tool title/description/tags
-    const queryTerms = intent.intent.toLowerCase().split(/[\s-_]+/).filter(t => t.length > 3);
-    for (const tool of INDEXABLE_TOOLS) {
-      const searchableText = `${tool.title} ${tool.shortDescription} ${tool.tags.join(" ")}`.toLowerCase();
-      if (queryTerms.some(term => searchableText.includes(term))) {
-        allMatched.push(tool);
-      }
-    }
-  }
 
   if (allMatched.length === 0) {
     return {

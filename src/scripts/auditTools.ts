@@ -32,16 +32,29 @@ function audit(): Finding[] {
     }
   }
 
+  // These tools are deliberately informational/comparison content (e.g. "VPN
+  // guide", "cloud storage comparison") rather than an interactive utility —
+  // ToolDetailPage's static description/FAQ/comparison content is the correct
+  // rendering for them, not a missing feature. Everything else that is
+  // INDEXABLE is presented as a working tool and must have a real widget.
+  const GUIDE_STYLE_TOOL_IDS = new Set([
+    "cloud-storage-guide",
+    "vpn-guide",
+    "wetransfer-alternative",
+    "canva-alternative",
+  ]);
+
   const appPath = path.join(process.cwd(), "src", "App.tsx");
   if (fs.existsSync(appPath)) {
-    const app = fs.readFileSync(appPath, "utf-8");
+    const source = fs.readFileSync(appPath, "utf-8");
     for (const t of INDEXABLE_TOOLS) {
-      if (!app.includes(`case "${t.id}"`)) {
+      if (GUIDE_STYLE_TOOL_IDS.has(t.id)) continue;
+      if (!source.includes(`case "${t.id}"`)) {
         findings.push({
           slug: t.slug,
           id: t.id,
           severity: "error",
-          message: `INDEXABLE but no case "${t.id}" in App.tsx renderToolComponent — page would fall through to AI fallback`,
+          message: `INDEXABLE but no case "${t.id}" in App.tsx renderInteractiveTool — page renders as a working tool but has no actual widget`,
         });
       }
     }

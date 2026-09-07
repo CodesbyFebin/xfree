@@ -116,10 +116,60 @@ async function executeToolInternal(
   }
 }
 
+// Each src/lib/tools/*.ts implementation takes a single named-field object
+// (e.g. jsonFormatter takes { json }, sha256Hash takes { text }) rather than a
+// bare value. A generic caller — an AI agent, the /api/v1/execute/:toolId
+// route, or a test — naturally passes the raw value for tools that only need
+// one piece of data. This maps those single-required-field tools to their
+// field name so a bare value gets wrapped correctly. Tools with more than one
+// required field (e.g. dateFormatter needs both date and format) are
+// deliberately excluded: there's no safe value to guess for the other fields,
+// so those are left to fail with a clear error if called without the full
+// shape, rather than silently fabricating defaults.
+const LOCAL_TOOL_PRIMARY_FIELD: Record<string, string> = {
+  "json-formatter": "json",
+  "json-minifier": "json",
+  "json-validator": "json",
+  "json-to-csv": "json",
+  "json-to-xml": "json",
+  "csv-to-json": "csv",
+  "base64-encoder": "text",
+  "base64-decoder": "text",
+  "base64-to-image": "base64",
+  "url-encoder": "text",
+  "url-decoder": "text",
+  "html-entities-encoder": "text",
+  "file-size-calculator": "bytes",
+  "markdown-to-html": "markdown",
+  "html-to-markdown": "html",
+  "qr-code-generator": "text",
+  "sha256-hash": "text",
+  "md5-hash": "text",
+  "password-strength": "password",
+  "string-reverse": "text",
+  "string-analyzer": "text",
+  "text-to-ascii": "text",
+  "ascii-to-text": "ascii",
+  "text-entropy": "text",
+  "text-to-sentence-case": "text",
+  "word-counter": "text",
+  "line-counter": "text",
+  "timer": "seconds",
+  "stopwatch": "action",
+  "unix-timestamp-converter": "timestamp",
+  "image-to-base64": "file",
+  "pdf-text-extractor": "file",
+  "image-compressor": "file",
+  "mime-type-detector": "file",
+};
+
 function executeLocalTool(tool: ToolDefinition, input: any): any {
   const impl = LOCAL_TOOLS[tool.slug];
   if (impl) {
-    return impl(input);
+    const primaryField = LOCAL_TOOL_PRIMARY_FIELD[tool.slug];
+    const isBareValue = typeof input !== "object" || input === null || Array.isArray(input);
+    const normalizedInput = primaryField && isBareValue ? { [primaryField]: input } : input;
+    return impl(normalizedInput);
   }
   return {
     toolId: tool.id,
