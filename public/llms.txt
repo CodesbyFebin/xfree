@@ -14,11 +14,9 @@
 - [Guides](https://www.xfree.in/guides): Reviewed documentation connected to published tools.
 - [How It Works](https://www.xfree.in/how-it-works): Processing modes, browser execution, and optional cloud handoffs.
 - [Pillars](https://www.xfree.in/pillars): 60 developer and SEO topic pillars.
-- [Roadmap](https://www.xfree.in/roadmap): 600 planned concepts on a noindex discovery page; this is not a count of live tools.
-- [Contribute](https://www.xfree.in/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.
-- [InstaServer](https://www.xfree.in/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.
-- [JSON Tools](https://www.xfree.in/json-tools): Hub of 18 free browser-based JSON tools — format, validate, minify, convert, sort, and inspect.
-- [OpenAPI](https://www.xfree.in/openapi.json): Machine-readable description of the public XFree API surface.
+- [Use Cases](https://www.xfree.in/use-cases): Real-world workflows built from published tools.
+- [FAQ](https://www.xfree.in/faq): Common questions about pricing, privacy, and AI features.
+- [About](https://www.xfree.in/about): What XFree is and the principles it's built on.
 
 ## Categories
 

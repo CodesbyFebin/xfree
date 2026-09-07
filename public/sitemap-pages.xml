@@ -2,146 +2,326 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.xfree.in/</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/how-it-works</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/use-cases</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/docs</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/blog</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/faq</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/about</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/contact</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/privacy</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/terms</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/security</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/trust</loc>
+    <lastmod>2026-09-06</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/clusters</loc>
+    <lastmod>2026-09-06</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/thinking</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
     <loc>https://www.xfree.in/xfree-app</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/pillars</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/guides</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/contribute</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/dev-data</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/instaserver</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/web-seo</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/json-tools</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/ai-auto</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/seo-tools</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/media-docs</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/developer-tools</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/security</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/text-tools</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/business</loc>
+    <lastmod>2026-09-06</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/converters</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/dev-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/generators</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/json-data-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/validators</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/code-formatting-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/pillar/technical-seo</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/api-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/pillar/system-administration</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/database-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/pillar/regular-expressions-regex</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/regex-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/pillar/cryptography-hashing</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/encoding-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/pillar/json-xml-yaml-utils</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/converters</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/validators</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/url-cleanup-pipeline</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/generators</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/log-sanitizer</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/web-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/jwt-inspection-workflow</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/seo-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/seo-url-audit</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/url-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/json-api-cleanup</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/schema-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/text-cleanup-pipeline</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/crawl-indexing-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/csv-preparation</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/website-audit-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
   <url>
-    <loc>https://www.xfree.in/recipes/developer-clipboard-cleanup</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://www.xfree.in/pillars/metadata-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/performance-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/accessibility-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/social-preview-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/ai-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/prompt-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/rag-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/llm-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/agent-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/mcp-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/agentic-workflows</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/automation-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/ai-evaluation-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/ai-data-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/image-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/video</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/audio-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/pdf-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/document-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/spreadsheet-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/markdown-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/subtitle-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/file-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/creative-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/security-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/hash-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/password-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/token-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/privacy-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/network-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/dns-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/http-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/certificate-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/security-header-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/text-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/content-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/writing-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/calculators</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/date-time-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/finance-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/marketing-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/productivity-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/education-tools</loc>
+    <lastmod>2026-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.xfree.in/pillars/business-tools</loc>
+    <lastmod>2026-09-05</lastmod>
   </url>
 </urlset>

@@ -1699,10 +1699,10 @@ const STATIC_PAGE_CONTENT: Record<string, StaticPageContent> = {
       },
     ],
   },
-  "/security": {
-    title: "Security — XFree.in",
+  "/trust": {
+    title: "Trust & Security — XFree.in",
     description: "XFree.in's security posture: CSP, rate limits, request validation, and how AI endpoints are hardened against abuse.",
-    h1: "Security",
+    h1: "Trust & Security",
     sections: [
       {
         paragraphs: [
@@ -2051,7 +2051,10 @@ const App: React.FC = () => {
         logo: { "@type": "ImageObject", url: "https://www.xfree.in/logo.png", width: 1200, height: 630 },
         description: "XFree is the ultimate free online app for developers offering privacy-first micro-tools.",
         license: "https://opensource.org/licenses/MIT",
-        sameAs: ["https://github.com/xfree-in/xfree", "https://twitter.com/xfreein"],
+        // Only real, verified profiles belong here — an unverifiable or
+        // wrong sameAs URL is a false entity-authority signal, not a
+        // harmless placeholder.
+        sameAs: ["https://github.com/CodesbyFebin/xfree"],
       },
       {
         "@context": "https://schema.org",
@@ -2074,21 +2077,67 @@ const App: React.FC = () => {
 
       <footer className="border-t border-cyber-border bg-cyber-surface py-14 px-4" role="contentinfo">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col items-center gap-8 text-center">
-            <div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 mb-10">
+            <div className="col-span-2 sm:col-span-3 lg:col-span-1">
               <span className="text-2xl font-black text-white font-cyber">
                 XFree<span className="text-cyber-glow">.in</span>
               </span>
-              <p className="mt-2 text-sm text-cyber-muted max-w-sm mx-auto">
-                XFree provides privacy-first browser tools for developers, technical teams and creators.
+              <p className="mt-2 text-sm text-cyber-muted max-w-xs">
+                Free, privacy-first browser tools for developers, technical teams, and creators. Local Mode by default.
               </p>
             </div>
-            <nav className="flex flex-wrap justify-center gap-6" aria-label="Footer navigation">
-              <a href="/" className="text-sm text-cyber-muted hover:text-white">Home</a>
-              <a href="/pillars" className="text-sm text-cyber-muted hover:text-white">Pillars</a>
-              <a href="/roadmap" className="text-sm text-cyber-muted hover:text-white">Roadmap</a>
-              <a href="https://app.xfree.in/" className="text-sm text-cyber-muted hover:text-white" rel="noopener">XFree Studio</a>
+
+            <nav aria-label="Category links">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wide mb-3 font-mono">Categories</h2>
+              <ul className="space-y-2">
+                {CATEGORIES.map((cat) => (
+                  <li key={cat.id}>
+                    <button
+                      onClick={() => navigate(`/${cat.id}`)}
+                      className="text-sm text-cyber-muted hover:text-white text-left cursor-pointer"
+                    >
+                      {cat.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </nav>
+
+            <nav aria-label="Explore links">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wide mb-3 font-mono">Explore</h2>
+              <ul className="space-y-2">
+                <li><a href="/pillars" className="text-sm text-cyber-muted hover:text-white">All Pillars</a></li>
+                <li><a href="/guides" className="text-sm text-cyber-muted hover:text-white">Guides</a></li>
+                <li><a href="/use-cases" className="text-sm text-cyber-muted hover:text-white">Use Cases</a></li>
+                <li><a href="/how-it-works" className="text-sm text-cyber-muted hover:text-white">How It Works</a></li>
+                <li><a href="/docs" className="text-sm text-cyber-muted hover:text-white">Documentation</a></li>
+              </ul>
+            </nav>
+
+            <nav aria-label="Company links">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wide mb-3 font-mono">Company</h2>
+              <ul className="space-y-2">
+                <li><a href="/about" className="text-sm text-cyber-muted hover:text-white">About</a></li>
+                <li><a href="/contact" className="text-sm text-cyber-muted hover:text-white">Contact</a></li>
+                <li><a href="/faq" className="text-sm text-cyber-muted hover:text-white">FAQ</a></li>
+                <li><a href="/trust" className="text-sm text-cyber-muted hover:text-white">Trust &amp; Security</a></li>
+                <li><a href="https://app.xfree.in/" className="text-sm text-cyber-muted hover:text-white" rel="noopener">XFree Studio</a></li>
+                <li><a href="https://github.com/CodesbyFebin/xfree" className="text-sm text-cyber-muted hover:text-white" rel="noopener">GitHub</a></li>
+              </ul>
+            </nav>
+
+            <nav aria-label="Legal links">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wide mb-3 font-mono">Legal</h2>
+              <ul className="space-y-2">
+                <li><a href="/privacy" className="text-sm text-cyber-muted hover:text-white">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-sm text-cyber-muted hover:text-white">Terms of Service</a></li>
+                <li><a href="/.well-known/security.txt" className="text-sm text-cyber-muted hover:text-white">Security</a></li>
+                <li><a href="/sitemap.xml" className="text-sm text-cyber-muted hover:text-white">Sitemap</a></li>
+              </ul>
+            </nav>
+          </div>
+
+          <div className="border-t border-cyber-border pt-6 text-center">
             <p className="text-xs text-cyber-dim">
               © {new Date().getFullYear()} XFree. MIT License. {PILLAR_COUNT} approved pillars, {TOOL_COUNT} verified tools.
             </p>

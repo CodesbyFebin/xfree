@@ -3,7 +3,8 @@ import { GUIDES } from "../data/guides";
 import { GENERATED_PUBLISHED_CONTENT } from "../data/generatedPublishedContent";
 import { CANONICAL_ORIGIN, SITE_CONTENT_LASTMOD } from "../data/siteConfig";
 import { PILLARS_60 } from "../data/pillarRegistry";
-import { ROADMAP_CONCEPT_COUNT } from "../data/masterBlueprint";
+import { INDEXABLE_TOOLS } from "../data/toolsRegistry";
+import { STATIC_ROUTES } from "../data/routes";
 
 const DEFAULT_BASE_URL = CANONICAL_ORIGIN;
 
@@ -54,24 +55,15 @@ function maxLastmod(entries: SitemapEntry[]): string {
   return entries.reduce((latest, entry) => entry.lastmod > latest ? entry.lastmod : latest, entries[0].lastmod);
 }
 
-const STATIC_PAGE_ENTRIES: SitemapEntry[] = [
-  { path: "/", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/how-it-works", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/use-cases", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/docs", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/blog", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/faq", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/about", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/contact", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/privacy", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/terms", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/security", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/xfree-app", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/pillars", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/contribute", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/instaserver", lastmod: SITE_CONTENT_LASTMOD },
-  { path: "/json-tools", lastmod: SITE_CONTENT_LASTMOD },
-];
+// Driven directly from STATIC_ROUTES (the same list the client router and
+// prerender.ts use) instead of a hand-maintained copy — a hand-maintained
+// copy had drifted to include three routes with no Route case anywhere
+// (/contribute, /instaserver, /json-tools) and was still submitting them to
+// search engines via sitemap.xml.
+const STATIC_PAGE_ENTRIES: SitemapEntry[] = STATIC_ROUTES.map((path) => ({
+  path,
+  lastmod: SITE_CONTENT_LASTMOD,
+}));
 
 export function getPageSitemapEntries(): SitemapEntry[] {
   return [
@@ -225,11 +217,9 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   text += `- [Guides](${cleanBase}/guides): Reviewed documentation connected to published tools.\n`;
   text += `- [How It Works](${cleanBase}/how-it-works): Processing modes, browser execution, and optional cloud handoffs.\n`;
   text += `- [Pillars](${cleanBase}/pillars): ${PILLARS_60.length} developer and SEO topic pillars.\n`;
-  text += `- [Roadmap](${cleanBase}/roadmap): ${ROADMAP_CONCEPT_COUNT.toLocaleString()} planned concepts on a noindex discovery page; this is not a count of live tools.\n`;
-  text += `- [Contribute](${cleanBase}/contribute): Open-source contribution workflow, publication gates, and safe good-first-issue process.\n`;
-  text += `- [InstaServer](${cleanBase}/instaserver): Free, open-source MCP server that deploys app containers on your own machine — no account, no rate limit.\n`;
-  text += `- [JSON Tools](${cleanBase}/json-tools): Hub of 18 free browser-based JSON tools — format, validate, minify, convert, sort, and inspect.\n`;
-  text += `- [OpenAPI](${cleanBase}/openapi.json): Machine-readable description of the public XFree API surface.\n\n`;
+  text += `- [Use Cases](${cleanBase}/use-cases): Real-world workflows built from published tools.\n`;
+  text += `- [FAQ](${cleanBase}/faq): Common questions about pricing, privacy, and AI features.\n`;
+  text += `- [About](${cleanBase}/about): What XFree is and the principles it's built on.\n\n`;
 
   text += `## Categories\n\n`;
   for (const cat of PUBLIC_CATEGORIES) {
@@ -332,4 +322,128 @@ Crawl-delay: 0
 # Canonical discovery entry point
 Sitemap: ${cleanBase}/sitemap-index.xml
 `;
+}
+
+// PUBLIC_TOOLS still carries the legacy per-tool category ids (seo-tools,
+// developer-tools, ...); PUBLIC_CATEGORIES (= PILLAR_CATEGORIES) uses the
+// newer pillar-category ids (web-seo, dev-data, ...). Same mapping as
+// prerender.ts's category-hub breadcrumb fix — keep in sync if either changes.
+const TOOL_CATEGORY_TO_PILLAR_CATEGORY: Record<string, string> = {
+  "seo-tools": "web-seo",
+  "developer-tools": "dev-data",
+  "security-tools": "security",
+  "converters": "dev-data",
+  "generators": "dev-data",
+  "ai-tools": "ai-auto",
+  "media-docs": "media-docs",
+  "business-tools": "business",
+};
+
+export function generateAiTxt(baseUrl: string = DEFAULT_BASE_URL): string {
+  const cleanBase = cleanOrigin(baseUrl);
+  const categoryLines = PUBLIC_CATEGORIES.map((cat) => {
+    const count = PUBLIC_TOOLS.filter(
+      (t) => (TOOL_CATEGORY_TO_PILLAR_CATEGORY[t.category] || t.category) === cat.id
+    ).length;
+    return `- ${cat.label}: ${count} tool${count === 1 ? "" : "s"} — ${cleanBase}/${cat.id}`;
+  }).join("\n");
+
+  return `# ai.txt — machine-readable guidance for AI agents and crawlers
+# XFree.in — Free Developer, SEO & AI Micro-Tools
+# Generated from live source data. Last updated: ${SITE_CONTENT_LASTMOD}
+
+## What this site is
+XFree.in publishes ${PUBLIC_TOOLS.length} browser-based developer, SEO, and AI micro-tools,
+organized across ${PUBLIC_CATEGORIES.length} categories and ${PILLARS_60.length} topic pillars.
+Most tools run entirely client-side in the browser; tools that call a cloud model
+disclose this before you submit input. No tool requires an account.
+
+## Source of truth
+- Canonical origin: ${cleanBase}
+- Source code (MIT licensed): https://github.com/CodesbyFebin/xfree
+- Machine-readable index: ${cleanBase}/llms.txt (short) and ${cleanBase}/llms-full.txt (full)
+- Sitemap index: ${cleanBase}/sitemap-index.xml
+- Structured tool data: ${cleanBase}/tools.json and ${cleanBase}/capabilities.json
+
+## Categories
+${categoryLines}
+
+## Permitted use
+- Indexing, summarizing, and linking to any published page is welcome.
+- Quoting tool descriptions, FAQs, and how-to steps with attribution is welcome.
+- Do not present XFree tool output as your own without disclosing the source when asked.
+- Do not scrape and republish this catalog as a competing directory without attribution.
+
+## Restrictions
+- Do not submit user-identifying or third-party personal data through XFree's tools on
+  a person's behalf without their knowledge — several tools process input via a cloud
+  API and this site cannot control what a caller submits.
+- Automated high-volume scraping should use the sitemap and JSON endpoints above rather
+  than repeated full-page crawls.
+
+## Contact
+- General / partnership inquiries: contact@xfree.in
+- Security reports: security@xfree.in (see ${cleanBase}/.well-known/security.txt)
+`;
+}
+
+export function generateSecurityTxt(baseUrl: string = DEFAULT_BASE_URL): string {
+  const cleanBase = cleanOrigin(baseUrl);
+  const expires = `${new Date().getUTCFullYear() + 1}-12-31T23:59:59.000Z`;
+  return `Contact: mailto:security@xfree.in
+Contact: https://github.com/CodesbyFebin/xfree/security/advisories/new
+Expires: ${expires}
+Preferred-Languages: en
+Canonical: ${cleanBase}/.well-known/security.txt
+`;
+}
+
+export function generateHumansTxt(baseUrl: string = DEFAULT_BASE_URL): string {
+  const cleanBase = cleanOrigin(baseUrl);
+  return `/* TEAM */
+Site: XFree.in
+Contact: contact@xfree.in
+GitHub: https://github.com/CodesbyFebin/xfree
+
+/* SITE */
+Last update: ${SITE_CONTENT_LASTMOD}
+Standards: HTML5, JSON-LD (schema.org)
+Components: Vite, React, TypeScript, Express
+License: MIT
+
+/* CATALOG */
+Published tools: ${PUBLIC_TOOLS.length}
+Topic pillars: ${PILLARS_60.length}
+Canonical origin: ${cleanBase}
+`;
+}
+
+export function generateJsonFeed(baseUrl: string = DEFAULT_BASE_URL): string {
+  const cleanBase = cleanOrigin(baseUrl);
+  const tools = getToolSitemapEntries();
+  const toolDate = new Map(tools.map((entry) => [entry.path.replace("/tools/", ""), entry.lastmod]));
+
+  const items = PUBLIC_TOOLS.map((tool) => {
+    const toolUrl = `${cleanBase}/tools/${tool.slug}`;
+    return {
+      id: toolUrl,
+      url: toolUrl,
+      title: tool.title,
+      summary: tool.shortDescription,
+      content_text: tool.explanation || tool.shortDescription,
+      date_published: `${normalizeDate(toolDate.get(tool.slug))}T00:00:00.000Z`,
+      tags: [tool.categoryLabel || tool.category],
+    };
+  });
+
+  const feed = {
+    version: "https://jsonfeed.org/version/1.1",
+    title: "XFree.in — Free Developer, SEO & AI Micro-Tools",
+    home_page_url: `${cleanBase}/`,
+    feed_url: `${cleanBase}/feed.json`,
+    description: "Published browser-based developer, SEO, AI, and converter micro-tools with clear processing disclosures.",
+    language: "en-US",
+    items,
+  };
+  return JSON.stringify(feed, null, 2);
 }

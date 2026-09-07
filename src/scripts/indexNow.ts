@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { INDEXNOW_KEY, INDEXNOW_KEY_FILE, buildIndexNowPayload, submitIndexNow } from "../utils/indexNow";
+import { STATIC_ROUTES } from "../data/routes";
 
 function writeKeyFile(publicDir: string): void {
   const keyPath = path.join(publicDir, INDEXNOW_KEY_FILE);
@@ -10,23 +11,12 @@ function writeKeyFile(publicDir: string): void {
 
 function collectUrls(): string[] {
   const baseUrl = process.env.BASE_URL || "https://www.xfree.in";
+  // STATIC_ROUTES is the same list the client router and prerender.ts use —
+  // this used to be a separate hand-maintained copy that had drifted to
+  // include three routes with no Route case anywhere (/contribute,
+  // /instaserver, /json-tools) and the old "/security" path (renamed /trust).
   const staticPaths = [
-    "/",
-    "/how-it-works",
-    "/use-cases",
-    "/docs",
-    "/blog",
-    "/faq",
-    "/about",
-    "/contact",
-    "/privacy",
-    "/terms",
-    "/security",
-    "/xfree-app",
-    "/pillars",
-    "/contribute",
-    "/instaserver",
-    "/json-tools",
+    ...STATIC_ROUTES,
     "/sitemap.xml",
     "/llms.txt",
     "/llms-full.txt",

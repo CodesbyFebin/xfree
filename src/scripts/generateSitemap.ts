@@ -1,37 +1,66 @@
 import fs from "fs";
 import path from "path";
-import { generateSitemapXml, generateRssXml, generateLlmsTxt, generateLlmsFullTxt, generateRobotsTxt } from "../utils/generateSitemap";
+import {
+  generateSitemapXml,
+  generatePagesSitemapXml,
+  generateToolsSitemapXml,
+  generateGuidesSitemapXml,
+  generateSitemapIndexXml,
+  generateRssXml,
+  generateLlmsTxt,
+  generateLlmsFullTxt,
+  generateRobotsTxt,
+  generateAiTxt,
+  generateSecurityTxt,
+  generateHumansTxt,
+  generateJsonFeed,
+} from "../utils/generateSitemap";
 import { generateCapabilitiesJson, generateToolsJson, generateProblemPagesSitemap } from "../utils/generateStructuredData";
 import { INDEXNOW_KEY, INDEXNOW_KEY_FILE } from "../utils/indexNow";
 
 function runGenerator() {
   const publicDir = path.join(process.cwd(), "public");
+  const wellKnownDir = path.join(publicDir, ".well-known");
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
+  }
+  if (!fs.existsSync(wellKnownDir)) {
+    fs.mkdirSync(wellKnownDir, { recursive: true });
   }
 
   const baseUrl = process.env.BASE_URL || "https://www.xfree.in";
 
-  const sitemapContent = generateSitemapXml(baseUrl);
-  const rssContent = generateRssXml(baseUrl);
-  const llmsContent = generateLlmsTxt(baseUrl);
-  const llmsFullContent = generateLlmsFullTxt(baseUrl);
-  const robotsContent = generateRobotsTxt(baseUrl);
-  const capabilitiesContent = generateCapabilitiesJson(baseUrl);
-  const toolsContent = generateToolsJson(baseUrl);
-  const problemPagesContent = generateProblemPagesSitemap(baseUrl);
+  const files: Record<string, string> = {
+    "sitemap.xml": generateSitemapXml(baseUrl),
+    "sitemap-index.xml": generateSitemapIndexXml(baseUrl),
+    "sitemap-pages.xml": generatePagesSitemapXml(baseUrl),
+    "sitemap-tools.xml": generateToolsSitemapXml(baseUrl),
+    "sitemap-guides.xml": generateGuidesSitemapXml(baseUrl),
+    "rss.xml": generateRssXml(baseUrl),
+    "feed.json": generateJsonFeed(baseUrl),
+    "llms.txt": generateLlmsTxt(baseUrl),
+    "llms-full.txt": generateLlmsFullTxt(baseUrl),
+    "robots.txt": generateRobotsTxt(baseUrl),
+    "ai.txt": generateAiTxt(baseUrl),
+    "humans.txt": generateHumansTxt(baseUrl),
+    "capabilities.json": generateCapabilitiesJson(baseUrl),
+    "tools.json": generateToolsJson(baseUrl),
+    "problem-pages-sitemap.xml": generateProblemPagesSitemap(baseUrl),
+    [INDEXNOW_KEY_FILE]: INDEXNOW_KEY,
+  };
 
-  fs.writeFileSync(path.join(publicDir, "sitemap.xml"), sitemapContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "rss.xml"), rssContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "llms.txt"), llmsContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "llms-full.txt"), llmsFullContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "robots.txt"), robotsContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "capabilities.json"), capabilitiesContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "tools.json"), toolsContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, "problem-pages-sitemap.xml"), problemPagesContent, "utf-8");
-  fs.writeFileSync(path.join(publicDir, INDEXNOW_KEY_FILE), INDEXNOW_KEY, "utf-8");
+  for (const [name, content] of Object.entries(files)) {
+    fs.writeFileSync(path.join(publicDir, name), content, "utf-8");
+  }
 
-  console.log("Successfully generated sitemap.xml, rss.xml, llms.txt, llms-full.txt, robots.txt, capabilities.json, tools.json, problem-pages-sitemap.xml, and IndexNow key file in /public!");
+  // RFC 9116 security.txt belongs at /.well-known/security.txt (canonical);
+  // keep a copy at /security.txt too since some scanners still look there.
+  const securityTxt = generateSecurityTxt(baseUrl);
+  fs.writeFileSync(path.join(wellKnownDir, "security.txt"), securityTxt, "utf-8");
+  fs.writeFileSync(path.join(publicDir, "security.txt"), securityTxt, "utf-8");
+
+  const generated = [...Object.keys(files), ".well-known/security.txt", "security.txt"];
+  console.log(`Successfully generated ${generated.length} machine-readable files in /public: ${generated.join(", ")}`);
 }
 
 runGenerator();

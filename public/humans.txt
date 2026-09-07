@@ -1,0 +1,15 @@
+/* TEAM */
+Site: XFree.in
+Contact: contact@xfree.in
+GitHub: https://github.com/CodesbyFebin/xfree
+
+/* SITE */
+Last update: 2026-09-06
+Standards: HTML5, JSON-LD (schema.org)
+Components: Vite, React, TypeScript, Express
+License: MIT
+
+/* CATALOG */
+Published tools: 23
+Topic pillars: 60
+Canonical origin: https://www.xfree.in

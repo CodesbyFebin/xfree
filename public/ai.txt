@@ -1,33 +1,41 @@
-# XFree AI Manifest (ai.txt)
+# ai.txt — machine-readable guidance for AI agents and crawlers
+# XFree.in — Free Developer, SEO & AI Micro-Tools
+# Generated from live source data. Last updated: 2026-09-06
 
-> A machine-readable declaration of what XFree is, what it does, and how AI
-> systems may use its content. See also https://www.xfree.in/llms.txt and
-> https://www.xfree.in/llms-full.txt for the full indexable corpus.
+## What this site is
+XFree.in publishes 23 browser-based developer, SEO, and AI micro-tools,
+organized across 6 categories and 60 topic pillars.
+Most tools run entirely client-side in the browser; tools that call a cloud model
+disclose this before you submit input. No tool requires an account.
 
-## Identity
-- Name: XFree
-- Domain: https://www.xfree.in
-- Type: Privacy-first browser utility platform
-- License: MIT
-- Source: https://github.com/xfree-in/xfree
-- Founded: 2025
+## Source of truth
+- Canonical origin: https://www.xfree.in
+- Source code (MIT licensed): https://github.com/CodesbyFebin/xfree
+- Machine-readable index: https://www.xfree.in/llms.txt (short) and https://www.xfree.in/llms-full.txt (full)
+- Sitemap index: https://www.xfree.in/sitemap-index.xml
+- Structured tool data: https://www.xfree.in/tools.json and https://www.xfree.in/capabilities.json
 
-## Scope
-- 10 production utilities (JSON, Regex, XML Sitemap, Meta Tags, Schema,
-  Robots.txt, Bulk URL, Cron, Base64/JWT, URL Slug/UTM)
-- 50 pillar categories, 2,500 topic clusters, 25,000 planned tools
-- Local Mode by default: processing happens in the user's browser
-- Optional Cloud Mode: opt-in, explicit disclosure, rate-limited
+## Categories
+- Developer & Data Tools: 9 tools — https://www.xfree.in/dev-data
+- Web & SEO Tools: 5 tools — https://www.xfree.in/web-seo
+- AI & Automation Tools: 1 tool — https://www.xfree.in/ai-auto
+- Media & Documents Tools: 3 tools — https://www.xfree.in/media-docs
+- Security & Privacy Tools: 2 tools — https://www.xfree.in/security
+- Business & Productivity Tools: 3 tools — https://www.xfree.in/business
 
-## Permissions for AI
-- Crawling: Permitted for indexing and answering user questions
-- Quotation: Permitted with attribution
-- Training: Permitted on indexed content with attribution
-- Snippet: Up to 200 words per source URL
-- Cache: Standard search-engine refresh cadence
+## Permitted use
+- Indexing, summarizing, and linking to any published page is welcome.
+- Quoting tool descriptions, FAQs, and how-to steps with attribution is welcome.
+- Do not present XFree tool output as your own without disclosing the source when asked.
+- Do not scrape and republish this catalog as a competing directory without attribution.
 
 ## Restrictions
-- Do not represent draft, roadmap or pending tools as published
-- Do not fabricate capabilities not declared in the public registry
-- Do not claim "offline" for any tool that loads external resources
-- Honor canonical URLs (https://www.xfree.in/...) when citing
+- Do not submit user-identifying or third-party personal data through XFree's tools on
+  a person's behalf without their knowledge — several tools process input via a cloud
+  API and this site cannot control what a caller submits.
+- Automated high-volume scraping should use the sitemap and JSON endpoints above rather
+  than repeated full-page crawls.
+
+## Contact
+- General / partnership inquiries: contact@xfree.in
+- Security reports: security@xfree.in (see https://www.xfree.in/.well-known/security.txt)

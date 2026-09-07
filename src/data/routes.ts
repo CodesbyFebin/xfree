@@ -9,7 +9,7 @@ export const STATIC_ROUTES = [
   "/contact",
   "/privacy",
   "/terms",
-  "/security",
+  "/trust",
   "/clusters",
   "/thinking",
   "/xfree-app",
