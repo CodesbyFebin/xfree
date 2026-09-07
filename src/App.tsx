@@ -11,6 +11,7 @@ import {
 } from "./data/pillarRegistry";
 import { INDEXABLE_TOOLS, INDEXABLE_TOOL_SLUGS } from "./data/toolsRegistry";
 import { STATIC_ROUTES } from "./data/routes";
+import { GUIDES, findGuide } from "./data/guides";
 import type { ToolDefinition } from "./types";
 
 // Only these 10 tools have a real, dedicated interactive component (see
@@ -192,6 +193,8 @@ type Route =
   | { type: "pillar-detail"; slug: string }
   | { type: "category-hub"; categoryId: string }
   | { type: "tool-detail"; slug: string }
+  | { type: "guides-list" }
+  | { type: "guide-detail"; slug: string }
   | { type: "static-page"; path: string }
   | { type: "not-found" };
 
@@ -211,6 +214,11 @@ function getRouteFromPath(pathname: string): Route {
   }
   const catMatch = CATEGORIES.find((c) => normalizedPath === `/${c.id}`);
   if (catMatch) return { type: "category-hub", categoryId: catMatch.id };
+  if (normalizedPath === "/guides") return { type: "guides-list" };
+  const guideMatch = normalizedPath.match(/^\/guides\/(.+)$/);
+  if (guideMatch && findGuide(guideMatch[1])) {
+    return { type: "guide-detail", slug: guideMatch[1] };
+  }
   // "/" is handled above; every other STATIC_ROUTES entry (privacy, terms,
   // about, contact, faq, etc.) renders via StaticPage. These previously had
   // no case at all here — prerendered content flashed on load, then flipped
@@ -439,176 +447,154 @@ const Hero: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) 
       className="relative min-h-[92vh] flex items-center justify-center pt-20 pb-12 overflow-hidden matrix-grid hex-pattern"
       aria-labelledby="hero-heading"
     >
-      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <picture>
-          <source
-            srcSet="/hero-main-800.webp 800w, /hero-main-1200.webp 1200w, /hero-main-1448.webp 1448w"
-            sizes="100vw"
-            type="image/webp"
-          />
-          <img
-            src="/hero-main-1200.jpg"
-            srcSet="/hero-main-800.jpg 800w, /hero-main-1200.jpg 1200w, /hero-main-1448.jpg 1448w"
-            sizes="100vw"
-            alt=""
-            width={1448}
-            height={1086}
-            fetchPriority="high"
-            decoding="async"
-            className="w-full h-full object-cover object-center opacity-25"
-          />
-        </picture>
-        <div className="absolute inset-0 bg-cyber-bg/75" />
-      </div>
       <div className="hero-orb w-[500px] h-[500px] bg-cyber-glow -top-40 -left-40" aria-hidden="true" />
       <div className="hero-orb w-[400px] h-[400px] bg-cyber-magenta top-1/4 -right-32" aria-hidden="true" />
       <div className="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" aria-hidden="true" />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute top-32 left-[15%] w-1.5 h-1.5 rounded-full bg-cyber-glow/40 anim-float" />
-        <div className="absolute top-48 right-[20%] w-2 h-2 rounded-full bg-cyber-cyan/30 anim-float" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-40 left-[25%] w-1 h-1 rounded-full bg-cyber-magenta/40 anim-float" style={{ animationDelay: "2s" }} />
-        <div className="absolute top-60 right-[40%] w-1 h-1 rounded-full bg-cyber-glow/30 anim-float" style={{ animationDelay: "3s" }} />
-      </div>
 
-      <div className="relative z-10 w-full min-w-0 max-w-5xl mx-auto px-4 text-center">
-        <div
-          className="anim-slide-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-8 neon-box-green"
-          style={{ animationDelay: ".1s" }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse" aria-hidden="true" />
-          <span>$ XFree App · Privacy-First Tools · No Signup Required</span>
-        </div>
-
-        <h1
-          id="hero-heading"
-          className="hero-title anim-slide-up text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4"
-          style={{ animationDelay: ".2s" }}
-        >
-          XFree App: Free Developer,<br />
-          SEO &amp; <span className="text-cyber-glow">Privacy Micro-Tools</span>
-        </h1>
-
-        <h2
-          id="hero-subheading"
-          className="anim-slide-up text-lg sm:text-xl text-cyber-cyan font-mono mb-2 font-medium"
-          style={{ animationDelay: ".25s" }}
-        >
-          XFree is a free, browser-based toolkit for developers, SEO professionals &amp; privacy-conscious builders
-        </h2>
-
-        <p
-          className="anim-slide-up text-base text-cyber-muted max-w-2xl mx-auto mb-10 leading-relaxed"
-          style={{ animationDelay: ".3s" }}
-        >
-          {TOOL_COUNT} published tools — JSON formatters, sitemap generators, password checkers, and more —
-          run entirely in Local Mode inside your browser. No account, no installs, no cost.
-        </p>
-
-        {/* Search */}
-        <div
-          className="anim-slide-up max-w-2xl mx-auto mb-6"
-          style={{ animationDelay: ".4s" }}
-        >
-          <form
-            action="/search"
-            method="get"
-            role="search"
-            onKeyDown={handleKeydown}
-          >
-            <div className="cmd-bar relative flex items-center bg-cyber-card rounded-lg p-1.5 border border-cyber-border transition-all duration-300 corner-brackets">
-              <div className="pl-4 pr-2 text-cyber-glow" aria-hidden="true">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <label htmlFor="heroSearch" className="sr-only">
-                Search XFree tools
-              </label>
-              <input
-                type="text"
-                id="heroSearch"
-                name="q"
-                placeholder="search> JSON, Regex, Sitemap, JWT, Hash..."
-                className="flex-1 min-w-0 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono"
-                autoComplete="off"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <div className="flex items-center gap-2 pr-2 shrink-0">
-                <kbd aria-hidden="true" className="hidden sm:inline-flex">⌘K</kbd>
-                <button type="submit" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring">
-                  <span>EXECUTE</span>
-                </button>
-              </div>
+      <div className="relative z-10 w-full min-w-0 max-w-7xl mx-auto px-4">
+        <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
+          <div className="min-w-0 text-center lg:text-left">
+            <div
+              className="anim-slide-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-6 neon-box-green"
+              style={{ animationDelay: ".1s" }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse" aria-hidden="true" />
+              <span>$ XFree App · Privacy-First Tools · No Signup Required</span>
             </div>
-          </form>
-          <nav
-            className="flex items-center justify-center gap-2 mt-3 flex-wrap"
-            aria-label="Popular XFree tool searches"
-          >
-            <span className="text-[11px] text-cyber-muted font-mono">Popular:</span>
-            <a
-              href="/tools/json-formatter"
-              className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
-            >
-              XFree JSON Formatter
-            </a>
-            <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <a
-              href="/tools/regex-tester"
-              className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
-            >
-              XFree Regex Tester
-            </a>
-            <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <a
-              href="/tools/xml-sitemap-generator"
-              className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
-            >
-              XFree Sitemap Generator
-            </a>
-            <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <a
-              href="/tools/meta-tag-generator"
-              className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
-            >
-              XFree Meta Tags
-            </a>
-            <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <a
-              href="/tools/jwt-decoder"
-              className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
-            >
-              XFree JWT Decoder
-            </a>
-            <span className="text-cyber-dim" aria-hidden="true">·</span>
-            <a
-              href="/tools/cron-generator"
-              className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono"
-            >
-              XFree Cron Gen
-            </a>
-          </nav>
-          <small className="block mt-3 text-[10px] text-cyber-dim font-mono">
-            Pro-tip: Press <kbd>⌘K</kbd> to jump to search from anywhere.
-          </small>
-        </div>
 
-        <div
-          className="anim-slide-up flex items-center justify-center gap-4 sm:gap-8 text-xs text-cyber-muted font-mono mt-6"
-          style={{ animationDelay: ".5s" }}
-        >
-          <span className="flex items-center gap-1.5">
-            <span className="text-cyber-glow" aria-hidden="true">⚡</span> <span className="text-cyber-glow">LOCAL</span> Mode by Default
-          </span>
-          <span className="hidden sm:inline text-cyber-dim" aria-hidden="true">|</span>
-          <span className="flex items-center gap-1.5">
-            <span className="text-cyber-cyan" aria-hidden="true">🔒</span> <span className="text-cyber-cyan">PRIVACY</span>-First
-          </span>
-          <span className="hidden sm:inline text-cyber-dim" aria-hidden="true">|</span>
-          <span className="flex items-center gap-1.5">
-            <span className="text-cyber-magenta" aria-hidden="true">🚀</span> <span className="text-cyber-magenta">ZERO</span> Sign-Up
-          </span>
+            <h1
+              id="hero-heading"
+              className="hero-title anim-slide-up text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight mb-4"
+              style={{ animationDelay: ".2s" }}
+            >
+              XFree App: Free Developer,<br />
+              SEO &amp; <span className="text-cyber-glow">Privacy Micro-Tools</span>
+            </h1>
+
+            <h2
+              id="hero-subheading"
+              className="anim-slide-up text-lg sm:text-xl text-cyber-cyan font-mono mb-2 font-medium"
+              style={{ animationDelay: ".25s" }}
+            >
+              XFree is a free, browser-based toolkit for developers, SEO professionals &amp; privacy-conscious builders
+            </h2>
+
+            <p
+              className="anim-slide-up text-base text-cyber-muted max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
+              style={{ animationDelay: ".3s" }}
+            >
+              {TOOL_COUNT} published tools — JSON formatters, sitemap generators, password checkers, and more —
+              run entirely in Local Mode inside your browser. No account, no installs, no cost.
+            </p>
+
+            <div
+              className="anim-slide-up flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-8"
+              style={{ animationDelay: ".35s" }}
+            >
+              <a href="#hero-search" className="cyber-btn cyber-btn-filled text-sm px-6 py-3 rounded focus-ring">
+                Explore All Tools →
+              </a>
+              <a href="https://app.xfree.in/" rel="noopener" className="cyber-btn text-sm px-6 py-3 rounded focus-ring">
+                Open XFree Studio
+              </a>
+            </div>
+
+            <div
+              className="anim-slide-up grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-cyber-muted font-mono mb-10"
+              style={{ animationDelay: ".4s" }}
+            >
+              <span className="flex items-center gap-1.5">
+                <span className="text-cyber-glow" aria-hidden="true">🔒</span> 100% Private
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-cyber-glow" aria-hidden="true">⚡</span> Browser Based
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-cyber-glow" aria-hidden="true">🔓</span> Open Source
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-cyber-glow" aria-hidden="true">👥</span> For Everyone
+              </span>
+            </div>
+
+            {/* Search */}
+            <div
+              id="hero-search"
+              className="anim-slide-up max-w-2xl mx-auto lg:mx-0 scroll-mt-24"
+              style={{ animationDelay: ".45s" }}
+            >
+              <form action="/search" method="get" role="search" onKeyDown={handleKeydown}>
+                <div className="cmd-bar relative flex items-center bg-cyber-card rounded-lg p-1.5 border border-cyber-border transition-all duration-300 corner-brackets">
+                  <div className="pl-4 pr-2 text-cyber-glow" aria-hidden="true">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <label htmlFor="heroSearch" className="sr-only">
+                    Search XFree tools
+                  </label>
+                  <input
+                    type="text"
+                    id="heroSearch"
+                    name="q"
+                    placeholder="search> JSON, Regex, Sitemap, JWT, Hash..."
+                    className="flex-1 min-w-0 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono"
+                    autoComplete="off"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  <div className="flex items-center gap-2 pr-2 shrink-0">
+                    <kbd aria-hidden="true" className="hidden sm:inline-flex">⌘K</kbd>
+                    <button type="submit" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring">
+                      <span>EXECUTE</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <nav
+                className="flex items-center justify-center lg:justify-start gap-2 mt-3 flex-wrap"
+                aria-label="Popular XFree tool searches"
+              >
+                <span className="text-[11px] text-cyber-muted font-mono">Popular:</span>
+                <a href="/tools/json-formatter" className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+                  XFree JSON Formatter
+                </a>
+                <span className="text-cyber-dim" aria-hidden="true">·</span>
+                <a href="/tools/regex-tester" className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+                  XFree Regex Tester
+                </a>
+                <span className="text-cyber-dim" aria-hidden="true">·</span>
+                <a href="/tools/xml-sitemap-generator" className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+                  XFree Sitemap Generator
+                </a>
+                <span className="text-cyber-dim" aria-hidden="true">·</span>
+                <a href="/tools/meta-tag-generator" className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+                  XFree Meta Tags
+                </a>
+                <span className="text-cyber-dim" aria-hidden="true">·</span>
+                <a href="/tools/jwt-decoder" className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+                  XFree JWT Decoder
+                </a>
+                <span className="text-cyber-dim" aria-hidden="true">·</span>
+                <a href="/tools/cron-generator" className="text-[11px] text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+                  XFree Cron Gen
+                </a>
+              </nav>
+              <small className="block mt-3 text-[10px] text-cyber-dim font-mono text-center lg:text-left">
+                Pro-tip: Press <kbd>⌘K</kbd> to jump to search from anywhere.
+              </small>
+            </div>
+          </div>
+
+          <img
+            src="/favicon-512x512.png"
+            alt=""
+            width={320}
+            height={320}
+            className="hidden lg:block w-72 h-72 xl:w-80 xl:h-80 opacity-95 anim-float"
+            aria-hidden="true"
+            decoding="async"
+          />
         </div>
       </div>
     </section>
@@ -789,6 +775,79 @@ const WhyXFree: React.FC = () => (
   </section>
 );
 
+// ===== XFree Studio Promo =====
+const StudioPromo: React.FC = () => (
+  <section className="py-16 px-4" aria-labelledby="studio-heading">
+    <div className="max-w-5xl mx-auto cyber-card p-8 sm:p-10 rounded-xl grid md:grid-cols-[1fr_auto] gap-8 items-center">
+      <div>
+        <h2 id="studio-heading" className="text-2xl sm:text-3xl font-black text-white mb-3 font-mono">
+          XFree <span className="text-cyber-glow">Studio</span>
+        </h2>
+        <p className="text-cyber-muted leading-relaxed mb-6 max-w-xl">
+          A single workspace for every XFree tool — search, run, and switch between {TOOL_COUNT} tools without
+          leaving the page. Installable as a Progressive Web App for one-tap access, offline-capable, still 100%
+          local by default.
+        </p>
+        <ul className="space-y-2 mb-6 text-sm text-cyber-text">
+          <li className="flex items-center gap-2"><span className="text-cyber-glow" aria-hidden="true">✓</span> All {TOOL_COUNT} tools in one workspace</li>
+          <li className="flex items-center gap-2"><span className="text-cyber-glow" aria-hidden="true">✓</span> Installable PWA — works offline</li>
+          <li className="flex items-center gap-2"><span className="text-cyber-glow" aria-hidden="true">✓</span> No account, no tracking</li>
+          <li className="flex items-center gap-2"><span className="text-cyber-glow" aria-hidden="true">✓</span> Open source and self-hostable</li>
+        </ul>
+        <a href="https://app.xfree.in/" rel="noopener" className="cyber-btn cyber-btn-filled text-sm px-6 py-3 rounded focus-ring inline-block">
+          Open XFree Studio →
+        </a>
+      </div>
+      <img
+        src="/logo-wordmark-160.png"
+        srcSet="/logo-wordmark-80.png 1x, /logo-wordmark-160.png 2x"
+        alt=""
+        width={321}
+        height={160}
+        className="hidden md:block w-56 h-auto opacity-90"
+        aria-hidden="true"
+        decoding="async"
+      />
+    </div>
+  </section>
+);
+
+// ===== Latest Guides =====
+const LatestGuides: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
+  const latest = [...GUIDES].sort((a, b) => (a.lastReviewed < b.lastReviewed ? 1 : -1)).slice(0, 4);
+  if (!latest.length) return null;
+  return (
+    <section className="py-16 px-4 bg-cyber-surface/50" aria-labelledby="guides-heading">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 id="guides-heading" className="text-xl font-bold text-white font-mono">
+              <span className="text-cyber-glow">$</span> Latest Guides
+            </h2>
+            <p className="text-sm text-cyber-muted mt-1 font-mono">// Learn. Build. Go deeper.</p>
+          </div>
+          <button onClick={() => onNavigate("/guides")} className="text-xs text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+            View all →
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {latest.map((g) => (
+            <a
+              key={g.slug}
+              href={`/guides/${g.slug}`}
+              className="cyber-card p-4 block focus-ring hover:border-cyber-glow/40 transition-colors"
+            >
+              <h3 className="text-sm font-semibold text-white mb-2 font-mono leading-snug">{g.title}</h3>
+              <p className="text-xs text-cyber-muted leading-relaxed mb-3">{g.description}</p>
+              <span className="text-[10px] text-cyber-dim font-mono">{g.lastReviewed}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // ===== How It Works Section =====
 const HowItWorks: React.FC = () => (
   <section className="py-16 px-4" aria-labelledby="how-heading">
@@ -920,7 +979,7 @@ const CategoryHub: React.FC<{ categoryId: string; onBack: () => void; onSelect: 
           </nav>
 
           <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-mono tracking-[0.2em] text-cyber-glow mb-3">
                 XFREE / {cat.label.toUpperCase()}
               </p>
@@ -1487,6 +1546,167 @@ const HOME_FAQS = [
   },
 ];
 
+// ===== Guides list =====
+const GuidesList: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
+  const canonical = "https://www.xfree.in/guides";
+  useDocumentMeta({
+    title: "Guides — XFree.in",
+    description: "Practical, reviewed guides for developers and SEOs — regex, cron, JSON, hashing, and more.",
+    canonical,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "XFree Guides",
+        url: canonical,
+        hasPart: GUIDES.map((g) => ({
+          "@type": "Article",
+          headline: g.title,
+          url: `https://www.xfree.in/guides/${g.slug}`,
+        })),
+      },
+    ],
+  });
+
+  return (
+    <section className="py-16 px-4" aria-labelledby="guides-list-heading">
+      <div className="max-w-5xl mx-auto">
+        <button onClick={() => onNavigate("/")} className="cyber-btn text-xs px-4 py-2 mb-6 rounded focus-ring">
+          ← Back home
+        </button>
+        <h1 id="guides-list-heading" className="text-3xl font-black text-white mb-3 font-mono">Guides</h1>
+        <p className="text-cyber-muted mb-10 max-w-xl">
+          Short, practical guides for developers and SEOs, each a standalone reference with runnable examples.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {GUIDES.map((g) => (
+            <a key={g.slug} href={`/guides/${g.slug}`} className="cyber-card p-5 block focus-ring hover:border-cyber-glow/40 transition-colors">
+              <h2 className="text-base font-semibold text-white mb-2 font-mono">{g.title}</h2>
+              <p className="text-sm text-cyber-muted leading-relaxed mb-3">{g.description}</p>
+              <span className="text-[10px] text-cyber-dim font-mono">Last reviewed {g.lastReviewed}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ===== Guide detail =====
+const GuideDetail: React.FC<{ slug: string; onNavigate: (path: string) => void }> = ({ slug, onNavigate }) => {
+  const guide = findGuide(slug);
+  if (!guide) {
+    return (
+      <section className="py-16 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Guide not found</h1>
+          <button onClick={() => onNavigate("/guides")} className="cyber-btn cyber-btn-cyan mt-4 text-sm px-6 py-2 rounded focus-ring">
+            ← Back to guides
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  const canonical = `https://www.xfree.in/guides/${guide.slug}`;
+  useDocumentMeta({
+    title: `${guide.title} — XFree.in`,
+    description: guide.description,
+    canonical,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: guide.title,
+        description: guide.description,
+        url: canonical,
+        dateModified: guide.lastReviewed,
+        publisher: { "@type": "Organization", name: "XFree", url: "https://www.xfree.in/" },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.xfree.in/" },
+          { "@type": "ListItem", position: 2, name: "Guides", item: "https://www.xfree.in/guides" },
+          { "@type": "ListItem", position: 3, name: guide.title, item: canonical },
+        ],
+      },
+    ],
+  });
+
+  const relatedTools = (guide.relatedToolSlugs || [])
+    .map((s) => INDEXABLE_TOOLS.find((t) => t.slug === s))
+    .filter((t): t is ToolDefinition => !!t);
+  const relatedGuides = (guide.relatedGuideSlugs || [])
+    .map((s) => findGuide(s))
+    .filter((g): g is (typeof GUIDES)[number] => !!g);
+
+  return (
+    <article className="prose prose-invert max-w-3xl mx-auto py-12 px-4">
+      <div className="cyber-card p-6 sm:p-9 rounded-xl">
+        <nav className="text-xs font-mono text-cyber-muted mb-6">
+          <button onClick={() => onNavigate("/guides")} className="hover:text-cyber-glow transition-colors focus-ring">← All guides</button>
+        </nav>
+
+        <header className="mb-8">
+          <h1 className="text-3xl font-black text-white font-mono mb-3">{guide.title}</h1>
+          <p className="text-lg text-cyber-text leading-relaxed">{guide.intro}</p>
+        </header>
+
+        <div className="space-y-8">
+          {guide.sections.map((section, i) => (
+            <section key={i}>
+              <h2 className="text-xl font-bold text-white font-mono mb-3">
+                <span className="text-cyber-glow">{'>'}</span> {section.heading}
+              </h2>
+              {section.paragraphs?.map((p, j) => (
+                <p key={j} className="text-cyber-muted leading-relaxed mb-2">{p}</p>
+              ))}
+              {section.bullets && (
+                <ul className="space-y-1.5 mt-2">
+                  {section.bullets.map((b, j) => (
+                    <li key={j} className="text-sm text-cyber-muted flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow mt-1.5 shrink-0" /> {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {section.code && (
+                <pre className="bg-cyber-bg border border-cyber-border rounded-lg p-4 text-xs text-cyber-glow overflow-x-auto whitespace-pre mt-2">
+                  {section.code.body}
+                </pre>
+              )}
+            </section>
+          ))}
+        </div>
+
+        {(relatedGuides.length || relatedTools.length) ? (
+          <section className="mt-10 pt-6 border-t border-cyber-border">
+            <h2 className="text-lg font-bold text-white font-mono mb-3">Related</h2>
+            <div className="flex flex-wrap gap-2">
+              {relatedGuides.map((g) => (
+                <a key={g.slug} href={`/guides/${g.slug}`} className="px-3 py-1.5 rounded-lg cyber-card text-xs focus-ring hover:border-cyber-glow/40 transition-colors">
+                  {g.title}
+                </a>
+              ))}
+              {relatedTools.map((t) => (
+                <a key={t.slug} href={`/tools/${t.slug}`} className="px-3 py-1.5 rounded-lg cyber-card text-xs text-cyber-glow focus-ring hover:border-cyber-glow/40 transition-colors">
+                  {t.title}
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <p className="text-xs text-cyber-dim italic pt-6 mt-6 border-t border-cyber-border">
+          Authored by the XFree.in team. Last reviewed {guide.lastReviewed}.
+        </p>
+      </div>
+    </article>
+  );
+};
+
 const FAQSection: React.FC = () => {
   useAppendJsonLd("home-faq-jsonld", {
     "@context": "https://schema.org",
@@ -1986,9 +2206,11 @@ const App: React.FC = () => {
           <>
             <Hero onNavigate={navigate} />
             <MetricsTicker />
-            <FeaturedTools />
             <CategoriesSection />
+            <FeaturedTools />
             <WhyXFree />
+            <StudioPromo />
+            <LatestGuides onNavigate={navigate} />
             <HowItWorks />
             <PillarsDirectory
               onSelect={(slug) => navigate(`/pillars/${slug}`)}
@@ -2011,6 +2233,12 @@ const App: React.FC = () => {
 
       case "tool-detail":
         return <ToolDetail slug={route.slug} onBack={() => navigate("/")} />;
+
+      case "guides-list":
+        return <GuidesList onNavigate={navigate} />;
+
+      case "guide-detail":
+        return <GuideDetail slug={route.slug} onNavigate={navigate} />;
 
       case "static-page":
         return <StaticPage path={route.path} onNavigate={navigate} />;
