@@ -46,7 +46,7 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
               <span>Blog Strategy & Architecture</span>
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-black uppercase tracking-tight">
-              100 Pillar Keyword Clusters
+              65 Pillar Keyword Clusters
             </h1>
             <p className="text-xs sm:text-sm text-black font-bold max-w-3xl">
               Search-intent keyword clusters mapped to XFree tools. Clusters map search intent to XFree's live tool inventory.
@@ -55,12 +55,12 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
 
           <div className="flex items-center gap-3 bg-white p-3 border-2 border-black shrink-0">
             <div className="text-center">
-              <div className="text-2xl font-black text-black leading-none">100</div>
+              <div className="text-2xl font-black text-black leading-none">65</div>
               <div className="text-[10px] font-black uppercase text-gray-600">Clusters</div>
             </div>
             <div className="h-8 w-0.5 bg-black" />
             <div className="text-center">
-              <div className="text-2xl font-black text-blue-600 leading-none">1,500+</div>
+              <div className="text-2xl font-black text-blue-600 leading-none">975+</div>
               <div className="text-[10px] font-black uppercase text-gray-600">Keywords</div>
             </div>
             <div className="h-8 w-0.5 bg-black" />
@@ -79,7 +79,7 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 100 clusters or 1,500+ keywords (e.g. sitemap, json, regex, sql)..."
+              placeholder="Search 65 clusters or 975+ keywords (e.g. sitemap, json, regex, sql)..."
               className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-black font-bold text-xs sm:text-sm text-black placeholder-gray-500 focus:outline-none focus:bg-yellow-50"
             />
           </div>
@@ -90,7 +90,7 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full p-2.5 bg-white border-2 border-black font-black text-xs text-black uppercase focus:outline-none cursor-pointer"
             >
-              <option value="all">All Categories (100 Clusters)</option>
+              <option value="all">All Categories (65 Clusters)</option>
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
@@ -107,7 +107,7 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
           <h2 className="text-base font-black text-black uppercase flex items-center gap-2">
             <Layers className="w-4 h-4 text-blue-600" />
             <span>
-              Showing {filteredClusters.length} of 100 Keyword Clusters
+              Showing {filteredClusters.length} of 65 Keyword Clusters
             </span>
           </h2>
           {searchQuery && (

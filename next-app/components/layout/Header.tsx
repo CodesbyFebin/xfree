@@ -30,8 +30,8 @@ const NAV_ITEMS = [
     href: '/pillars',
     children: [
       { label: 'All Pillars', href: '/pillars' },
-      { label: 'Developer Tools', href: '/categories/dev-tools' },
-      { label: 'SEO Tools', href: '/categories/seo-tools' },
+      { label: 'Developer Tools', href: '/categories/developer-tools' },
+      { label: 'SEO Tools', href: '/categories/seo-url-tools' },
       { label: 'AI Tools', href: '/categories/ai-tools' },
       { label: 'Security Tools', href: '/categories/security-tools' },
     ],

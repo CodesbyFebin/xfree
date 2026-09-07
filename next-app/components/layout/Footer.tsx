@@ -58,12 +58,12 @@ export function Footer({ dict, locale }: FooterProps) {
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <Link href={`/${locale}/categories/dev-tools`} className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href={`/${locale}/categories/developer-tools`} className="text-sm text-cyber-muted transition-colors hover:text-white">
                     XFree Developer Tools
                   </Link>
                 </li>
                 <li>
-                  <Link href={`/${locale}/categories/seo-tools`} className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href={`/${locale}/categories/seo-url-tools`} className="text-sm text-cyber-muted transition-colors hover:text-white">
                     XFree SEO Tools
                   </Link>
                 </li>
@@ -109,7 +109,7 @@ export function Footer({ dict, locale }: FooterProps) {
                   </Link>
                 </li>
                 <li>
-                  <Link href={`/${locale}/pillars/seo-tools`} className="text-sm text-cyber-muted transition-colors hover:text-white">
+                  <Link href={`/${locale}/pillars/seo-audit-tools`} className="text-sm text-cyber-muted transition-colors hover:text-white">
                     XFree SEO Tools
                   </Link>
                 </li>
