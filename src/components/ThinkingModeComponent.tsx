@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { Brain, Sparkles, RefreshCw, Copy, Check, ArrowRight, Lightbulb, Zap } from "lucide-react";
+import { Brain, Sparkles, RefreshCw, Copy, Check, ArrowRight, Lightbulb } from "lucide-react";
 
 export function ThinkingModeComponent() {
   const [prompt, setPrompt] = useState("");
-  const [systemInstruction, setSystemInstruction] = useState(
-    "You are XFree Deep Reasoning Engine. Perform thorough, step-by-step analytical thinking before delivering the final clean solution."
-  );
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState<string | null>(null);
+  const [model, setModel] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,18 +32,19 @@ export function ThinkingModeComponent() {
     setAnswer(null);
 
     try {
+      // The server always uses its own fixed system prompt and model for
+      // this task (src/server/tasks.ts / env config) — the client can't
+      // override either, by design, so only the prompt itself is sent.
       const response = await fetch("/api/ai/thinking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: prompt.trim(),
-          systemInstruction,
-        }),
+        body: JSON.stringify({ prompt: prompt.trim() }),
       });
 
       const data = await response.json();
       if (data.success && data.answer) {
         setAnswer(data.answer);
+        setModel(data.model || null);
       } else {
         setError(data.error || "Thinking mode failed to produce output.");
       }
@@ -64,22 +63,21 @@ export function ThinkingModeComponent() {
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
+    <div className="cyber-card p-6 space-y-6">
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
-        <div className="flex items-center space-x-3">
-          <div className="p-3 bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-500 rounded-2xl text-white shadow-lg shadow-purple-500/20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-cyber-border">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-cyber-glow/10 border border-cyber-glow/30 rounded-xl text-cyber-glow">
             <Brain className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              Gemini Thinking Mode
-              <span className="px-2.5 py-0.5 text-xs font-mono bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-full flex items-center gap-1">
-                <Zap className="w-3 h-3" />
-                gemini-3.1-pro-preview (HIGH Reasoning)
+            <h2 className="text-xl font-bold text-white flex items-center gap-2 font-mono">
+              Deep Reasoning Mode
+              <span className="px-2.5 py-0.5 text-xs font-mono bg-cyber-glow/10 text-cyber-glow border border-cyber-glow/30 rounded-full">
+                {model || "Gemini"}
               </span>
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-cyber-muted">
               Deep, multi-step analytical reasoning for complex architectural, regex, database, and SEO strategy queries
             </p>
           </div>
@@ -88,21 +86,21 @@ export function ThinkingModeComponent() {
 
       {/* Preset Buttons */}
       <div>
-        <label className="text-xs font-mono uppercase text-slate-400 mb-2 block">
-          Sample High-Complexity Scenarios:
+        <label className="text-xs font-mono uppercase text-cyber-muted mb-2 block">
+          Sample high-complexity scenarios:
         </label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {samplePrompts.map((item, idx) => (
             <button
               key={idx}
               onClick={() => setPrompt(item.prompt)}
-              className="p-3 bg-slate-800/80 hover:bg-slate-800 text-left rounded-xl border border-slate-700/80 hover:border-purple-500/50 transition-all group"
+              className="p-3 bg-cyber-bg/60 hover:bg-cyber-bg text-left rounded-xl border border-cyber-border hover:border-cyber-glow/40 transition-all group focus-ring"
             >
-              <div className="text-xs font-semibold text-purple-300 group-hover:text-purple-200 flex items-center justify-between">
+              <div className="text-xs font-semibold text-cyber-glow flex items-center justify-between">
                 <span>{item.label}</span>
                 <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{item.prompt}</p>
+              <p className="text-[11px] text-cyber-muted mt-1 line-clamp-2">{item.prompt}</p>
             </button>
           ))}
         </div>
@@ -110,18 +108,15 @@ export function ThinkingModeComponent() {
 
       {/* Query Input */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="text-xs font-mono uppercase text-slate-300">
-            Complex Query or Code Problem:
-          </label>
-          <span className="text-xs text-slate-500 font-mono">ThinkingLevel: HIGH (4096 tokens)</span>
-        </div>
+        <label className="text-xs font-mono uppercase text-cyber-muted">
+          Complex query or code problem:
+        </label>
         <textarea
           rows={5}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Enter a complex coding error, SQL architecture query, regex logic requirement, or technical SEO migration scenario..."
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+          className="w-full bg-cyber-bg border border-cyber-border rounded-xl p-4 text-sm text-cyber-text placeholder-cyber-muted focus:outline-none focus:border-cyber-glow font-mono"
         />
       </div>
 
@@ -130,12 +125,12 @@ export function ThinkingModeComponent() {
         <button
           onClick={handleExecuteThinking}
           disabled={loading || !prompt.trim()}
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-semibold rounded-xl shadow-xl flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="cyber-btn cyber-btn-filled px-6 py-3 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus-ring"
         >
           {loading ? (
             <>
               <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Thinking deeply with gemini-3.1-pro-preview...</span>
+              <span>Thinking deeply…</span>
             </>
           ) : (
             <>
@@ -148,28 +143,28 @@ export function ThinkingModeComponent() {
 
       {/* Error Message */}
       {error && (
-        <div className="p-4 bg-red-950/40 border border-red-800/80 rounded-xl text-red-300 text-sm">
+        <div className="p-4 bg-cyber-magenta/10 border border-cyber-magenta/30 rounded-xl text-cyber-magenta text-sm">
           {error}
         </div>
       )}
 
       {/* Reasoning Output */}
       {answer && (
-        <div className="space-y-3 pt-4 border-t border-slate-800">
+        <div className="space-y-3 pt-4 border-t border-cyber-border">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Lightbulb className="w-4 h-4 text-amber-400" />
-              Deep Reasoning Output:
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2 font-mono">
+              <Lightbulb className="w-4 h-4 text-cyber-amber" />
+              Deep reasoning output:
             </h3>
             <button
               onClick={handleCopy}
-              className="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 flex items-center space-x-1.5 transition-colors"
+              className="px-3 py-1.5 text-xs bg-cyber-bg hover:bg-cyber-surface text-cyber-muted hover:text-white rounded-lg border border-cyber-border flex items-center gap-1.5 transition-colors focus-ring"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-cyber-glow" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? "Copied" : "Copy Output"}</span>
             </button>
           </div>
-          <div className="p-5 bg-slate-950 rounded-xl border border-purple-900/40 text-slate-200 font-mono text-xs leading-relaxed whitespace-pre-wrap overflow-x-auto shadow-inner">
+          <div className="p-5 bg-cyber-bg rounded-xl border border-cyber-border text-cyber-text font-mono text-xs leading-relaxed whitespace-pre-wrap overflow-x-auto">
             {answer}
           </div>
         </div>

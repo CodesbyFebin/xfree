@@ -16,6 +16,7 @@ import type { ToolDefinition, SavedItem } from "./types";
 import { CommandPalette } from "./components/CommandPalette";
 import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
 import { SavedDrawer } from "./components/SavedDrawer";
+import { ThinkingModeComponent } from "./components/ThinkingModeComponent";
 
 // Only these 10 tools have a real, dedicated interactive component (see
 // src/components/tools/). Everything else renders ToolDetail's informational
@@ -199,6 +200,7 @@ type Route =
   | { type: "guides-list" }
   | { type: "guide-detail"; slug: string }
   | { type: "signals" }
+  | { type: "thinking" }
   | { type: "static-page"; path: string }
   | { type: "not-found" };
 
@@ -220,6 +222,7 @@ function getRouteFromPath(pathname: string): Route {
   if (catMatch) return { type: "category-hub", categoryId: catMatch.id };
   if (normalizedPath === "/guides") return { type: "guides-list" };
   if (normalizedPath === "/updates") return { type: "signals" };
+  if (normalizedPath === "/thinking") return { type: "thinking" };
   const guideMatch = normalizedPath.match(/^\/guides\/(.+)$/);
   if (guideMatch && findGuide(guideMatch[1])) {
     return { type: "guide-detail", slug: guideMatch[1] };
@@ -1646,6 +1649,32 @@ function formatSignalDate(iso: string): string {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
+// ===== Deep Reasoning Mode page =====
+const ThinkingModePage: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
+  const canonical = "https://www.xfree.in/thinking";
+  useDocumentMeta({
+    title: "Deep Reasoning Mode — XFree.in",
+    description: "XFree's deep, step-by-step reasoning endpoint, powered by Google Gemini.",
+    canonical,
+  });
+
+  return (
+    <section className="py-16 px-4" aria-labelledby="thinking-heading">
+      <div className="max-w-3xl mx-auto">
+        <button onClick={() => onNavigate("/")} className="cyber-btn text-xs px-4 py-2 mb-6 rounded focus-ring">
+          ← Back home
+        </button>
+        <h1 id="thinking-heading" className="text-3xl font-black text-white mb-3 font-mono">Deep Reasoning Mode</h1>
+        <p className="text-cyber-muted mb-8 max-w-xl">
+          For hard problems: complex SQL, regex, and architecture questions. Cloud Mode — your prompt is sent to
+          Google Gemini for step-by-step analysis.
+        </p>
+        <ThinkingModeComponent />
+      </div>
+    </section>
+  );
+};
+
 const SignalsPage: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
   const [items, setItems] = useState<SignalItem[] | null>(null);
   const [error, setError] = useState(false);
@@ -2279,19 +2308,6 @@ const STATIC_PAGE_CONTENT: Record<string, StaticPageContent> = {
       },
     ],
   },
-  "/thinking": {
-    title: "Deep Reasoning Mode — XFree.in",
-    description: "XFree's deep, step-by-step reasoning endpoint, powered by Google Gemini.",
-    h1: "Deep reasoning mode",
-    sections: [
-      {
-        paragraphs: [
-          "For problems that need more than a quick answer — complex SQL, regex, or architecture questions — XFree's server exposes a deep-reasoning endpoint backed by Google Gemini's extended-thinking mode, rate-limited separately from standard AI requests.",
-          "A dedicated interactive page for this is still in progress; in the meantime it's used by select tools that need multi-step reasoning.",
-        ],
-      },
-    ],
-  },
   "/xfree-app": {
     title: "XFree App — Install the Free Browser-Based Developer & SEO Toolkit",
     description: "Install XFree as a Progressive Web App on desktop, Android, or iOS to use free developer, SEO, formatting, and AI tools without a browser tab.",
@@ -2555,6 +2571,9 @@ const App: React.FC = () => {
 
       case "signals":
         return <SignalsPage onNavigate={navigate} />;
+
+      case "thinking":
+        return <ThinkingModePage onNavigate={navigate} />;
 
       case "static-page":
         return <StaticPage path={route.path} onNavigate={navigate} />;
