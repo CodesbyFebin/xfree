@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { Inter, JetBrains_Mono, Orbitron } from 'next/font/google';
 import { AnalyticsWidgets } from '@/components/analytics/Widgets';
+import { PWARegister } from '@/components/PWARegister';
 import { routing, type Locale } from '@/i18n/routing';
 import '../globals.css';
 
@@ -217,6 +218,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider>
           {children}
           <AnalyticsWidgets />
+          <PWARegister />
         </NextIntlClientProvider>
       </body>
     </html>

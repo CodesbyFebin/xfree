@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { buildAlternates } from '@/lib/canonical';
 import type { Locale } from '@/i18n/routing';
+import { InstallButton } from './InstallButton';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -94,13 +95,16 @@ export default function XFreeAppPage() {
             </div>
           </div>
 
-          <div className="text-center">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-glow text-cyber-bg font-bold text-sm hover:bg-cyber-glow/90 transition-colors"
-            >
-              Go to XFree App
-            </Link>
+          <div className="text-center space-y-4">
+            <InstallButton />
+            <div>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-cyber-glow text-cyber-bg font-bold text-sm hover:bg-cyber-glow/90 transition-colors"
+              >
+                Go to XFree App
+              </Link>
+            </div>
           </div>
         </div>
       </main>

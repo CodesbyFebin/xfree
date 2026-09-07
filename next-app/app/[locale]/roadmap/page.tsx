@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { Link } from '@/i18n/navigation';
 import { buildAlternates } from '@/lib/canonical';
 import type { Locale } from '@/i18n/routing';
 
@@ -13,11 +14,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
   };
 }
 
+// Verified against lib/data/tools.ts before listing anything here - this
+// list previously included "Color Palette Generator" and "SQL Query
+// Formatter" as not-yet-built, when color-palette and sql-formatter are
+// both already real, published tools with the same functionality.
 const upcomingFeatures = [
   { status: 'planned', title: 'PDF to JPG Converter', description: 'Convert PDF pages to images', pillar: 'Media Tools' },
-  { status: 'planned', title: 'SQL Query Formatter', description: 'Format and validate SQL queries', pillar: 'Developer Tools' },
   { status: 'research', title: 'API Documentation Generator', description: 'Generate OpenAPI docs from endpoints', pillar: 'API Tools' },
-  { status: 'planned', title: 'Color Palette Generator', description: 'Create harmonious color schemes', pillar: 'Creative Tools' },
   { status: 'research', title: 'Webhook Tester', description: 'Test and debug webhooks locally', pillar: 'Developer Tools' },
 ];
 
@@ -84,7 +87,9 @@ export default function RoadmapPage() {
           <div className="cyber-card p-8 space-y-4 border-cyber-glow/30 text-center">
             <h2 className="text-xl font-bold text-white">Have a suggestion?</h2>
             <p className="text-cyber-muted text-sm">
-              We welcome feedback on what tools would be most useful. Contact us with your suggestions.
+              We welcome feedback on what tools would be most useful.{' '}
+              <Link href="/contact" className="text-cyber-glow hover:underline">Contact us</Link> with your suggestions, or browse the{' '}
+              <Link href="/pillars" className="text-cyber-glow hover:underline">full tool directory</Link> to see what&apos;s already shipped.
             </p>
           </div>
         </div>
