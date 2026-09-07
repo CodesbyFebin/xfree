@@ -14,6 +14,7 @@ import { STATIC_ROUTES } from "./data/routes";
 import { GUIDES, findGuide } from "./data/guides";
 import type { ToolDefinition } from "./types";
 import { CommandPalette } from "./components/CommandPalette";
+import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
 
 // Only these 10 tools have a real, dedicated interactive component (see
 // src/components/tools/). Everything else renders ToolDetail's informational
@@ -2353,6 +2354,7 @@ const StaticPage: React.FC<{ path: string; onNavigate: (path: string) => void }>
 const App: React.FC = () => {
   const [route, setRoute] = useState<Route>(() => getRouteFromPath(window.location.pathname));
   const [searchOpen, setSearchOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const [searchInitialQuery, setSearchInitialQuery] = useState("");
 
   const navigate = useCallback((path: string) => {
@@ -2491,6 +2493,19 @@ const App: React.FC = () => {
         tools={INDEXABLE_TOOLS}
         onSelectTool={(slug) => navigate(`/tools/${slug}`)}
       />
+
+      <GeminiChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+
+      {!chatOpen && (
+        <button
+          onClick={() => setChatOpen(true)}
+          className="fixed bottom-5 right-5 z-40 w-14 h-14 rounded-full bg-cyber-glow text-cyber-bg shadow-lg shadow-cyber-glow/30 flex items-center justify-center hover:scale-105 transition-transform focus-ring"
+          aria-label="Open XFree AI Assistant"
+          title="Ask the XFree AI Assistant"
+        >
+          <span className="text-xl" aria-hidden="true">✦</span>
+        </button>
+      )}
 
       <main id="main-content" className="relative">
         {renderContent()}
