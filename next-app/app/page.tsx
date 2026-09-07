@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { TOOLS as ALL_TOOLS } from '@/lib/data/tools';
+import { TOOLS as ALL_TOOLS, CATEGORIES } from '@/lib/data/tools';
 import { PILLARS as ALL_PILLARS } from '@/lib/data/pillars';
+import { Footer } from '@/components/layout/Footer';
 
 interface Tool {
   slug: string;
@@ -11,14 +12,6 @@ interface Tool {
   category: string;
   badge?: string;
   description: string;
-}
-
-interface Pillar {
-  slug: string;
-  num: string;
-  title: string;
-  desc: string;
-  icon?: string;
 }
 
 interface FAQ {
@@ -45,21 +38,6 @@ const PUBLIC_TOOLS: Tool[] = [
   { slug: 'jwt-decoder', title: 'JWT Decoder', category: 'Security', badge: 'POPULAR', description: 'Decode OAuth JWT tokens and convert Base64 strings safely.' },
   { slug: 'cron-generator', title: 'Cron Generator', category: 'Developer', badge: 'NEW', description: 'Generate cron expressions with human-readable output.' },
   { slug: 'hash-generator', title: 'Hash Generator', category: 'Security', description: 'Generate SHA256, MD5, and other hash values instantly.' },
-];
-
-const PUBLIC_PILLARS: Pillar[] = [
-  { slug: 'frontend-development', num: '01', title: 'Frontend Development Tools', desc: 'HTML, CSS, JavaScript, React' },
-  { slug: 'backend-development', num: '02', title: 'Backend Development Tools', desc: 'Node.js, Python, Go, Rust' },
-  { slug: 'devops-cicd', num: '03', title: 'DevOps & CI/CD Tools', desc: 'GitHub Actions, Docker, K8s' },
-  { slug: 'cybersecurity-privacy', num: '04', title: 'Cybersecurity & Privacy Tools', desc: 'Encryption, hashing, tokens' },
-  { slug: 'technical-seo', num: '05', title: 'Technical SEO Tools', desc: 'Sitemaps, meta, schema' },
-  { slug: 'content-copywriting', num: '06', title: 'Content & Copywriting Tools', desc: 'Readability, word count' },
-  { slug: 'data-engineering', num: '07', title: 'Data Engineering Tools', desc: 'CSV, JSON, XML, ETL' },
-  { slug: 'ai-machine-learning', num: '08', title: 'AI & Machine Learning Tools', desc: 'Prompts, tokens, embeddings' },
-  { slug: 'database-management', num: '09', title: 'Database Management Tools', desc: 'SQL, NoSQL, queries' },
-  { slug: 'api-development', num: '10', title: 'API Development Tools', desc: 'OpenAPI, GraphQL, REST' },
-  { slug: 'cloud-infrastructure', num: '11', title: 'Cloud Infrastructure Tools', desc: 'AWS, Azure, GCP configs' },
-  { slug: 'mobile-development', num: '12', title: 'Mobile Development Tools', desc: 'iOS, Android, React Native' },
 ];
 
 // Real counts (ALL_TOOLS.length / ALL_PILLARS.length), not hardcoded
@@ -90,80 +68,44 @@ const USE_CASES: UseCase[] = [
   { title: 'Security Testing', tools: ['Hash Generator', 'JWT Decoder', 'Password Generator'], description: 'Test authentication and encryption flows' },
 ];
 
-const NAV_LINKS = {
-  devData: [
-    { href: '/dev-tools', label: 'Developer Tools' },
-    { href: '/json-data-tools', label: 'JSON & Data Tools' },
-    { href: '/code-formatting-tools', label: 'Code Formatting' },
-    { href: '/api-tools', label: 'API Tools' },
-    { href: '/regex-tools', label: 'Regex Tools' },
-    { href: '/encoding-tools', label: 'Encoding Tools' },
-    { href: '/converters', label: 'Converter Tools' },
-    { href: '/validators', label: 'Validator Tools' },
-    { href: '/generators', label: 'Generator Tools' },
-    { href: '/database-tools', label: 'Database Tools' },
-  ],
-  webSeo: [
-    { href: '/web-tools', label: 'Web Tools' },
-    { href: '/seo-tools', label: 'SEO Tools' },
-    { href: '/url-tools', label: 'URL Tools' },
-    { href: '/schema-tools', label: 'Schema Tools' },
-    { href: '/crawl-indexing-tools', label: 'Crawl & Indexing Tools' },
-    { href: '/website-audit-tools', label: 'Website Audit Tools' },
-    { href: '/metadata-tools', label: 'Metadata Tools' },
-    { href: '/performance-tools', label: 'Performance Tools' },
-    { href: '/accessibility-tools', label: 'Accessibility Tools' },
-    { href: '/social-preview-tools', label: 'Social Preview Tools' },
-  ],
-  aiAutomation: [
-    { href: '/ai-tools', label: 'AI Tools' },
-    { href: '/prompt-tools', label: 'Prompt Tools' },
-    { href: '/rag-tools', label: 'RAG Tools' },
-    { href: '/llm-tools', label: 'LLM Tools' },
-    { href: '/agent-tools', label: 'Agent Tools' },
-    { href: '/mcp-tools', label: 'MCP Tools' },
-    { href: '/agentic-workflows', label: 'Agentic Workflows' },
-    { href: '/automation-tools', label: 'Automation Tools' },
-    { href: '/ai-evaluation-tools', label: 'AI Evaluation Tools' },
-    { href: '/ai-data-tools', label: 'AI Data Tools' },
-  ],
-  mediaDocs: [
-    { href: '/image-tools', label: 'Image Tools' },
-    { href: '/video', label: 'Video Tools' },
-    { href: '/audio-tools', label: 'Audio Tools' },
-    { href: '/pdf-tools', label: 'PDF Tools' },
-    { href: '/document-tools', label: 'Document Tools' },
-    { href: '/spreadsheet-tools', label: 'Spreadsheet Tools' },
-    { href: '/markdown-tools', label: 'Markdown Tools' },
-    { href: '/subtitle-tools', label: 'Subtitle Tools' },
-    { href: '/file-tools', label: 'File Tools' },
-    { href: '/creative-tools', label: 'Creative Tools' },
-  ],
-  security: [
-    { href: '/security-tools', label: 'Security Tools' },
-    { href: '/hash-tools', label: 'Hash Tools' },
-    { href: '/password-tools', label: 'Password Tools' },
-    { href: '/token-tools', label: 'JWT & Token Tools' },
-    { href: '/privacy-tools', label: 'Privacy Tools' },
-    { href: '/network-tools', label: 'Network Tools' },
-    { href: '/dns-tools', label: 'DNS Tools' },
-    { href: '/http-tools', label: 'HTTP Tools' },
-    { href: '/certificate-tools', label: 'Certificate Tools' },
-    { href: '/security-header-tools', label: 'Security Header Tools' },
-  ],
-  business: [
-    { href: '/text-tools', label: 'Text Tools' },
-    { href: '/content-tools', label: 'Content Tools' },
-    { href: '/writing-tools', label: 'Writing Tools' },
-    { href: '/calculators', label: 'Calculator Tools' },
-    { href: '/date-time-tools', label: 'Date & Time Tools' },
-    { href: '/finance-tools', label: 'Finance Tools' },
-    { href: '/marketing-tools', label: 'Marketing Tools' },
-    { href: '/productivity-tools', label: 'Productivity Tools' },
-    { href: '/education-tools', label: 'Education Tools' },
-    { href: '/business-tools', label: 'Business Tools' },
-  ],
-};
+// Verified against lib/data/tools.ts's real CATEGORIES.slug and the
+// shared components/layout/Header.tsx nav — this replaced a 6-group,
+// 70-link NAV_LINKS object where all but a handful of hrefs (e.g.
+// /dev-tools, /seo-tools, /web-tools, /agentic-workflows, /mcp-tools)
+// matched no real route in the app.
+const NAV_ITEMS = [
+  {
+    label: 'Tools',
+    href: '/pillars',
+    children: [
+      { label: 'All Pillars', href: '/pillars' },
+      { label: 'Developer Tools', href: '/categories/developer-tools' },
+      { label: 'SEO Tools', href: '/categories/seo-url-tools' },
+      { label: 'AI Tools', href: '/categories/ai-tools' },
+      { label: 'Security Tools', href: '/categories/security-tools' },
+    ],
+  },
+  {
+    label: 'Resources',
+    href: '/guides',
+    children: [
+      { label: 'All Guides', href: '/guides' },
+      { label: 'FAQ', href: '/faq' },
+      { label: 'How It Works', href: '/how-it-works' },
+      { label: 'Use Cases', href: '/use-cases' },
+    ],
+  },
+  {
+    label: 'About',
+    href: '/about',
+    children: [
+      { label: 'About XFree', href: '/about' },
+      { label: 'Security', href: '/security' },
+      { label: 'Roadmap', href: '/roadmap' },
+      { label: 'XFree App', href: '/xfree-app' },
+    ],
+  },
+];
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -212,35 +154,31 @@ export default function HomePage() {
       <header id="mainNav" className={`sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3 ${scrolled ? 'scrolled' : ''}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group" aria-label="XFree homepage">
-            <div className="w-9 h-9 rounded-lg border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 group-hover:bg-cyber-glow/10 transition-all neon-box-green">
-              <span className="text-sm font-black text-cyber-glow font-cyber">X</span>
-            </div>
-            <div>
-              <span className="text-base font-bold text-white tracking-tight">XFree<span className="text-cyber-glow">.in</span></span>
-              <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-2">// Free Developer Tools</span>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size logo, see components/layout/Header.tsx */}
+            <picture className="shrink-0">
+              <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
+              <img
+                src="/logo-wordmark-80.png"
+                srcSet="/logo-wordmark-80.png 1x, /logo-wordmark-160.png 2x"
+                alt="XFree"
+                width={160}
+                height={80}
+                decoding="async"
+                style={{ height: '36px', width: '72px' }}
+              />
+            </picture>
+            <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-1">// Free Developer Tools</span>
           </Link>
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
-            <NavDropdown label="XFree Dev & Data" links={NAV_LINKS.devData} />
-            <NavDropdown label="XFree Web & SEO" links={NAV_LINKS.webSeo} />
-            <NavDropdown label="XFree AI & Automation" links={NAV_LINKS.aiAutomation} />
-            <NavDropdown label="XFree Media & Docs" links={NAV_LINKS.mediaDocs} />
-            <NavDropdown label="XFree Security" links={NAV_LINKS.security} />
-            <NavDropdown label="XFree Business" links={NAV_LINKS.business} />
-            <Link href="/pillars" className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all">Pillars</Link>
-            <Link href="/roadmap" className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all">Roadmap</Link>
+            {NAV_ITEMS.map((item) => (
+              <NavDropdown key={item.label} label={item.label} links={item.children} />
+            ))}
+            <Link href="/contact" className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all">Contact</Link>
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden xl:flex items-center gap-1">
-              <Link href="/" className="lang-switcher active">EN</Link>
-              <Link href="/es/" className="lang-switcher">ES</Link>
-              <Link href="/fr/" className="lang-switcher">FR</Link>
-              <Link href="/de/" className="lang-switcher">DE</Link>
-              <Link href="/ja/" className="lang-switcher">JA</Link>
-            </div>
             <Link href="https://app.xfree.in/" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded" rel="noopener">
               <span>Launch Studio →</span>
             </Link>
@@ -257,45 +195,18 @@ export default function HomePage() {
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
         <nav className="mt-12 space-y-6">
-          <div>
-            <h3 className="text-xs font-mono text-cyber-glow mb-2">// Dev & Data</h3>
-            <div className="space-y-2">
-              <Link href="/dev-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">Developer Tools</Link>
-              <Link href="/json-data-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">JSON & Data</Link>
-              <Link href="/code-formatting-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">Code Formatting</Link>
-              <Link href="/api-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">API Tools</Link>
-              <Link href="/regex-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">Regex Tools</Link>
+          {NAV_ITEMS.map((item) => (
+            <div key={item.label}>
+              <h3 className="text-xs font-mono text-cyber-glow mb-2">{`// ${item.label}`}</h3>
+              <div className="space-y-2">
+                {item.children.map((child) => (
+                  <Link key={child.href} href={child.href} className="block text-sm text-cyber-muted hover:text-cyber-glow">{child.label}</Link>
+                ))}
+              </div>
             </div>
-          </div>
-          <div>
-            <h3 className="text-xs font-mono text-cyber-cyan mb-2">// Web & SEO</h3>
-            <div className="space-y-2">
-              <Link href="/seo-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">SEO Tools</Link>
-              <Link href="/schema-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">Schema Tools</Link>
-              <Link href="/performance-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">Performance</Link>
-            </div>
-          </div>
-          <div>
-            <h3 className="text-xs font-mono text-cyber-magenta mb-2">// AI & Automation</h3>
-            <div className="space-y-2">
-              <Link href="/ai-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">AI Tools</Link>
-              <Link href="/mcp-tools" className="block text-sm text-cyber-muted hover:text-cyber-glow">MCP Tools</Link>
-              <Link href="/agentic-workflows" className="block text-sm text-cyber-muted hover:text-cyber-glow">Agentic Workflows</Link>
-            </div>
-          </div>
+          ))}
           <div className="pt-4 border-t border-cyber-border">
-            <Link href="/pillars" className="block text-sm text-cyber-glow mb-2">All Pillars →</Link>
-            <Link href="/roadmap" className="block text-sm text-cyber-glow">Roadmap →</Link>
-          </div>
-          <div className="pt-4 border-t border-cyber-border">
-            <h3 className="text-xs font-mono text-cyber-muted mb-2">// Languages</h3>
-            <div className="flex flex-wrap gap-2">
-              <Link href="/" className="lang-switcher active">EN</Link>
-              <Link href="/es/" className="lang-switcher">ES</Link>
-              <Link href="/fr/" className="lang-switcher">FR</Link>
-              <Link href="/de/" className="lang-switcher">DE</Link>
-              <Link href="/ja/" className="lang-switcher">JA</Link>
-            </div>
+            <Link href="/contact" className="block text-sm text-cyber-glow">Contact →</Link>
           </div>
         </nav>
       </div>
@@ -446,7 +357,7 @@ export default function HomePage() {
                 <h2 id="featured-heading" className="text-xl font-bold text-white font-mono"><span className="text-cyber-glow">$</span> Featured XFree Tools</h2>
                 <p className="text-sm text-cyber-muted mt-1 font-mono">// Working tools available now in the <Link href="https://app.xfree.in/" className="text-cyber-cyan hover:text-white underline focus-ring" rel="noopener">XFree Studio app</Link></p>
               </div>
-              <Link href="/dev-tools" className="text-xs text-cyber-glow hover:text-white font-mono">View all →</Link>
+              <Link href="/tools" className="text-xs text-cyber-glow hover:text-white font-mono">View all →</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {PUBLIC_TOOLS.slice(0, 6).map((tool) => (
@@ -487,20 +398,11 @@ export default function HomePage() {
               <p className="text-cyber-muted font-mono text-sm">// Find the right XFree tool in the right category.</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {[
-                { icon: '⚡', label: 'Developer Tools', href: '/dev-tools', desc: 'Formatters, validators, debuggers' },
-                { icon: '🌐', label: 'SEO Tools', href: '/seo-tools', desc: 'Sitemaps, meta tags, schema' },
-                { icon: '🤖', label: 'AI Tools', href: '/ai-tools', desc: 'Prompt tools, token counters' },
-                { icon: '📝', label: 'Text Tools', href: '/text-tools', desc: 'Word count, diff, case convert' },
-                { icon: '🔄', label: 'Converters', href: '/converters', desc: 'JSON, CSV, Base64, YAML' },
-                { icon: '⚙️', label: 'Generators', href: '/generators', desc: 'UUID, QR, password, cron' },
-                { icon: '✓', label: 'Validators', href: '/validators', desc: 'JSON Schema, HTML, CSS' },
-                { icon: '🔒', label: 'Security Tools', href: '/security-tools', desc: 'Hash, encrypt, JWT, HMAC' },
-              ].map((cat, i) => (
-                <Link key={i} href={cat.href} className="cyber-card p-4 text-center block focus-ring">
+              {CATEGORIES.map((cat) => (
+                <Link key={cat.slug} href={`/categories/${cat.slug}`} className="cyber-card p-4 text-center block focus-ring">
                   <div className="text-2xl mb-2" aria-hidden="true">{cat.icon}</div>
                   <h3 className="text-sm font-semibold text-white font-mono">{cat.label}</h3>
-                  <p className="text-[11px] text-cyber-muted mt-1">{cat.desc}</p>
+                  <p className="text-[11px] text-cyber-muted mt-1">{cat.description}</p>
                 </Link>
               ))}
             </div>
@@ -597,21 +499,21 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-10">
               <span className="inline-block px-3 py-1 rounded border border-cyber-cyan/30 bg-cyber-cyan/5 text-cyber-cyan text-xs font-mono mb-4 neon-box-cyan">// XFree Knowledge Graph</span>
-              <h2 id="pillars-heading" className="text-3xl font-black text-white mb-3 font-mono">The XFree Tool Directory: <span className="text-cyber-glow">{PUBLIC_PILLARS.length}</span> Pillars, <span className="text-cyber-cyan">Approved</span> Discovery Hubs</h2>
+              <h2 id="pillars-heading" className="text-3xl font-black text-white mb-3 font-mono">The XFree Tool Directory: <span className="text-cyber-glow">{ALL_PILLARS.length}</span> Pillars, <span className="text-cyber-cyan">Approved</span> Discovery Hubs</h2>
               <p className="text-cyber-muted max-w-2xl mx-auto font-mono text-sm">The most comprehensive developer tool taxonomy. Each XFree pillar connects specialized clusters with dedicated micro-tools.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {PUBLIC_PILLARS.map((pillar) => (
-                <Link key={pillar.slug} href={`/${pillar.slug}`} className="pillar-card cyber-card p-3.5 block">
+              {ALL_PILLARS.slice(0, 12).map((pillar) => (
+                <Link key={pillar.slug} href={`/pillars/${pillar.slug}`} className="pillar-card cyber-card p-3.5 block">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0">#</div>
+                    <div className="w-8 h-8 rounded-lg bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-base flex-shrink-0" aria-hidden="true">{pillar.icon}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-0.5">
                         <span className="text-[9px] font-mono text-cyber-glow">#{pillar.num}</span>
                         <span className="text-[9px] text-cyber-dim font-mono">hub</span>
                       </div>
-                      <h3 className="text-xs font-semibold text-white leading-tight truncate font-mono">XFree {pillar.title}</h3>
-                      <p className="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">{pillar.desc}</p>
+                      <h3 className="text-xs font-semibold text-white leading-tight truncate font-mono">XFree {pillar.name}</h3>
+                      <p className="text-[10px] text-cyber-muted mt-0.5 line-clamp-1">{pillar.description}</p>
                     </div>
                   </div>
                 </Link>
@@ -630,11 +532,11 @@ export default function HomePage() {
             <p className="text-cyber-muted mb-6 max-w-2xl mx-auto font-mono text-sm">The XFree taxonomy maps a growing catalog of micro-tool concepts. Tools that are not yet built are tracked on our <Link href="/roadmap" className="text-cyber-glow hover:underline focus-ring">public XFree roadmap</Link>.</p>
             <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
               <div className="cyber-card p-3 text-center corner-brackets">
-                <div className="text-xl font-bold text-cyber-glow font-cyber neon-green">{PUBLIC_TOOLS.length}</div>
+                <div className="text-xl font-bold text-cyber-glow font-cyber neon-green">{ALL_TOOLS.length}</div>
                 <div className="text-[10px] text-cyber-muted font-mono">Published Tools</div>
               </div>
               <div className="cyber-card p-3 text-center corner-brackets">
-                <div className="text-xl font-bold text-cyber-cyan font-cyber neon-cyan">{PUBLIC_PILLARS.length}</div>
+                <div className="text-xl font-bold text-cyber-cyan font-cyber neon-cyan">{ALL_PILLARS.length}</div>
                 <div className="text-[10px] text-cyber-muted font-mono">Pillar Hubs</div>
               </div>
               <div className="cyber-card p-3 text-center corner-brackets">
@@ -697,104 +599,7 @@ export default function HomePage() {
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-cyber-border bg-cyber-surface py-14 px-4" role="contentinfo">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid gap-12 lg:grid-cols-[1.2fr_3fr]">
-            <section aria-labelledby="footer-brand">
-              <Link href="/" className="inline-flex items-center gap-3" aria-label="XFree homepage">
-                <div className="w-10 h-10 rounded-xl border border-cyber-glow/50 flex items-center justify-center bg-cyber-glow/5 neon-box-green">
-                  <span className="text-sm font-black text-cyber-glow font-cyber">X</span>
-                </div>
-                <span className="text-xl font-bold text-white">XFree<span className="text-cyber-glow">.in</span></span>
-              </Link>
-              <p className="mt-4 max-w-sm text-sm leading-6 text-cyber-muted">XFree provides privacy-first browser tools for developers, technical teams and creators. Local Mode is used by default for supported operations, with no signup required.</p>
-              <Link href="https://app.xfree.in/" className="mt-6 cyber-btn cyber-btn-filled text-sm px-5 py-3 rounded inline-flex items-center gap-2" rel="noopener">
-                <span>Open XFree Studio</span>
-                <span aria-hidden="true">→</span>
-              </Link>
-              <p className="mt-4 text-xs leading-5 text-cyber-dim font-mono">{PUBLIC_TOOLS.length} published tools and {PUBLIC_PILLARS.length} approved discovery hubs are currently available.</p>
-            </section>
-
-            <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 xl:grid-cols-6">
-              <section>
-                <h2 className="text-sm font-semibold text-cyber-glow font-mono">// Categories</h2>
-                <ul className="mt-4 space-y-2.5">
-                  <li><Link href="/dev-tools" className="text-sm text-cyber-muted hover:text-white">XFree Developer Tools</Link></li>
-                  <li><Link href="/seo-tools" className="text-sm text-cyber-muted hover:text-white">XFree SEO Tools</Link></li>
-                  <li><Link href="/ai-tools" className="text-sm text-cyber-muted hover:text-white">XFree AI Tools</Link></li>
-                  <li><Link href="/text-tools" className="text-sm text-cyber-muted hover:text-white">XFree Text Tools</Link></li>
-                  <li><Link href="/converters" className="text-sm text-cyber-muted hover:text-white">XFree File Converters</Link></li>
-                  <li><Link href="/generators" className="text-sm text-cyber-muted hover:text-white">XFree Online Generators</Link></li>
-                  <li><Link href="/validators" className="text-sm text-cyber-muted hover:text-white">XFree Data Validators</Link></li>
-                  <li><Link href="/security-tools" className="text-sm text-cyber-muted hover:text-white">XFree Security Tools</Link></li>
-                </ul>
-              </section>
-              <section>
-                <h2 className="text-sm font-semibold text-cyber-cyan font-mono">// Popular</h2>
-                <ul className="mt-4 space-y-2.5">
-                  {PUBLIC_TOOLS.slice(0, 5).map(t => (
-                    <li key={t.slug}><Link href={`/tools/${t.slug}`} className="text-sm text-cyber-muted hover:text-white">XFree {t.title}</Link></li>
-                  ))}
-                </ul>
-              </section>
-              <section>
-                <h2 className="text-sm font-semibold text-cyber-magenta font-mono">// Tool Hubs</h2>
-                <ul className="mt-4 space-y-2.5">
-                  <li><Link href="/json-data-tools" className="text-sm text-cyber-muted hover:text-white">XFree JSON & Data Tools</Link></li>
-                  <li><Link href="/encoding-tools" className="text-sm text-cyber-muted hover:text-white">XFree Encoding Tools</Link></li>
-                  <li><Link href="/url-tools" className="text-sm text-cyber-muted hover:text-white">XFree URL & Web Tools</Link></li>
-                  <li><Link href="/schema-tools" className="text-sm text-cyber-muted hover:text-white">XFree Schema Tools</Link></li>
-                  <li><Link href="/crawl-indexing-tools" className="text-sm text-cyber-muted hover:text-white">XFree Crawl & Indexing Tools</Link></li>
-                  <li><Link href="/regex-tools" className="text-sm text-cyber-muted hover:text-white">XFree Regex Tools</Link></li>
-                  <li><Link href="/code-formatting-tools" className="text-sm text-cyber-muted hover:text-white">XFree Code Formatting Tools</Link></li>
-                  <li><Link href="/content-metadata-tools" className="text-sm text-cyber-muted hover:text-white">XFree Content & Metadata Tools</Link></li>
-                </ul>
-              </section>
-              <section>
-                <h2 className="text-sm font-semibold text-cyber-purple font-mono">// Products</h2>
-                <ul className="mt-4 space-y-2.5">
-                  <li><Link href="https://app.xfree.in/" className="text-sm text-cyber-muted hover:text-white" rel="noopener">Open XFree Studio</Link></li>
-                  <li><Link href="/agentic-workflows" className="text-sm text-cyber-muted hover:text-white">XFree Agentic Workflows</Link></li>
-                  <li><Link href="/video" className="text-sm text-cyber-muted hover:text-white">XFree Video Tools</Link></li>
-                  <li><Link href="/openhost" className="text-sm text-cyber-muted hover:text-white">XFree OpenHost</Link></li>
-                  <li><Link href="/downloads" className="text-sm text-cyber-muted hover:text-white">XFree Downloads</Link></li>
-                </ul>
-              </section>
-              <section>
-                <h2 className="text-sm font-semibold text-cyber-amber font-mono">// Resources</h2>
-                <ul className="mt-4 space-y-2.5">
-                  <li><Link href="/pillars" className="text-sm text-cyber-muted hover:text-white">XFree Pillar Hubs</Link></li>
-                  <li><Link href="/roadmap" className="text-sm text-cyber-muted hover:text-white">XFree Product Roadmap</Link></li>
-                  <li><Link href="/how-it-works" className="text-sm text-cyber-muted hover:text-white">How XFree Works</Link></li>
-                  <li><Link href="/use-cases" className="text-sm text-cyber-muted hover:text-white">XFree Use Cases</Link></li>
-                  <li><Link href="/docs" className="text-sm text-cyber-muted hover:text-white">XFree Documentation</Link></li>
-                  <li><Link href="/blog" className="text-sm text-cyber-muted hover:text-white">XFree Blog</Link></li>
-                  <li><Link href="/status" className="text-sm text-cyber-muted hover:text-white">XFree System Status</Link></li>
-                  <li><Link href="/sitemap.xml" className="text-sm text-cyber-muted hover:text-white">XFree XML Sitemap</Link></li>
-                </ul>
-              </section>
-              <section>
-                <h2 className="text-sm font-semibold text-white font-mono">// Company & Legal</h2>
-                <ul className="mt-4 space-y-2.5">
-                  <li><Link href="/about" className="text-sm text-cyber-muted hover:text-white">About XFree</Link></li>
-                  <li><Link href="/contact" className="text-sm text-cyber-muted hover:text-white">Contact XFree</Link></li>
-                  <li><Link href="/privacy" className="text-sm text-cyber-muted hover:text-white">XFree Privacy Policy</Link></li>
-                  <li><Link href="/terms" className="text-sm text-cyber-muted hover:text-white">XFree Terms of Service</Link></li>
-                  <li><Link href="/security" className="text-sm text-cyber-muted hover:text-white">XFree Security</Link></li>
-                  <li><Link href="/.well-known/security.txt" className="text-sm text-cyber-muted hover:text-white">XFree Security.txt</Link></li>
-                </ul>
-              </section>
-            </nav>
-          </div>
-
-          <div className="data-line my-6" aria-hidden="true" />
-
-          <div className="flex flex-col gap-4 border-t border-cyber-border pt-6 text-xs text-cyber-dim sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-mono">© {new Date().getFullYear()} XFree. Open-source software released under the MIT License.</p>
-            <p className="font-mono">Marketing: <Link href="https://www.xfree.in/" className="text-cyber-muted hover:text-white">www.xfree.in</Link> · Application: <Link href="https://app.xfree.in/" className="text-cyber-muted hover:text-white" rel="noopener">app.xfree.in</Link></p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
@@ -806,15 +611,19 @@ function NavDropdown({ label, links }: { label: string; links: { href: string; l
       <button className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all flex items-center gap-1" aria-haspopup="true" aria-expanded={open}>
         {label} <span aria-hidden="true">▾</span>
       </button>
-      {open && (
-        <div className="nav-dropdown-menu" role="menu">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="nav-dropdown-item" role="menuitem">
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      )}
+      {/* Always rendered — visibility is CSS-driven (:hover/:focus-within on
+          .nav-dropdown, see globals.css), matching how the mobile menu
+          below shows/hides its always-rendered links via a CSS class.
+          Gating this behind the `open` state made the menu never appear:
+          mouseenter/mouseleave here don't reliably drive React state for a
+          CSS-hover interaction, so the panel was permanently empty. */}
+      <div className="nav-dropdown-menu" role="menu">
+        {links.map((link) => (
+          <Link key={link.href} href={link.href} className="nav-dropdown-item" role="menuitem">
+            {link.label}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
