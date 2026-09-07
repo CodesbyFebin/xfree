@@ -9,7 +9,7 @@ interface SolveRequest {
   options?: Record<string, unknown>;
 }
 
-function executeLocalTool(toolId: string, input: string): { success: boolean; result?: string; error?: string } {
+async function executeLocalTool(toolId: string, input: string): Promise<{ success: boolean; result?: string; error?: string }> {
   try {
     switch (toolId) {
       case 'json-formatter': {
@@ -43,13 +43,11 @@ function executeLocalTool(toolId: string, input: string): { success: boolean; re
       case 'hash-generator': {
         const encoder = new TextEncoder();
         const data = encoder.encode(input);
-        let sha256 = '';
-        crypto.subtle.digest('SHA-256', data).then(hash => {
-          sha256 = Array.from(new Uint8Array(hash))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-        });
-        return { success: true, result: 'SHA-256 hash generation requires client-side Web Crypto API' };
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        const sha256 = Array.from(new Uint8Array(hash))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+        return { success: true, result: sha256 };
       }
       case 'uuid-generator': {
         const uuid = crypto.randomUUID();
@@ -105,7 +103,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const execution = executeLocalTool(toolId, input);
+    const execution = await executeLocalTool(toolId, input);
 
     const response = {
       toolId,

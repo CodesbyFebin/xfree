@@ -22,7 +22,7 @@ const WORKFLOWS = [
     description: 'Convert between JSON, CSV, YAML, and XML formats',
     steps: [
       { toolId: 'json-formatter', action: 'Format and validate JSON', order: 1 },
-      { toolId: 'json-to-csv-converter', action: 'Convert to CSV', order: 2 },
+      { toolId: 'json-to-csv', action: 'Convert to CSV', order: 2 },
       { toolId: 'yaml-validator', action: 'Validate and convert to YAML', order: 3 },
     ],
     category: 'developer',
@@ -35,7 +35,7 @@ const WORKFLOWS = [
     steps: [
       { toolId: 'jwt-decoder', action: 'Decode and validate JWT', order: 1 },
       { toolId: 'hash-generator', action: 'Generate SHA hashes', order: 2 },
-      { toolId: 'base64-tool', action: 'Encode/decode Base64', order: 3 },
+      { toolId: 'base64-encode', action: 'Encode/decode Base64', order: 3 },
     ],
     category: 'security',
     estimatedTime: '1-3 minutes',
@@ -58,8 +58,8 @@ const WORKFLOWS = [
     description: 'Prepare and validate API-related data',
     steps: [
       { toolId: 'json-formatter', action: 'Format JSON payload', order: 1 },
-      { toolId: 'url-encoder', action: 'Encode URL parameters', order: 2 },
-      { toolId: 'base64-tool', action: 'Encode/decode body content', order: 3 },
+      { toolId: 'url-encode', action: 'Encode URL parameters', order: 2 },
+      { toolId: 'base64-encode', action: 'Encode/decode body content', order: 3 },
     ],
     category: 'developer',
     estimatedTime: '1-2 minutes',

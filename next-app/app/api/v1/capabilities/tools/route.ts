@@ -47,11 +47,6 @@ export async function GET() {
       inLanguage: 'en-US',
       license: 'https://www.xfree.in/terms',
       isAccessibleForFree: true,
-     aggregateRating: tool.engineVerified ? {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        ratingCount: Math.floor(Math.random() * 500) + 100,
-      } : undefined,
     })),
   };
 

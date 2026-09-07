@@ -27,13 +27,6 @@ export function generateToolSchema(tool: ToolDefinition) {
       '@type': 'Thing',
       description: tool.explanation,
     },
-    aggregateRating: tool.engineVerified ? {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: Math.floor(Math.random() * 500) + 100,
-      bestRating: '5',
-      worstRating: '1',
-    } : undefined,
     publisher: {
       '@type': 'Organization',
       name: 'XFree',
@@ -224,20 +217,13 @@ export function generateSoftwareApplicationSchema() {
     name: 'XFree',
     alternateName: ['XFree App', 'XFree Tools'],
     url: baseUrl,
-    description: 'Free privacy-first developer and SEO tools platform with 26+ tools.',
+    description: 'Free privacy-first developer and SEO tools platform with 58+ tools.',
     applicationCategory: 'UtilityApplication',
     operatingSystem: 'Web',
     offers: {
       '@type': 'Offer',
       price: '0',
       priceCurrency: 'USD',
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: Math.floor(Math.random() * 1000) + 200,
-      bestRating: '5',
-      worstRating: '1',
     },
     featureList: [
       'JSON Formatter',

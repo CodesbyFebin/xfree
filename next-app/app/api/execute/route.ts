@@ -7,7 +7,7 @@ const TOOL_HANDLERS: Record<string, (input: unknown) => Promise<unknown>> = {
     const parsed = JSON.parse(json);
     return JSON.stringify(parsed, null, 2);
   },
-  'json-minifier': async (input: unknown) => {
+  'json-minify': async (input: unknown) => {
     const { json } = input as { json: string };
     const parsed = JSON.parse(json);
     return JSON.stringify(parsed);
@@ -20,19 +20,19 @@ const TOOL_HANDLERS: Record<string, (input: unknown) => Promise<unknown>> = {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   },
-  'base64-encoder': async (input: unknown) => {
+  'base64-encode': async (input: unknown) => {
     const { text } = input as { text: string };
     return btoa(text);
   },
-  'base64-decoder': async (input: unknown) => {
+  'base64-decode': async (input: unknown) => {
     const { text } = input as { text: string };
     return atob(text);
   },
-  'url-encoder': async (input: unknown) => {
+  'url-encode': async (input: unknown) => {
     const { text } = input as { text: string };
     return encodeURIComponent(text);
   },
-  'url-decoder': async (input: unknown) => {
+  'url-decode': async (input: unknown) => {
     const { text } = input as { text: string };
     return decodeURIComponent(text);
   },

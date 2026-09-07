@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { TOOLS } from '@/lib/data/toolsWithSEO';
+import { TOOLS, CATEGORIES } from '@/lib/data/toolsWithSEO';
 import { PILLARS } from '@/lib/data/pillars';
 import { GUIDES } from '@/lib/data/guides';
 
@@ -40,6 +40,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ] : undefined,
   }));
 
+  const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.map(cat => ({
+    url: `${BASE_URL}/categories/${cat.slug}`,
+    lastModified: today,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
   const pillarRoutes: MetadataRoute.Sitemap = PILLARS.map(pillar => ({
     url: `${BASE_URL}/pillars/${pillar.slug}`,
     lastModified: today,
@@ -54,5 +61,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...toolRoutes, ...pillarRoutes, ...guideRoutes];
+  return [...staticRoutes, ...toolRoutes, ...categoryRoutes, ...pillarRoutes, ...guideRoutes];
 }
