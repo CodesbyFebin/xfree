@@ -44,7 +44,7 @@ import { INDEXABLE_TOOL_SLUGS } from "../data/toolsRegistry";
 import { PUBLIC_TOOLS } from "../data/publicTools";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
-import { PILLARS_60 } from "../data/pillarRegistry";
+import { PILLARS_60, PILLAR_CATEGORIES } from "../data/pillarRegistry";
 
 export interface AppOptions {
   attachStatic?: (app: Express) => void | Promise<void>;
@@ -455,13 +455,21 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
   });
 
   const staticRouteSet = new Set<string>(STATIC_ROUTES);
+  // CATEGORY_SLUGS/"/category/:slug" is the OLD taxonomy at a URL shape
+  // vercel.json permanently redirects away from ("/category/:slug" ->
+  // "/:slug") — kept only so a direct hit still classifies as "known"
+  // rather than 404ing while the redirect resolves. The taxonomy the app
+  // actually renders content for is PILLAR_CATEGORIES, at single-segment
+  // URLs (see prerender.ts for the matching fix).
   const categoryRouteSet = new Set<string>(CATEGORY_SLUGS.map((s) => `/category/${s}`));
+  const pillarCategoryRouteSet = new Set<string>(PILLAR_CATEGORIES.map((c) => `/${c.id}`));
   const guideSlugSet = new Set<string>(GUIDES.map((g) => g.slug));
   const pillarSlugSet = new Set<string>(PILLARS_60.map((p) => p.slug));
 
   (app as any)._classifyPath = function classifyPath(pathname: string): "known" | "unknown" {
     if (staticRouteSet.has(pathname)) return "known";
     if (categoryRouteSet.has(pathname)) return "known";
+    if (pillarCategoryRouteSet.has(pathname)) return "known";
     if (pathname === "/pillars") return "known";
     const toolMatch = pathname.match(/^\/tools\/([^/]+)\/?$/);
     if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) return "known";

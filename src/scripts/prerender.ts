@@ -9,7 +9,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { INDEXABLE_TOOLS, CATEGORIES } from "../data/toolsRegistry";
+import { INDEXABLE_TOOLS } from "../data/toolsRegistry";
 import { STATIC_ROUTES } from "../data/routes";
 import { guideForSlug } from "../data/toolGuides";
 import { GUIDES } from "../data/guides";
@@ -210,10 +210,20 @@ function main() {
     count++;
   }
 
-  for (const cat of CATEGORIES) {
-    const route = `/category/${cat.id}`;
+  // Category hubs: the header nav and the pillar system both moved to a
+  // newer 6-category taxonomy (PILLAR_CATEGORIES, e.g. "dev-data") at
+  // single-segment URLs ("/dev-data") — App.tsx's router only recognizes
+  // that shape. This used to prerender the OLD 7-category taxonomy from
+  // toolsRegistry.ts (e.g. "seo-tools") at "/category/:id" — dead output:
+  // vercel.json has a permanent redirect from "/category/:slug" to
+  // "/:slug", so nothing ever actually reached that prerendered page, and
+  // even if it had, the router wouldn't have recognized the old taxonomy's
+  // ids anyway.
+  for (const cat of PILLAR_CATEGORIES) {
+    const route = `/${cat.id}`;
     const title = `${cat.label} — XFree.in`;
     const description = cat.description;
+    const pillarsInCategory = PILLARS_60.filter((p) => p.category === cat.id);
     writeRoute(route, injectMeta(template, {
       route,
       title,
@@ -228,21 +238,43 @@ function main() {
           name: title,
           description,
           url: `${BASE}${route}`,
+          hasPart: pillarsInCategory.map((p) => ({
+            "@type": "CollectionPage",
+            name: p.name,
+            url: `${BASE}/pillars/${p.slug}`,
+          })),
         },
       ],
     }));
     count++;
   }
 
+  // Tools still carry the OLD 7-value category taxonomy from toolsRegistry.ts
+  // (e.g. "seo-tools"), predating the newer PILLAR_CATEGORIES ids the router
+  // actually resolves ("web-seo"). Mapped by genuine content match, not a
+  // guess: each of these old categories is a subset/near-synonym of exactly
+  // one new pillar category. media-docs already matches directly.
+  const TOOL_CATEGORY_TO_PILLAR_CATEGORY: Record<string, string> = {
+    "seo-tools": "web-seo",
+    "developer-tools": "dev-data",
+    "security-tools": "security",
+    "converters": "dev-data",
+    "generators": "dev-data",
+    "ai-tools": "ai-auto",
+    "media-docs": "media-docs",
+    "business-tools": "business",
+  };
+
   for (const tool of INDEXABLE_TOOLS) {
     const route = `/tools/${tool.slug}`;
     const title = `${tool.title} — XFree.in`;
     const description = tool.shortDescription;
+    const categoryHubId = TOOL_CATEGORY_TO_PILLAR_CATEGORY[tool.category] || tool.category;
     const jsonLd: any[] = [
       organizationJsonLd(), siteJsonLd(),
       breadcrumbs([
         { name: "Home", url: `${BASE}/` },
-        { name: tool.categoryLabel || tool.category, url: `${BASE}/category/${tool.category}` },
+        { name: tool.categoryLabel || tool.category, url: `${BASE}/${categoryHubId}` },
         { name: tool.title, url: `${BASE}${route}` },
       ]),
       {
