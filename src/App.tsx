@@ -2331,16 +2331,27 @@ const App: React.FC = () => {
 
       <footer className="border-t border-cyber-border bg-cyber-surface py-14 px-4" role="contentinfo">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 mb-10">
-            <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-              <span className="text-2xl font-black text-white font-cyber">
-                XFree<span className="text-cyber-glow">.in</span>
-              </span>
-              <p className="mt-2 text-sm text-cyber-muted max-w-xs">
-                Free, privacy-first browser tools for developers, technical teams, and creators. Local Mode by default.
-              </p>
-            </div>
+          <div className="mb-8 pb-8 border-b border-cyber-border">
+            <span className="text-2xl font-black text-white font-cyber">
+              XFree<span className="text-cyber-glow">.in</span>
+            </span>
+            <p className="mt-2 text-sm text-cyber-muted max-w-xl">
+              XFree provides privacy-first browser tools for developers, technical teams, and creators. Local Mode
+              is used by default for supported operations, with no signup required.
+            </p>
+            <a
+              href="https://app.xfree.in/"
+              rel="noopener"
+              className="inline-block mt-3 text-sm text-cyber-glow hover:text-white transition-colors"
+            >
+              Open XFree Studio →
+            </a>
+            <p className="mt-3 text-xs text-cyber-dim font-mono">
+              {TOOL_COUNT} published tools and {PILLAR_COUNT} pillar hubs are currently available.
+            </p>
+          </div>
 
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 mb-10">
             <nav aria-label="Category links">
               <h2 className="text-xs font-bold text-white uppercase tracking-wide mb-3 font-mono">Categories</h2>
               <ul className="space-y-2">
@@ -2354,6 +2365,30 @@ const App: React.FC = () => {
                     </button>
                   </li>
                 ))}
+              </ul>
+            </nav>
+
+            <nav aria-label="Popular tool links">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wide mb-3 font-mono">Popular Tools</h2>
+              <ul className="space-y-2">
+                <li><a href="/tools/json-formatter" className="text-sm text-cyber-muted hover:text-white">JSON Formatter</a></li>
+                <li><a href="/tools/regex-tester" className="text-sm text-cyber-muted hover:text-white">Regex Tester</a></li>
+                <li><a href="/tools/xml-sitemap-generator" className="text-sm text-cyber-muted hover:text-white">Sitemap Generator</a></li>
+                <li><a href="/tools/meta-tag-generator" className="text-sm text-cyber-muted hover:text-white">Meta Tag Generator</a></li>
+                <li><a href="/tools/jwt-decoder" className="text-sm text-cyber-muted hover:text-white">JWT Decoder</a></li>
+                <li><a href="/tools/cron-generator" className="text-sm text-cyber-muted hover:text-white">Cron Generator</a></li>
+              </ul>
+            </nav>
+
+            <nav aria-label="Tool hub links">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wide mb-3 font-mono">Tool Hubs</h2>
+              <ul className="space-y-2">
+                <li><a href="/pillars/json-data-tools" className="text-sm text-cyber-muted hover:text-white">JSON &amp; Data Tools</a></li>
+                <li><a href="/pillars/encoding-tools" className="text-sm text-cyber-muted hover:text-white">Encoding Tools</a></li>
+                <li><a href="/pillars/url-tools" className="text-sm text-cyber-muted hover:text-white">URL &amp; Web Tools</a></li>
+                <li><a href="/pillars/schema-tools" className="text-sm text-cyber-muted hover:text-white">Schema Tools</a></li>
+                <li><a href="/pillars/regex-tools" className="text-sm text-cyber-muted hover:text-white">Regex Tools</a></li>
+                <li><a href="/pillars/security-tools" className="text-sm text-cyber-muted hover:text-white">Security Tools</a></li>
               </ul>
             </nav>
 
@@ -2375,7 +2410,6 @@ const App: React.FC = () => {
                 <li><a href="/contact" className="text-sm text-cyber-muted hover:text-white">Contact</a></li>
                 <li><a href="/faq" className="text-sm text-cyber-muted hover:text-white">FAQ</a></li>
                 <li><a href="/trust" className="text-sm text-cyber-muted hover:text-white">Trust &amp; Security</a></li>
-                <li><a href="https://app.xfree.in/" className="text-sm text-cyber-muted hover:text-white" rel="noopener">XFree Studio</a></li>
                 <li><a href="https://github.com/CodesbyFebin/xfree" className="text-sm text-cyber-muted hover:text-white" rel="noopener">GitHub</a></li>
               </ul>
             </nav>
@@ -2385,7 +2419,7 @@ const App: React.FC = () => {
               <ul className="space-y-2">
                 <li><a href="/privacy" className="text-sm text-cyber-muted hover:text-white">Privacy Policy</a></li>
                 <li><a href="/terms" className="text-sm text-cyber-muted hover:text-white">Terms of Service</a></li>
-                <li><a href="/.well-known/security.txt" className="text-sm text-cyber-muted hover:text-white">Security</a></li>
+                <li><a href="/.well-known/security.txt" className="text-sm text-cyber-muted hover:text-white">Security.txt</a></li>
                 <li><a href="/sitemap.xml" className="text-sm text-cyber-muted hover:text-white">Sitemap</a></li>
               </ul>
             </nav>
