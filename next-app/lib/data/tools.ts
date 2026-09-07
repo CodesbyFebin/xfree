@@ -16,30 +16,6 @@ export const CATEGORIES = [
   { id: 'pdf-tools', label: 'PDF Tools', slug: 'pdf-tools', icon: '📄', description: 'PDF conversion, editing, extraction' },
 ] as const;
 
-export const INDEXABLE_TOOL_SLUGS = [
-  'json-formatter', 'json-minify', 'json-validator', 'json-to-csv', 'json-to-yaml', 'json-to-xml',
-  'regex-tester', 'regex-builder', 'regex-explainer', 'regex-cheat-sheet',
-  'base64-encode', 'base64-decode', 'url-encode', 'url-decode',
-  'hash-generator', 'sha256-hash', 'md5-hash', 'bcrypt-hash',
-  'jwt-decoder', 'jwt-encoder',
-  'password-generator', 'uuid-generator', 'cron-generator', 'cron-parser',
-  'xml-sitemap-generator', 'robots-txt-generator', 'meta-tag-generator',
-  'html-minifier', 'css-minifier', 'js-minifier',
-  'sql-formatter', 'yaml-validator', 'xml-validator', 'toml-validator',
-  'bulk-url-extractor', 'slug-generator', 'utm-builder',
-  'word-counter', 'diff-tool', 'case-converter',
-  'markdown-editor', 'table-generator',
-  'color-converter', 'color-palette',
-  'qr-code-generator', 'barcode-generator',
-  'hash-generator', 'hmac-generator',
-  'jwt-encoder', 'jwt-decoder',
-  'random-string', 'random-number', 'random-color',
-  'credit-card-validator', 'email-validator', 'phone-validator', 'url-validator',
-  'ip-lookup', 'dns-lookup', 'whois-lookup',
-  'csv-to-json', 'tsv-to-json', 'xml-to-json', 'yaml-to-json',
-  'hex-to-rgb', 'rgb-to-hex', 'hsl-to-hex', 'hex-to-hsl',
-];
-
 export const TOOLS: ToolDefinition[] = [
   {
     id: 'json-formatter',
@@ -1279,6 +1255,13 @@ export const TOOLS: ToolDefinition[] = [
     pillarSlug: 'color-tools',
   },
 ];
+
+// Derived from TOOLS so it can never drift from the real catalog - this
+// used to be a hand-maintained literal array with 7 slugs (json-to-xml,
+// regex-cheat-sheet, bcrypt-hash, tsv-to-json, xml-to-json, hsl-to-hex,
+// hex-to-hsl) for tools that were never actually added to TOOLS below,
+// plus duplicate entries (hash-generator, jwt-decoder each listed twice).
+export const INDEXABLE_TOOL_SLUGS = TOOLS.filter(t => t.indexable).map(t => t.slug);
 
 export const TOOLS_BY_CATEGORY = new Map(
   CATEGORIES.map(cat => [

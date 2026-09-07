@@ -24,7 +24,7 @@ export async function GET() {
         description: 'Convert between JSON, CSV, YAML, and XML formats',
         steps: [
           { tool: 'json-formatter', action: 'Format and validate JSON' },
-          { tool: 'json-to-csv-converter', action: 'Convert to CSV' },
+          { tool: 'json-to-csv', action: 'Convert to CSV' },
           { tool: 'yaml-validator', action: 'Validate and convert to YAML' },
         ],
         category: 'developer',
@@ -36,7 +36,7 @@ export async function GET() {
         steps: [
           { tool: 'jwt-decoder', action: 'Decode and validate JWT' },
           { tool: 'hash-generator', action: 'Generate SHA hashes' },
-          { tool: 'base64-tool', action: 'Encode/decode Base64' },
+          { tool: 'base64-encode', action: 'Encode/decode Base64' },
         ],
         category: 'security',
       },

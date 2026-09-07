@@ -1,5 +1,6 @@
-import { INDEXABLE_TOOL_SLUGS } from '@/lib/data/tools';
-import { PILLARS, AUTHORITY_PILLARS } from '@/lib/data/pillars';
+import { INDEXABLE_TOOL_SLUGS, TOOLS, CATEGORIES } from '@/lib/data/tools';
+import { PILLARS } from '@/lib/data/pillars';
+import { PILLAR_CATEGORIES } from '@/lib/data/pillarCategories';
 
 export interface StaticPage {
   slug: string;
@@ -47,16 +48,6 @@ export function getAllStaticPages(): StaticPage[] {
   PILLARS.forEach((pillar) => {
     pages.push({
       slug: `pillar-${pillar.slug}`,
-      route: `/pillars/${pillar.slug}`,
-      lastModified: new Date().toISOString(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    });
-  });
-
-  AUTHORITY_PILLARS.forEach((pillar) => {
-    pages.push({
-      slug: `authority-${pillar.slug}`,
       route: `/pillars/${pillar.slug}`,
       lastModified: new Date().toISOString(),
       changeFrequency: 'weekly',
@@ -118,15 +109,28 @@ Sitemap: https://www.xfree.in/sitemap.xml
 }
 
 export function generateLlmsTxt(): string {
-  const pages = getAllStaticPages();
-  const tools = pages.filter((p) => p.slug.startsWith('tool-'));
-  const pillars = pages.filter((p) => p.slug.startsWith('pillar-') || p.slug.startsWith('authority-'));
+  const indexableTools = TOOLS.filter((t) => t.indexable);
+  const pillarCount = PILLARS.length;
+
+  const toolLines: string[] = [];
+  CATEGORIES.forEach((cat) => {
+    const toolsInCategory = indexableTools.filter((t) => t.category === cat.id);
+    if (toolsInCategory.length === 0) return;
+    toolLines.push('', `### ${cat.label}`, ...toolsInCategory.map((t) => `- ${t.title}`));
+  });
+
+  const pillarLines: string[] = [];
+  PILLAR_CATEGORIES.forEach((cat) => {
+    const pillarsInCategory = PILLARS.filter((p) => p.category === cat.id);
+    if (pillarsInCategory.length === 0) return;
+    pillarLines.push('', `### ${cat.label}`, ...pillarsInCategory.map((p) => `- ${p.name}`));
+  });
 
   const lines = [
-    '# XFree: 150+ Free Privacy-First Developer & SEO Tools',
+    `# XFree: ${indexableTools.length}+ Free Privacy-First Developer & SEO Tools`,
     '',
     '## What is XFree?',
-    'XFree is the ultimate free online toolbox for developers and SEO professionals. We provide 150+ completely free online tools organized into 55 thematic pillars.',
+    `XFree is a free online toolbox for developers and SEO professionals. It provides ${indexableTools.length} completely free online tools organized into ${pillarCount} thematic pillars.`,
     '',
     '## Key Features',
     '- 100% free with no signup required',
@@ -135,85 +139,11 @@ export function generateLlmsTxt(): string {
     '- Privacy-first approach with zero tracking',
     '- Optimized for both humans and AI crawlers',
     '',
-    `## Available Tools (${tools.length})`,
+    `## Available Tools (${indexableTools.length})`,
+    ...toolLines,
     '',
-    '### Developer Tools',
-    '- JSON Formatter, Minifier, Validator',
-    '- Regex Tester, Builder, Explainer',
-    '- Base64 Encoder/Decoder',
-    '- URL Encoder/Decoder',
-    '- Hash Generator (MD5, SHA-256, SHA-512)',
-    '- Password Generator',
-    '- UUID Generator',
-    '- JWT Decoder/Encoder',
-    '- SQL Formatter',
-    '- Cron Expression Generator',
-    '- HTML/CSS/JS Minifier',
-    '- YAML Validator',
-    '',
-    '### SEO Tools',
-    '- XML Sitemap Generator',
-    '- robots.txt Generator',
-    '- Meta Tag Generator (Open Graph, Twitter Cards)',
-    '- Schema Markup Generator (FAQ, HowTo, Product)',
-    '- URL Slug Generator',
-    '- UTM Builder',
-    '',
-    '### Security & Privacy Tools',
-    '- Hash Generator',
-    '- Password Generator with strength checker',
-    '- JWT Decoder',
-    '- Email/URL/Phone Validators',
-    '',
-    '### Text & Data Tools',
-    '- Word Counter, Character Counter',
-    '- Diff Tool',
-    '- Case Converter',
-    '- CSV to JSON Converter',
-    '- JSON to CSV Converter',
-    '',
-    `## Tool Pillars (${pillars.length})`,
-    '',
-    '### Authority Pillars',
-    '- JSON Data Tools Hub',
-    '- Regex & Pattern Tools Hub',
-    '- Encoding & Conversion Tools Hub',
-    '',
-    '### Developer Pillars',
-    '- Code Formatters Hub',
-    '- Validators & Debuggers Hub',
-    '- API Development Tools Hub',
-    '- Database Tools Hub',
-    '- Version Control Tools Hub',
-    '- Shell & Command Tools Hub',
-    '',
-    '### SEO Pillars',
-    '- Sitemap Generator Tools Hub',
-    '- Meta Tag Generator Tools Hub',
-    '- Schema Markup Tools Hub',
-    '- SEO Audit Tools Hub',
-    '- Performance Optimization Tools Hub',
-    '- URL Analysis Tools Hub',
-    '',
-    '### Security Pillars',
-    '- Hash Generator Tools Hub',
-    '- Password Generator & Manager Tools Hub',
-    '- Token Decoder & Encoder Tools Hub',
-    '- Encryption & Decryption Tools Hub',
-    '- SSL & Certificate Tools Hub',
-    '',
-    '### Media & Document Pillars',
-    '- PDF Conversion Tools Hub',
-    '- PDF Editing Tools Hub',
-    '- Document Converter Tools Hub',
-    '- Markdown Tools Hub',
-    '',
-    '### Business Pillars',
-    '- Text Analysis & NLP Tools Hub',
-    '- Case Conversion Tools Hub',
-    '- List & Table Utilities Hub',
-    '- Calculator & Converter Tools Hub',
-    '- Generator & Random Data Tools Hub',
+    `## Tool Pillars (${pillarCount})`,
+    ...pillarLines,
     '',
     '## Privacy Commitment',
     'All XFree tools run 100% in your browser using:',
@@ -238,7 +168,7 @@ export function generateLlmsTxt(): string {
     'All XFree tools are free for personal and commercial use under the MIT License.',
     '',
     '---',
-    'Last updated: September 2026',
+    `Last updated: ${new Date().toISOString().split('T')[0]}`,
   ];
 
   return lines.join('\n');
