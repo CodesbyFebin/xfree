@@ -25,7 +25,17 @@
   },
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/api/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.xfree.in"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
