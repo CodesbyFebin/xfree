@@ -44,11 +44,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const baseUrl = 'https://www.xfree.in';
+  // The real route for a locale's homepage is exactly "/es" (no
+  // trailing slash) - appending one here would 308-redirect. Only the
+  // default locale's homepage is genuinely "/" with a trailing slash.
   const path = locale === routing.defaultLocale ? '' : `/${locale}`;
+  const canonicalHomeUrl = locale === routing.defaultLocale ? `${baseUrl}/` : `${baseUrl}${path}`;
 
   const languages: Record<string, string> = { 'x-default': `${baseUrl}/` };
   for (const l of routing.locales) {
-    languages[l] = l === routing.defaultLocale ? `${baseUrl}/` : `${baseUrl}/${l}/`;
+    languages[l] = l === routing.defaultLocale ? `${baseUrl}/` : `${baseUrl}/${l}`;
   }
 
   return {
@@ -74,7 +78,7 @@ export async function generateMetadata({
       },
     },
     alternates: {
-      canonical: `${baseUrl}${path}/`,
+      canonical: canonicalHomeUrl,
       languages,
     },
     openGraph: {
@@ -83,7 +87,7 @@ export async function generateMetadata({
       title: 'XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup',
       description:
         'XFree is the ultimate free online app for developers. Access privacy-first SEO tools, JSON formatters, HTML minifiers, and crypto utilities. 100% client-side, no signup required.',
-      url: `${baseUrl}${path}/`,
+      url: canonicalHomeUrl,
       images: [
         {
           url: '/opengraph-image',

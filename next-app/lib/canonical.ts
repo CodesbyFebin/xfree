@@ -5,6 +5,13 @@ const BASE_URL = 'https://www.xfree.in';
 function urlFor(path: string, locale: string): string {
   const normalized = path.startsWith('/') ? path : `/${path}`;
   const prefix = locale === routing.defaultLocale ? '' : `/${locale}`;
+  // The real route for a locale's homepage is exactly "/es" (no
+  // trailing slash) - appending the "/" root path after the prefix
+  // would produce "/es/", which 308-redirects to "/es". Every other
+  // path is unaffected since it doesn't start with a bare "/".
+  if (normalized === '/') {
+    return prefix ? `${BASE_URL}${prefix}` : `${BASE_URL}/`;
+  }
   return `${BASE_URL}${prefix}${normalized}`;
 }
 
