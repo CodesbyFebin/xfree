@@ -1,11 +1,17 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'How It Works | XFree',
-  description: 'Learn how XFree browser-based tools process your data locally for privacy-first execution.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'How It Works | XFree',
+    description: 'Learn how XFree browser-based tools process your data locally for privacy-first execution.',
+    alternates: buildAlternates('/how-it-works', locale),
+  };
+}
 
 export default function HowItWorksPage() {
   return (

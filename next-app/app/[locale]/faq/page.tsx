@@ -2,11 +2,17 @@ import { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'FAQ - Frequently Asked Questions | XFree',
-  description: 'Answers to common questions about XFree tools, privacy, pricing, and usage.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'FAQ - Frequently Asked Questions | XFree',
+    description: 'Answers to common questions about XFree tools, privacy, pricing, and usage.',
+    alternates: buildAlternates('/faq', locale),
+  };
+}
 
 const faqs = [
   {

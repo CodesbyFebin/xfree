@@ -3,11 +3,17 @@ import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { GUIDES } from '@/lib/data/guides';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'Guides | XFree',
-  description: 'In-depth guides on developer tools, SEO, and best practices.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'Guides | XFree',
+    description: 'In-depth guides on developer tools, SEO, and best practices.',
+    alternates: buildAlternates('/guides', locale),
+  };
+}
 
 export default function GuideIndexPage() {
   return (

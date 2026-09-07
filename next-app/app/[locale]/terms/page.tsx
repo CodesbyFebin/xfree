@@ -1,11 +1,17 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'Terms of Service | XFree',
-  description: 'Terms of service for using XFree free browser-based tools.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'Terms of Service | XFree',
+    description: 'Terms of service for using XFree free browser-based tools.',
+    alternates: buildAlternates('/terms', locale),
+  };
+}
 
 export default function TermsPage() {
   return (

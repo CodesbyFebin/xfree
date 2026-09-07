@@ -3,11 +3,17 @@ import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { TOOLS } from '@/lib/data/tools';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'Use Cases | XFree',
-  description: 'See how developers, SEO professionals, and creators use XFree tools.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'Use Cases | XFree',
+    description: 'See how developers, SEO professionals, and creators use XFree tools.',
+    alternates: buildAlternates('/use-cases', locale),
+  };
+}
 
 // Tool names verified against lib/data/tools.ts TOOLS.title - this
 // replaced two fabricated names ("Schema Markup Generator", "Text

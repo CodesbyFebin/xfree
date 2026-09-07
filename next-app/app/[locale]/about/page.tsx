@@ -1,11 +1,17 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'About XFree - Free Developer & SEO Tools Platform',
-  description: 'Learn about XFree.in - a privacy-first platform of free browser-based developer, SEO, and AI micro-tools. No registration, no paywalls.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'About XFree - Free Developer & SEO Tools Platform',
+    description: 'Learn about XFree.in - a privacy-first platform of free browser-based developer, SEO, and AI micro-tools. No registration, no paywalls.',
+    alternates: buildAlternates('/about', locale),
+  };
+}
 
 export default function AboutPage() {
   return (

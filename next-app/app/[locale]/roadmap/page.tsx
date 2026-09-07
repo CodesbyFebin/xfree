@@ -1,11 +1,17 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'Roadmap | XFree',
-  description: 'Public roadmap for XFree micro-tools - see what is coming next.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'Roadmap | XFree',
+    description: 'Public roadmap for XFree micro-tools - see what is coming next.',
+    alternates: buildAlternates('/roadmap', locale),
+  };
+}
 
 const upcomingFeatures = [
   { status: 'planned', title: 'PDF to JPG Converter', description: 'Convert PDF pages to images', pillar: 'Media Tools' },

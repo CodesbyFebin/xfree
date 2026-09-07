@@ -2,11 +2,17 @@ import { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
-export const metadata: Metadata = {
-  title: 'XFree App - Installable PWA | XFree',
-  description: 'Install XFree as a Progressive Web App on your device for quick access to free developer and SEO tools.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: 'XFree App - Installable PWA | XFree',
+    description: 'Install XFree as a Progressive Web App on your device for quick access to free developer and SEO tools.',
+    alternates: buildAlternates('/xfree-app', locale),
+  };
+}
 
 export default function XFreeAppPage() {
   return (

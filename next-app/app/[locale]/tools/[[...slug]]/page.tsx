@@ -7,23 +7,26 @@ import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { TrustBadge } from '@/components/analytics/TrustBadge';
 import { TOOLS, CATEGORIES, findToolById } from '@/lib/data/toolsWithSEO';
 import { findPillarBySlug, PILLARS } from '@/lib/data/pillars';
-import { buildCanonical } from '@/lib/canonical';
+import { buildCanonical, buildLanguageAlternates } from '@/lib/canonical';
 import { generateToolSchema, generateFAQSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { USE_CASES } from '@/lib/data/content';
+import type { Locale } from '@/i18n/routing';
 
 interface Props {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ slug?: string[]; locale: Locale }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
 
   if (!slug || slug.length === 0) {
+    const indexableCount = TOOLS.filter((t) => t.indexable).length;
     return {
-      title: 'XFree Tools | 150+ Free Developer & SEO Tools',
-      description: 'Browse all XFree developer and SEO tools. JSON formatter, regex tester, Base64 encoder, hash generator, and 140+ more privacy-first tools.',
+      title: `XFree Tools | ${indexableCount}+ Free Developer & SEO Tools`,
+      description: `Browse all XFree developer and SEO tools. JSON formatter, regex tester, Base64 encoder, hash generator, and ${indexableCount - 4}+ more privacy-first tools.`,
       keywords: ['free developer tools', 'seo tools', 'json formatter', 'regex tester', 'XFree'],
-      openGraph: { title: 'XFree Tools | 150+ Free Developer & SEO Tools', description: 'Browse all XFree tools.', type: 'website' },
+      openGraph: { title: `XFree Tools | ${indexableCount}+ Free Developer & SEO Tools`, description: 'Browse all XFree tools.', type: 'website' },
+      alternates: { canonical: buildCanonical('/tools', locale), languages: buildLanguageAlternates('/tools') },
     };
   }
 
@@ -31,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tool = findToolById(toolSlug);
 
   if (tool) {
-    const canonical = buildCanonical(`/tools/${tool.slug}`);
+    const canonical = buildCanonical(`/tools/${tool.slug}`, locale);
     const fullDescription = tool.longDescription || tool.shortDescription;
     const allKeywords = [
       ...(tool.seoKeywords || []),
@@ -46,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `XFree ${tool.title} | Free Online Tool`,
       description: fullDescription,
       keywords: allKeywords,
-      alternates: { canonical },
+      alternates: { canonical, languages: buildLanguageAlternates(`/tools/${tool.slug}`) },
       openGraph: {
         title: `XFree ${tool.title}`,
         description: fullDescription,

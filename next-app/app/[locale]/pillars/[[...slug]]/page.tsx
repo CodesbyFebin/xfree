@@ -7,36 +7,39 @@ import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { PILLARS, findPillarBySlug, getPillarsByCategory } from '@/lib/data/pillars';
 import { PILLAR_CATEGORIES } from '@/lib/data/pillarCategories';
 import { TOOLS } from '@/lib/data/toolsWithSEO';
-import { buildCanonical } from '@/lib/canonical';
+import { buildCanonical, buildLanguageAlternates } from '@/lib/canonical';
 import { generatePillarSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { PillarCategory } from '@/lib/data/pillarCategories';
+import type { Locale } from '@/i18n/routing';
 
 interface Props {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ slug?: string[]; locale: Locale }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
 
   if (!slug || slug.length === 0) {
     return {
-      title: 'XFree Pillars | 55 Free Tool Hubs & Categories',
-      description: 'Browse XFree 55 organized tool pillars covering JSON, regex, SEO, security, PDF, image, video, and more. Each pillar connects related micro-tools for easier discovery.',
+      title: `XFree Pillars | ${PILLARS.length} Free Tool Hubs & Categories`,
+      description: `Browse XFree ${PILLARS.length} organized tool pillars covering JSON, regex, SEO, security, PDF, image, video, and more. Each pillar connects related micro-tools for easier discovery.`,
       keywords: ['XFree pillars', 'tool categories', 'tool hubs', 'developer tools', 'seo tools', 'free tools'],
-      openGraph: { title: 'XFree Pillars | 55 Free Tool Hubs', description: 'Browse 55 organized tool pillars.', type: 'website' },
+      openGraph: { title: `XFree Pillars | ${PILLARS.length} Free Tool Hubs`, description: `Browse ${PILLARS.length} organized tool pillars.`, type: 'website' },
+      alternates: { canonical: buildCanonical('/pillars', locale), languages: buildLanguageAlternates('/pillars') },
     };
   }
 
   if (slug.length === 1) {
     const pillar = findPillarBySlug(slug[0]);
     if (pillar) {
-      const canonical = buildCanonical(`/pillars/${slug[0]}`);
+      const path = `/pillars/${slug[0]}`;
+      const canonical = buildCanonical(path, locale);
       const allKeywords = [...(pillar.keywords || []), 'XFree', 'pillar', 'tool hub', pillar.category].filter(Boolean);
       return {
         title: `XFree ${pillar.name} | Free Tool Hub`,
         description: pillar.description,
         keywords: allKeywords,
-        alternates: { canonical },
+        alternates: { canonical, languages: buildLanguageAlternates(path) },
         openGraph: { title: `XFree ${pillar.name}`, description: pillar.description, url: canonical, type: 'article' },
         twitter: { card: 'summary_large_image', title: `XFree ${pillar.name}`, description: pillar.description },
       };
@@ -47,13 +50,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const [category, pillarSlug] = slug;
     const pillar = findPillarBySlug(pillarSlug);
     if (pillar && pillar.category === category) {
-      const canonical = buildCanonical(`/pillars/${category}/${pillarSlug}`);
+      const path = `/pillars/${category}/${pillarSlug}`;
+      const canonical = buildCanonical(path, locale);
       const allKeywords = [...(pillar.keywords || []), 'XFree', pillar.category].filter(Boolean);
       return {
         title: `XFree ${pillar.name} | ${pillar.toolCount} Free Tools`,
         description: pillar.description,
         keywords: allKeywords,
-        alternates: { canonical },
+        alternates: { canonical, languages: buildLanguageAlternates(path) },
         openGraph: { title: `XFree ${pillar.name}`, description: pillar.description, url: canonical, type: 'article' },
         twitter: { card: 'summary_large_image', title: `XFree ${pillar.name}`, description: pillar.description },
       };

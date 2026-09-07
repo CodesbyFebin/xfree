@@ -1,6 +1,14 @@
+import { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+
+// Service-worker fallback shown when a visitor is offline, not real
+// content - excluded from indexing rather than given a canonical URL.
+export const metadata: Metadata = {
+  title: 'Offline | XFree',
+  robots: { index: false, follow: false },
+};
 
 export default function OfflinePage() {
   return (

@@ -4,13 +4,15 @@ import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { TOOLS, CATEGORIES } from '@/lib/data/tools';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
 interface Props {
-  params: Promise<{ category: string }>;
+  params: Promise<{ category: string; locale: Locale }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category } = await params;
+  const { category, locale } = await params;
   const cat = CATEGORIES.find((c) => c.slug === category);
 
   if (!cat) {
@@ -20,9 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${cat.label} - Free Online Tools | XFree`,
     description: `Browse free ${cat.label.toLowerCase()}. ${cat.description}`,
-    alternates: {
-      canonical: `https://www.xfree.in/categories/${category}`,
-    },
+    alternates: buildAlternates(`/categories/${category}`, locale),
   };
 }
 

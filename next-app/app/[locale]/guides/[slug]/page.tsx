@@ -5,18 +5,21 @@ import { ArrowLeft } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { findGuide, GUIDES } from '@/lib/data/guides';
+import { buildAlternates } from '@/lib/canonical';
+import type { Locale } from '@/i18n/routing';
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const guide = findGuide(slug);
   if (!guide) return { title: 'Guide Not Found | XFree' };
   return {
     title: `${guide.title} | XFree Guides`,
     description: guide.description,
+    alternates: buildAlternates(`/guides/${guide.slug}`, locale),
   };
 }
 
