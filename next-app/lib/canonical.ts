@@ -20,6 +20,10 @@ export function buildCanonical(
 
   const langPrefix = language !== 'en' ? `/${language}` : '';
 
+  if (canonicalPath === '/' && language !== 'en') {
+    return `${BASE_URL}${langPrefix}`;
+  }
+
   return `${BASE_URL}${langPrefix}${canonicalPath}`;
 }
 
@@ -27,11 +31,9 @@ export function buildHreflang(
   path: string,
   languages: string[] = ['en', 'es', 'fr', 'pt', 'de', 'ja']
 ): Array<{ lang: string; href: string }> {
-  const canonical = buildCanonical(path);
-
-  return languages.map(lang => ({
+  return languages.map((lang) => ({
     lang,
-    href: lang === 'en' ? canonical : `${canonical}/${lang}/`,
+    href: buildCanonical(path, { language: lang }),
   }));
 }
 

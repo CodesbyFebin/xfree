@@ -152,6 +152,145 @@ export const GUIDES: Guide[] = [
     relatedToolSlugs: [],
     lastReviewed: "2026-08-03",
   },
+  {
+    slug: "json-best-practices",
+    title: "JSON Best Practices for APIs",
+    description: "Best practices for designing and consuming JSON APIs: naming conventions, error handling, versioning, and pagination.",
+    intro: "JSON is the lingua franca of web APIs. These best practices will help you design cleaner, more maintainable APIs.",
+    sections: [
+      {
+        heading: "Naming conventions",
+        paragraphs: ["Use camelCase for keys. Be consistent. Avoid abbreviations."],
+      },
+      {
+        heading: "Error handling",
+        paragraphs: ["Return consistent error objects with code, message, and details fields."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["json-formatter", "json-validator"],
+    lastReviewed: "2026-08-04",
+  },
+  {
+    slug: "regex-performance",
+    title: "Regex Performance Tips",
+    description: "Optimize regex patterns for speed: avoid backtracking, use possessive quantifiers, and pre-compile patterns.",
+    intro: "Regular expressions can be fast or catastrophic. Learn to write efficient patterns.",
+    sections: [
+      {
+        heading: "Avoid backtracking",
+        paragraphs: ["Nested quantifiers like (a+)+ can cause exponential backtracking."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["regex-tester"],
+    lastReviewed: "2026-08-05",
+  },
+  {
+    slug: "seo-checklist",
+    title: "SEO Checklist for 2026",
+    description: "Complete SEO checklist: meta tags, schema markup, sitemaps, Core Web Vitals, and mobile optimization.",
+    intro: "Stay ahead with this comprehensive SEO checklist for modern websites.",
+    sections: [
+      {
+        heading: "Technical SEO",
+        paragraphs: ["Ensure proper indexing, crawlability, and structured data."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["meta-tag-generator", "xml-sitemap-generator"],
+    lastReviewed: "2026-08-06",
+  },
+  {
+    slug: "password-security",
+    title: "Password Security Guide",
+    description: "How to generate, store, and verify passwords securely using bcrypt, Argon2, and modern best practices.",
+    intro: "Password security is critical. Learn the best practices for handling passwords.",
+    sections: [
+      {
+        heading: "Hashing algorithms",
+        paragraphs: ["Use bcrypt or Argon2. Never use MD5 or SHA-1 for passwords."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["password-generator", "bcrypt-hash"],
+    lastReviewed: "2026-08-07",
+  },
+  {
+    slug: "jwt-best-practices",
+    title: "JWT Best Practices",
+    description: "Secure JWT usage: algorithm selection, secret management, expiration, and revocation strategies.",
+    intro: "JWTs are powerful but easy to misuse. Follow these best practices.",
+    sections: [
+      {
+        heading: "Algorithm selection",
+        paragraphs: ["Prefer RS256 over HS256 for public keys. Never use 'none' algorithm."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["jwt-decoder", "jwt-encoder"],
+    lastReviewed: "2026-08-08",
+  },
+  {
+    slug: "css-optimization",
+    title: "CSS Optimization Techniques",
+    description: "Minify, purge, and optimize CSS for faster page loads: remove unused styles, compress, and cache.",
+    intro: "CSS performance matters. Learn to optimize your stylesheets.",
+    sections: [
+      {
+        heading: "Minification",
+        paragraphs: ["Remove whitespace, comments, and shorten values."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["css-minifier"],
+    lastReviewed: "2026-08-09",
+  },
+  {
+    slug: "html-minification",
+    title: "HTML Minification Guide",
+    description: "Reduce HTML file size by removing comments, whitespace, and optional tags without breaking layout.",
+    intro: "Smaller HTML files load faster. Learn safe minification techniques.",
+    sections: [
+      {
+        heading: "What to remove",
+        paragraphs: ["Comments, extra whitespace, and optional closing tags."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["html-minifier"],
+    lastReviewed: "2026-08-10",
+  },
+  {
+    slug: "base64-guide",
+    title: "Base64 Encoding Guide",
+    description: "When and how to use Base64 encoding: data URIs, email attachments, and API payloads.",
+    intro: "Base64 is everywhere. Understand when to use it and when not to.",
+    sections: [
+      {
+        heading: "Use cases",
+        paragraphs: ["Data URIs, email MIME, API payloads with binary data."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["base64-encode", "base64-decode"],
+    lastReviewed: "2026-08-11",
+  },
+  {
+    slug: "cron-scheduling",
+    title: "Cron Scheduling Explained",
+    description: "Master cron expressions: syntax, special characters, common patterns, and testing tools.",
+    intro: "Cron is the standard for scheduled tasks. Master the syntax.",
+    sections: [
+      {
+        heading: "Basic syntax",
+        paragraphs: ["Five fields: minute, hour, day of month, month, day of week."],
+      },
+    ],
+    relatedGuideSlugs: [],
+    relatedToolSlugs: ["cron-generator", "cron-parser"],
+    lastReviewed: "2026-08-12",
+  },
 ];
 
 export function findGuide(slug: string): Guide | undefined {

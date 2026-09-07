@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next';
 import { TOOLS } from '@/lib/data/toolsWithSEO';
 import { PILLARS } from '@/lib/data/pillars';
 import { GUIDES } from '@/lib/data/guides';
+import { BLOG_POSTS } from '@/lib/data/blogPosts';
+import { PILLAR_CATEGORIES } from '@/lib/data/pillarCategories';
 import { LOCALES } from '@/lib/i18n';
 
 const BASE_URL = 'https://www.xfree.in';
@@ -12,11 +14,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     'pillars', 'tools', 'guides', 'about', 'blog', 'contact', 'faq',
     'how-it-works', 'privacy', 'terms', 'security', 'roadmap', 'use-cases', 'xfree-app',
+    'categories',
   ];
 
   const localeRoutes: MetadataRoute.Sitemap = [];
-  LOCALES.forEach(locale => {
-    staticRoutes.forEach(route => {
+  LOCALES.forEach((locale) => {
+    staticRoutes.forEach((route) => {
       localeRoutes.push({
         url: `${BASE_URL}/${locale}/${route}`,
         lastModified: today,
@@ -25,15 +28,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       });
     });
     localeRoutes.push({
-      url: `${BASE_URL}/${locale}/`,
+      url: `${BASE_URL}/${locale}`,
       lastModified: today,
       changeFrequency: 'daily' as const,
       priority: 1,
     });
   });
 
-  const toolRoutes: MetadataRoute.Sitemap = TOOLS.filter(t => t.indexable).flatMap(tool =>
-    LOCALES.map(locale => ({
+  const toolRoutes: MetadataRoute.Sitemap = TOOLS.filter((t) => t.indexable).flatMap((tool) =>
+    LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}/tools/${tool.slug}`,
       lastModified: today,
       changeFrequency: 'weekly' as const,
@@ -41,8 +44,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
-  const pillarRoutes: MetadataRoute.Sitemap = PILLARS.flatMap(pillar =>
-    LOCALES.map(locale => ({
+  const pillarRoutes: MetadataRoute.Sitemap = PILLARS.flatMap((pillar) =>
+    LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}/pillars/${pillar.slug}`,
       lastModified: today,
       changeFrequency: 'weekly' as const,
@@ -50,8 +53,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
-  const guideRoutes: MetadataRoute.Sitemap = GUIDES.flatMap(guide =>
-    LOCALES.map(locale => ({
+  const guideRoutes: MetadataRoute.Sitemap = GUIDES.flatMap((guide) =>
+    LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}/guides/${guide.slug}`,
       lastModified: guide.lastReviewed,
       changeFrequency: 'monthly' as const,
@@ -59,5 +62,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
-  return [...localeRoutes, ...toolRoutes, ...pillarRoutes, ...guideRoutes];
+  const categoryRoutes: MetadataRoute.Sitemap = PILLAR_CATEGORIES.flatMap((category) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}/categories/${category.slug}`,
+      lastModified: today,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }))
+  );
+
+  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.flatMap((post) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}/blog/${post.slug}`,
+      lastModified: post.date,
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    }))
+  );
+
+  return [...localeRoutes, ...toolRoutes, ...pillarRoutes, ...guideRoutes, ...categoryRoutes, ...blogRoutes];
 }
