@@ -12,9 +12,10 @@ import {
 import { INDEXABLE_TOOLS, INDEXABLE_TOOL_SLUGS } from "./data/toolsRegistry";
 import { STATIC_ROUTES } from "./data/routes";
 import { GUIDES, findGuide } from "./data/guides";
-import type { ToolDefinition } from "./types";
+import type { ToolDefinition, SavedItem } from "./types";
 import { CommandPalette } from "./components/CommandPalette";
 import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
+import { SavedDrawer } from "./components/SavedDrawer";
 
 // Only these 10 tools have a real, dedicated interactive component (see
 // src/components/tools/). Everything else renders ToolDetail's informational
@@ -237,7 +238,7 @@ function getRouteFromPath(pathname: string): Route {
 // ===== Components =====
 
 // ===== Header & Navigation =====
-const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string }> = ({ onNavigate, currentPath }) => {
+const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string; onOpenSaved: () => void; savedCount: number }> = ({ onNavigate, currentPath, onOpenSaved, savedCount }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -339,6 +340,21 @@ const Header: React.FC<{ onNavigate: (path: string) => void; currentPath: string
               <a href="/de/" className="lang-switcher" aria-label="Deutsch">DE</a>
               <a href="/ja/" className="lang-switcher" aria-label="日本語">JA</a>
             </div>
+            <button
+              onClick={onOpenSaved}
+              className="relative p-2 text-cyber-muted hover:text-cyber-glow transition-colors focus-ring"
+              aria-label="Saved tools and history"
+              title="Saved tools and history"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z" />
+              </svg>
+              {savedCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-cyber-glow text-cyber-bg text-[9px] font-bold flex items-center justify-center">
+                  {savedCount > 9 ? "9+" : savedCount}
+                </span>
+              )}
+            </button>
             <a
               href="https://app.xfree.in/"
               className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded focus-ring"
@@ -1405,7 +1421,13 @@ const PillarDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, on
 };
 
 // ===== Tool Detail Page =====
-const ToolDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, onBack }) => {
+const ToolDetail: React.FC<{
+  slug: string;
+  onBack: () => void;
+  favorites: string[];
+  onToggleFavorite: (toolId: string) => void;
+  onSaveHistory: (toolId: string, toolTitle: string, input: string, output: string) => void;
+}> = ({ slug, onBack, favorites, onToggleFavorite, onSaveHistory }) => {
   const tool = INDEXABLE_TOOLS.find((t) => t.slug === slug);
   if (!tool) {
     return (
@@ -1452,8 +1474,9 @@ const ToolDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, onBa
     ],
   });
 
-  const noopSaveHistory = () => {};
-  const interactiveTool = renderInteractiveTool(tool, noopSaveHistory);
+  const handleSaveHistory = (input: string, output: string) => onSaveHistory(tool.id, tool.title, input, output);
+  const interactiveTool = renderInteractiveTool(tool, handleSaveHistory);
+  const isFavorite = favorites.includes(tool.id);
 
   return (
     <article className="prose prose-invert max-w-3xl mx-auto py-12 px-4">
@@ -1463,16 +1486,33 @@ const ToolDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, onBa
         </button>
 
         <header className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-3xl" aria-hidden="true">
-              ⚡
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-3xl" aria-hidden="true">
+                ⚡
+              </div>
+              <div>
+                <span className="inline-block px-3 py-1 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-xs font-mono mb-2 neon-box-green">
+                  {tool.categoryLabel}
+                </span>
+                <h1 className="text-3xl font-black text-white font-mono">{tool.title}</h1>
+              </div>
             </div>
-            <div>
-              <span className="inline-block px-3 py-1 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-xs font-mono mb-2 neon-box-green">
-                {tool.categoryLabel}
-              </span>
-              <h1 className="text-3xl font-black text-white font-mono">{tool.title}</h1>
-            </div>
+            <button
+              onClick={() => onToggleFavorite(tool.id)}
+              className={`shrink-0 p-2.5 rounded-lg border transition-colors focus-ring ${
+                isFavorite
+                  ? "border-cyber-glow bg-cyber-glow/10 text-cyber-glow"
+                  : "border-cyber-border text-cyber-muted hover:text-cyber-glow hover:border-cyber-glow/40"
+              }`}
+              aria-label={isFavorite ? "Remove from saved tools" : "Save this tool"}
+              aria-pressed={isFavorite}
+              title={isFavorite ? "Saved" : "Save for later"}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill={isFavorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              </svg>
+            </button>
           </div>
           <p className="text-cyber-cyan font-mono text-sm">// {tool.shortDescription}</p>
         </header>
@@ -2351,10 +2391,84 @@ const StaticPage: React.FC<{ path: string; onNavigate: (path: string) => void }>
 };
 
 // ===== Main App Component =====
+// ===== Saved workspace (favorites + history) =====
+// Real localStorage-backed persistence for SavedDrawer. Deliberately does
+// NOT implement workspacePresets (save/load a tool's full input/output
+// config) — that needs each interactive tool component to expose its
+// current state for saving, which none of them do today. Leaving that tab
+// as SavedDrawer's own real "empty" state rather than faking it.
+const FAVORITES_KEY = "xfree_favorites";
+const HISTORY_KEY = "xfree_history";
+const HISTORY_LIMIT = 30;
+
+function useSavedWorkspace() {
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem(FAVORITES_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [history, setHistory] = useState<SavedItem[]>(() => {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    } catch {
+      // Storage full or unavailable (private browsing) — favorites just
+      // won't persist across reloads; not worth surfacing as an error.
+    }
+  }, [favorites]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch {
+      // See above.
+    }
+  }, [history]);
+
+  const toggleFavorite = useCallback((toolId: string) => {
+    setFavorites((prev) => (prev.includes(toolId) ? prev.filter((id) => id !== toolId) : [toolId, ...prev]));
+  }, []);
+
+  const removeFavorite = useCallback((toolId: string) => {
+    setFavorites((prev) => prev.filter((id) => id !== toolId));
+  }, []);
+
+  const addHistory = useCallback((toolId: string, toolTitle: string, inputSnippet: string, outputSnippet: string) => {
+    setHistory((prev) => {
+      const entry: SavedItem = {
+        id: `${toolId}-${Date.now()}`,
+        toolId,
+        toolTitle,
+        timestamp: Date.now(),
+        inputSnippet: inputSnippet.slice(0, 80),
+        outputSnippet: outputSnippet.slice(0, 80),
+      };
+      return [entry, ...prev].slice(0, HISTORY_LIMIT);
+    });
+  }, []);
+
+  const clearHistory = useCallback(() => setHistory([]), []);
+
+  return { favorites, history, toggleFavorite, removeFavorite, addHistory, clearHistory };
+}
+
 const App: React.FC = () => {
   const [route, setRoute] = useState<Route>(() => getRouteFromPath(window.location.pathname));
   const [searchOpen, setSearchOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [savedOpen, setSavedOpen] = useState(false);
+  const saved = useSavedWorkspace();
   const [searchInitialQuery, setSearchInitialQuery] = useState("");
 
   const navigate = useCallback((path: string) => {
@@ -2423,7 +2537,15 @@ const App: React.FC = () => {
         return <CategoryHub categoryId={route.categoryId} onBack={() => navigate("/")} onSelect={(slug) => navigate(`/pillars/${slug}`)} />;
 
       case "tool-detail":
-        return <ToolDetail slug={route.slug} onBack={() => navigate("/")} />;
+        return (
+          <ToolDetail
+            slug={route.slug}
+            onBack={() => navigate("/")}
+            favorites={saved.favorites}
+            onToggleFavorite={saved.toggleFavorite}
+            onSaveHistory={saved.addHistory}
+          />
+        );
 
       case "guides-list":
         return <GuidesList onNavigate={navigate} />;
@@ -2450,7 +2572,11 @@ const App: React.FC = () => {
           </section>
         );
     }
-  }, [route, navigate]);
+    // saved.favorites/history are read inside the "tool-detail" case above
+    // (for the star toggle + history log) — without them here this callback
+    // memoizes a stale closure that never sees favorite/history updates,
+    // even though saved.* state does change and re-renders App.
+  }, [route, navigate, saved.favorites, saved.history]);
 
   /* Homepage SEO */
   useDocumentMeta({
@@ -2484,7 +2610,12 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cyber-bg text-cyber-text">
-      <Header onNavigate={navigate} currentPath={window.location.pathname} />
+      <Header
+        onNavigate={navigate}
+        currentPath={window.location.pathname}
+        onOpenSaved={() => setSavedOpen(true)}
+        savedCount={saved.favorites.length}
+      />
 
       <CommandPalette
         isOpen={searchOpen}
@@ -2495,6 +2626,20 @@ const App: React.FC = () => {
       />
 
       <GeminiChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+
+      <SavedDrawer
+        isOpen={savedOpen}
+        onClose={() => setSavedOpen(false)}
+        favorites={saved.favorites}
+        history={saved.history}
+        tools={INDEXABLE_TOOLS}
+        onSelectTool={(toolId) => {
+          const t = INDEXABLE_TOOLS.find((t) => t.id === toolId);
+          if (t) navigate(`/tools/${t.slug}`);
+        }}
+        onClearHistory={saved.clearHistory}
+        onRemoveFavorite={saved.removeFavorite}
+      />
 
       {!chatOpen && (
         <button

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ToolDefinition, SavedItem, WorkspacePreset } from "../types";
 import { TOOLS_REGISTRY } from "../data/toolsRegistry";
-import { Star, History, X, Trash2, Folder, Download, Play, CheckCircle2 } from "lucide-react";
+import { Star, History, X, Trash2, Folder, Download, Play } from "lucide-react";
 
 interface SavedDrawerProps {
   isOpen: boolean;
@@ -32,14 +32,13 @@ export const SavedDrawer: React.FC<SavedDrawerProps> = ({
   onClearHistory,
   onRemoveFavorite,
 }) => {
-  const [activeTab, setActiveTab] = useState<"workspace" | "starred" | "history">("workspace");
+  const [activeTab, setActiveTab] = useState<"workspace" | "starred" | "history">("starred");
 
   if (!isOpen) return null;
 
   const actualHistory = history || savedItems || [];
   const favoriteTools = tools.filter((t) => favorites.includes(t.id));
 
-  // Export single workspace preset as JSON
   const handleExportSinglePreset = (preset: WorkspacePreset) => {
     const jsonStr = JSON.stringify(preset, null, 2);
     const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
@@ -51,7 +50,6 @@ export const SavedDrawer: React.FC<SavedDrawerProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  // Export all workspace presets as JSON
   const handleExportAllPresets = () => {
     const jsonStr = JSON.stringify(workspacePresets, null, 2);
     const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
@@ -63,178 +61,73 @@ export const SavedDrawer: React.FC<SavedDrawerProps> = ({
     URL.revokeObjectURL(url);
   };
 
+  const tabBtn = (tab: typeof activeTab, icon: React.ReactNode, label: string, count: number) => (
+    <button
+      onClick={() => setActiveTab(tab)}
+      className={`flex-1 py-2.5 px-3 flex items-center justify-center gap-1.5 text-xs font-mono font-semibold uppercase transition-colors cursor-pointer ${
+        activeTab === tab ? "bg-cyber-glow/10 text-cyber-glow border-b-2 border-cyber-glow" : "text-cyber-muted hover:text-white border-b-2 border-transparent"
+      }`}
+    >
+      {icon}
+      <span>{label} ({count})</span>
+    </button>
+  );
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex justify-end">
-      <div className="w-full max-w-md bg-white border-l-2 border-black h-full flex flex-col shadow-[-8px_0px_0px_#1a1a1a]">
+    <div className="fixed inset-0 z-50 bg-black/70 flex justify-end" onClick={onClose}>
+      <div className="w-full max-w-md bg-cyber-card border-l border-cyber-border h-full flex flex-col shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="p-4 border-b-2 border-black flex items-center justify-between bg-yellow-300">
+        <div className="p-4 border-b border-cyber-border flex items-center justify-between bg-cyber-bg/80">
           <div className="flex items-center gap-2">
-            <Folder className="w-5 h-5 text-black fill-black" />
-            <h3 className="text-sm font-black text-black uppercase">Personal Workspace & History</h3>
+            <Folder className="w-5 h-5 text-cyber-glow" />
+            <h3 className="text-sm font-bold text-white font-mono">Saved Tools &amp; History</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 border-2 border-black bg-white hover:bg-black hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg border border-cyber-border bg-cyber-bg hover:bg-cyber-surface text-cyber-muted hover:text-white transition-colors cursor-pointer focus-ring"
+            aria-label="Close saved drawer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Tab Navigation Bar */}
-        <div className="flex border-b-2 border-black bg-gray-100 font-bold text-xs uppercase">
-          <button
-            onClick={() => setActiveTab("workspace")}
-            className={`flex-1 py-2.5 px-3 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
-              activeTab === "workspace" ? "bg-black text-white font-black" : "text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            <Folder className="w-4 h-4 text-yellow-300" />
-            <span>Workspace ({workspacePresets.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("starred")}
-            className={`flex-1 py-2.5 px-3 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
-              activeTab === "starred" ? "bg-black text-white font-black" : "text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
-            <span>Starred ({favorites.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("history")}
-            className={`flex-1 py-2.5 px-3 flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
-              activeTab === "history" ? "bg-black text-white font-black" : "text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            <History className="w-4 h-4 text-blue-400" />
-            <span>History ({actualHistory.length})</span>
-          </button>
+        {/* Tab Navigation */}
+        <div className="flex border-b border-cyber-border">
+          {tabBtn("starred", <Star className="w-3.5 h-3.5" />, "Starred", favorites.length)}
+          {tabBtn("history", <History className="w-3.5 h-3.5" />, "History", actualHistory.length)}
+          {tabBtn("workspace", <Folder className="w-3.5 h-3.5" />, "Workspace", workspacePresets.length)}
         </div>
 
-        {/* Content Body */}
-        <div className="p-4 overflow-y-auto flex-1 space-y-6">
-          {activeTab === "workspace" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b-2 border-black pb-2">
-                <span className="text-xs font-black uppercase text-black">Saved Workspaces</span>
-                {workspacePresets.length > 0 && (
-                  <button
-                    onClick={handleExportAllPresets}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 border-2 border-black bg-blue-100 hover:bg-blue-200 text-black text-[10px] font-black uppercase cursor-pointer"
-                  >
-                    <Download className="w-3 h-3 text-blue-700" />
-                    <span>Export All (JSON)</span>
-                  </button>
-                )}
-              </div>
-
-              {workspacePresets.length === 0 ? (
-                <div className="p-5 border-2 border-black bg-blue-50 space-y-2 text-center">
-                  <Folder className="w-8 h-8 text-blue-700 mx-auto" />
-                  <h4 className="text-xs font-black uppercase text-black">Workspace is Empty</h4>
-                  <p className="text-xs text-gray-700 font-medium leading-relaxed">
-                    Click "Save Workspace" inside any tool page to save your configurations, inputs, and output results for one-click reload later!
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {workspacePresets.map((preset) => (
-                    <div
-                      key={preset.id}
-                      className="p-3.5 bg-white border-2 border-black brutal-shadow-sm space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="px-2 py-0.5 bg-yellow-300 border border-black text-[10px] font-black uppercase text-black">
-                          {preset.toolTitle}
-                        </span>
-                        <span className="text-[10px] font-mono text-gray-500 font-bold">
-                          {new Date(preset.timestamp).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <h4 className="text-xs font-black text-black uppercase">{preset.name}</h4>
-
-                      {preset.inputContent && (
-                        <div className="p-2 bg-gray-50 border border-gray-300 font-mono text-[11px] text-gray-700 truncate">
-                          In: {preset.inputContent}
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200">
-                        {onDeletePreset && (
-                          <button
-                            onClick={() => onDeletePreset(preset.id)}
-                            className="p-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 border border-gray-300"
-                            title="Delete Preset"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-
-                        <button
-                          onClick={() => handleExportSinglePreset(preset)}
-                          className="px-2 py-1 border border-black bg-gray-100 hover:bg-gray-200 text-black text-[10px] font-bold uppercase flex items-center gap-1"
-                          title="Export JSON file"
-                        >
-                          <Download className="w-3 h-3" />
-                          <span>Export</span>
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            if (onLoadPreset) onLoadPreset(preset);
-                            onClose();
-                          }}
-                          className="px-3 py-1 border-2 border-black bg-yellow-300 hover:bg-yellow-400 text-black text-[10px] font-black uppercase flex items-center gap-1 cursor-pointer"
-                        >
-                          <Play className="w-3 h-3 fill-black" />
-                          <span>Load Preset</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
+        {/* Content */}
+        <div className="p-4 overflow-y-auto flex-1 space-y-4 text-sm">
           {activeTab === "starred" && (
             <div>
-              <h4 className="text-xs font-black uppercase text-black mb-3">
-                Starred Tools ({favoriteTools.length})
-              </h4>
               {favoriteTools.length === 0 ? (
-                <p className="text-xs text-gray-600 font-medium bg-gray-50 p-3 border border-black">
-                  No starred tools yet. Click the star icon on any tool card to bookmark it for quick access.
+                <p className="text-xs text-cyber-muted font-mono bg-cyber-bg/60 p-4 rounded-lg border border-cyber-border">
+                  No saved tools yet. Click the star icon on any tool page to save it here for quick access.
                 </p>
               ) : (
                 <div className="space-y-2">
                   {favoriteTools.map((tool) => (
-                    <div
-                      key={tool.id}
-                      className="flex items-center justify-between p-3 bg-white border-2 border-black hover:bg-yellow-50 transition-colors"
-                    >
+                    <div key={tool.id} className="flex items-center justify-between p-3 cyber-card hover:border-cyber-glow/40 transition-colors">
                       <div
                         onClick={() => {
-                          if (onSelectTool) onSelectTool(tool.id);
+                          onSelectTool?.(tool.id);
                           onClose();
                         }}
-                        className="cursor-pointer flex-1"
+                        className="cursor-pointer flex-1 min-w-0"
                       >
-                        <h5 className="text-sm font-black text-black hover:text-blue-600 uppercase">
-                          {tool.title}
-                        </h5>
-                        <p className="text-[11px] text-gray-600 font-medium">{tool.categoryLabel}</p>
+                        <h5 className="text-sm font-semibold text-white font-mono truncate">{tool.title}</h5>
+                        <p className="text-[11px] text-cyber-muted">{tool.categoryLabel}</p>
                       </div>
                       {onRemoveFavorite && (
                         <button
                           onClick={() => onRemoveFavorite(tool.id)}
-                          className="p-1 text-black hover:text-red-600 cursor-pointer"
-                          title="Unstar"
+                          className="p-1.5 text-cyber-glow hover:text-white transition-colors focus-ring shrink-0"
+                          title="Remove"
+                          aria-label={`Remove ${tool.title} from saved`}
                         >
-                          <Star className="w-4 h-4 fill-black" />
+                          <Star className="w-4 h-4 fill-current" />
                         </button>
                       )}
                     </div>
@@ -247,48 +140,42 @@ export const SavedDrawer: React.FC<SavedDrawerProps> = ({
           {activeTab === "history" && (
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-xs font-black uppercase text-black flex items-center gap-1.5">
-                  <History className="w-4 h-4 text-blue-600" />
-                  <span>Recent Tool History ({actualHistory.length})</span>
-                </h4>
+                <span className="text-xs text-cyber-muted font-mono">Recent actions, this browser only</span>
                 {actualHistory.length > 0 && onClearHistory && (
-                  <button
-                    onClick={onClearHistory}
-                    className="text-[10px] font-black uppercase text-red-600 hover:underline flex items-center gap-1 cursor-pointer"
-                  >
+                  <button onClick={onClearHistory} className="text-[10px] font-mono text-cyber-magenta hover:underline flex items-center gap-1 focus-ring">
                     <Trash2 className="w-3 h-3" /> Clear
                   </button>
                 )}
               </div>
 
               {actualHistory.length === 0 ? (
-                <div className="text-xs text-gray-600 font-medium bg-blue-50 p-4 border-2 border-black">
-                  Your recent outputs and actions will be saved locally here for easy retrieval.
+                <div className="text-xs text-cyber-muted font-mono bg-cyber-bg/60 p-4 rounded-lg border border-cyber-border">
+                  Your recent tool inputs and outputs will show up here for easy retrieval.
                 </div>
               ) : (
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {actualHistory.map((item) => (
                     <div
                       key={item.id}
                       onClick={() => {
-                        if (onSelectTool) onSelectTool(item.toolId);
+                        onSelectTool?.(item.toolId);
                         onClose();
                       }}
-                      className="p-3 bg-white border-2 border-black hover:bg-yellow-50 cursor-pointer transition-colors space-y-1"
+                      className="p-3 cyber-card hover:border-cyber-glow/40 cursor-pointer transition-colors space-y-1"
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-black text-blue-600 uppercase">{item.toolTitle}</span>
-                        <span className="text-[10px] font-mono font-bold text-gray-500">
-                          {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        <span className="font-semibold text-cyber-glow font-mono">{item.toolTitle}</span>
+                        <span className="text-[10px] font-mono text-cyber-dim">
+                          {new Date(item.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
                       {item.inputSnippet && (
-                        <div className="text-[11px] text-gray-700 font-mono truncate bg-gray-100 p-1.5 border border-gray-300">
+                        <div className="text-[11px] text-cyber-muted font-mono truncate bg-cyber-bg/60 p-1.5 rounded border border-cyber-border">
                           In: {item.inputSnippet}
                         </div>
                       )}
                       {item.outputSnippet && (
-                        <div className="text-[11px] text-black font-mono font-bold truncate bg-yellow-100 p-1.5 border border-black">
+                        <div className="text-[11px] text-cyber-text font-mono truncate bg-cyber-bg/60 p-1.5 rounded border border-cyber-border">
                           Out: {item.outputSnippet}
                         </div>
                       )}
@@ -298,11 +185,87 @@ export const SavedDrawer: React.FC<SavedDrawerProps> = ({
               )}
             </div>
           )}
+
+          {activeTab === "workspace" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-cyber-border pb-2">
+                <span className="text-xs font-mono text-cyber-muted">Saved workspace configurations</span>
+                {workspacePresets.length > 0 && (
+                  <button
+                    onClick={handleExportAllPresets}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-cyber-border bg-cyber-bg/60 hover:border-cyber-glow/40 text-cyber-muted hover:text-cyber-glow text-[10px] font-mono focus-ring"
+                  >
+                    <Download className="w-3 h-3" />
+                    <span>Export All</span>
+                  </button>
+                )}
+              </div>
+
+              {workspacePresets.length === 0 ? (
+                <div className="p-5 rounded-lg border border-cyber-border bg-cyber-bg/60 space-y-2 text-center">
+                  <Folder className="w-8 h-8 text-cyber-muted mx-auto" />
+                  <p className="text-xs text-cyber-muted leading-relaxed font-mono">
+                    Workspace presets aren&apos;t available yet — this needs each tool to support saving its own
+                    input/output state, which isn&apos;t built for any tool today.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {workspacePresets.map((preset) => (
+                    <div key={preset.id} className="p-3.5 cyber-card space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="px-2 py-0.5 bg-cyber-glow/10 border border-cyber-glow/30 text-[10px] font-mono text-cyber-glow rounded">
+                          {preset.toolTitle}
+                        </span>
+                        <span className="text-[10px] font-mono text-cyber-dim">
+                          {new Date(preset.timestamp).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h4 className="text-xs font-semibold text-white font-mono">{preset.name}</h4>
+                      {preset.inputContent && (
+                        <div className="p-2 bg-cyber-bg/60 border border-cyber-border rounded font-mono text-[11px] text-cyber-muted truncate">
+                          In: {preset.inputContent}
+                        </div>
+                      )}
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-cyber-border">
+                        {onDeletePreset && (
+                          <button
+                            onClick={() => onDeletePreset(preset.id)}
+                            className="p-1.5 text-cyber-muted hover:text-cyber-magenta transition-colors focus-ring"
+                            title="Delete Preset"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleExportSinglePreset(preset)}
+                          className="px-2 py-1 rounded border border-cyber-border bg-cyber-bg/60 hover:border-cyber-glow/40 text-cyber-muted hover:text-cyber-glow text-[10px] font-mono flex items-center gap-1 focus-ring"
+                        >
+                          <Download className="w-3 h-3" />
+                          <span>Export</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            onLoadPreset?.(preset);
+                            onClose();
+                          }}
+                          className="cyber-btn cyber-btn-filled px-3 py-1 text-[10px] rounded flex items-center gap-1 focus-ring"
+                        >
+                          <Play className="w-3 h-3" />
+                          <span>Load</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t-2 border-black bg-black text-white text-[10px] font-bold uppercase text-center tracking-wider">
-          Saved locally in browser memory • XFree.in Workspace
+        <div className="p-3 border-t border-cyber-border text-cyber-dim text-[10px] font-mono text-center">
+          Saved locally in this browser only
         </div>
       </div>
     </div>
