@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { Link } from '@/i18n/navigation';
 import { buildAlternates } from '@/lib/canonical';
 import type { Locale } from '@/i18n/routing';
 
@@ -32,8 +33,8 @@ export default function SecurityPage() {
             <h2 className="text-xl font-bold text-white">Our Security Approach</h2>
             <div className="space-y-4 text-cyber-muted text-sm">
               <p>
-                XFree is built with security as a core principle. Since all tool processing happens 
-                client-side in the browser, the attack surface is significantly reduced compared 
+                XFree is built with security as a core principle. Since all tool processing happens
+                client-side in the browser, the attack surface is significantly reduced compared
                 to server-side processing.
               </p>
             </div>
@@ -43,7 +44,7 @@ export default function SecurityPage() {
             <div className="cyber-card p-6 space-y-4">
               <h3 className="text-lg font-bold text-white">Client-Side Processing</h3>
               <p className="text-cyber-muted text-sm">
-                Most tools process data entirely in your browser. No server receives your data, 
+                Every published tool processes data entirely in your browser. No server receives your data,
                 reducing exposure to network attacks.
               </p>
             </div>
@@ -51,7 +52,7 @@ export default function SecurityPage() {
             <div className="cyber-card p-6 space-y-4">
               <h3 className="text-lg font-bold text-white">HTTPS Only</h3>
               <p className="text-cyber-muted text-sm">
-                All XFree traffic is encrypted via HTTPS. We use modern TLS versions 
+                All XFree traffic is encrypted via HTTPS. We use modern TLS versions
                 and strong cipher suites.
               </p>
             </div>
@@ -59,7 +60,7 @@ export default function SecurityPage() {
             <div className="cyber-card p-6 space-y-4">
               <h3 className="text-lg font-bold text-white">No Data Storage</h3>
               <p className="text-cyber-muted text-sm">
-                We do not store tool inputs, outputs, or user data on our servers. 
+                We do not store tool inputs, outputs, or user data on our servers.
                 Your data exists only in your browser session.
               </p>
             </div>
@@ -67,19 +68,37 @@ export default function SecurityPage() {
             <div className="cyber-card p-6 space-y-4">
               <h3 className="text-lg font-bold text-white">Minimal Dependencies</h3>
               <p className="text-cyber-muted text-sm">
-                We keep third-party JavaScript to a minimum to reduce potential 
+                We keep third-party JavaScript to a minimum to reduce potential
                 supply chain vulnerabilities.
+              </p>
+            </div>
+
+            <div className="cyber-card p-6 space-y-4">
+              <h3 className="text-lg font-bold text-white">Content Security Policy</h3>
+              <p className="text-cyber-muted text-sm">
+                Every page ships with a strict Content-Security-Policy, Cross-Origin-Opener-Policy,
+                Cross-Origin-Embedder-Policy, and X-Content-Type-Options header to limit what scripts
+                and resources can execute or load, even in the event of an injection attempt.
+              </p>
+            </div>
+
+            <div className="cyber-card p-6 space-y-4">
+              <h3 className="text-lg font-bold text-white">Web Crypto API</h3>
+              <p className="text-cyber-muted text-sm">
+                Hashing and cryptographic tools (SHA-256, HMAC, and similar) use the browser&apos;s native
+                Web Crypto API rather than a third-party JavaScript crypto library, so the primitives are
+                implemented and audited by the browser vendor, not by us.
               </p>
             </div>
           </div>
 
           <div className="cyber-card p-8 space-y-4">
-            <h2 className="text-xl font-bold text-white">AI Tool Security</h2>
+            <h2 className="text-xl font-bold text-white">No AI Backend, Today</h2>
             <p className="text-cyber-muted text-sm">
-              For AI-powered features, input data is transmitted to our AI backend. 
-              These tools are clearly marked with privacy notices. Data is processed 
-              according to our AI provider&apos;s security practices and is not stored 
-              after processing.
+              Every tool currently published on XFree is Local Mode only - none of them transmit input
+              data to an AI backend or any other external service. If that changes for a future tool,
+              it will be clearly marked with a privacy notice on that specific tool&apos;s page before
+              you use it.
             </p>
           </div>
 
@@ -88,8 +107,8 @@ export default function SecurityPage() {
               <span className="text-amber-400">⚠️</span> Responsible Disclosure
             </h2>
             <p className="text-cyber-muted text-sm">
-              If you discover a security vulnerability, please contact us through our 
-              contact form. We appreciate responsible disclosure and will work to 
+              If you discover a security vulnerability, please contact us through our{' '}
+              <Link href="/contact" className="text-cyber-glow hover:underline">contact form</Link>. We appreciate responsible disclosure and will work to
               address issues promptly.
             </p>
           </div>

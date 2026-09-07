@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { Link } from '@/i18n/navigation';
 import { buildAlternates } from '@/lib/canonical';
 import type { Locale } from '@/i18n/routing';
 
@@ -71,27 +72,20 @@ export default function HowItWorksPage() {
           </div>
 
           <div className="cyber-card p-8 space-y-6">
-            <h2 className="text-2xl font-bold text-white text-center">Local vs Cloud Processing</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <h3 className="font-bold text-emerald-400">Local Mode (Default)</h3>
-                <ul className="space-y-2 text-cyber-muted text-sm">
-                  <li>✓ All processing in browser JavaScript</li>
-                  <li>✓ Zero data transmission</li>
-                  <li>✓ Works offline after initial load</li>
-                  <li>✓ Complete privacy</li>
-                </ul>
-              </div>
-              <div className="space-y-3">
-                <h3 className="font-bold text-cyan-400">AI Mode (Optional)</h3>
-                <ul className="space-y-2 text-cyber-muted text-sm">
-                  <li>✓ Data sent to Google Gemini API</li>
-                  <li>✓ Clearly labeled with privacy notice</li>
-                  <li>✓ Powers complex AI features</li>
-                  <li>✓ Requires explicit user action</li>
-                </ul>
-              </div>
-            </div>
+            <h2 className="text-2xl font-bold text-white text-center">Local Mode</h2>
+            <p className="text-cyber-muted text-sm text-center max-w-xl mx-auto">
+              Every published tool today runs in Local Mode - there is no
+              server-side or AI processing step to opt into. If that changes
+              for a future tool, the change will be disclosed on that
+              tool&apos;s own page before you use it, not buried in a
+              site-wide setting.
+            </p>
+            <ul className="space-y-2 text-cyber-muted text-sm max-w-md mx-auto">
+              <li>✓ All processing in browser JavaScript</li>
+              <li>✓ Zero data transmission</li>
+              <li>✓ Works offline after initial load</li>
+              <li>✓ Complete privacy</li>
+            </ul>
           </div>
 
           <div className="cyber-card p-8 space-y-4 border-cyber-cyan/30">
@@ -105,6 +99,15 @@ export default function HowItWorksPage() {
               <li>Do not process truly confidential data on shared computers</li>
               <li>For highly sensitive data, use an air-gapped device</li>
             </ul>
+          </div>
+
+          <div className="cyber-card p-8 space-y-4 text-center">
+            <h2 className="text-xl font-bold text-white">Try It Yourself</h2>
+            <p className="text-cyber-muted text-sm">
+              The best way to see local processing in action is to open a tool and watch the network tab stay empty. Start with the{' '}
+              <Link href="/tools/json-formatter" className="text-cyber-glow hover:underline">JSON Formatter</Link>, or read the{' '}
+              <Link href="/guides" className="text-cyber-glow hover:underline">developer guides</Link> for a deeper technical walkthrough of specific tools.
+            </p>
           </div>
         </div>
       </main>

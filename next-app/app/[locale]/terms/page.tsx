@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { Link } from '@/i18n/navigation';
 import { buildAlternates } from '@/lib/canonical';
 import type { Locale } from '@/i18n/routing';
 
@@ -70,9 +71,18 @@ export default function TermsPage() {
             </section>
 
             <section className="space-y-3">
+              <h2 className="text-xl font-bold text-white">Open Source License</h2>
+              <p>
+                XFree&apos;s tools and platform code are released under the MIT License. You may audit,
+                fork, and self-host the code under the terms of that license; these Terms of Service
+                govern your use of the hosted service at xfree.in itself.
+              </p>
+            </section>
+
+            <section className="space-y-3">
               <h2 className="text-xl font-bold text-white">Changes to Terms</h2>
               <p>
-                We may update these terms at any time. Continued use of the site constitutes acceptance 
+                We may update these terms at any time. Continued use of the site constitutes acceptance
                 of any changes.
               </p>
             </section>
@@ -80,7 +90,8 @@ export default function TermsPage() {
             <section className="space-y-3">
               <h2 className="text-xl font-bold text-white">Contact</h2>
               <p>
-                Questions about these terms can be directed through our contact form.
+                Questions about these terms can be directed through our{' '}
+                <Link href="/contact" className="text-cyber-glow hover:underline">contact form</Link>.
               </p>
             </section>
           </div>
