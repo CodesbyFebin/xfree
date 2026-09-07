@@ -1148,31 +1148,63 @@ const PillarDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, on
 
   const related = getRelatedPillars(def);
   const relatedEditorials = related.map((r) => PILLAR_EDITORIAL[r.slug]).filter((e): e is PillarEditorialContent => !!e);
+  const cat = CATEGORIES.find((c) => c.id === def.category);
 
   return (
-    <article className="prose prose-invert max-w-3xl mx-auto py-12 px-4">
-      <div className="cyber-card p-6 sm:p-9 rounded-xl mb-8">
-        <button onClick={onBack} className="cyber-btn text-xs px-4 py-2 mb-4 rounded focus-ring">
-          ← Back to pillars
-        </button>
+    <>
+      {/* Pillar hero */}
+      <section className="relative overflow-hidden border-b border-cyber-border" aria-labelledby="pillar-heading">
+        <div className="absolute inset-0 matrix-grid hex-pattern opacity-40" aria-hidden="true" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-14 lg:py-20">
+          <nav aria-label="Breadcrumb" className="mb-6 text-xs font-mono text-cyber-muted">
+            <button onClick={onBack} className="hover:text-cyber-glow transition-colors focus-ring">Home</button>
+            {cat && (
+              <>
+                <span className="mx-2 text-cyber-dim" aria-hidden="true">/</span>
+                <a href={`/${cat.id}`} className="hover:text-cyber-glow transition-colors focus-ring">{cat.label}</a>
+              </>
+            )}
+            <span className="mx-2 text-cyber-dim" aria-hidden="true">/</span>
+            <span className="text-cyber-glow">{def.name}</span>
+          </nav>
 
-        <header className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 flex items-center justify-center text-3xl" aria-hidden="true">
+          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
+            <div className="min-w-0">
+              <p className="text-xs font-mono tracking-[0.2em] text-cyber-glow mb-3">XFREE / PILLAR #{def.num}</p>
+              <h1 id="pillar-heading" className="text-4xl sm:text-5xl font-black text-white leading-[1.05] tracking-tight mb-4">
+                {def.name}
+              </h1>
+              <p className="text-cyber-cyan font-mono text-sm mb-4">// {def.tagline}</p>
+              <p className="text-cyber-muted max-w-xl leading-relaxed mb-8">{editorial.directAnswer}</p>
+
+              <div className="flex flex-wrap items-center gap-3 mb-8">
+                {cat && (
+                  <a href={`/${cat.id}`} className="cyber-btn cyber-btn-filled text-sm px-5 py-2.5 rounded focus-ring">
+                    Back to {cat.label} →
+                  </a>
+                )}
+                <a href="https://app.xfree.in/" rel="noopener" className="cyber-btn text-sm px-5 py-2.5 rounded focus-ring">
+                  Open XFree Studio
+                </a>
+              </div>
+
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-6 gap-y-2 text-xs font-mono text-cyber-muted">
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🔒</span> 100% Private</span>
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">⚡</span> Browser Based</span>
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🔓</span> Open Source</span>
+                <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">👥</span> For Everyone</span>
+              </div>
+            </div>
+
+            <div className="hidden lg:flex w-44 h-44 rounded-xl bg-cyber-glow/5 border border-cyber-glow/20 items-center justify-center text-7xl" aria-hidden="true">
               {def.emoji}
             </div>
-            <div>
-              <span className="inline-block px-3 py-1 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-xs font-mono mb-2 neon-box-green">
-                #{def.num} · pillar
-              </span>
-              <h1 className="text-3xl font-black text-white font-mono">{def.name}</h1>
-            </div>
           </div>
-          <p className="text-cyber-cyan font-mono text-sm">// {def.tagline}</p>
-        </header>
+        </div>
+      </section>
 
-        <p className="text-lg text-cyber-text leading-relaxed mb-6">{editorial.directAnswer}</p>
-
+      <article className="prose prose-invert max-w-3xl mx-auto py-12 px-4">
+      <div className="cyber-card p-6 sm:p-9 rounded-xl mb-8">
         <div className="space-y-8">
           {/* Purpose and Audience */}
           <section>
@@ -1364,7 +1396,8 @@ const PillarDetail: React.FC<{ slug: string; onBack: () => void }> = ({ slug, on
           </section>
         </div>
       </div>
-    </article>
+      </article>
+    </>
   );
 };
 
