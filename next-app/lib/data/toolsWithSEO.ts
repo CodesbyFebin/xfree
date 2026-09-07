@@ -87,7 +87,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
       { question: 'What regex flavors are supported?', answer: 'JavaScript-style regex is supported in the browser.' },
       { question: 'Can I test multiple patterns?', answer: 'Yes, you can test multiple patterns and see all matches highlighted.' },
     ],
-    relatedToolIds: ['regex-builder', 'regex-explainer', 'regex-cheat-sheet'],
+    relatedToolIds: ['regex-builder', 'regex-explainer'],
     pillarSlug: 'regex-pattern-tools',
   },
   {
@@ -129,7 +129,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
       { question: 'Is Base64 encryption?', answer: 'No, Base64 is encoding, not encryption. It can be easily decoded.' },
       { question: 'What is Base64 used for?', answer: 'Data URLs, email attachments, API keys, configuration files.' },
     ],
-    relatedToolIds: ['base64-decode', 'url-encode', 'html-encoder'],
+    relatedToolIds: ['base64-decode', 'url-encode'],
     pillarSlug: 'encoding-conversion-tools',
   },
   {
@@ -1561,7 +1561,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     howToUse: ['Enter base color', 'Select palette type', 'Copy colors'],
     privacyNotice: 'All processing happens in your browser.',
     faqs: [],
-    relatedToolIds: ['color-converter', 'contrast-checker'],
+    relatedToolIds: ['color-converter', 'hex-to-rgb'],
     pillarSlug: 'color-tools',
   },
   {

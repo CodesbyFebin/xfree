@@ -936,7 +936,7 @@ export const TOOLS: ToolDefinition[] = [
     howToUse: ['Enter base color', 'Select palette type', 'Copy colors'],
     privacyNotice: 'All processing happens in your browser.',
     faqs: [],
-    relatedToolIds: ['color-converter', 'contrast-checker'],
+    relatedToolIds: ['color-converter', 'hex-to-rgb'],
     pillarSlug: 'color-tools',
   },
   {
