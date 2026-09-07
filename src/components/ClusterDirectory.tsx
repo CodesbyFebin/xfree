@@ -1,173 +1,147 @@
 import React, { useState } from "react";
 import { KEYWORD_CLUSTERS, KeywordCluster } from "../data/clustersData";
-import { Search, Layers, ArrowRight, Sparkles, Database, Code, CheckCircle, Tag } from "lucide-react";
+import { Search, Layers, ArrowRight, Tag } from "lucide-react";
 
 interface ClusterDirectoryProps {
   onSelectKeywordTool: (keyword: string, cluster: KeywordCluster) => void;
 }
 
-export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
-  onSelectKeywordTool,
-}) => {
+export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({ onSelectKeywordTool }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [expandedClusterId, setExpandedClusterId] = useState<string | null>(null);
 
-  // Extract unique categories
-  const categories = Array.from(
-    new Set(KEYWORD_CLUSTERS.map((c) => c.category))
-  );
+  const categories = Array.from(new Set(KEYWORD_CLUSTERS.map((c) => c.category)));
+  const totalKeywords = KEYWORD_CLUSTERS.reduce((sum, c) => sum + c.supportingKeywords.length + 1, 0);
 
-  // Filter clusters
   const filteredClusters = KEYWORD_CLUSTERS.filter((cluster) => {
-    const matchesCategory =
-      selectedCategory === "all" || cluster.category === selectedCategory;
-
+    const matchesCategory = selectedCategory === "all" || cluster.category === selectedCategory;
     const query = searchQuery.toLowerCase().trim();
     if (!query) return matchesCategory;
 
     const matchesName = cluster.name.toLowerCase().includes(query);
     const matchesPillar = cluster.pillarKeyword.toLowerCase().includes(query);
-    const matchesSupporting = cluster.supportingKeywords.some((k) =>
-      k.toLowerCase().includes(query)
-    );
+    const matchesSupporting = cluster.supportingKeywords.some((k) => k.toLowerCase().includes(query));
 
     return matchesCategory && (matchesName || matchesPillar || matchesSupporting);
   });
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Cluster Hub Header */}
-      <div className="p-6 sm:p-8 bg-yellow-300 brutal-border brutal-shadow space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-black pb-4">
+      {/* Header */}
+      <div className="cyber-card p-6 sm:p-8 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyber-border pb-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest">
-              <Layers className="w-3.5 h-3.5 text-yellow-300" />
-              <span>Blog Strategy & Architecture</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-cyber-glow text-[10px] font-mono uppercase tracking-widest neon-box-green">
+              <Layers className="w-3.5 h-3.5" />
+              <span>Search Intent Directory</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-black uppercase tracking-tight">
-              100 Pillar Keyword Clusters
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight font-mono">
+              {KEYWORD_CLUSTERS.length} Keyword Clusters
             </h1>
-            <p className="text-xs sm:text-sm text-black font-bold max-w-3xl">
-              Search-intent keyword clusters mapped to XFree tools. Clusters map search intent to XFree's live tool inventory.
+            <p className="text-xs sm:text-sm text-cyber-muted max-w-3xl">
+              Search-intent keyword clusters mapped to XFree's real, published tool catalogue.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-white p-3 border-2 border-black shrink-0">
+          <div className="flex items-center gap-3 cyber-card p-3 shrink-0">
             <div className="text-center">
-              <div className="text-2xl font-black text-black leading-none">100</div>
-              <div className="text-[10px] font-black uppercase text-gray-600">Clusters</div>
+              <div className="text-2xl font-black text-cyber-glow leading-none font-mono">{KEYWORD_CLUSTERS.length}</div>
+              <div className="text-[10px] text-cyber-muted font-mono uppercase">Clusters</div>
             </div>
-            <div className="h-8 w-0.5 bg-black" />
+            <div className="h-8 w-px bg-cyber-border" />
             <div className="text-center">
-              <div className="text-2xl font-black text-blue-600 leading-none">1,500+</div>
-              <div className="text-[10px] font-black uppercase text-gray-600">Keywords</div>
+              <div className="text-2xl font-black text-cyber-cyan leading-none font-mono">{totalKeywords.toLocaleString()}</div>
+              <div className="text-[10px] text-cyber-muted font-mono uppercase">Keywords</div>
             </div>
-            <div className="h-8 w-0.5 bg-black" />
+            <div className="h-8 w-px bg-cyber-border" />
             <div className="text-center">
-              <div className="text-2xl font-black text-green-700 leading-none">2,000</div>
-              <div className="text-[10px] font-black uppercase text-gray-600">20 FAQs/Tool</div>
+              <div className="text-2xl font-black text-white leading-none font-mono">{categories.length}</div>
+              <div className="text-[10px] text-cyber-muted font-mono uppercase">Categories</div>
             </div>
           </div>
         </div>
 
-        {/* Search & Filter Bar */}
+        {/* Search & Filter */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 pt-2">
           <div className="md:col-span-7 relative">
-            <Search className="w-5 h-5 absolute left-3 top-3 text-black pointer-events-none" />
+            <Search className="w-4 h-4 absolute left-3 top-3.5 text-cyber-glow pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 100 clusters or 1,500+ keywords (e.g. sitemap, json, regex, sql)..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-black font-bold text-xs sm:text-sm text-black placeholder-gray-500 focus:outline-none focus:bg-yellow-50"
+              placeholder={`Search ${KEYWORD_CLUSTERS.length} clusters or ${totalKeywords.toLocaleString()}+ keywords (e.g. sitemap, json, regex, sql)...`}
+              className="w-full pl-10 pr-4 py-2.5 bg-cyber-bg border border-cyber-border rounded-lg font-mono text-xs sm:text-sm text-white placeholder-cyber-muted focus:outline-none focus:border-cyber-glow"
             />
           </div>
 
-          <div className="md:col-span-5 flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+          <div className="md:col-span-5">
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full p-2.5 bg-white border-2 border-black font-black text-xs text-black uppercase focus:outline-none cursor-pointer"
+              className="w-full p-2.5 bg-cyber-bg border border-cyber-border rounded-lg font-mono text-xs text-white uppercase focus:outline-none focus:border-cyber-glow cursor-pointer"
             >
-              <option value="all">All Categories (100 Clusters)</option>
+              <option value="all">All Categories ({KEYWORD_CLUSTERS.length} Clusters)</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
+                <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
           </div>
         </div>
       </div>
 
-      {/* Cluster Grid Display */}
+      {/* Cluster Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-black text-black uppercase flex items-center gap-2">
-            <Layers className="w-4 h-4 text-blue-600" />
-            <span>
-              Showing {filteredClusters.length} of 100 Keyword Clusters
-            </span>
+          <h2 className="text-sm font-bold text-white font-mono flex items-center gap-2">
+            <Layers className="w-4 h-4 text-cyber-glow" />
+            <span>Showing {filteredClusters.length} of {KEYWORD_CLUSTERS.length} clusters</span>
           </h2>
           {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="text-xs font-bold text-blue-700 underline uppercase"
-            >
-              Clear Search
+            <button onClick={() => setSearchQuery("")} className="text-xs text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
+              Clear search
             </button>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredClusters.map((cluster) => {
             const isExpanded = expandedClusterId === cluster.id;
             return (
-              <div
-                key={cluster.id}
-                className="bg-white brutal-border brutal-shadow p-5 flex flex-col justify-between space-y-4 hover:-translate-y-1 transition-transform group"
-              >
+              <div key={cluster.id} className="cyber-card p-5 flex flex-col justify-between space-y-4 hover:border-cyber-glow/40 transition-colors">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b-2 border-black pb-2">
-                    <span className="px-2.5 py-0.5 bg-yellow-300 text-black border border-black text-[10px] font-black uppercase">
+                  <div className="flex items-center justify-between border-b border-cyber-border pb-2">
+                    <span className="px-2 py-0.5 rounded bg-cyber-glow/10 text-cyber-glow border border-cyber-glow/30 text-[10px] font-mono">
                       Cluster #{cluster.clusterNumber}
                     </span>
-                    <span className="px-2 py-0.5 bg-gray-100 text-gray-800 border border-black text-[10px] font-bold uppercase">
+                    <span className="px-2 py-0.5 rounded bg-cyber-bg text-cyber-muted border border-cyber-border text-[10px] font-mono">
                       {cluster.category}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-black text-black uppercase group-hover:text-blue-600 transition-colors">
-                      {cluster.name}
-                    </h3>
-                    <div className="mt-1 text-xs font-black text-blue-700 bg-blue-50 p-2 border border-blue-200">
-                      PILLAR: "{cluster.pillarKeyword}"
+                    <h3 className="text-base font-bold text-white font-mono">{cluster.name}</h3>
+                    <div className="mt-1 text-xs font-mono text-cyber-cyan bg-cyber-cyan/5 p-2 rounded border border-cyber-cyan/20">
+                      Pillar: &quot;{cluster.pillarKeyword}&quot;
                     </div>
                   </div>
 
-                  <p className="text-xs text-gray-700 font-medium line-clamp-2">
-                    {cluster.description}
-                  </p>
+                  <p className="text-xs text-cyber-muted leading-relaxed line-clamp-2">{cluster.description}</p>
 
-                  <div className="space-y-1.5 pt-2 border-t border-gray-200">
-                    <div className="text-[10px] font-black uppercase text-gray-500 flex items-center justify-between">
-                      <span>15 Supporting Tool Keywords:</span>
-                      <span>{cluster.supportingKeywords.length} tools</span>
+                  <div className="space-y-1.5 pt-2 border-t border-cyber-border">
+                    <div className="text-[10px] font-mono uppercase text-cyber-dim flex items-center justify-between">
+                      <span>Supporting keywords</span>
+                      <span>{cluster.supportingKeywords.length}</span>
                     </div>
 
                     <div className="flex flex-wrap gap-1.5">
-                      {(isExpanded
-                        ? cluster.supportingKeywords
-                        : cluster.supportingKeywords.slice(0, 6)
-                      ).map((kw, idx) => (
+                      {(isExpanded ? cluster.supportingKeywords : cluster.supportingKeywords.slice(0, 6)).map((kw, idx) => (
                         <button
                           key={idx}
                           onClick={() => onSelectKeywordTool(kw, cluster)}
-                          className="px-2 py-1 bg-gray-50 hover:bg-black hover:text-white border border-black text-[10px] font-bold text-black transition-colors flex items-center gap-1 cursor-pointer"
+                          className="px-2 py-1 rounded bg-cyber-bg hover:bg-cyber-glow/10 border border-cyber-border hover:border-cyber-glow/40 text-[10px] font-mono text-cyber-muted hover:text-cyber-glow transition-colors flex items-center gap-1 focus-ring"
                         >
-                          <Tag className="w-2.5 h-2.5 text-blue-600 group-hover:text-white" />
+                          <Tag className="w-2.5 h-2.5" />
                           <span className="truncate max-w-[140px]">{kw}</span>
                         </button>
                       ))}
@@ -176,11 +150,9 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
                     {cluster.supportingKeywords.length > 6 && (
                       <button
                         onClick={() => setExpandedClusterId(isExpanded ? null : cluster.id)}
-                        className="text-[10px] font-black text-blue-700 underline uppercase pt-1 inline-block cursor-pointer"
+                        className="text-[10px] text-cyber-glow hover:text-white transition-colors pt-1 inline-block focus-ring font-mono"
                       >
-                        {isExpanded
-                          ? "Show Less"
-                          : `+ ${cluster.supportingKeywords.length - 6} More Keywords`}
+                        {isExpanded ? "Show less" : `+ ${cluster.supportingKeywords.length - 6} more`}
                       </button>
                     )}
                   </div>
@@ -188,10 +160,10 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({
 
                 <button
                   onClick={() => onSelectKeywordTool(cluster.pillarKeyword, cluster)}
-                  className="w-full py-2 bg-yellow-300 hover:bg-yellow-400 text-black border-2 border-black font-black text-xs uppercase flex items-center justify-center gap-2 brutal-shadow-sm cursor-pointer"
+                  className="cyber-btn cyber-btn-filled w-full py-2 text-xs rounded flex items-center justify-center gap-2 focus-ring"
                 >
-                  <span>Open Cluster Pillar Tool</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Search this cluster</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             );

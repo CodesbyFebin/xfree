@@ -17,6 +17,7 @@ import { CommandPalette } from "./components/CommandPalette";
 import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
 import { SavedDrawer } from "./components/SavedDrawer";
 import { ThinkingModeComponent } from "./components/ThinkingModeComponent";
+import { ClusterDirectory } from "./components/ClusterDirectory";
 
 // Only these 10 tools have a real, dedicated interactive component (see
 // src/components/tools/). Everything else renders ToolDetail's informational
@@ -201,6 +202,7 @@ type Route =
   | { type: "guide-detail"; slug: string }
   | { type: "signals" }
   | { type: "thinking" }
+  | { type: "clusters" }
   | { type: "static-page"; path: string }
   | { type: "not-found" };
 
@@ -223,6 +225,7 @@ function getRouteFromPath(pathname: string): Route {
   if (normalizedPath === "/guides") return { type: "guides-list" };
   if (normalizedPath === "/updates") return { type: "signals" };
   if (normalizedPath === "/thinking") return { type: "thinking" };
+  if (normalizedPath === "/clusters") return { type: "clusters" };
   const guideMatch = normalizedPath.match(/^\/guides\/(.+)$/);
   if (guideMatch && findGuide(guideMatch[1])) {
     return { type: "guide-detail", slug: guideMatch[1] };
@@ -1650,6 +1653,36 @@ function formatSignalDate(iso: string): string {
 }
 
 // ===== Deep Reasoning Mode page =====
+// ===== Keyword Cluster directory page =====
+const ClustersPage: React.FC<{ onNavigate: (path: string) => void; onOpenSearch: (query?: string) => void }> = ({ onNavigate, onOpenSearch }) => {
+  const canonical = "https://www.xfree.in/clusters";
+  useDocumentMeta({
+    title: "Keyword Clusters — XFree.in",
+    description: "Search-intent keyword clusters mapped to XFree.in's real, published tool catalogue.",
+    canonical,
+  });
+
+  return (
+    <section className="py-16 px-4" aria-labelledby="clusters-heading">
+      <div className="max-w-7xl mx-auto">
+        <button onClick={() => onNavigate("/")} className="cyber-btn text-xs px-4 py-2 mb-6 rounded focus-ring">
+          ← Back home
+        </button>
+        <h1 id="clusters-heading" className="sr-only">Keyword cluster directory</h1>
+        <ClusterDirectory
+          onSelectKeywordTool={(keyword) => {
+            // No direct keyword -> tool-slug mapping exists in the cluster
+            // data, so route through the real fuzzy-search palette rather
+            // than guessing/fabricating a link — it'll surface whatever
+            // published tools actually match.
+            onOpenSearch(keyword);
+          }}
+        />
+      </div>
+    </section>
+  );
+};
+
 const ThinkingModePage: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
   const canonical = "https://www.xfree.in/thinking";
   useDocumentMeta({
@@ -2296,18 +2329,6 @@ const STATIC_PAGE_CONTENT: Record<string, StaticPageContent> = {
       },
     ],
   },
-  "/clusters": {
-    title: "Keyword Clusters — XFree.in",
-    description: "How XFree.in organizes its tool catalogue into topic pillars mapped to search intent.",
-    h1: "Keyword cluster directory",
-    sections: [
-      {
-        paragraphs: [
-          "XFree organizes its tool catalogue into topic pillars — groups of related tools mapped to a shared area of intent (for example, JSON & Data Tools, or Security & Privacy Tools). Browse the full pillar directory to explore them.",
-        ],
-      },
-    ],
-  },
   "/xfree-app": {
     title: "XFree App — Install the Free Browser-Based Developer & SEO Toolkit",
     description: "Install XFree as a Progressive Web App on desktop, Android, or iOS to use free developer, SEO, formatting, and AI tools without a browser tab.",
@@ -2574,6 +2595,9 @@ const App: React.FC = () => {
 
       case "thinking":
         return <ThinkingModePage onNavigate={navigate} />;
+
+      case "clusters":
+        return <ClustersPage onNavigate={navigate} onOpenSearch={openSearch} />;
 
       case "static-page":
         return <StaticPage path={route.path} onNavigate={navigate} />;
