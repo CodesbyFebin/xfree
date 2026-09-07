@@ -37,7 +37,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${BASE_URL}/${locale}/tools/${tool.slug}`,
       lastModified: today,
       changeFrequency: 'weekly' as const,
+<<<<<<< ours
       priority: Math.min(0.9, 0.7 + ((tool.searchVolume ?? 50000) / 1000000)),
+=======
+      priority: Math.min(0.9, 0.7 + (tool.searchVolume / 1000000)),
+>>>>>>> theirs
     }))
   );
 
