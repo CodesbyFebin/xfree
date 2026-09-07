@@ -10,6 +10,7 @@ import {
   getRelatedPillars,
 } from "./data/pillarRegistry";
 import { INDEXABLE_TOOLS, INDEXABLE_TOOL_SLUGS } from "./data/toolsRegistry";
+import { STATIC_ROUTES } from "./data/routes";
 import type { ToolDefinition } from "./types";
 
 // Only these 10 tools have a real, dedicated interactive component (see
@@ -185,13 +186,16 @@ const TOOL_COUNT = INDEXABLE_TOOLS.length;
 const PILLAR_COUNT = ALL_PILLARS.length;
 
 // ===== Navigation routing =====
-type Route = 
+type Route =
   | { type: "home" }
   | { type: "pillars-list" }
   | { type: "pillar-detail"; slug: string }
   | { type: "category-hub"; categoryId: string }
   | { type: "tool-detail"; slug: string }
+  | { type: "static-page"; path: string }
   | { type: "not-found" };
+
+const STATIC_ROUTE_SET = new Set<string>(STATIC_ROUTES);
 
 function getRouteFromPath(pathname: string): Route {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
@@ -207,6 +211,14 @@ function getRouteFromPath(pathname: string): Route {
   }
   const catMatch = CATEGORIES.find((c) => normalizedPath === `/${c.id}`);
   if (catMatch) return { type: "category-hub", categoryId: catMatch.id };
+  // "/" is handled above; every other STATIC_ROUTES entry (privacy, terms,
+  // about, contact, faq, etc.) renders via StaticPage. These previously had
+  // no case at all here — prerendered content flashed on load, then flipped
+  // to a 404 view the moment React hydrated and hit this function's old
+  // fallthrough to "not-found".
+  if (normalizedPath !== "/" && STATIC_ROUTE_SET.has(normalizedPath)) {
+    return { type: "static-page", path: normalizedPath };
+  }
   return { type: "not-found" };
 }
 
@@ -1540,24 +1552,424 @@ const ClosingCta: React.FC<{ onNavigate: (path: string) => void }> = ({ onNaviga
   </section>
 );
 
+// ===== Static pages =====
+// These 14 routes (STATIC_ROUTES) had prerendered HTML but no client-side
+// route case at all — real content flashed on load, then got wiped by
+// getRouteFromPath's old fallthrough to "not-found" the moment React
+// hydrated. Content below is grounded in this codebase's actual, verified
+// behavior (see README.md, src/server/env.ts, src/server/app.ts) — not
+// generic boilerplate.
+interface StaticPageSection {
+  heading?: string;
+  paragraphs?: string[];
+  list?: string[];
+}
+interface StaticPageContent {
+  title: string;
+  description: string;
+  h1: string;
+  updated?: string;
+  sections: StaticPageSection[];
+}
+
+const STATIC_PAGE_CONTENT: Record<string, StaticPageContent> = {
+  "/privacy": {
+    title: "Privacy Policy — XFree.in",
+    description: "How XFree.in handles data: local tools stay local; AI-assisted tools proxy to Google Gemini or NVIDIA NIM. What we log and what we don't.",
+    h1: "Privacy Policy",
+    updated: "2026-09-07",
+    sections: [
+      {
+        paragraphs: [
+          "XFree.in (\"XFree\", \"we\", \"us\") provides free, browser-based developer, SEO, and AI micro-tools. This page explains what happens to your data when you use them.",
+        ],
+      },
+      {
+        heading: "Local Mode tools",
+        paragraphs: [
+          "Most published tools run entirely in your browser using client-side JavaScript. Input you paste or upload into a Local Mode tool is processed on your device and is never transmitted to XFree's servers. Closing the tab clears it from memory.",
+        ],
+      },
+      {
+        heading: "AI-assisted tools (Cloud Mode)",
+        paragraphs: [
+          "Tools that use AI send your input to XFree's server, which forwards it to Google Gemini or the NVIDIA NIM API to generate a response. This is disclosed on the tool itself before you submit anything. We do not send client-supplied system prompts to either provider — only a fixed, server-defined instruction for that specific task.",
+          "Requests are rate-limited per IP address and capped by a global daily limit to prevent abuse. We do not use your input to train models we operate.",
+        ],
+      },
+      {
+        heading: "Contact, feedback, and lead forms",
+        paragraphs: [
+          "If you submit the contact, feedback, or tool-request forms, the email address and message you provide are sent to our inbox (via Resend, when configured) or logged server-side for review. We use this solely to respond to you or improve XFree.",
+        ],
+      },
+      {
+        heading: "Cookies and advertising",
+        paragraphs: [
+          "XFree displays Google AdSense advertising, which sets its own cookies and may use them for ad personalization, subject to Google's own privacy policy. You can manage ad personalization through Google's Ad Settings or your browser's cookie controls. XFree itself does not set tracking or analytics cookies beyond what AdSense requires to function.",
+        ],
+      },
+      {
+        heading: "Accounts and data retention",
+        paragraphs: [
+          "XFree requires no account or sign-up for any published tool. We don't maintain user profiles. Rate-limit counters are held in memory (or Redis, if configured) and expire automatically; they are not a record of what you processed.",
+        ],
+      },
+      {
+        heading: "Children's privacy",
+        paragraphs: [
+          "XFree is not directed at children under 13 and we do not knowingly collect personal information from them.",
+        ],
+      },
+      {
+        heading: "Changes to this policy",
+        paragraphs: [
+          "We'll update the date above when this policy changes. Continued use of XFree after a change means you accept the update.",
+        ],
+      },
+      {
+        heading: "Contact",
+        paragraphs: [
+          "Questions about this policy: use the contact form, or email contact@xfree.in.",
+        ],
+      },
+    ],
+  },
+  "/terms": {
+    title: "Terms of Service — XFree.in",
+    description: "Terms of service for XFree.in's free browser-based developer and AI micro-tools.",
+    h1: "Terms of Service",
+    updated: "2026-09-07",
+    sections: [
+      {
+        paragraphs: [
+          "By using XFree.in (\"XFree\"), you agree to these terms. If you don't agree, please don't use the service.",
+        ],
+      },
+      {
+        heading: "The service",
+        paragraphs: [
+          "XFree provides free, browser-based developer, SEO, and single-purpose AI tools. No account or payment is required for any published tool. We may add, change, or remove tools at any time.",
+        ],
+      },
+      {
+        heading: "Acceptable use",
+        list: [
+          "Don't use XFree for anything illegal, or to process data you don't have the right to process.",
+          "Don't attempt to bypass rate limits, security controls, or the AI task allowlist.",
+          "Don't use automated scraping against XFree's tool pages beyond what robots.txt permits.",
+          "Don't submit confidential or sensitive data to AI-assisted (Cloud Mode) tools — see the Privacy Policy for how that data is handled.",
+        ],
+      },
+      {
+        heading: "AI-generated output",
+        paragraphs: [
+          "AI-assisted tools can produce inaccurate, incomplete, or misleading output. Review any AI-generated content before relying on it, especially for production, legal, medical, or financial use.",
+        ],
+      },
+      {
+        heading: "No warranty",
+        paragraphs: [
+          "XFree is provided \"as is\" and \"as available,\" without warranties of any kind, express or implied. We don't guarantee the service will be uninterrupted, error-free, or fit for a particular purpose.",
+        ],
+      },
+      {
+        heading: "Limitation of liability",
+        paragraphs: [
+          "To the fullest extent permitted by law, XFree and its operators aren't liable for any indirect, incidental, or consequential damages arising from your use of the service, including data loss or reliance on tool output.",
+        ],
+      },
+      {
+        heading: "Third-party services",
+        paragraphs: [
+          "XFree's AI features rely on Google Gemini and NVIDIA NIM; the site displays Google AdSense. Your use of features backed by these providers is also subject to their own terms.",
+        ],
+      },
+      {
+        heading: "Changes to these terms",
+        paragraphs: [
+          "We may update these terms; the date above reflects the last change. Continued use after an update means you accept it.",
+        ],
+      },
+      {
+        heading: "Contact",
+        paragraphs: [
+          "Questions about these terms: use the contact form, or email contact@xfree.in.",
+        ],
+      },
+    ],
+  },
+  "/security": {
+    title: "Security — XFree.in",
+    description: "XFree.in's security posture: CSP, rate limits, request validation, and how AI endpoints are hardened against abuse.",
+    h1: "Security",
+    sections: [
+      {
+        paragraphs: [
+          "XFree is built with a security-first server, even though most tools process data entirely in your browser.",
+        ],
+      },
+      {
+        heading: "What we do",
+        list: [
+          "Zod schema validation on every AI, contact, feedback, and lead request body — malformed or oversized requests are rejected before any processing.",
+          "A fixed, server-side task allowlist for AI features — the browser can select a task, but never supply its own system prompt.",
+          "Per-IP and global daily rate limits on AI endpoints, with a stricter separate cap on deep-reasoning requests.",
+          "A strict Content-Security-Policy, HSTS, X-Frame-Options: DENY, and a restrictive Permissions-Policy on every response, including static files.",
+          "A central error handler that returns a request ID instead of a stack trace in production.",
+          "API keys (Google Gemini, NVIDIA NIM, Resend) are read from server-side environment variables only and never reach the browser.",
+        ],
+      },
+      {
+        heading: "Reporting a vulnerability",
+        paragraphs: [
+          "Please report security issues privately via the contact form rather than a public issue — see the project's SECURITY.md for the full policy.",
+        ],
+      },
+    ],
+  },
+  "/about": {
+    title: "About XFree.in",
+    description: "About the XFree.in micro-tools platform: what it is, and the principles it's built on.",
+    h1: "About XFree.in",
+    sections: [
+      {
+        paragraphs: [
+          "XFree.in is a small, focused platform of free, browser-based developer, SEO, and single-purpose AI tools — built for developers, SEOs, and technical writers who want a quick utility without an account, a paywall, or a data-collection catch.",
+        ],
+      },
+      {
+        heading: "Principles",
+        list: [
+          "Local Mode by default — most tools process your input in your browser, not on a server.",
+          "No account or signup required for any published tool.",
+          "AI features are opt-in and clearly labelled before you submit anything.",
+          "We publish only what actually works — draft or planned tools are excluded from navigation, search, and the sitemap until they're real.",
+        ],
+      },
+    ],
+  },
+  "/contact": {
+    title: "Contact XFree.in",
+    description: "Contact XFree.in for bug reports, tool requests, or partnership inquiries.",
+    h1: "Contact us",
+    sections: [
+      {
+        paragraphs: [
+          "Found a bug, have a tool request, or a partnership inquiry? Email contact@xfree.in — we read every message. For security issues specifically, please report them privately (see the Security page) rather than publicly.",
+        ],
+      },
+    ],
+  },
+  "/faq": {
+    title: "Frequently Asked Questions — XFree.in",
+    description: "Common questions about XFree.in: pricing, privacy, AI features, and how tools work.",
+    h1: "FAQ",
+    sections: [
+      {
+        heading: "Is XFree really free?",
+        paragraphs: ["Yes — every published tool is free, with no account, signup, or usage cap."],
+      },
+      {
+        heading: "Does XFree see my data?",
+        paragraphs: ["Only if you use an AI-assisted (Cloud Mode) tool, and only what you submit to it — clearly disclosed on that tool's page. Local Mode tools never send your input anywhere."],
+      },
+      {
+        heading: "Which AI providers does XFree use?",
+        paragraphs: ["Google Gemini for the AI task endpoints, and NVIDIA NIM for XFree Studio's Cloud Mode chat gateway. Both are proxied server-side — no API key ever reaches your browser."],
+      },
+      {
+        heading: "Why are some pillars not linked to a working tool yet?",
+        paragraphs: ["XFree organizes its catalogue into topic pillars ahead of building every tool in them. A pillar page describes the category honestly even where not every listed capability has shipped yet."],
+      },
+    ],
+  },
+  "/how-it-works": {
+    title: "How XFree.in Works",
+    description: "How the XFree.in micro-tools platform works: local execution vs. AI proxy, and where your data goes.",
+    h1: "How XFree.in works",
+    sections: [
+      {
+        heading: "1. Search or browse",
+        paragraphs: ["Find a tool via search, the category dropdowns, or the pillar directory."],
+      },
+      {
+        heading: "2. Paste & execute",
+        paragraphs: ["Drop in your input — JSON, text, a URL, code. Local Mode tools process it immediately in your browser; AI-assisted tools send it to XFree's rate-limited server, which proxies to Google Gemini or NVIDIA NIM."],
+      },
+      {
+        heading: "3. Copy & ship",
+        paragraphs: ["One-click copy to clipboard, or export as a file. Nothing is saved server-side unless the tool explicitly says so."],
+      },
+    ],
+  },
+  "/use-cases": {
+    title: "Use Cases — XFree.in",
+    description: "Real-world workflows powered by XFree.in developer and SEO micro-tools.",
+    h1: "Use cases",
+    sections: [
+      {
+        paragraphs: ["A few ways teams use XFree in day-to-day work:"],
+        list: [
+          "Auditing a site's crawlability with the sitemap generator and robots.txt tools before a launch.",
+          "Debugging an API response by formatting and diffing JSON payloads.",
+          "Testing a regex pattern against real sample strings before shipping it.",
+          "Generating and sanity-checking a cron schedule for a new background job.",
+          "Building UTM-tagged campaign links without a spreadsheet.",
+          "Checking password strength or generating a strong password before setting up a new account.",
+        ],
+      },
+    ],
+  },
+  "/docs": {
+    title: "Documentation — XFree.in",
+    description: "Documentation for XFree.in tools: how they work, their limits, and how the platform is built.",
+    h1: "Documentation",
+    sections: [
+      {
+        paragraphs: [
+          "Each published tool page includes its own \"How to use\" steps, an explanation of what it does, and an FAQ covering its specific limits. That's the primary reference — open any tool from the homepage or a pillar page to see it.",
+          "For how the platform itself is built — architecture, security, deployment — see the project's README on GitHub.",
+        ],
+      },
+    ],
+  },
+  "/blog": {
+    title: "Blog — XFree.in",
+    description: "Articles and updates from the XFree.in team.",
+    h1: "Blog",
+    sections: [
+      {
+        paragraphs: ["No posts published yet — check back soon."],
+      },
+    ],
+  },
+  "/clusters": {
+    title: "Keyword Clusters — XFree.in",
+    description: "How XFree.in organizes its tool catalogue into topic pillars mapped to search intent.",
+    h1: "Keyword cluster directory",
+    sections: [
+      {
+        paragraphs: [
+          "XFree organizes its tool catalogue into topic pillars — groups of related tools mapped to a shared area of intent (for example, JSON & Data Tools, or Security & Privacy Tools). Browse the full pillar directory to explore them.",
+        ],
+      },
+    ],
+  },
+  "/thinking": {
+    title: "Deep Reasoning Mode — XFree.in",
+    description: "XFree's deep, step-by-step reasoning endpoint, powered by Google Gemini.",
+    h1: "Deep reasoning mode",
+    sections: [
+      {
+        paragraphs: [
+          "For problems that need more than a quick answer — complex SQL, regex, or architecture questions — XFree's server exposes a deep-reasoning endpoint backed by Google Gemini's extended-thinking mode, rate-limited separately from standard AI requests.",
+          "A dedicated interactive page for this is still in progress; in the meantime it's used by select tools that need multi-step reasoning.",
+        ],
+      },
+    ],
+  },
+  "/xfree-app": {
+    title: "XFree App — Install the Free Browser-Based Developer & SEO Toolkit",
+    description: "Install XFree as a Progressive Web App on desktop, Android, or iOS to use free developer, SEO, formatting, and AI tools without a browser tab.",
+    h1: "XFree App",
+    sections: [
+      {
+        paragraphs: [
+          "XFree is installable as a Progressive Web App. Add it to your desktop dock or mobile home screen for one-tap access to every tool. Everything still runs in your browser — installing is just a shortcut, not a separate binary.",
+        ],
+      },
+      {
+        heading: "Install",
+        list: [
+          "Desktop Chrome/Edge: click the install icon in the address bar, or the browser menu → \"Install XFree.\"",
+          "Android Chrome: browser menu → \"Add to Home screen.\"",
+          "iOS Safari: Share → \"Add to Home Screen.\"",
+        ],
+      },
+    ],
+  },
+  "/guides": {
+    title: "Guides — XFree.in",
+    description: "Practical guides for developers and SEOs on regex, cron, JSON errors, canonical vs redirect, and more.",
+    h1: "Guides",
+    sections: [
+      {
+        paragraphs: ["Short, practical guides for developers and SEOs, each a standalone reference with runnable examples."],
+      },
+    ],
+  },
+};
+
+const StaticPage: React.FC<{ path: string; onNavigate: (path: string) => void }> = ({ path, onNavigate }) => {
+  const content = STATIC_PAGE_CONTENT[path];
+
+  const canonical = `https://www.xfree.in${path}`;
+  useDocumentMeta({
+    title: content?.title || "XFree.in",
+    description: content?.description,
+    canonical,
+    jsonLd: content
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: content.title,
+            description: content.description,
+            url: canonical,
+          },
+        ]
+      : undefined,
+  });
+
+  if (!content) {
+    return (
+      <section className="py-16 px-4 pt-20 text-center">
+        <h1 className="text-2xl font-bold text-white mb-4">Page not found</h1>
+        <button onClick={() => onNavigate("/")} className="cyber-btn cyber-btn-filled text-sm px-6 py-3 rounded focus-ring">
+          <span>Back to Home →</span>
+        </button>
+      </section>
+    );
+  }
+
+  return (
+    <article className="prose prose-invert max-w-3xl mx-auto py-12 px-4">
+      <div className="cyber-card p-6 sm:p-9 rounded-xl mb-8">
+        <button onClick={() => onNavigate("/")} className="cyber-btn text-xs px-4 py-2 mb-6 rounded focus-ring">
+          ← Back
+        </button>
+        <h1 className="text-3xl font-black text-white font-mono mb-2">{content.h1}</h1>
+        {content.updated && (
+          <p className="text-cyber-muted text-xs font-mono mb-8">Last updated {content.updated}</p>
+        )}
+        <div className="space-y-8">
+          {content.sections.map((section, i) => (
+            <section key={i}>
+              {section.heading && (
+                <h2 className="text-lg font-bold text-white font-mono mb-3">{section.heading}</h2>
+              )}
+              {section.paragraphs?.map((p, j) => (
+                <p key={j} className="text-cyber-text leading-relaxed mb-3">{p}</p>
+              ))}
+              {section.list && (
+                <ul className="list-disc list-inside space-y-1.5 text-cyber-muted">
+                  {section.list.map((li, k) => (
+                    <li key={k}>{li}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+};
+
 // ===== Main App Component =====
 const App: React.FC = () => {
-  const [route, setRoute] = useState<Route>(() => {
-    const path = window.location.pathname.replace(/\/$/, "") || "/";
-    if (path === "/") return { type: "home" };
-    if (path === "/pillars") return { type: "pillars-list" };
-    const pillarMatch = path.match(/^\/pillars\/(.+)$/);
-    if (pillarMatch && PILLAR_BY_SLUG.has(pillarMatch[1])) {
-      return { type: "pillar-detail", slug: pillarMatch[1] };
-    }
-    const toolMatch = path.match(/^\/tools\/(.+)$/);
-    if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) {
-      return { type: "tool-detail", slug: toolMatch[1] };
-    }
-    const catMatch = CATEGORIES.find((c) => path === `/${c.id}`);
-    if (catMatch) return { type: "category-hub", categoryId: catMatch.id };
-    return { type: "not-found" };
-  });
+  const [route, setRoute] = useState<Route>(() => getRouteFromPath(window.location.pathname));
 
   const navigate = useCallback((path: string) => {
     setRoute(getRouteFromPath(path));
@@ -1606,6 +2018,9 @@ const App: React.FC = () => {
 
       case "tool-detail":
         return <ToolDetail slug={route.slug} onBack={() => navigate("/")} />;
+
+      case "static-page":
+        return <StaticPage path={route.path} onNavigate={navigate} />;
 
       case "not-found":
         return (
