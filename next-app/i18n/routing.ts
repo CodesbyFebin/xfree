@@ -1,6 +1,6 @@
 import { defineRouting } from 'next-intl/routing';
 
-export const locales = ['en', 'es', 'fr', 'de', 'ja'] as const;
+export const locales = ['en', 'es', 'fr', 'de', 'ja', 'hi', 'ar', 'zh', 'ta', 'ml'] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = 'en';
@@ -11,7 +11,18 @@ export const localeNames: Record<Locale, string> = {
   fr: 'Français',
   de: 'Deutsch',
   ja: '日本語',
+  hi: 'हिन्दी',
+  ar: 'العربية',
+  zh: '中文',
+  ta: 'தமிழ்',
+  ml: 'മലയാളം',
 };
+
+// Right-to-left locales - drives <html dir> in app/[locale]/layout.tsx.
+export const rtlLocales: readonly Locale[] = ['ar'];
+export function isRtl(locale: Locale): boolean {
+  return rtlLocales.includes(locale);
+}
 
 export const routing = defineRouting({
   locales,

@@ -4,7 +4,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import { AnalyticsWidgets } from '@/components/analytics/Widgets';
 import { PWARegister } from '@/components/PWARegister';
-import { routing, type Locale } from '@/i18n/routing';
+import { routing, isRtl, type Locale } from '@/i18n/routing';
 import '../globals.css';
 
 const inter = Inter({
@@ -31,6 +31,11 @@ const OG_LOCALES: Record<Locale, string> = {
   fr: 'fr_FR',
   de: 'de_DE',
   ja: 'ja_JP',
+  hi: 'hi_IN',
+  ar: 'ar_AR',
+  zh: 'zh_CN',
+  ta: 'ta_IN',
+  ml: 'ml_IN',
 };
 
 export function generateStaticParams() {
@@ -189,7 +194,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      dir="ltr"
+      dir={isRtl(locale as Locale) ? 'rtl' : 'ltr'}
       className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}
     >
       <head>
