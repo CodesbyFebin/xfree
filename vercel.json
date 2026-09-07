@@ -25,6 +25,16 @@
   },
   "rewrites": [
     {
+      "source": "/((?!api/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.xfree.in"
+        }
+      ],
+      "destination": "/studio/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/api"
     }

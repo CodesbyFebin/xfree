@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XFree Studio — Universal Command Center</title>
+<meta name="description" content="XFree Studio: a privacy-first command center for developer micro-tools. Drop a file, type what you want done, and get instant local results — no signup, no server upload.">
+<link rel="canonical" href="https://app.xfree.in/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XFree Studio">
+<meta property="og:title" content="XFree Studio — Universal Command Center">
+<meta property="og:description" content="Drop a file, type what you want done, get instant local results. Privacy-first developer micro-tools, no signup required.">
+<meta property="og:url" content="https://app.xfree.in/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="XFree Studio — Universal Command Center">
+<meta name="twitter:description" content="Drop a file, type what you want done, get instant local results. Privacy-first developer micro-tools, no signup required.">
+<link href="https://cdn.jsdelivr.net/fontsource/css/inter@latest/index.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#0a0b0f;--bg-surface:#12131a;--bg-card:#1a1b25;--bg-elevated:#22232f;
+  --border:#2a2b38;--border-hover:#3a3b4a;
+  --text-primary:#e8e9ed;--text-secondary:#9395a5;--text-muted:#5d5f72;
+  --accent:#6366f1;--accent-hover:#818cf8;--accent-glow:rgba(99,102,241,0.15);
+  --local:#10b981;--local-bg:rgba(16,185,129,0.1);--local-border:rgba(16,185,129,0.25);
+  --cloud:#3b82f6;--cloud-bg:rgba(59,130,246,0.1);--cloud-border:rgba(59,130,246,0.25);
+  --danger:#ef4444;--warning:#f59e0b;--success:#10b981;
+  --glass:rgba(18,19,26,0.7);--glass-border:rgba(255,255,255,0.06);
+  --radius:12px;--radius-lg:16px;--radius-xl:20px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.5);
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:var(--text-primary);-webkit-font-smoothing:antialiased}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hover)}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInRight{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes glow{0%,100%{box-shadow:0 0 5px var(--accent-glow)}50%{box-shadow:0 0 20px var(--accent-glow),0 0 40px rgba(99,102,241,0.05)}}
+@keyframes ripple{0%{transform:scale(1);opacity:.4}100%{transform:scale(2.5);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes notifIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+@keyframes notifOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(100%)}}
+@keyframes dotPulse{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.anim-fade{animation:fadeIn .3s ease}
+.anim-fade-up{animation:fadeInUp .35s ease-out forwards}
+.anim-fade-right{animation:fadeInRight .3s ease-out forwards}
+.anim-slide-down{animation:slideDown .25s ease-out}
+.anim-float{animation:float 3s ease-in-out infinite}
+
+/* Layout */
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* Header */
+.header{height:56px;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:30;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:12px}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#a855f7);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;box-shadow:0 2px 12px rgba(99,102,241,0.3)}
+.header-title{font-size:15px;font-weight:600}
+.header-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
+.header-right{display:flex;align-items:center;gap:10px}
+
+/* Mode Toggle */
+.mode-toggle{display:flex;background:var(--bg-card);border:1px solid var(--border);border-radius:24px;padding:2px;gap:2px}
+.mode-btn{padding:6px 14px;border-radius:22px;font-size:11px;font-weight:500;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;color:var(--text-muted);background:transparent}
+.mode-btn.active-local{background:var(--local-bg);color:var(--local);border:1px solid var(--local-border)}
+.mode-btn.active-cloud{background:var(--cloud-bg);color:var(--cloud);border:1px solid var(--cloud-border)}
+.mode-btn:hover:not(.active-local):not(.active-cloud){color:var(--text-secondary)}
+.mode-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* Notification Bell */
+.notif-btn{position:relative;width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:all .2s}
+.notif-btn:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.notif-badge{position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;border-radius:8px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg-deep)}
+
+/* Icon Button */
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--bg-card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:all .15s}
+.icon-btn:hover{border-color:var(--border-hover);color:var(--text-primary);background:var(--bg-elevated)}
+
+/* Main Layout */
+.main{flex:1;display:flex;overflow:hidden}
+
+/* Panels */
+.panel-left{width:280px;background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.panel-center{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg-deep)}
+.panel-right{width:340px;background:var(--bg-surface);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+
+/* Left Panel */
+.panel-section{padding:12px 14px}
+.panel-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.panel-section-badge{font-size:9px;background:var(--bg-elevated);border:1px solid var(--border);padding:1px 6px;border-radius:8px;color:var(--text-muted)}
+
+/* Drop Zone */
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:20px;text-align:center;cursor:pointer;transition:all .25s;margin:12px 14px}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:var(--accent-glow)}
+.drop-zone.drag-over .dz-icon{transform:scale(1.15);color:var(--accent)}
+.dz-icon{color:var(--text-muted);transition:all .25s;margin-bottom:8px}
+.dz-text{font-size:13px;font-weight:500;color:var(--text-secondary)}
+.dz-sub{font-size:11px;color:var(--text-muted);margin-top:3px}
+
+/* File List */
+.file-list{flex:1;overflow-y:auto;padding:0 10px 10px}
+.file-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:all .15s;margin-bottom:2px}
+.file-item:hover{background:var(--bg-card)}
+.file-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--bg-elevated);color:var(--text-muted);border:1px solid var(--border)}
+.file-icon.img{background:var(--accent-glow);color:var(--accent);border-color:rgba(99,102,241,.2);overflow:hidden}
+.file-icon img{width:100%;height:100%;object-fit:cover}
+.file-info{flex:1;min-width:0}
+.file-name{font-size:12px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta{font-size:10px;color:var(--text-muted);margin-top:1px}
+.file-remove{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;opacity:0;transition:all .15s}
+.file-item:hover .file-remove{opacity:1}
+.file-remove:hover{background:rgba(239,68,68,.1);color:var(--danger)}
+
+/* Engine Shortcuts */
+.engine-grid{display:flex;flex-wrap:wrap;gap:5px}
+.engine-chip{padding:5px 10px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.engine-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+
+/* Center Panel */
+.chat-area{flex:1;overflow-y:auto;padding:20px 24px}
+.empty-state{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;animation:fadeIn .5s ease}
+.empty-illust{width:100px;height:100px;position:relative;margin-bottom:20px}
+.empty-illust .ring{position:absolute;inset:0;border-radius:24px;border:2px solid var(--border);animation:float 3s ease-in-out infinite}
+.empty-illust .ring:nth-child(2){inset:6px;border-color:rgba(99,102,241,.15);animation-delay:.3s}
+.empty-illust .core{position:absolute;inset:14px;background:linear-gradient(135deg,var(--bg-card),var(--bg-elevated));border-radius:18px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);box-shadow:var(--shadow)}
+.empty-title{font-size:20px;font-weight:600;margin-bottom:6px}
+.empty-desc{font-size:13px;color:var(--text-secondary);max-width:380px;margin-bottom:8px;line-height:1.5}
+.privacy-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--local-bg);border:1px solid var(--local-border);border-radius:20px;font-size:11px;font-weight:500;color:var(--local);margin-bottom:20px}
+.suggestion-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:520px}
+.suggestion-chip{padding:9px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.suggestion-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow);transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,.15)}
+
+/* Messages */
+.msg-container{max-width:680px;margin:0 auto}
+.msg{margin-bottom:14px;animation:fadeInUp .3s ease-out}
+.msg-user{display:flex;justify-content:flex-end}
+.msg-user .msg-bubble{background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;padding:10px 16px;border-radius:16px 16px 4px 16px;font-size:13px;max-width:80%;box-shadow:0 2px 12px rgba(99,102,241,.2)}
+.msg-assistant{display:flex;gap:10px;align-items:flex-start}
+.msg-avatar{width:28px;height:28px;border-radius:8px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.msg-bubble-sys{background:var(--bg-card);border:1px solid var(--border);padding:10px 16px;border-radius:4px 16px 16px 16px;font-size:13px;color:var(--text-secondary);max-width:85%;line-height:1.5}
+.msg-bubble-sys strong{color:var(--text-primary)}
+.msg-bubble-sys code{background:var(--bg-elevated);padding:1px 5px;border-radius:4px;font-size:11px;font-family:'SF Mono',monospace}
+
+/* Thinking */
+.thinking{display:flex;gap:4px;padding:4px 0}
+.thinking span{width:6px;height:6px;border-radius:50%;background:var(--text-muted);animation:dotPulse 1.4s ease-in-out infinite}
+.thinking span:nth-child(2){animation-delay:.2s}
+.thinking span:nth-child(3){animation-delay:.4s}
+
+/* Chain Suggestions */
+.chain-bar{padding:6px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chain-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
+.chain-chip{padding:4px 10px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;font-size:11px;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+.chain-chip:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Command Bar */
+.cmd-area{padding:10px 20px 14px;flex-shrink:0}
+.cmd-bar{max-width:680px;margin:0 auto;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);display:flex;align-items:flex-end;gap:8px;padding:8px;transition:all .2s;box-shadow:var(--shadow)}
+.cmd-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow),var(--shadow)}
+.cmd-attach{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;transition:all .15s;flex-shrink:0;border:none;background:transparent}
+.cmd-attach:hover{color:var(--accent);background:var(--accent-glow)}
+.cmd-input{flex:1;background:transparent;border:none;outline:none;color:var(--text-primary);font-size:13px;font-family:inherit;resize:none;min-height:36px;max-height:100px;padding:8px 4px;line-height:1.4}
+.cmd-input::placeholder{color:var(--text-muted)}
+.cmd-mode{display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;font-size:10px;font-weight:500;flex-shrink:0;margin-bottom:4px}
+.cmd-mode.local{background:var(--local-bg);color:var(--local)}
+.cmd-mode.cloud{background:var(--cloud-bg);color:var(--cloud)}
+.cmd-send{width:36px;height:36px;border-radius:10px;background:var(--accent);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.cmd-send:hover{background:var(--accent-hover);transform:scale(1.05)}
+.cmd-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.cmd-hint{text-align:center;font-size:10px;color:var(--text-muted);margin-top:6px}
+.cmd-hint kbd{background:var(--bg-card);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-size:10px;font-family:inherit}
+
+/* Right Panel */
+.rp-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.rp-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.rp-count{font-size:10px;background:var(--bg-elevated);border:1px solid var(--border);padding:1px 7px;border-radius:8px;color:var(--text-muted)}
+.rp-body{flex:1;overflow-y:auto;padding:12px}
+.rp-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+.rp-empty-icon{width:52px;height:52px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--text-muted)}
+.rp-empty-title{font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:4px}
+.rp-empty-desc{font-size:11px;color:var(--text-muted)}
+
+/* Result Card */
+.result-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;transition:all .2s;animation:fadeInRight .3s ease-out forwards}
+.result-card:hover{border-color:var(--border-hover);box-shadow:var(--shadow)}
+.rc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.rc-title-area{display:flex;align-items:center;gap:8px}
+.rc-icon{font-size:16px}
+.rc-title{font-size:13px;font-weight:600}
+.rc-badges{display:flex;align-items:center;gap:5px;margin-top:3px}
+.rc-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:500}
+.rc-badge.local{background:var(--local-bg);color:var(--local)}
+.rc-badge.cloud{background:var(--cloud-bg);color:var(--cloud)}
+.rc-badge.time{background:var(--bg-elevated);color:var(--text-muted)}
+.rc-badge.chained{background:rgba(168,85,247,.1);color:#a855f7}
+.rc-filename{font-size:10px;color:var(--text-muted);font-family:'SF Mono',monospace;text-align:right;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-stats{display:flex;gap:10px;font-size:10px;color:var(--text-muted);margin-bottom:10px}
+.rc-stats .highlight{color:var(--success);font-weight:500}
+.rc-preview{background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:10px;max-height:140px;overflow:auto;font-family:'SF Mono','Fira Code',monospace;font-size:11px;line-height:1.6;color:var(--text-secondary);white-space:pre-wrap;word-break:break-all}
+.rc-preview img{width:100%;max-height:140px;object-fit:contain;border-radius:6px}
+.rc-preview .color-swatch{width:100%;height:48px;border-radius:8px;margin-bottom:4px}
+.rc-actions{display:flex;gap:5px}
+.rc-btn{flex:1;padding:7px 10px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.rc-btn:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.rc-btn.primary{background:var(--accent-glow);border-color:rgba(99,102,241,.25);color:var(--accent)}
+.rc-btn.primary:hover{background:rgba(99,102,241,.2)}
+.rc-btn.icon{flex:none;width:34px}
+.rc-smart{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.rc-smart-btn{padding:4px 9px;background:var(--bg-deep);border:1px solid var(--border);border-radius:7px;font-size:10px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:3px}
+.rc-smart-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+
+/* Code Highlighting */
+.ck{color:#818cf8}.cs{color:#34d399}.cn{color:#fbbf24}.cb{color:#f87171}
+
+/* Notifications Panel */
+.notif-panel{position:fixed;top:56px;right:12px;width:340px;max-height:480px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);z-index:50;display:none;flex-direction:column;overflow:hidden;animation:slideDown .25s ease-out}
+.notif-panel.open{display:flex}
+.notif-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-header h3{font-size:13px;font-weight:600}
+.notif-list{flex:1;overflow-y:auto;padding:8px}
+.notif-item{display:flex;gap:10px;padding:10px 12px;border-radius:var(--radius);transition:all .15s;cursor:pointer;margin-bottom:2px}
+.notif-item:hover{background:var(--bg-elevated)}
+.notif-item.unread{background:var(--accent-glow)}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px}
+.notif-dot.read{background:transparent}
+.notif-content{flex:1;min-width:0}
+.notif-title{font-size:12px;font-weight:500;margin-bottom:2px}
+.notif-desc{font-size:11px;color:var(--text-muted);line-height:1.4}
+.notif-time{font-size:10px;color:var(--text-muted);margin-top:3px}
+
+/* Toast */
+.toast-container{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;padding:10px 18px;border-radius:var(--radius);font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;animation:notifIn .3s ease-out;box-shadow:var(--shadow-lg);border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary)}
+.toast.success{border-color:var(--local-border);background:linear-gradient(135deg,rgba(16,185,129,.1),var(--bg-card))}
+.toast.error{border-color:rgba(239,68,68,.25);background:linear-gradient(135deg,rgba(239,68,68,.1),var(--bg-card))}
+.toast.info{border-color:rgba(99,102,241,.25);background:linear-gradient(135deg,var(--accent-glow),var(--bg-card))}
+.toast.removing{animation:notifOut .3s ease-in forwards}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);width:100%;max-width:520px;max-height:80vh;overflow:hidden;box-shadow:var(--shadow-lg);animation:modalIn .3s ease-out;display:flex;flex-direction:column}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header h2{font-size:15px;font-weight:600}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.modal-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{background:var(--bg-elevated);color:var(--text-primary)}
+
+/* Reminder Form */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:500;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.form-input,.form-select,.form-textarea{width:100%;padding:9px 12px;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:inherit;outline:none;transition:all .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.form-textarea{resize:vertical;min-height:70px}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235d5f72' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.form-btn{padding:9px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.form-btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.form-btn-primary:hover{background:var(--accent-hover)}
+.form-btn-ghost{background:transparent;color:var(--text-secondary);border-color:var(--border)}
+.form-btn-ghost:hover{background:var(--bg-elevated);color:var(--text-primary)}
+
+/* Reminder List */
+.reminder-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;transition:all .15s}
+.reminder-item:hover{border-color:var(--border-hover)}
+.reminder-item.overdue{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+.reminder-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.reminder-check.done{background:var(--success);border-color:var(--success)}
+.reminder-info{flex:1;min-width:0}
+.reminder-title{font-size:12px;font-weight:500}
+.reminder-meta{font-size:10px;color:var(--text-muted);margin-top:2px;display:flex;gap:8px}
+.reminder-del{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;transition:all .15s;opacity:0}
+.reminder-item:hover .reminder-del{opacity:1}
+.reminder-del:hover{color:var(--danger);background:rgba(239,68,68,.1)}
+
+/* NIM Status */
+.nim-status{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;color:var(--text-muted);margin-bottom:10px}
+.nim-dot{width:6px;height:6px;border-radius:50%}
+.nim-dot.active{background:var(--success);animation:pulse 2s infinite}
+.nim-dot.error{background:var(--danger)}
+.nim-dot.pending{background:var(--warning);animation:pulse 1s infinite}
+
+/* Audio Visualizer */
+.audio-vis{display:flex;align-items:center;gap:2px;height:20px}
+.audio-vis .bar{width:3px;border-radius:2px;background:var(--accent);transition:height .1s}
+
+/* Mobile */
+.mobile-only{display:none}
+@media(max-width:1024px){
+  .desktop-only{display:none!important}
+  .mobile-only{display:flex!important}
+  .panel-left,.panel-right{display:none!important}
+  .main{flex-direction:column}
+}
+
+/* Mobile Bottom Nav */
+.mobile-nav{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--glass-border);display:none;align-items:center;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:30;flex-shrink:0}
+@media(max-width:1024px){.mobile-nav{display:flex}}
+.mob-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;border-top:2px solid transparent;font-size:10px;font-weight:500}
+.mob-tab.active{color:var(--accent);border-top-color:var(--accent)}
+
+/* Mobile Panels */
+.mobile-panel{display:none;position:fixed;inset:56px 0 52px 0;background:var(--bg-deep);z-index:20;overflow-y:auto;padding:14px}
+.mobile-panel.open{display:block}
+
+/* Settings Modal Specific */
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border:none}
+.settings-label{font-size:13px;font-weight:500}
+.settings-desc{font-size:11px;color:var(--text-muted);margin-top:2px}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--bg-elevated);border:1px solid var(--border);cursor:pointer;position:relative;transition:all .2s}
+.toggle.on{background:var(--accent);border-color:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:all .2s}
+.toggle.on::after{left:20px}
+
+/* NIM Models List */
+.nim-model{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:6px;background:var(--bg-deep)}
+.nim-model-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nim-model-name{font-size:12px;font-weight:500;flex:1}
+.nim-model-tag{font-size:10px;color:var(--text-muted);background:var(--bg-elevated);padding:2px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">X</div>
+      <div>
+        <div class="header-title">XFree Studio</div>
+        <div class="header-sub desktop-only">Universal Command Center</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="mode-toggle">
+        <button class="mode-btn active-local" id="localBtn" onclick="setMode('local')">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          Local
+        </button>
+        <button class="mode-btn" id="cloudBtn" onclick="setMode('cloud')">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          Cloud
+        </button>
+      </div>
+      <button class="notif-btn" onclick="toggleNotifPanel()" id="notifBtn">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+      </button>
+      <button class="icon-btn" onclick="openModal('settings')" title="Settings">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- LEFT PANEL -->
+    <aside class="panel-left desktop-only">
+      <div class="drop-zone" id="dropZone" onclick="$('fileInput').click()">
+        <div class="dz-icon">
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+        </div>
+        <div class="dz-text">Drop files here</div>
+        <div class="dz-sub">JSON · CSV · Images · Text · Code</div>
+        <input type="file" id="fileInput" multiple style="display:none">
+      </div>
+      <div class="panel-section">
+        <div class="panel-section-title">Files <span class="panel-section-badge" id="fileCount">0</span></div>
+      </div>
+      <div class="file-list" id="fileList">
+        <div style="text-align:center;padding:20px 0"><span style="font-size:12px;color:var(--text-muted)">No files yet</span></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:12px 14px">
+        <div class="panel-section-title">Quick Engines</div>
+        <div class="engine-grid" id="engineGrid"></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:12px 14px">
+        <div class="panel-section-title">Reminders <span class="panel-section-badge" id="reminderCount">0</span></div>
+        <button class="engine-chip" style="width:100%;justify-content:center;margin-bottom:6px" onclick="openModal('reminder')">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+          New Reminder
+        </button>
+        <div id="reminderListMini"></div>
+      </div>
+    </aside>
+
+    <!-- CENTER PANEL -->
+    <section class="panel-center">
+      <div class="chat-area" id="chatArea">
+        <div id="emptyState" class="empty-state">
+          <div class="empty-illust anim-float">
+            <div class="ring"></div>
+            <div class="ring"></div>
+            <div class="core">
+              <svg width="36" height="36" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+          </div>
+          <h2 class="empty-title">Welcome to XFree Studio</h2>
+          <p class="empty-desc">Drop a file and tell me what to do. All processing runs locally in your browser — your data never leaves this device.</p>
+          <div class="privacy-badge">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Privacy-first · Local processing
+          </div>
+          <div class="suggestion-grid" id="suggestionGrid"></div>
+        </div>
+        <div id="msgContainer" class="msg-container" style="display:none"></div>
+      </div>
+      <div id="chainBar" class="chain-bar" style="display:none"></div>
+      <div class="cmd-area">
+        <div class="cmd-bar" id="cmdBar">
+          <button class="cmd-attach" onclick="$('fileInput').click()" title="Attach file">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+          </button>
+          <textarea id="cmdInput" class="cmd-input" rows="1" placeholder="Tell me what to do… (e.g. Convert JSON to CSV)"></textarea>
+          <div class="cmd-mode local" id="cmdMode">
+            <span class="mode-dot" style="width:5px;height:5px;border-radius:50%;background:currentColor"></span>
+            Local
+          </div>
+          <button class="cmd-send" id="sendBtn" onclick="handleCommand()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+        <div class="cmd-hint">Press <kbd>Enter</kbd> to run · <kbd>Shift+Enter</kbd> new line · <kbd>/</kbd> shortcuts</div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <aside class="panel-right desktop-only">
+      <div class="rp-header">
+        <div class="rp-title">Results <span class="rp-count" id="resultCount">0</span></div>
+        <button class="icon-btn" onclick="clearResults()" title="Clear all" style="width:28px;height:28px">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+      </div>
+      <div class="rp-body" id="resultsArea">
+        <div class="rp-empty">
+          <div class="rp-empty-icon">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <div class="rp-empty-title">No results yet</div>
+          <div class="rp-empty-desc">Run a command to see outputs here</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-nav">
+    <button class="mob-tab active" data-tab="chat" onclick="switchMobTab('chat')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+      Chat
+    </button>
+    <button class="mob-tab" data-tab="files" onclick="switchMobTab('files')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+      Files
+    </button>
+    <button class="mob-tab" data-tab="results" onclick="switchMobTab('results')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+      Results
+    </button>
+  </nav>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">
+    <h3>Notifications</h3>
+    <button class="icon-btn" onclick="markAllRead()" title="Mark all read" style="width:28px;height:28px;font-size:10px">All read</button>
+  </div>
+  <div class="notif-list" id="notifList"></div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal" style="display:none">
+    <div class="modal-header">
+      <h2>⚙️ Settings</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="nim-status" id="nimStatus">
+        <span class="nim-dot pending"></span>
+        <span>NIM Fallback Loop: Checking endpoints…</span>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">Audio Notifications</div><div class="settings-desc">Play sounds for alerts and completions</div></div>
+        <div class="toggle on" id="toggleAudio" onclick="toggleSetting('audio')"></div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">Desktop Notifications</div><div class="settings-desc">Show browser push notifications</div></div>
+        <div class="toggle" id="toggleDesktop" onclick="toggleSetting('desktop')"></div>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">Auto-chain Suggestions</div><div class="settings-desc">Show follow-up actions after each result</div></div>
+        <div class="toggle on" id="toggleChain" onclick="toggleSetting('chain')"></div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="panel-section-title" style="margin-bottom:10px">NVIDIA NIM Free Models (Fallback)</div>
+        <div id="nimModelsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reminder Modal -->
+  <div class="modal" id="reminderModal" style="display:none">
+    <div class="modal-header">
+      <h2>🔔 New Reminder</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="form-input" id="reminderTitle" placeholder="e.g. Review JSON conversion results">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" id="reminderMsg" placeholder="Optional details…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Remind in</label>
+        <select class="form-select" id="reminderDelay">
+          <option value="1">1 minute</option>
+          <option value="5">5 minutes</option>
+          <option value="15">15 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="60">1 hour</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button class="form-btn form-btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="form-btn form-btn-primary" onclick="createReminder()">Create Reminder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NIM Info Modal -->
+  <div class="modal" id="nimModal" style="display:none">
+    <div class="modal-header">
+      <h2>☁️ Cloud AI — NIM Fallback</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">
+        When Cloud Mode is active, XFree Studio attempts to use <strong style="color:var(--text-primary)">NVIDIA NIM free-tier endpoints</strong> in a cascading fallback loop. If all cloud endpoints fail, processing falls back to local engines automatically.
+      </p>
+      <div class="nim-status" id="nimStatusModal">
+        <span class="nim-dot pending"></span>
+        <span>Initializing fallback chain…</span>
+      </div>
+      <div id="nimModelsListModal"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- MOBILE PANELS -->
+<div class="mobile-panel" id="mobFilesPanel">
+  <div class="drop-zone" onclick="$('fileInput').click()" style="margin:0 0 12px">
+    <div class="dz-icon"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg></div>
+    <div class="dz-text">Tap to add files</div>
+  </div>
+  <div id="mobFileList"></div>
+</div>
+<div class="mobile-panel" id="mobResultsPanel">
+  <div id="mobResultsArea">
+    <div class="rp-empty"><div class="rp-empty-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="rp-empty-title">No results yet</div></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+const S = {
+  files: [], results: [], messages: [], notifications: [], reminders: [],
+  mode: 'local', isProcessing: false, lastResult: null, mobTab: 'chat',
+  settings: { audio: true, desktop: false, chain: true },
+  nimModels: [
+    { id: 'meta/llama-3.1-8b-instruct', name: 'Llama 3.1 8B', status: 'checking', provider: 'NVIDIA' },
+    { id: 'google/gemma-2-9b-it', name: 'Gemma 2 9B', status: 'checking', provider: 'NVIDIA' },
+    { id: 'mistralai/mistral-7b-instruct-v0.3', name: 'Mistral 7B v0.3', status: 'checking', provider: 'NVIDIA' },
+    { id: 'microsoft/phi-3-mini-128k-instruct', name: 'Phi-3 Mini', status: 'checking', provider: 'NVIDIA' },
+    { id: 'nvidia/llama3-chatqa-1.5-8b', name: 'ChatQA 1.5 8B', status: 'checking', provider: 'NVIDIA' },
+  ],
+  activeNimModel: null
+};
+
+// ═══════════════════════════════════════════════════════
+// AUDIO ENGINE (Web Audio API — no external files)
+// ═══════════════════════════════════════════════════════
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, duration, type = 'sine', vol = 0.12) {
+  if (!S.settings.audio) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+function playNotifSound() { playTone(880, 0.15, 'sine', 0.08); setTimeout(() => playTone(1100, 0.2, 'sine', 0.06), 120); }
+function playSuccessSound() { playTone(523, 0.1, 'sine', 0.08); setTimeout(() => playTone(659, 0.1, 'sine', 0.08), 100); setTimeout(() => playTone(784, 0.2, 'sine', 0.06), 200); }
+function playErrorSound() { playTone(300, 0.2, 'square', 0.05); setTimeout(() => playTone(250, 0.3, 'square', 0.04), 150); }
+function playReminderSound() { for(let i=0;i<3;i++) setTimeout(()=>playTone(660+i*110,0.15,'sine',0.07),i*180); }
+function playClickSound() { playTone(600, 0.05, 'sine', 0.04); }
+
+// ═══════════════════════════════════════════════════════
+// NVIDIA NIM FALLBACK LOOP
+// ═══════════════════════════════════════════════════════
+async function tryNIMFallback(prompt) {
+  // Calls this same origin's real backend (POST /api/nvidia/chat), which
+  // holds the actual NVIDIA_API_KEY server-side and does its own model
+  // selection/fallback across the catalog - a previous version of this
+  // function called NVIDIA's API directly from the browser with a
+  // hardcoded placeholder key ('Bearer nvip-placeholder'), which could
+  // never have worked and would have exposed a real key to every visitor
+  // if someone had filled one in.
+  updateNIMStatus('Contacting XFree Cloud Mode…');
+  S.nimModels.forEach(m => m.status = 'trying');
+  updateNIMModels();
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    const res = await fetch('/api/nvidia/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        taskType: 'general',
+        messages: [{ role: 'user', content: prompt }],
+        maxTokens: 512,
+      }),
+    });
+    clearTimeout(timeout);
+
+    if (res.status === 503) {
+      updateNIMStatus('Cloud Mode is not configured on this server yet');
+      S.nimModels.forEach(m => m.status = 'idle');
+      updateNIMModels();
+      return { success: false, fallback: 'local', reason: 'not_configured' };
+    }
+
+    if (!res.ok) {
+      updateNIMStatus('Cloud request failed — falling back to local');
+      S.nimModels.forEach(m => m.status = 'error');
+      updateNIMModels();
+      return { success: false, fallback: 'local' };
+    }
+
+    const data = await res.json();
+    S.nimModels.forEach(m => m.status = m.id === data.model ? 'active' : 'idle');
+    S.activeNimModel = { id: data.model, name: data.model };
+    updateNIMStatus(`Connected: ${data.model}${data.wasFallback ? ' (fallback)' : ''}`);
+    updateNIMModels();
+    return { success: true, content: data.reply || 'No response', model: data.model };
+  } catch (e) {
+    updateNIMStatus('All cloud endpoints unavailable — falling back to local');
+    S.nimModels.forEach(m => m.status = 'error');
+    updateNIMModels();
+    return { success: false, fallback: 'local' };
+  }
+}
+
+function updateNIMStatus(text) {
+  const dot = S.nimModels.some(m => m.status === 'active') ? 'active' : S.nimModels.some(m => m.status === 'trying') ? 'pending' : 'error';
+  const html = `<span class="nim-dot ${dot}"></span><span>${text}</span>`;
+  const el1 = $('nimStatus'); if(el1) el1.innerHTML = html;
+  const el2 = $('nimStatusModal'); if(el2) el2.innerHTML = html;
+}
+
+function updateNIMModels() {
+  const html = S.nimModels.map(m => `
+    <div class="nim-model">
+      <div class="nim-model-status" style="background:${m.status==='active'?'var(--success)':m.status==='trying'?'var(--warning)':m.status==='error'?'var(--danger)':'var(--text-muted)'}"></div>
+      <div class="nim-model-name">${m.name}</div>
+      <div class="nim-model-tag">${m.status==='active'?'Active':m.status==='trying'?'Trying…':m.status==='error'?'Failed':'Idle'}</div>
+    </div>
+  `).join('');
+  const el1 = $('nimModelsList'); if(el1) el1.innerHTML = html;
+  const el2 = $('nimModelsListModal'); if(el2) el2.innerHTML = html;
+}
+
+// Initial NIM check
+async function initNIM() {
+  updateNIMModels();
+  // Simulate checking each model
+  for (let i = 0; i < S.nimModels.length; i++) {
+    await sleep(300);
+    S.nimModels[i].status = 'idle';
+    updateNIMModels();
+  }
+  updateNIMStatus('Fallback chain ready — Local Mode active');
+}
+
+// ═══════════════════════════════════════════════════════
+// ENGINES
+// ═══════════════════════════════════════════════════════
+const ENGINES = [
+  { id:'json-csv', name:'JSON → CSV', icon:'📊', keywords:['convert','json','csv','json to csv'] },
+  { id:'csv-json', name:'CSV → JSON', icon:'📋', keywords:['csv to json','csv json'] },
+  { id:'base64-enc', name:'Base64 Encode', icon:'🔐', keywords:['base64','encode','btoa'] },
+  { id:'base64-dec', name:'Base64 Decode', icon:'🔓', keywords:['base64','decode','atob'] },
+  { id:'word-count', name:'Word Counter', icon:'📝', keywords:['count','word','character','words','characters'] },
+  { id:'case-conv', name:'Case Converter', icon:'🔤', keywords:['case','upper','lower','title','camel','snake','uppercase','lowercase'] },
+  { id:'uuid', name:'UUID Generator', icon:'🔑', keywords:['uuid','guid','generate','id','unique'] },
+  { id:'hash', name:'SHA-256 Hash', icon:'#️⃣', keywords:['hash','sha','sha256','sha-256','digest'] },
+  { id:'json-fmt', name:'JSON Formatter', icon:'✨', keywords:['format','json','pretty','beautify','indent'] },
+  { id:'json-min', name:'JSON Minify', icon:'📦', keywords:['minify','compress json','compact'] },
+  { id:'regex', name:'Regex Tester', icon:'🔍', keywords:['regex','regexp','pattern','match'] },
+  { id:'img-info', name:'Image Info', icon:'🖼️', keywords:['image','info','dimensions','compress','resize'] },
+  { id:'line-sort', name:'Line Sorter', icon:'📑', keywords:['sort','lines','unique','dedup','alphabetical'] },
+  { id:'url-enc', name:'URL Encode', icon:'🔗', keywords:['url','encode','decode','percent','uri'] },
+  { id:'lorem', name:'Lorem Ipsum', icon:'📄', keywords:['lorem','ipsum','placeholder','dummy','generate text'] },
+  { id:'color', name:'Color Converter', icon:'🎨', keywords:['color','hex','rgb','hsl'] },
+];
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+// getElementById, not querySelector: every $(...) call site in this file
+// passes a bare id ("engineGrid", not "#engineGrid"). With querySelector,
+// a bare id string is a tag-name selector and always resolves to null -
+// init() threw on its very first line ($('engineGrid').innerHTML = ...)
+// and silently aborted, so nothing after it in init() ever ran: no
+// suggestion chips, no drag-and-drop, and critically no keydown listener
+// on the command input, so Enter never submitted a command. The whole
+// interactive app was unreachable despite rendering correctly.
+const $ = s => document.getElementById(s);
+const $$ = s => document.querySelectorAll(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const escHtml = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const fmtSize = b => { if(!b) return '0 B'; const k=1024,s=['B','KB','MB','GB']; const i=Math.floor(Math.log(b)/Math.log(k)); return (b/Math.pow(k,i)).toFixed(1)+' '+s[i]; };
+const uid = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2,9);
+
+function fmtMd(t) {
+  return t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+}
+
+function highlightJson(s) {
+  return escHtml(s)
+    .replace(/"([^"]+)"(\s*:)/g,'<span class="ck">"$1"</span>$2')
+    .replace(/:\s*"([^"]*)"/g,': <span class="cs">"$1"</span>')
+    .replace(/:\s*(\d+\.?\d*)/g,': <span class="cn">$1</span>')
+    .replace(/:\s*(true|false|null)/g,': <span class="cb">$1</span>');
+}
+
+function getFileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const m = {json:'{ }',csv:'⊞',txt:'T',js:'JS',ts:'TS',html:'<>',css:'#',py:'PY',md:'M↓',xml:'XM',yaml:'YM'};
+  return m[ext] || ext.substring(0,3).toUpperCase();
+}
+
+function getFileContent(file) {
+  if (!file) throw new Error("No file loaded. Drop a file first.");
+  if (!file.content) throw new Error("Cannot read this file as text.");
+  if (file.isImage) return null;
+  if (file.content.startsWith('data:')) {
+    try { return atob(file.content.split(',')[1]); } catch { return file.content; }
+  }
+  return file.content;
+}
+
+// ═══════════════════════════════════════════════════════
+// ENGINE EXECUTION
+// ═══════════════════════════════════════════════════════
+function runEngine(id, cmd) {
+  const file = S.files.length ? S.files[S.files.length - 1] : null;
+  const lower = (cmd || '').toLowerCase();
+  
+  switch(id) {
+    case 'json-csv': {
+      const text = getFileContent(file);
+      const json = JSON.parse(text);
+      const arr = Array.isArray(json) ? json : [json];
+      if (!arr.length) throw new Error("Empty JSON.");
+      const headers = [...new Set(arr.flatMap(Object.keys))];
+      const rows = arr.map(o => headers.map(h => { const s=String(o[h]??''); return s.includes(',')||s.includes('"')||s.includes('\n')?`"${s.replace(/"/g,'""')}"`:s; }).join(','));
+      const csv = [headers.join(','),...rows].join('\n');
+      return { type:'text/csv', content:csv, name:'converted.csv', preview:csv.substring(0,400), lines:rows.length+1 };
+    }
+    case 'csv-json': {
+      const text = getFileContent(file);
+      const lines = text.trim().split('\n');
+      if (lines.length < 2) throw new Error("CSV needs header + data.");
+      const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+      const rows = lines.slice(1).map(l => { const v=l.split(','); const o={}; headers.forEach((h,i)=>o[h]=v[i]?.trim().replace(/^"|"$/g,'')||''); return o; });
+      const json = JSON.stringify(rows,null,2);
+      return { type:'application/json', content:json, name:'converted.json', preview:json.substring(0,400), lines:rows.length };
+    }
+    case 'base64-enc': {
+      const text = getFileContent(file) || cmd;
+      if (!text) throw new Error("No input.");
+      const enc = btoa(unescape(encodeURIComponent(text)));
+      return { type:'text/plain', content:enc, name:'encoded.base64', preview:enc.substring(0,200), lines:1 };
+    }
+    case 'base64-dec': {
+      const text = getFileContent(file) || cmd;
+      if (!text) throw new Error("No input.");
+      const dec = decodeURIComponent(escape(atob(text.trim())));
+      return { type:'text/plain', content:dec, name:'decoded.txt', preview:dec.substring(0,400), lines:dec.split('\n').length };
+    }
+    case 'word-count': {
+      const text = getFileContent(file);
+      const words = text.trim().split(/\s+/).filter(w=>w.length>0).length;
+      const chars = text.length;
+      const c = `Words: ${words}\nCharacters: ${chars}\nNo spaces: ${text.replace(/\s/g,'').length}\nLines: ${text.split('\n').length}\nSentences: ${text.split(/[.!?]+/).filter(s=>s.trim()).length}\nRead time: ~${Math.ceil(words/200)} min`;
+      return { type:'text/plain', content:c, name:'stats.txt', preview:c, lines:7, stats:{words,chars} };
+    }
+    case 'case-conv': {
+      const text = getFileContent(file);
+      let r,v;
+      if (lower.includes('upper')) { r=text.toUpperCase(); v='UPPERCASE'; }
+      else if (lower.includes('lower')) { r=text.toLowerCase(); v='lowercase'; }
+      else if (lower.includes('title')) { r=text.replace(/\w\S*/g,t=>t[0].toUpperCase()+t.substr(1).toLowerCase()); v='Title Case'; }
+      else if (lower.includes('camel')) { r=text.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g,(_,c)=>c.toUpperCase()); v='camelCase'; }
+      else if (lower.includes('snake')) { r=text.toLowerCase().replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_/,''); v='snake_case'; }
+      else { r=text.toUpperCase(); v='UPPERCASE'; }
+      return { type:'text/plain', content:r, name:`${v.toLowerCase().replace(/\s/g,'-')}.txt`, preview:r.substring(0,400), lines:r.split('\n').length };
+    }
+    case 'uuid': {
+      const ids = Array.from({length:10},()=>crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);}));
+      const c = ids.join('\n');
+      return { type:'text/plain', content:c, name:'uuids.txt', preview:c, lines:10 };
+    }
+    case 'hash': {
+      return (async () => {
+        const text = getFileContent(file);
+        const data = new TextEncoder().encode(text);
+        const buf = await crypto.subtle.digest('SHA-256', data);
+        const hex = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+        const buf2 = await crypto.subtle.digest('SHA-1', data);
+        const sha1 = Array.from(new Uint8Array(buf2)).map(b=>b.toString(16).padStart(2,'0')).join('');
+        const c = `SHA-256: ${hex}\nSHA-1: ${sha1}\nInput: ${text.length} bytes`;
+        return { type:'text/plain', content:c, name:'hashes.txt', preview:c, lines:4, hash:hex };
+      })();
+    }
+    case 'json-fmt': {
+      const text = getFileContent(file);
+      const fmt = JSON.stringify(JSON.parse(text),null,2);
+      return { type:'application/json', content:fmt, name:'formatted.json', preview:fmt.substring(0,400), lines:fmt.split('\n').length };
+    }
+    case 'json-min': {
+      const text = getFileContent(file);
+      const min = JSON.stringify(JSON.parse(text));
+      const sav = ((1-min.length/text.length)*100).toFixed(1);
+      return { type:'application/json', content:min, name:'minified.json', preview:min.substring(0,400), lines:1, savings:sav };
+    }
+    case 'regex': {
+      const text = getFileContent(file);
+      const m = cmd.match(/\/(.+?)\/([gimsuy]*)$/);
+      if (!m) throw new Error("Use format: /pattern/flags");
+      const rx = new RegExp(m[1], m[2]||'g');
+      const matches = [...text.matchAll(rx)];
+      const c = `Pattern: /${m[1]}/${m[2]||'g'}\nMatches: ${matches.length}\n\n${matches.slice(0,50).map((x,i)=>`[${i}] "${x[0]}" @${x.index}`).join('\n')}`;
+      return { type:'text/plain', content:c, name:'regex.txt', preview:c.substring(0,400), lines:matches.length+3, matchCount:matches.length };
+    }
+    case 'img-info': {
+      if (!file || !file.isImage) throw new Error("Drop an image first.");
+      return new Promise(r => {
+        const img = new Image();
+        img.onload = () => {
+          const c = `${file.name}\n${img.width}×${img.height}px\nRatio: ${(img.width/img.height).toFixed(2)}\nSize: ${fmtSize(file.size)}\nType: ${file.type}\nMP: ${((img.width*img.height)/1e6).toFixed(2)}`;
+          r({ type:'image', content:file.content, name:file.name, preview:c, lines:6, isImageResult:true });
+        };
+        img.src = file.content;
+      });
+    }
+    case 'line-sort': {
+      const text = getFileContent(file);
+      let lines = text.split('\n');
+      if (lower.includes('unique')||lower.includes('dedup')) lines=[...new Set(lines)];
+      if (lower.includes('reverse')) lines.reverse();
+      else if (lower.includes('shuffle')) { for(let i=lines.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[lines[i],lines[j]]=[lines[j],lines[i]];} }
+      else lines.sort((a,b)=>a.localeCompare(b));
+      const c = lines.join('\n');
+      return { type:'text/plain', content:c, name:'sorted.txt', preview:c.substring(0,400), lines:lines.length };
+    }
+    case 'url-enc': {
+      const text = getFileContent(file);
+      const r = lower.includes('decode') ? decodeURIComponent(text) : encodeURIComponent(text);
+      return { type:'text/plain', content:r, name:'url.txt', preview:r.substring(0,400), lines:1 };
+    }
+    case 'lorem': {
+      const m = cmd.match(/(\d+)\s*(paragraph|sentence|word)/i);
+      const cnt = m?parseInt(m[1]):3;
+      const tp = m?m[2].toLowerCase():'paragraph';
+      const w = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'.split(' ');
+      const sent = () => { const l=8+Math.floor(Math.random()*12); const ws=Array.from({length:l},()=>w[Math.floor(Math.random()*w.length)]); ws[0]=ws[0][0].toUpperCase()+ws[0].slice(1); return ws.join(' ')+'.'; };
+      const para = () => Array.from({length:3+Math.floor(Math.random()*4)},sent).join(' ');
+      let c;
+      if (tp.startsWith('word')) c=Array.from({length:cnt},()=>w[Math.floor(Math.random()*w.length)]).join(' ');
+      else if (tp.startsWith('sentence')) c=Array.from({length:cnt},sent).join(' ');
+      else c=Array.from({length:cnt},para).join('\n\n');
+      return { type:'text/plain', content:c, name:'lorem.txt', preview:c.substring(0,400), lines:c.split('\n').length };
+    }
+    case 'color': {
+      const hm = cmd.match(/#?([0-9a-fA-F]{6})/);
+      const rm = cmd.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      let r,g,b;
+      if (hm) { const h=hm[1]; r=parseInt(h.substr(0,2),16); g=parseInt(h.substr(2,2),16); b=parseInt(h.substr(4,2),16); }
+      else if (rm) { r=+rm[1]; g=+rm[2]; b=+rm[3]; }
+      else throw new Error("Provide: '#4F46E5' or 'rgb(79,70,229)'");
+      const hex=`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+      const mx=Math.max(r,g,b)/255, mn=Math.min(r,g,b)/255;
+      let h,s,l=(mx+mn)/2;
+      if(mx===mn){h=s=0}else{const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);switch(mx){case r/255:h=((g/255-b/255)/d+(g<b?6:0))/6;break;case g/255:h=((b/255-r/255)/d+2)/6;break;case b/255:h=((r/255-g/255)/d+4)/6;break}}
+      const c=`HEX: ${hex}\nRGB: rgb(${r}, ${g}, ${b})\nHSL: hsl(${Math.round(h*360)}, ${Math.round(s*100)}%, ${Math.round(l*100)}%)`;
+      return { type:'text/plain', content:c, name:'color.txt', preview:c, lines:3, color:hex, isColor:true };
+    }
+    default: throw new Error("Unknown engine.");
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// COMMAND PROCESSOR
+// ═══════════════════════════════════════════════════════
+async function handleCommand() {
+  const cmd = $('cmdInput').value.trim();
+  if (!cmd || S.isProcessing) return;
+  
+  hideEmpty();
+  addMsg('user', cmd);
+  $('cmdInput').value = '';
+  autoResize($('cmdInput'));
+  S.isProcessing = true;
+  $('sendBtn').disabled = true;
+  showThinking();
+  
+  await sleep(300 + Math.random() * 300);
+  
+  const lower = cmd.toLowerCase();
+  let matched = false;
+  
+  for (const eng of ENGINES) {
+    if (eng.keywords.some(k => lower.includes(k))) {
+      matched = true;
+      removeThinking();
+      try {
+        const result = await runEngine(eng.id, cmd);
+        if (result instanceof Promise) {
+          const r = await result;
+          finishEngine(eng, r);
+        } else {
+          finishEngine(eng, result);
+        }
+      } catch(e) {
+        addMsg('assistant', `⚠️ ${e.message}`);
+        playErrorSound();
+      }
+      break;
+    }
+  }
+  
+  // Cloud mode: try NIM if no local match
+  if (!matched && S.mode === 'cloud') {
+    removeThinking();
+    addMsg('assistant', `☁️ Trying NVIDIA NIM fallback loop…`);
+    const nimResult = await tryNIMFallback(cmd);
+    if (nimResult.success) {
+      addMsg('assistant', `✅ **${nimResult.model}** responded:\n\n${nimResult.content}`);
+      playSuccessSound();
+      addNotification('Cloud AI Response', `Processed via ${nimResult.model}`, 'info');
+    } else if (nimResult.reason === 'not_configured') {
+      addMsg('assistant', `☁️ Cloud Mode isn't configured on this server yet (no NVIDIA API key set). Falling back to local engines.\n\nI couldn't match "**${escHtml(cmd)}**" to any tool. Try:\n• "Convert JSON to CSV"\n• "Generate UUID"\n• "Hash with SHA-256"\n• Type **help** for all commands`);
+      playErrorSound();
+    } else {
+      addMsg('assistant', `Cloud Mode request failed. Falling back to local engines.\n\nI couldn't match "**${escHtml(cmd)}**" to any tool. Try:\n• "Convert JSON to CSV"\n• "Generate UUID"\n• "Hash with SHA-256"\n• Type **help** for all commands`);
+      playErrorSound();
+    }
+  }
+  
+  if (!matched && S.mode === 'local') {
+    removeThinking();
+    if (lower.includes('help') || lower.includes('what can')) {
+      addMsg('assistant', "Here's what I can do:\n\n• **JSON → CSV** / **CSV → JSON**\n• **Base64** encode/decode\n• **SHA-256** hash\n• **UUID** generator\n• **Word counter** & **case converter**\n• **JSON** format/minify\n• **Regex** tester\n• **Image** info\n• **URL** encode/decode\n• **Line sorter**\n• **Color** converter\n• **Lorem** ipsum generator\n\nSwitch to **Cloud Mode** for AI-powered responses via NVIDIA NIM!");
+    } else {
+      addMsg('assistant', `I couldn't match "**${escHtml(cmd)}**". Try:\n• "Convert JSON to CSV"\n• "Generate UUID"\n• "Hash with SHA-256"\n• Type **help** for all commands\n\n💡 Switch to **Cloud Mode** for AI assistance via NVIDIA NIM.`);
+    }
+  }
+  
+  S.isProcessing = false;
+  $('sendBtn').disabled = false;
+}
+
+function finishEngine(eng, result) {
+  result.engineId = eng.id;
+  result.engineName = eng.name;
+  result.engineIcon = eng.icon;
+  result.mode = S.mode;
+  result.timestamp = Date.now();
+  S.results.unshift(result);
+  S.lastResult = result;
+  
+  addMsg('assistant', `✅ **${eng.name}** completed`);
+  playSuccessSound();
+  renderResults();
+  showChain(eng.id);
+  addNotification('Result Ready', `${eng.name} processed successfully`, 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// CHAT UI
+// ═══════════════════════════════════════════════════════
+function hideEmpty() { $('emptyState').style.display='none'; $('msgContainer').style.display='block'; }
+
+function addMsg(role, text) {
+  const c = $('msgContainer');
+  const d = document.createElement('div');
+  d.className = 'msg anim-fade-up';
+  if (role === 'user') {
+    d.classList.add('msg-user');
+    d.innerHTML = `<div class="msg-bubble">${escHtml(text)}</div>`;
+  } else {
+    d.classList.add('msg-assistant');
+    d.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-bubble-sys">${fmtMd(text)}</div>`;
+  }
+  c.appendChild(d);
+  scrollChat();
+  S.messages.push({ role, content: text, time: Date.now() });
+}
+
+function showThinking() {
+  const c = $('msgContainer');
+  const d = document.createElement('div');
+  d.id = 'thinkingEl';
+  d.className = 'msg msg-assistant anim-fade';
+  d.innerHTML = `<div class="msg-avatar" style="animation:pulse 1.5s infinite">🤖</div><div class="msg-bubble-sys"><div class="thinking"><span></span><span></span><span></span></div></div>`;
+  c.appendChild(d);
+  scrollChat();
+}
+
+function removeThinking() { const e = $('thinkingEl'); if(e) e.remove(); }
+function scrollChat() { requestAnimationFrame(() => { $('chatArea').scrollTop = $('chatArea').scrollHeight; }); }
+
+// ═══════════════════════════════════════════════════════
+// RESULTS RENDERING
+// ═══════════════════════════════════════════════════════
+function renderResults() {
+  $('resultCount').textContent = S.results.length;
+  const html = S.results.map((r,i) => renderCard(r,i)).join('');
+  $('resultsArea').innerHTML = html;
+  const mr = $('mobResultsArea'); if(mr) mr.innerHTML = html;
+}
+
+function renderCard(r, i) {
+  const modeBadge = r.mode === 'local'
+    ? '<span class="rc-badge local"><span style="width:4px;height:4px;border-radius:50%;background:currentColor"></span>Local</span>'
+    : '<span class="rc-badge cloud"><span style="width:4px;height:4px;border-radius:50%;background:currentColor"></span>Cloud</span>';
+  
+  let preview = '';
+  if (r.isImageResult) preview = `<img src="${r.content}">`;
+  else if (r.isColor) preview = `<div class="color-swatch" style="background:${r.color}"></div>`;
+  else if (r.type === 'application/json') preview = highlightJson(r.preview || r.content.substring(0,300));
+  else preview = escHtml(r.preview || r.content.substring(0,300)) + (r.content.length > 300 ? '…' : '');
+  
+  const smart = getSmartActions(r);
+  
+  return `<div class="result-card">
+    <div class="rc-header">
+      <div>
+        <div class="rc-title-area"><span class="rc-icon">${r.engineIcon}</span><span class="rc-title">${r.engineName}</span></div>
+        <div class="rc-badges">${modeBadge}<span class="rc-badge time">${r.elapsed||'0.00'}s</span>${i>0?'<span class="rc-badge chained">Chained</span>':''}</div>
+      </div>
+      <span class="rc-filename">${r.name}</span>
+    </div>
+    ${r.lines?`<div class="rc-stats"><span>${r.lines} lines</span><span>·</span><span>${fmtSize(r.content.length)}</span>${r.savings?`<span>·</span><span class="highlight">${r.savings}% smaller</span>`:''}${r.matchCount!==undefined?`<span>·</span><span>${r.matchCount} matches</span>`:''}${r.stats?`<span>·</span><span>${r.stats.words} words</span>`:''}</div>`:''}
+    <div class="rc-preview">${preview}</div>
+    <div class="rc-actions">
+      <button class="rc-btn primary" onclick="downloadResult(${i})">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Download
+      </button>
+      <button class="rc-btn" onclick="copyResult(${i})">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        Copy
+      </button>
+      <button class="rc-btn icon" onclick="sendToChat(${i})" title="Use as input">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+      </button>
+    </div>
+    ${smart.length?`<div class="rc-smart">${smart.map(a=>`<button class="rc-smart-btn" onclick="smartAction('${a.engine}',${i})">${a.icon} ${a.label}</button>`).join('')}</div>`:''}
+  </div>`;
+}
+
+function getSmartActions(r) {
+  const a = [];
+  if (r.type==='application/json') { a.push({engine:'json-csv',icon:'📊',label:'→ CSV'}); a.push({engine:'json-min',icon:'📦',label:'Minify'}); }
+  if (r.type==='text/csv') a.push({engine:'csv-json',icon:'📋',label:'→ JSON'});
+  if (r.type==='text/plain'||r.type==='text/csv'||r.type==='application/json') { a.push({engine:'base64-enc',icon:'🔐',label:'Base64'}); a.push({engine:'hash',icon:'#️⃣',label:'Hash'}); }
+  return a.slice(0,4);
+}
+
+function showChain(engineId) {
+  if (!S.settings.chain) return;
+  const bar = $('chainBar');
+  bar.style.display = 'flex';
+  const map = {
+    'json-csv':['Hash it','Base64 encode','Sort lines'],
+    'csv-json':['Format JSON','Minify','Hash it'],
+    'hash':['Base64 encode','Generate UUID'],
+    'uuid':['Hash these','Sort lines'],
+    'word-count':['Convert to UPPERCASE','Sort lines'],
+  };
+  const sugs = map[engineId] || ['Hash it','Base64 encode','Generate UUID'];
+  bar.innerHTML = `<span class="chain-label">Try next:</span>${sugs.map(s=>`<button class="chain-chip" onclick="runSuggestion('${s}')">${s}</button>`).join('')}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// RESULT ACTIONS
+// ═══════════════════════════════════════════════════════
+function downloadResult(i) {
+  const r = S.results[i]; if(!r) return;
+  let blob;
+  if (r.isImageResult) {
+    const arr=r.content.split(','); const mime=arr[0].match(/:(.*?);/)[1];
+    const bstr=atob(arr[1]); const u8=new Uint8Array(bstr.length);
+    for(let j=0;j<bstr.length;j++) u8[j]=bstr.charCodeAt(j);
+    blob=new Blob([u8],{type:mime});
+  } else { blob=new Blob([r.content],{type:r.type||'text/plain'}); }
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=r.name; a.click(); URL.revokeObjectURL(url);
+  playClickSound();
+  showToast('Download started','success');
+}
+
+function copyResult(i) {
+  const r=S.results[i]; if(!r) return;
+  navigator.clipboard.writeText(r.content).then(()=>{playClickSound();showToast('Copied!','success')});
+}
+
+function sendToChat(i) {
+  const r=S.results[i]; if(!r) return;
+  S.files.push({id:uid(),file:{name:r.name,size:r.content.length,type:r.type},content:r.content,type:r.type,name:r.name,size:r.content.length,isImage:r.isImageResult,addedAt:new Date()});
+  renderFileList();
+  addMsg('assistant',`📎 Result added as **${r.name}** — chain another command.`);
+  playClickSound();
+  showToast('Added to files','info');
+}
+
+function smartAction(engId, srcI) {
+  const src=S.results[srcI]; if(!src) return;
+  S.files.push({id:uid(),file:{name:src.name,size:src.content.length,type:src.type},content:src.content,type:src.type,name:src.name,size:src.content.length,isImage:src.isImageResult,addedAt:new Date()});
+  renderFileList();
+  hideEmpty();
+  const eng=ENGINES.find(e=>e.id===engId);
+  addMsg('user', `⚡ ${eng.icon} ${eng.name} (chained)`);
+  S.isProcessing=true; $('sendBtn').disabled=true; showThinking();
+  setTimeout(async()=>{
+    try{
+      const result=await runEngine(engId,'');
+      if(result instanceof Promise){const r=await result;finishEngine(eng,r);}else finishEngine(eng,result);
+    }catch(e){removeThinking();addMsg('assistant',`⚠️ ${e.message}`);playErrorSound();}
+    S.isProcessing=false;$('sendBtn').disabled=false;
+  },300);
+}
+
+function clearResults() {
+  S.results=[];S.lastResult=null;
+  $('resultCount').textContent='0';
+  $('resultsArea').innerHTML='<div class="rp-empty"><div class="rp-empty-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="rp-empty-title">No results yet</div><div class="rp-empty-desc">Run a command to see outputs here</div></div>';
+  $('chainBar').style.display='none';
+  playClickSound();
+}
+
+// ═══════════════════════════════════════════════════════
+// FILES
+// ═══════════════════════════════════════════════════════
+function handleFiles(e) {
+  Array.from(e.target.files).forEach(file => {
+    const reader = new FileReader();
+    const isImage = file.type.startsWith('image/');
+    reader.onload = evt => {
+      S.files.push({id:uid(),file,content:evt.target.result,type:file.type||'text/plain',name:file.name,size:file.size,isImage,addedAt:new Date()});
+      renderFileList();
+      addMsg('assistant', `📎 Loaded **${file.name}** (${fmtSize(file.size)})`);
+      playClickSound();
+      addNotification('File Loaded', `${file.name} ready for processing`, 'info');
+    };
+    reader.readAsDataURL(file);
+  });
+  $('fileInput').value = '';
+}
+
+function renderFileList() {
+  $('fileCount').textContent = S.files.length;
+  if (!S.files.length) {
+    $('fileList').innerHTML = '<div style="text-align:center;padding:20px 0"><span style="font-size:12px;color:var(--text-muted)">No files yet</span></div>';
+    const ml=$('mobFileList'); if(ml) ml.innerHTML='';
+    return;
+  }
+  const html = S.files.map((f,i) => `
+    <div class="file-item">
+      <div class="file-icon ${f.isImage?'img':''}">${f.isImage&&f.content?`<img src="${f.content}">`:getFileIcon(f.name)}</div>
+      <div class="file-info"><div class="file-name">${f.name}</div><div class="file-meta">${fmtSize(f.size)}</div></div>
+      <div class="file-remove" onclick="event.stopPropagation();removeFile(${i})"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
+    </div>
+  `).join('');
+  $('fileList').innerHTML = html;
+  const ml=$('mobFileList'); if(ml) ml.innerHTML=S.files.map((f,i)=>`<div class="file-item"><div class="file-icon">${getFileIcon(f.name)}</div><div class="file-info"><div class="file-name">${f.name}</div><div class="file-meta">${fmtSize(f.size)}</div></div><div class="file-remove" onclick="removeFile(${i})"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div></div>`).join('');
+}
+
+function removeFile(i) { S.files.splice(i,1); renderFileList(); playClickSound(); }
+
+// ═══════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════
+function addNotification(title, desc, type='info') {
+  const n = { id:uid(), title, desc, type, time:Date.now(), read:false };
+  S.notifications.unshift(n);
+  updateNotifBadge();
+  renderNotifList();
+  playNotifSound();
+  
+  // Desktop notification
+  if (S.settings.desktop && Notification.permission === 'granted') {
+    new Notification(title, { body: desc, icon: '🔔' });
+  }
+}
+
+function updateNotifBadge() {
+  const unread = S.notifications.filter(n => !n.read).length;
+  const badge = $('notifBadge');
+  if (unread > 0) { badge.style.display='flex'; badge.textContent=unread; }
+  else { badge.style.display='none'; }
+}
+
+function renderNotifList() {
+  const list = $('notifList');
+  if (!S.notifications.length) {
+    list.innerHTML = '<div style="text-align:center;padding:30px 0"><span style="font-size:12px;color:var(--text-muted)">No notifications</span></div>';
+    return;
+  }
+  list.innerHTML = S.notifications.map(n => `
+    <div class="notif-item ${n.read?'':'unread'}" onclick="readNotif('${n.id}')">
+      <div class="notif-dot ${n.read?'read':''}"></div>
+      <div class="notif-content">
+        <div class="notif-title">${escHtml(n.title)}</div>
+        <div class="notif-desc">${escHtml(n.desc)}</div>
+        <div class="notif-time">${timeAgo(n.time)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function readNotif(id) { const n=S.notifications.find(x=>x.id===id); if(n){n.read=true;updateNotifBadge();renderNotifList();} }
+function markAllRead() { S.notifications.forEach(n=>n.read=true); updateNotifBadge(); renderNotifList(); playClickSound(); }
+
+function timeAgo(t) {
+  const s=Math.floor((Date.now()-t)/1000);
+  if(s<60) return 'Just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+function toggleNotifPanel() {
+  const p=$('notifPanel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')) renderNotifList();
+  playClickSound();
+}
+
+// Close notif panel on outside click
+document.addEventListener('click', e => {
+  if (!$('notifPanel').contains(e.target) && !$('notifBtn').contains(e.target)) {
+    $('notifPanel').classList.remove('open');
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+// REMINDERS
+// ═══════════════════════════════════════════════════════
+function createReminder() {
+  const title = $('reminderTitle').value.trim();
+  const msg = $('reminderMsg').value.trim();
+  const delay = parseInt($('reminderDelay').value);
+  if (!title) { showToast('Please enter a title','error'); return; }
+  
+  const reminder = { id:uid(), title, msg, delay, createdAt:Date.now(), fireAt:Date.now()+delay*60000, done:false };
+  S.reminders.push(reminder);
+  renderReminders();
+  closeModal();
+  $('reminderTitle').value=''; $('reminderMsg').value='';
+  playClickSound();
+  showToast(`Reminder set for ${delay} min`,'success');
+  addNotification('Reminder Set', `"${title}" in ${delay} minutes`, 'info');
+  
+  // Schedule check
+  setTimeout(() => fireReminder(reminder), delay * 60000);
+}
+
+function fireReminder(r) {
+  if (r.done) return;
+  r.done = true;
+  playReminderSound();
+  addNotification('⏰ Reminder', r.title, 'warning');
+  addMsg('assistant', `⏰ **Reminder:** ${r.title}${r.msg ? '\n' + r.msg : ''}`);
+  hideEmpty();
+  showToast(`⏰ ${r.title}`, 'info');
+  renderReminders();
+  
+  if (S.settings.desktop && Notification.permission === 'granted') {
+    new Notification('⏰ Reminder: ' + r.title, { body: r.msg || 'Time\'s up!' });
+  }
+}
+
+function renderReminders() {
+  $('reminderCount').textContent = S.reminders.filter(r=>!r.done).length;
+  const html = S.reminders.map(r => {
+    const overdue = !r.done && Date.now() > r.fireAt;
+    const timeLeft = r.done ? 'Done' : overdue ? 'Overdue' : formatCountdown(r.fireAt - Date.now());
+    return `<div class="reminder-item ${overdue?'overdue':''}">
+      <div class="reminder-check ${r.done?'done':''}" onclick="toggleReminder('${r.id}')">${r.done?'<svg width="12" height="12" fill="none" stroke="#fff" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>':''}</div>
+      <div class="reminder-info">
+        <div class="reminder-title" style="${r.done?'text-decoration:line-through;opacity:.5':''}">${escHtml(r.title)}</div>
+        <div class="reminder-meta"><span>⏱ ${timeLeft}</span>${r.msg?`<span>· ${escHtml(r.msg).substring(0,30)}</span>`:''}</div>
+      </div>
+      <div class="reminder-del" onclick="deleteReminder('${r.id}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
+    </div>`;
+  }).join('');
+  $('reminderListMini').innerHTML = html || '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:8px">No reminders</div>';
+}
+
+function formatCountdown(ms) {
+  if (ms <= 0) return 'Now';
+  const m = Math.floor(ms/60000);
+  const s = Math.floor((ms%60000)/1000);
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
+
+function toggleReminder(id) { const r=S.reminders.find(x=>x.id===id); if(r){r.done=!r.done;renderReminders();playClickSound();} }
+function deleteReminder(id) { S.reminders=S.reminders.filter(r=>r.id!==id); renderReminders(); playClickSound(); }
+
+// Update countdown every second
+setInterval(() => { if(S.reminders.some(r=>!r.done)) renderReminders(); }, 1000);
+
+// ═══════════════════════════════════════════════════════
+// MODE TOGGLE
+// ═══════════════════════════════════════════════════════
+function setMode(mode) {
+  S.mode = mode;
+  const lb=$('localBtn'), cb=$('cloudBtn');
+  if (mode==='local') {
+    lb.className='mode-btn active-local'; cb.className='mode-btn';
+    $('cmdMode').className='cmd-mode local'; $('cmdMode').innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> Local';
+  } else {
+    cb.className='mode-btn active-cloud'; lb.className='mode-btn';
+    $('cmdMode').className='cmd-mode cloud'; $('cmdMode').innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> Cloud';
+    addMsg('assistant', '☁️ **Cloud Mode** activated. Commands will attempt NVIDIA NIM free models with automatic fallback to local processing.\n\nYour data is sent only when you explicitly use Cloud Mode.');
+    addNotification('Cloud Mode Active', 'NVIDIA NIM fallback loop enabled', 'info');
+  }
+  playClickSound();
+}
+
+// ═══════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════
+function openModal(type) {
+  $('modalOverlay').classList.add('open');
+  $$('.modal').forEach(m => m.style.display = 'none');
+  if (type === 'settings') { $('settingsModal').style.display = 'flex'; updateNIMModels(); }
+  if (type === 'reminder') $('reminderModal').style.display = 'flex';
+  if (type === 'nim') { $('nimModal').style.display = 'flex'; updateNIMModels(); }
+  playClickSound();
+}
+
+function closeModal() {
+  $('modalOverlay').classList.remove('open');
+  $$('.modal').forEach(m => m.style.display = 'none');
+}
+
+function toggleSetting(key) {
+  S.settings[key] = !S.settings[key];
+  const el = $(`#toggle${key.charAt(0).toUpperCase()+key.slice(1)}`);
+  el.classList.toggle('on', S.settings[key]);
+  
+  if (key === 'desktop' && S.settings.desktop && Notification.permission !== 'granted') {
+    Notification.requestPermission();
+  }
+  playClickSound();
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function showToast(msg, type='info') {
+  const c=$('toastContainer');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  const icons = { success:'✓', error:'✕', info:'ℹ' };
+  t.innerHTML=`<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.classList.add('removing');setTimeout(()=>t.remove(),300)},2500);
+}
+
+// ═══════════════════════════════════════════════════════
+// MOBILE
+// ═══════════════════════════════════════════════════════
+function switchMobTab(tab) {
+  $$('.mob-tab').forEach(t=>{t.classList.toggle('active',t.dataset.tab===tab)});
+  $('mobFilesPanel').classList.toggle('open',tab==='files');
+  $('mobResultsPanel').classList.toggle('open',tab==='results');
+  playClickSound();
+}
+
+// ═══════════════════════════════════════════════════════
+// SUGGESTIONS & SHORTCUTS
+// ═══════════════════════════════════════════════════════
+function runSuggestion(text) {
+  $('cmdInput').value = text;
+  handleCommand();
+}
+
+function runEngineDirect(id) {
+  const eng=ENGINES.find(e=>e.id===id);
+  if(!eng) return;
+  hideEmpty();
+  addMsg('user', eng.icon+' '+eng.name);
+  S.isProcessing=true; $('sendBtn').disabled=true; showThinking();
+  setTimeout(async()=>{
+    try{
+      const result=await runEngine(id,'');
+      if(result instanceof Promise){const r=await result;finishEngine(eng,r);}else finishEngine(eng,result);
+    }catch(e){removeThinking();addMsg('assistant',`⚠️ ${e.message}`);playErrorSound();}
+    S.isProcessing=false;$('sendBtn').disabled=false;
+  },300);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function init() {
+  // Engine shortcuts
+  $('engineGrid').innerHTML = ENGINES.slice(0,10).map(e=>`<button class="engine-chip" onclick="runEngineDirect('${e.id}')">${e.icon} ${e.name}</button>`).join('');
+  
+  // Suggestion chips
+  $('suggestionGrid').innerHTML = [
+    ['📊','Convert JSON → CSV','Convert JSON to CSV'],
+    ['🖼️','Compress Image','Image info'],
+    ['🔑','Generate UUID','Generate a UUID'],
+    ['🔐','Base64 Encode','Encode to Base64'],
+    ['#️⃣','SHA-256 Hash','Hash with SHA-256'],
+    ['📝','Word Counter','Count words and characters'],
+  ].map(([icon,label,cmd])=>`<button class="suggestion-chip" onclick="runSuggestion('${cmd}')">${icon} ${label}</button>`).join('');
+  
+  // File input
+  $('fileInput').addEventListener('change', handleFiles);
+  
+  // Drag & drop
+  const dz=$('dropZone');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over')});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');handleFiles({target:{files:e.dataTransfer.files}})});
+  
+  // Global drop
+  document.addEventListener('dragover',e=>e.preventDefault());
+  document.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files.length&&!e.target.closest('.drop-zone'))handleFiles({target:{files:e.dataTransfer.files}})});
+  
+  // Command input
+  const ci=$('cmdInput');
+  ci.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleCommand()}});
+  ci.addEventListener('input',()=>autoResize(ci));
+  
+  // NIM init
+  initNIM();
+  
+  // Render
+  renderFileList();
+  renderReminders();
+  renderNotifList();
+  
+  // Welcome notification after delay
+  setTimeout(()=>{
+    addNotification('Welcome to XFree Studio','Drop a file or type a command to begin','info');
+  }, 2000);
+  
+  // Periodic reminder to add files if idle
+  setTimeout(()=>{
+    if(!S.files.length && !S.results.length) {
+      addNotification('💡 Tip','Try dropping a JSON file and typing "Convert to CSV"','info');
+    }
+  }, 30000);
+}
+
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+
+// Boot
+init();
+</script>
+</body>
+</html>
