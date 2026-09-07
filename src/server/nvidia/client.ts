@@ -1,5 +1,5 @@
 import { config } from "../env";
-import { inferModelCapabilities, selectModelForTask } from "./router";
+import { inferModelCapabilities, selectModelForTask, rankModelsForTask } from "./router";
 import { inferModelKind, isChatCompatibleKind } from "./catalog";
 import type {
   NvidiaChatMessage,
@@ -99,16 +99,12 @@ export async function resolveNvidiaModel(
   requestedModel: string | undefined,
   taskType: NvidiaTaskType,
 ): Promise<NvidiaModelResolution> {
-  let models = (await listAvailableModels()).filter((model) => model.chatCompatible);
+  const models = (await listAvailableModels()).filter((model) => model.chatCompatible);
   if (!models.length) throw new NvidiaApiError("No NVIDIA chat models are available to this account", 503, "unavailable");
 
   const requested = requestedModel?.trim() || "auto";
   if (requested !== "auto") {
-    let exact = models.find((model) => model.id === requested);
-    if (!exact) {
-      models = (await listAvailableModels({ forceRefresh: true })).filter((model) => model.chatCompatible);
-      exact = models.find((model) => model.id === requested);
-    }
+    const exact = models.find((model) => model.id === requested);
     if (exact) return { requestedModel: requested, usedModel: exact.id, wasFallback: false };
   }
 
@@ -122,6 +118,33 @@ export async function resolveNvidiaModel(
   };
 }
 
+// NVIDIA's model catalog (GET /v1/models) lists more models than are
+// actually invocable on a given account/free tier — some 404 on a real
+// /chat/completions call (confirmed empirically: every "coder"-branded
+// model this account's free tier exposes 404s, while general flagship
+// models like nemotron/deepseek-v4/llama-3.2 work fine, including for code
+// questions). A single best-guess model is not reliable, so this walks a
+// task-ranked candidate list and only gives up once several have failed —
+// the "cascading fallback" the free tier needs to actually be usable.
+const MAX_MODEL_ATTEMPTS = 12;
+
+// Models confirmed dead (400/404) are skipped for a while rather than
+// retried on every request — each retry is a real round-trip, and a model
+// missing from this account's free tier doesn't come back mid-session.
+// Re-checked periodically in case NVIDIA's catalog changes.
+const DEAD_MODEL_TTL_MS = 30 * 60_000;
+const deadModels = new Map<string, number>();
+
+function isKnownDead(modelId: string): boolean {
+  const markedAt = deadModels.get(modelId);
+  if (markedAt === undefined) return false;
+  if (Date.now() - markedAt > DEAD_MODEL_TTL_MS) {
+    deadModels.delete(modelId);
+    return false;
+  }
+  return true;
+}
+
 export async function createChatCompletion(payload: {
   requestedModel?: string;
   taskType: NvidiaTaskType;
@@ -129,51 +152,91 @@ export async function createChatCompletion(payload: {
   temperature?: number;
   maxTokens?: number;
 }) {
-  let resolution = await resolveNvidiaModel(payload.requestedModel, payload.taskType);
-  const send = (model: string) => nvidiaFetch("/chat/completions", {
-      method: "POST",
-      body: JSON.stringify({
-        model,
-        messages: payload.messages,
-        temperature: payload.temperature ?? 0.4,
-        max_tokens: payload.maxTokens ?? config.NVIDIA_MAX_OUTPUT_TOKENS,
-        stream: false,
-      }),
-    });
-  let response = await send(resolution.usedModel);
+  const requested = payload.requestedModel?.trim() || "auto";
+  const models = (await listAvailableModels()).filter((model) => model.chatCompatible);
+  if (!models.length) throw new NvidiaApiError("No NVIDIA chat models are available to this account", 503, "unavailable");
 
-  if (
-    (response.status === 400 || response.status === 404) &&
-    resolution.requestedModel !== "auto" &&
-    !resolution.wasFallback
-  ) {
-    const refreshed = (await listAvailableModels({ forceRefresh: true })).filter((model) => model.chatCompatible);
-    const fallback = selectModelForTask(
-      payload.taskType,
-      refreshed.filter((model) => model.id !== resolution.usedModel),
-    );
-    if (fallback) {
-      resolution = {
-        requestedModel: resolution.requestedModel,
-        usedModel: fallback.id,
-        wasFallback: true,
-        fallbackReason: "selected_model_unavailable",
-      };
-      response = await send(fallback.id);
+  const buildCandidates = (skipKnownDead: boolean): string[] => {
+    const list: string[] = [];
+    if (requested !== "auto") {
+      const exact = models.find((model) => model.id === requested);
+      if (exact) list.push(exact.id);
     }
+    for (const model of rankModelsForTask(payload.taskType, models)) {
+      if (list.includes(model.id)) continue;
+      if (skipKnownDead && isKnownDead(model.id)) continue;
+      list.push(model.id);
+    }
+    return list;
+  };
+
+  // Prefer candidates not already known-dead; if that empties the list
+  // (e.g. everything ranked has failed before), fall back to the full
+  // ranked list anyway rather than erroring out early.
+  const candidates = buildCandidates(true).length ? buildCandidates(true) : buildCandidates(false);
+  if (!candidates.length) throw new NvidiaApiError("No suitable NVIDIA model is available", 503, "unavailable");
+
+  const send = (model: string) => nvidiaFetch("/chat/completions", {
+    method: "POST",
+    body: JSON.stringify({
+      model,
+      messages: payload.messages,
+      temperature: payload.temperature ?? 0.4,
+      max_tokens: payload.maxTokens ?? config.NVIDIA_MAX_OUTPUT_TOKENS,
+      stream: false,
+    }),
+  });
+
+  let successResponse: Response | null = null;
+  let usedModel: string | null = null;
+  let attempts = 0;
+  let lastError: NvidiaApiError | null = null;
+
+  for (const modelId of candidates.slice(0, MAX_MODEL_ATTEMPTS)) {
+    attempts++;
+    let response: Response;
+    try {
+      response = await send(modelId);
+    } catch (error) {
+      // A timeout or network failure on one candidate shouldn't abort the
+      // whole cascade — try the next model, and only surface this error if
+      // every candidate fails the same way.
+      lastError = error instanceof NvidiaApiError ? error : new NvidiaApiError("NVIDIA service could not be reached", 502, "upstream_error");
+      continue;
+    }
+    if (response.status === 401 || response.status === 403) {
+      throw new NvidiaApiError("NVIDIA credentials were rejected", 503, "unauthorized");
+    }
+    if (response.status === 400 || response.status === 404) {
+      deadModels.set(modelId, Date.now());
+      continue; // this model isn't actually invocable — try the next candidate
+    }
+    if (!response.ok) {
+      throw new NvidiaApiError("NVIDIA could not complete the request", response.status >= 500 ? 502 : 400, "upstream_error");
+    }
+    usedModel = modelId;
+    successResponse = response;
+    break;
   }
 
-  if (response.status === 401 || response.status === 403) {
-    throw new NvidiaApiError("NVIDIA credentials were rejected", 503, "unauthorized");
+  if (!usedModel || !successResponse) {
+    if (lastError) throw lastError;
+    throw new NvidiaApiError(`NVIDIA could not complete the request after trying ${attempts} model(s)`, 502, "upstream_error");
   }
-  if (!response.ok) {
-    throw new NvidiaApiError("NVIDIA could not complete the request", response.status >= 500 ? 502 : 400, "upstream_error");
-  }
-  const data = await response.json() as {
+
+  const data = await successResponse.json() as {
     choices?: Array<{ message?: { content?: string } }>;
     usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
   };
   const reply = data.choices?.[0]?.message?.content;
   if (typeof reply !== "string") throw new NvidiaApiError("NVIDIA returned an invalid response", 502, "upstream_error");
-  return { ...resolution, reply, usage: data.usage };
+
+  return {
+    requestedModel: requested,
+    usedModel,
+    wasFallback: usedModel !== requested,
+    fallbackReason: requested === "auto" ? ("auto_routing" as const) : usedModel !== requested ? ("selected_model_unavailable" as const) : undefined,
+    reply,
+    usage: data.usage,
+  };
 }

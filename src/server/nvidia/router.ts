@@ -30,12 +30,21 @@ function scoreModel(model: NvidiaModel, taskType: NvidiaTaskType): number {
   return score;
 }
 
+// Returns chat-compatible models ranked best-first for a task. NVIDIA's
+// model catalog (GET /v1/models) lists models beyond what's actually
+// invocable on a given account/free tier — some 404 on a real chat
+// completion call. Callers should walk this list and try the next
+// candidate on failure, rather than trusting the top pick will work.
+export function rankModelsForTask(taskType: NvidiaTaskType, availableModels: NvidiaModel[]): NvidiaModel[] {
+  return availableModels
+    .filter((model) => model.chatCompatible)
+    .map((model) => ({ model, score: scoreModel(model, taskType) }))
+    .sort((a, b) => b.score - a.score)
+    .map((entry) => entry.model);
+}
+
 export function selectModelForTask(taskType: NvidiaTaskType, availableModels: NvidiaModel[]): NvidiaModel | null {
-  const compatible = availableModels.filter((model) => model.chatCompatible);
-  if (!compatible.length) return null;
-  return compatible.reduce((best, model) =>
-    scoreModel(model, taskType) > scoreModel(best, taskType) ? model : best,
-  );
+  return rankModelsForTask(taskType, availableModels)[0] ?? null;
 }
 
 export function inferModelCapabilities(modelId: string): NvidiaModel["capabilities"] {

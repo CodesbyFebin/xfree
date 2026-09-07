@@ -13,11 +13,19 @@ import {
   AiBatchSchema,
   AiChatSchema,
   AiThinkingSchema,
+  NvidiaChatSchema,
   ContactSchema,
   FeedbackSchema,
   LeadSchema,
 } from "./schemas";
 import { deliverMessage } from "./delivery";
+import {
+  createChatCompletion,
+  listAvailableModels,
+  NvidiaNotConfiguredError,
+  NvidiaApiError,
+} from "./nvidia/client";
+import type { NvidiaChatMessage } from "./nvidia/types";
 import { securityHeadersMiddleware } from "../middleware/security-headers";
 import {
   generateSitemapXml,
@@ -258,6 +266,56 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       const response = await generateWithTimeout(async () => chat.sendMessage({ message: latest }));
       return res.json({ success: true, model: config.GEMINI_DEFAULT_MODEL, reply: response.text ?? "" });
     } catch (err) { next(err); }
+  });
+
+  // NVIDIA NIM Cloud Mode for XFree Studio: task-routed model selection with
+  // automatic fallback across NIM's free-tier catalog. Wraps the existing
+  // src/server/nvidia/client.ts, which was fully built but never mounted.
+  app.get("/api/nvidia/models", aiPerMinute, async (_req, res, next) => {
+    try {
+      const models = await listAvailableModels();
+      return res.json({ success: true, models });
+    } catch (err) {
+      if (err instanceof NvidiaNotConfiguredError) {
+        return res.status(503).json({ error: "nvidia_not_configured", message: "NVIDIA Cloud Mode is not configured on this server." });
+      }
+      if (err instanceof NvidiaApiError) {
+        return res.status(err.status).json({ error: err.code, message: err.message });
+      }
+      next(err);
+    }
+  });
+
+  app.post("/api/nvidia/chat", aiPerMinute, aiPerDay, globalCap, async (req, res, next) => {
+    try {
+      const parsed = NvidiaChatSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+      const { model, taskType, messages, temperature, maxTokens } = parsed.data;
+      const result = await createChatCompletion({
+        requestedModel: model,
+        taskType,
+        messages: messages as NvidiaChatMessage[],
+        temperature,
+        maxTokens,
+      });
+      return res.json({
+        success: true,
+        provider: "NVIDIA NIM",
+        model: result.usedModel,
+        wasFallback: result.wasFallback,
+        fallbackReason: result.fallbackReason,
+        reply: result.reply,
+        usage: result.usage,
+      });
+    } catch (err) {
+      if (err instanceof NvidiaNotConfiguredError) {
+        return res.status(503).json({ error: "nvidia_not_configured", message: "NVIDIA Cloud Mode is not configured on this server." });
+      }
+      if (err instanceof NvidiaApiError) {
+        return res.status(err.status).json({ error: err.code, message: err.message });
+      }
+      next(err);
+    }
   });
 
   app.post("/api/contact", contactRateLimit, async (req, res, next) => {

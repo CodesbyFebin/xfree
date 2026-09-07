@@ -38,7 +38,17 @@ const EnvSchema = z.object({
 export type AppConfig = z.infer<typeof EnvSchema>;
 
 function loadConfig(): AppConfig {
-  const parsed = EnvSchema.safeParse(process.env);
+  // A present-but-blank optional var (e.g. `GEMINI_API_KEY=` in .env, common
+  // for secrets not yet provisioned) fails z.string().min(1).optional() —
+  // "" is not undefined, so it's checked against .min(1) and rejected. That
+  // previously failed the ENTIRE safeParse, silently discarding every other
+  // real value (including ones that WERE set) and falling back to hard
+  // defaults for the whole config. Normalize blank strings to undefined
+  // first so "not set" behaves the same whether the key is absent or empty.
+  const sanitizedEnv = Object.fromEntries(
+    Object.entries(process.env).map(([key, value]) => [key, value === "" ? undefined : value]),
+  );
+  const parsed = EnvSchema.safeParse(sanitizedEnv);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
     // Do NOT process.exit here. On Vercel serverless, exiting at import time
