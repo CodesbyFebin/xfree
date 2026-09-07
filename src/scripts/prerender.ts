@@ -193,6 +193,7 @@ const STATIC_META: Record<string, { title: string; description: string; h1: stri
   "/blog": { title: "Blog — XFree.in", description: "Articles and updates from the XFree.in team.", h1: "Blog", intro: "Articles from the XFree.in team." },
   "/clusters": { title: "Keyword Clusters — XFree.in", description: "Programmatic SEO keyword cluster directory mapping search intent to XFree.in tools.", h1: "Keyword cluster directory", intro: "Browse search-intent clusters mapped to XFree.in tools." },
   "/thinking": { title: "Deep Reasoning Mode — XFree.in", description: "Deep step-by-step analytical reasoning powered by Google Gemini.", h1: "Deep reasoning mode", intro: "For hard problems: complex SQL, regex, and architecture questions." },
+  "/updates": { title: "XFree Signals — Open Web & Developer Updates", description: "A live, curated feed of developer news from Chrome for Developers, GitHub, Cloudflare, and MDN — with source attribution and links to the originals.", h1: "XFree Signals", intro: "A live feed of real posts from a small set of authoritative developer sources, refreshed regularly. Every item links straight to the original." },
 };
 
 function main() {

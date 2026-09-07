@@ -14,6 +14,7 @@ export const STATIC_ROUTES = [
   "/thinking",
   "/xfree-app",
   "/guides",
+  "/updates",
 ] as const;
 
 export const SOLVE_ROUTES = [

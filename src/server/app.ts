@@ -45,6 +45,7 @@ import { PUBLIC_TOOLS } from "../data/publicTools";
 import { STATIC_ROUTES, CATEGORY_SLUGS } from "../data/routes";
 import { GUIDES } from "../data/guides";
 import { PILLARS_60, PILLAR_CATEGORIES } from "../data/pillarRegistry";
+import { getSignals } from "./signals";
 
 export interface AppOptions {
   attachStatic?: (app: Express) => void | Promise<void>;
@@ -315,6 +316,16 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       if (err instanceof NvidiaApiError) {
         return res.status(err.status).json({ error: err.code, message: err.message });
       }
+      next(err);
+    }
+  });
+
+  app.get("/api/signals", async (_req, res, next) => {
+    try {
+      const { items, fetchedAt, stale } = await getSignals();
+      res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=1800");
+      return res.json({ success: true, items, fetchedAt, stale });
+    } catch (err) {
       next(err);
     }
   });

@@ -12,6 +12,7 @@
 
 - [Home](https://www.xfree.in/): Search and browse the published tool directory.
 - [Guides](https://www.xfree.in/guides): Reviewed documentation connected to published tools.
+- [XFree Signals](https://www.xfree.in/updates): Live, curated developer news from Chrome for Developers, GitHub, Cloudflare, and MDN, with links to the originals.
 - [How It Works](https://www.xfree.in/how-it-works): Processing modes, browser execution, and optional cloud handoffs.
 - [Pillars](https://www.xfree.in/pillars): 60 developer and SEO topic pillars.
 - [Use Cases](https://www.xfree.in/use-cases): Real-world workflows built from published tools.

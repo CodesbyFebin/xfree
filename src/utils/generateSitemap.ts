@@ -215,6 +215,7 @@ export function generateLlmsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   text += `## Primary Sections\n\n`;
   text += `- [Home](${cleanBase}/): Search and browse the published tool directory.\n`;
   text += `- [Guides](${cleanBase}/guides): Reviewed documentation connected to published tools.\n`;
+  text += `- [XFree Signals](${cleanBase}/updates): Live, curated developer news from Chrome for Developers, GitHub, Cloudflare, and MDN, with links to the originals.\n`;
   text += `- [How It Works](${cleanBase}/how-it-works): Processing modes, browser execution, and optional cloud handoffs.\n`;
   text += `- [Pillars](${cleanBase}/pillars): ${PILLARS_60.length} developer and SEO topic pillars.\n`;
   text += `- [Use Cases](${cleanBase}/use-cases): Real-world workflows built from published tools.\n`;

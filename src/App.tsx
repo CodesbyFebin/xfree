@@ -195,6 +195,7 @@ type Route =
   | { type: "tool-detail"; slug: string }
   | { type: "guides-list" }
   | { type: "guide-detail"; slug: string }
+  | { type: "signals" }
   | { type: "static-page"; path: string }
   | { type: "not-found" };
 
@@ -215,6 +216,7 @@ function getRouteFromPath(pathname: string): Route {
   const catMatch = CATEGORIES.find((c) => normalizedPath === `/${c.id}`);
   if (catMatch) return { type: "category-hub", categoryId: catMatch.id };
   if (normalizedPath === "/guides") return { type: "guides-list" };
+  if (normalizedPath === "/updates") return { type: "signals" };
   const guideMatch = normalizedPath.match(/^\/guides\/(.+)$/);
   if (guideMatch && findGuide(guideMatch[1])) {
     return { type: "guide-detail", slug: guideMatch[1] };
@@ -1579,6 +1581,140 @@ const HOME_FAQS = [
   },
 ];
 
+// ===== XFree Signals =====
+interface SignalItem {
+  sourceId: string;
+  sourceName: string;
+  sourceUrl: string;
+  title: string;
+  link: string;
+  summary: string;
+  publishedAt: string;
+}
+
+const SIGNAL_SOURCE_META: Record<string, { icon: string }> = {
+  "chrome-dev": { icon: "🌐" },
+  "github-blog": { icon: "🐙" },
+  "cloudflare-blog": { icon: "☁️" },
+  "mdn-blog": { icon: "📘" },
+};
+
+function formatSignalDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+const SignalsPage: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
+  const [items, setItems] = useState<SignalItem[] | null>(null);
+  const [error, setError] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/signals")
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data?.success) setItems(data.items);
+        else setError(true);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const canonical = "https://www.xfree.in/updates";
+  useDocumentMeta({
+    title: "XFree Signals — Open Web & Developer Updates",
+    description: "A live, curated feed of developer news from Chrome for Developers, GitHub, Cloudflare, and MDN — with source attribution and links to the originals.",
+    canonical,
+  });
+
+  const sources = Array.from(new Map((items || []).map((i) => [i.sourceId, i.sourceName])).entries());
+  const filtered = items ? (sourceFilter ? items.filter((i) => i.sourceId === sourceFilter) : items) : null;
+
+  return (
+    <section className="py-16 px-4" aria-labelledby="signals-heading">
+      <div className="max-w-5xl mx-auto">
+        <button onClick={() => onNavigate("/")} className="cyber-btn text-xs px-4 py-2 mb-6 rounded focus-ring">
+          ← Back home
+        </button>
+        <h1 id="signals-heading" className="text-3xl font-black text-white mb-3 font-mono">XFree Signals</h1>
+        <p className="text-cyber-muted mb-2 max-w-xl">
+          A live feed of real posts from a small set of authoritative developer sources, refreshed regularly.
+          Every item links straight to the original — nothing here is republished XFree content.
+        </p>
+        <p className="text-xs text-cyber-dim font-mono mb-8">
+          Sources: Chrome for Developers · GitHub Blog · Cloudflare Blog · MDN Web Docs
+        </p>
+
+        {sources.length > 1 && (
+          <div className="flex flex-wrap gap-2 mb-8">
+            <button
+              onClick={() => setSourceFilter(null)}
+              className={`text-xs px-3 py-1.5 rounded border font-mono transition-colors ${!sourceFilter ? "border-cyber-glow text-cyber-glow bg-cyber-glow/10" : "border-cyber-border text-cyber-muted hover:text-white"}`}
+            >
+              All
+            </button>
+            {sources.map(([id, name]) => (
+              <button
+                key={id}
+                onClick={() => setSourceFilter(id)}
+                className={`text-xs px-3 py-1.5 rounded border font-mono transition-colors ${sourceFilter === id ? "border-cyber-glow text-cyber-glow bg-cyber-glow/10" : "border-cyber-border text-cyber-muted hover:text-white"}`}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {error && (
+          <div className="cyber-card p-6 text-center text-cyber-muted text-sm">
+            Unable to load updates right now. Try refreshing in a moment.
+          </div>
+        )}
+
+        {!error && !items && (
+          <div className="cyber-card p-6 text-center text-cyber-muted text-sm font-mono">Loading updates…</div>
+        )}
+
+        {!error && filtered && filtered.length === 0 && (
+          <div className="cyber-card p-6 text-center text-cyber-muted text-sm">No updates available right now.</div>
+        )}
+
+        {!error && filtered && filtered.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {filtered.map((item) => (
+              <article key={item.link} className="cyber-card p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-mono text-cyber-glow flex items-center gap-1.5">
+                    <span aria-hidden="true">{SIGNAL_SOURCE_META[item.sourceId]?.icon || "🔗"}</span> {item.sourceName}
+                  </span>
+                  <span className="text-[10px] text-cyber-dim font-mono">{formatSignalDate(item.publishedAt)}</span>
+                </div>
+                <h2 className="text-sm font-semibold text-white mb-2 leading-snug">{item.title}</h2>
+                {item.summary && <p className="text-xs text-cyber-muted leading-relaxed mb-3">{item.summary}</p>}
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-cyber-glow hover:text-white transition-colors font-mono inline-flex items-center gap-1"
+                >
+                  Read on {item.sourceName} ↗
+                </a>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
 // ===== Guides list =====
 const GuidesList: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
   const canonical = "https://www.xfree.in/guides";
@@ -2273,6 +2409,9 @@ const App: React.FC = () => {
       case "guide-detail":
         return <GuideDetail slug={route.slug} onNavigate={navigate} />;
 
+      case "signals":
+        return <SignalsPage onNavigate={navigate} />;
+
       case "static-page":
         return <StaticPage path={route.path} onNavigate={navigate} />;
 
@@ -2397,6 +2536,7 @@ const App: React.FC = () => {
               <ul className="space-y-2">
                 <li><a href="/pillars" className="text-sm text-cyber-muted hover:text-white">All Pillars</a></li>
                 <li><a href="/guides" className="text-sm text-cyber-muted hover:text-white">Guides</a></li>
+                <li><a href="/updates" className="text-sm text-cyber-muted hover:text-white">XFree Signals</a></li>
                 <li><a href="/use-cases" className="text-sm text-cyber-muted hover:text-white">Use Cases</a></li>
                 <li><a href="/how-it-works" className="text-sm text-cyber-muted hover:text-white">How It Works</a></li>
                 <li><a href="/docs" className="text-sm text-cyber-muted hover:text-white">Documentation</a></li>
