@@ -18,6 +18,7 @@ import { GeminiChatDrawer } from "./components/GeminiChatDrawer";
 import { SavedDrawer } from "./components/SavedDrawer";
 import { ThinkingModeComponent } from "./components/ThinkingModeComponent";
 import { ClusterDirectory } from "./components/ClusterDirectory";
+import { Analytics } from "@vercel/analytics/react";
 
 // Only these 10 tools have a real, dedicated interactive component (see
 // src/components/tools/). Everything else renders ToolDetail's informational
@@ -2803,6 +2804,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </footer>
+      <Analytics />
     </div>
   );
 };
