@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { Inter, JetBrains_Mono, Space_Grotesk, Caveat } from 'next/font/google';
 import { AnalyticsWidgets } from '@/components/analytics/Widgets';
 import { PWARegister } from '@/components/PWARegister';
 import { routing, isRtl, type Locale } from '@/i18n/routing';
@@ -22,6 +22,12 @@ const jetbrainsMono = JetBrains_Mono({
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-orbitron',
+  display: 'swap',
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  variable: '--font-caveat',
   display: 'swap',
 });
 
@@ -195,7 +201,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={isRtl(locale as Locale) ? 'rtl' : 'ltr'}
-      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${caveat.variable}`}
     >
       <head>
         {/* Sets data-theme before hydration/paint so the light theme

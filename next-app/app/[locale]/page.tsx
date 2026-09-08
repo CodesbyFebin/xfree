@@ -228,17 +228,21 @@ export default function HomePage() {
           <div className="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" aria-hidden="true" />
 
           <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-8 neon-box-green anim-slide-up">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-6 neon-box-green anim-slide-up">
               <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse" aria-hidden="true" />
               <span>$ {t('badge')}</span>
             </div>
 
-            <h1 id="hero-heading" className="hero-title text-4xl sm:text-5xl lg:text-7xl font-black text-cyber-text leading-[1.05] tracking-tight mb-4 glitch anim-slide-up" data-text={`${t('titleLine1')}\n${t('titleLine2')}`} style={{ animationDelay: '0.1s' }}>
+            <p className="text-xs sm:text-sm font-mono uppercase tracking-[0.3em] text-cyber-muted mb-3 anim-slide-up">
+              {t('heroTagline')}
+            </p>
+
+            <h1 id="hero-heading" className="hero-title text-4xl sm:text-5xl lg:text-7xl font-black text-cyber-text leading-[1.05] tracking-tight mb-4 uppercase glitch anim-slide-up" data-text={`${t('titleLine1')}\n${t('titleLine2')}`} style={{ animationDelay: '0.1s' }}>
               {t('titleLine1')}<br />
               <span className="text-cyber-glow neon-green">{t('titleLine2')}</span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-cyber-cyan font-mono mb-2 anim-slide-up" style={{ animationDelay: '0.2s' }}>// {t('subtitle')}</p>
+            <p className="text-lg sm:text-xl text-cyber-cyan font-mono mb-2 anim-slide-up" style={{ animationDelay: '0.2s' }}>{t('heroVerbs')}</p>
 
             <p className="text-base text-cyber-muted max-w-2xl mx-auto mb-10 leading-relaxed anim-slide-up" style={{ animationDelay: '0.3s' }}>
               {t('description')}
@@ -270,13 +274,21 @@ export default function HomePage() {
               <small className="block mt-3 text-[10px] text-cyber-dim font-mono">Pro-tip: Press <kbd>Ctrl+Enter</kbd> to process, <kbd>Ctrl+Shift+C</kbd> to copy.</small>
             </div>
 
-            <div className="flex items-center justify-center gap-4 sm:gap-8 text-xs text-cyber-muted font-mono mt-6 anim-slide-up" style={{ animationDelay: '0.5s' }}>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">⚡</span> <span className="text-cyber-glow">LOCAL</span> Mode by Default</span>
-              <span className="hidden sm:inline text-cyber-dim">|</span>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-cyan" aria-hidden="true">🔒</span> <span className="text-cyber-cyan">PRIVACY</span>-First</span>
-              <span className="hidden sm:inline text-cyber-dim">|</span>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-magenta" aria-hidden="true">🚀</span> <span className="text-cyber-magenta">ZERO</span> Sign-Up</span>
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-cyber-muted font-mono mt-6 anim-slide-up" style={{ animationDelay: '0.5s' }}>
+              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">⚡</span> {t('heroFeature1')}</span>
+              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🔒</span> {t('heroFeature2')}</span>
+              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🖥️</span> {t('heroFeature3')}</span>
+              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🌱</span> {t('heroFeature4')}</span>
+              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">💚</span> {t('heroFeature5')}</span>
             </div>
+
+            <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyber-dim mt-8 anim-slide-up" style={{ animationDelay: '0.6s' }}>
+              {t('heroSideLine1')}<br />
+              <span className="text-cyber-text">{t('heroSideLine2')}</span>
+            </p>
+            <p className="font-script text-cyber-glow text-3xl sm:text-4xl mt-2 -rotate-3 anim-slide-up" style={{ animationDelay: '0.7s' }}>
+              {t('heroHandwritten')}
+            </p>
           </div>
         </section>
 
@@ -603,6 +615,9 @@ export default function HomePage() {
               </Link>
               <Link href="/pillars" className="cyber-btn cyber-btn-cyan text-sm px-8 py-3.5 rounded">{t('ctaBrowse')}</Link>
             </div>
+            <p className="font-script text-cyber-glow text-2xl sm:text-3xl mt-10 rotate-2 whitespace-pre-line">
+              {t('ctaHandwritten')}
+            </p>
           </div>
         </section>
       </main>

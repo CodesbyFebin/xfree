@@ -804,6 +804,10 @@
     font-family: var(--font-orbitron), sans-serif;
   }
 
+  .font-script {
+    font-family: var(--font-caveat), cursive;
+  }
+
   .font-mono {
     font-family: var(--font-jetbrains), monospace;
   }
