@@ -127,6 +127,29 @@ const TOOL_COMPONENTS: Record<string, ComponentType> = {
   'whois-lookup': WhoisLookupTool,
 };
 
+// Maps this app's tool ids to Studio's own internal engine ids (verified
+// against public/studio/index.html's real ENGINES array - the two id
+// sets don't match, e.g. this app's 'hash-generator' is Studio's 'hash').
+// Only tools with a genuine Studio-side equivalent are listed; anything
+// else falls back to a plain (non-deep-linking) Studio link.
+const STUDIO_ENGINE_IDS: Record<string, string> = {
+  'json-to-csv': 'json-csv',
+  'csv-to-json': 'csv-json',
+  'base64-encode': 'base64-enc',
+  'base64-decode': 'base64-dec',
+  'word-counter': 'word-count',
+  'case-converter': 'case-conv',
+  'uuid-generator': 'uuid',
+  'hash-generator': 'hash',
+  'sha256-hash': 'hash',
+  'json-formatter': 'json-fmt',
+  'json-minify': 'json-min',
+  'regex-tester': 'regex',
+  'url-encode': 'url-enc',
+  'url-decode': 'url-enc',
+  'color-converter': 'color',
+};
+
 interface Props {
   params: Promise<{ slug?: string[]; locale: Locale }>;
 }
@@ -339,7 +362,7 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
                       Open XFree Studio to use {tool.title} in your browser.
                     </p>
                     <a
-                      href="https://app.xfree.in/"
+                      href={STUDIO_ENGINE_IDS[tool.id] ? `https://app.xfree.in/?tool=${STUDIO_ENGINE_IDS[tool.id]}` : 'https://app.xfree.in/'}
                       className="cyber-btn text-xs px-6 py-2.5 rounded inline-block"
                     >
                       Open in XFree Studio →

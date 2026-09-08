@@ -1471,6 +1471,15 @@ function init() {
     ['📝','Word Counter','Count words and characters'],
   ].map(([icon,label,cmd])=>`<button class="suggestion-chip" onclick="runSuggestion('${cmd}')">${icon} ${label}</button>`).join('');
   
+  // Deep-link support: ?tool=<engine-id> (e.g. from a marketing-site tool
+  // page's "Open in Studio" link) runs that engine immediately instead of
+  // showing the generic welcome screen. Silently ignored if the id isn't
+  // real - falls back to the normal welcome state rather than erroring.
+  const deepLinkTool = new URLSearchParams(window.location.search).get('tool');
+  if (deepLinkTool && ENGINES.some(e => e.id === deepLinkTool)) {
+    runEngineDirect(deepLinkTool);
+  }
+
   // File input
   $('fileInput').addEventListener('change', handleFiles);
   
