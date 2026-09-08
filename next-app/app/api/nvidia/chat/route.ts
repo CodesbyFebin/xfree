@@ -40,7 +40,14 @@ const OPENROUTER_MODELS = [
   'cohere/north-mini-code:free',
 ];
 
-function routeOpenRouterModels(taskType: string): string[] {
+function routeOpenRouterModels(taskType: string, requestedModel?: string): string[] {
+  // An explicit pick that's actually one of OpenRouter's models goes
+  // first, ahead of task-based ordering - this is what makes Studio's
+  // "preferred model" setting mean something for OpenRouter too, not
+  // just NVIDIA (which already honors requestedModel in its own client).
+  if (requestedModel && OPENROUTER_MODELS.includes(requestedModel)) {
+    return [requestedModel, ...OPENROUTER_MODELS.filter((m) => m !== requestedModel)];
+  }
   const isCodeTask = taskType === 'code' || taskType === 'sql' || taskType === 'json';
   if (!isCodeTask) return OPENROUTER_MODELS;
   const codeModel = 'cohere/north-mini-code:free';
@@ -111,7 +118,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (openrouterKey) {
-    const routed = routeOpenRouterModels(taskType);
+    const routed = routeOpenRouterModels(taskType, model);
     for (let i = 0; i < routed.length; i++) {
       const reply = await tryOpenRouterModel(openrouterKey, routed[i], messages, maxTokens ?? 512);
       if (reply) {

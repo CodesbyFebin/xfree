@@ -474,6 +474,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 
 .assistant-voice-unsupported{font-size:10px;color:#ffcc44;text-align:center;margin-top:2px}
 
+/* Workspace canvas - ChatGPT-style output area above the input, and the
+   home for uploaded-file chips (file upload workspace). */
+.assistant-workspace{position:relative;z-index:2;flex-shrink:0;margin:0 16px 8px;max-height:38vh;display:flex;flex-direction:column;
+  background:var(--a-surface);border:1px solid var(--a-line2);border-radius:14px;box-shadow:0 0 20px rgba(0,255,65,.08);overflow:hidden}
+.aw-header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--a-line)}
+.aw-title{display:flex;align-items:center;gap:7px;font:600 12px 'Orbitron',sans-serif;letter-spacing:.04em;color:var(--ag)}
+.aw-dot{width:6px;height:6px;border-radius:50%;background:var(--ag);box-shadow:0 0 8px var(--ag)}
+.aw-actions{display:flex;gap:5px}
+.aw-files{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px 0}
+.aw-files:empty{padding:0}
+.aw-file-chip{display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:9px;border:1px solid var(--a-line);background:rgba(0,255,65,.04);font-size:11px;color:var(--a-text)}
+.aw-file-chip .aw-file-remove{color:var(--a-muted);cursor:pointer}
+.aw-file-chip .aw-file-remove:hover{color:#ff5555}
+.aw-body{flex:1;overflow:auto;margin:0;padding:12px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;line-height:1.6;color:var(--a-text);white-space:pre-wrap;word-break:break-word}
+
 @media(max-width:520px){
   .jarvis-panel{display:none}
   .assistant-hud{width:230px;height:230px}
@@ -671,22 +686,64 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
         <div class="toggle on" id="toggleChain" onclick="toggleSetting('chain')"></div>
       </div>
       <div style="margin-top:16px">
+        <div class="panel-section-title" style="margin-bottom:10px">Voice &amp; Tone (X Assistant replies)</div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6">
+          Uses your browser's built-in text-to-speech voices (Web Speech API) - real voices your OS/browser already has installed, no server or API involved.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Voice</label>
+          <select class="form-select" id="voiceSelect" onchange="S.settings.voiceURI = this.value; saveAssistantSettings(); previewVoice()"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tone</label>
+          <select class="form-select" id="toneSelect" onchange="S.settings.voiceTone = this.value; saveAssistantSettings(); previewVoice()">
+            <option value="natural">Natural</option>
+            <option value="calm">Calm &amp; Slow</option>
+            <option value="energetic">Energetic &amp; Upbeat</option>
+            <option value="formal">Formal &amp; Precise</option>
+          </select>
+        </div>
+        <button class="form-btn form-btn-ghost" style="font-size:12px" onclick="previewVoice()">▶ Preview voice</button>
+      </div>
+      <div style="margin-top:16px">
         <div class="panel-section-title" style="margin-bottom:10px">Local AI via Ollama (pre-routed before cloud)</div>
         <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6">
           If Ollama is running on your own machine, commands that don't match a built-in tool are tried against it first - nothing leaves your device. Requires Ollama started with <code>OLLAMA_ORIGINS=https://app.xfree.in ollama serve</code> (its default CORS policy otherwise blocks this page from reaching it) and the model already pulled (<code>ollama pull llama3.2:1b</code>).
         </p>
         <div class="form-group">
           <label class="form-label">Ollama URL</label>
-          <input class="form-input" id="ollamaUrlInput" value="http://localhost:11434" oninput="S.settings.ollamaUrl = this.value">
+          <input class="form-input" id="ollamaUrlInput" value="http://localhost:11434" oninput="S.settings.ollamaUrl = this.value; saveAssistantSettings()">
         </div>
         <div class="form-group">
           <label class="form-label">Model</label>
-          <input class="form-input" id="ollamaModelInput" value="llama3.2:1b" oninput="S.settings.ollamaModel = this.value">
+          <input class="form-input" id="ollamaModelInput" value="llama3.2:1b" oninput="S.settings.ollamaModel = this.value; saveAssistantSettings()">
         </div>
       </div>
       <div style="margin-top:16px">
         <div class="panel-section-title" style="margin-bottom:10px">Cloud Fallback Models (NVIDIA + OpenRouter)</div>
+        <div class="form-group">
+          <label class="form-label">Preferred model</label>
+          <select class="form-select" id="modelSelect" onchange="S.settings.selectedModel = this.value; saveAssistantSettings()">
+            <option value="auto">Auto (task-routed - recommended)</option>
+          </select>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5">
+            "Auto" lets the gateway pick the best available free model per request (real NVIDIA catalog discovery + task scoring). Picking one here requests it specifically - the gateway still falls back automatically if it's unavailable.
+          </p>
+        </div>
         <div id="nimModelsList"></div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="panel-section-title" style="margin-bottom:10px">MCP Connector</div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6">
+          Connect a <strong style="color:var(--text-primary)">remote</strong> MCP server (Streamable HTTP transport, CORS-enabled for browser clients). Most desktop MCP servers use local stdio and can't be reached from a webpage at all - this only works with MCP servers built to be called directly from a browser.
+        </p>
+        <div class="form-group">
+          <label class="form-label">MCP Server URL</label>
+          <input class="form-input" id="mcpUrlInput" placeholder="https://example.com/mcp" oninput="S.settings.mcpUrl = this.value; saveAssistantSettings()">
+        </div>
+        <button class="form-btn form-btn-ghost" style="font-size:12px" onclick="connectMCP()">🔌 Connect</button>
+        <div id="mcpStatus" style="font-size:11px;color:var(--text-muted);margin-top:8px"></div>
+        <div id="mcpToolsList" style="margin-top:8px"></div>
       </div>
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
         <div class="panel-section-title" style="margin-bottom:8px">Get a Free API Key</div>
@@ -818,6 +875,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
       <button class="suggestion-chip" onclick="runAssistantSuggestion('Summarize this text: ', 'summarization')">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg>Summarize this text
       </button>
+      <button class="suggestion-chip" onclick="runAssistantSuggestion('Generate an image of ')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>Generate an image
+      </button>
       <button class="suggestion-chip" onclick="openSeoTools()">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 19a8 8 0 100-16 8 8 0 000 16zm10 2l-4.35-4.35"/></svg>Open SEO tools
       </button>
@@ -825,6 +885,28 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Write an article
       </button>
     </div>
+  </div>
+
+  <div class="assistant-workspace" id="assistantWorkspace" style="display:none">
+    <div class="aw-header">
+      <div class="aw-title"><span class="aw-dot"></span><span id="awTitle">Workspace</span></div>
+      <div class="aw-actions">
+        <button class="assistant-side-btn" id="awUploadBtn" onclick="$('fileInput').click()" title="Upload a file" style="width:30px;height:30px">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+        </button>
+        <button class="assistant-side-btn" onclick="copyWorkspace()" title="Copy" style="width:30px;height:30px">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+        </button>
+        <button class="assistant-side-btn" onclick="downloadWorkspace()" title="Download" style="width:30px;height:30px">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v12m0 0l4-4m-4 4l-4-4M4 20h16"/></svg>
+        </button>
+        <button class="assistant-side-btn" onclick="hideWorkspace()" title="Close" style="width:30px;height:30px">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="aw-files" id="awFiles"></div>
+    <pre class="aw-body" id="awBody"></pre>
   </div>
 
   <div class="assistant-controls">
@@ -874,7 +956,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 const S = {
   files: [], results: [], messages: [], notifications: [], reminders: [],
   mode: 'local', isProcessing: false, lastResult: null, mobTab: 'chat',
-  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b' },
+  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'auto', mcpUrl: '' },
+  mcp: { connected: false, tools: [], sessionId: null, requestId: 0 },
   nimModels: [
     { id: 'meta/llama-3.1-8b-instruct', name: 'Llama 3.1 8B', status: 'checking', provider: 'NVIDIA' },
     { id: 'google/gemma-2-9b-it', name: 'Gemma 2 9B', status: 'checking', provider: 'NVIDIA' },
@@ -986,6 +1069,7 @@ async function tryNIMFallback(prompt, taskType) {
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
+        model: S.settings.selectedModel && S.settings.selectedModel !== 'auto' ? S.settings.selectedModel : undefined,
         taskType: taskType || 'general',
         messages: [{ role: 'user', content: prompt }],
         maxTokens: 512,
@@ -1021,6 +1105,148 @@ async function tryNIMFallback(prompt, taskType) {
   }
 }
 
+// ═══════════════════════════════════════════════════════
+// MULTI-AGENT ORCHESTRATION - a real two-stage draft->review chain
+// through the same /api/nvidia/chat gateway (2 real calls, different
+// system-role prompts), not a fake "multi-agent" label on one call.
+// Only triggered for tasks where a second pass genuinely adds value
+// (code, articles) - everything else stays a single call, since running
+// two LLM calls for "generate a UUID"-style requests would just burn
+// the free tier's rate limit for no benefit.
+// ═══════════════════════════════════════════════════════
+async function callGatewayRaw(messages, taskType) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    const res = await fetch('/api/nvidia/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: S.settings.selectedModel && S.settings.selectedModel !== 'auto' ? S.settings.selectedModel : undefined,
+        taskType: taskType || 'general',
+        messages,
+        maxTokens: 700,
+      }),
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return { success: false };
+    const data = await res.json();
+    return { success: true, content: data.reply, model: data.model };
+  } catch (e) {
+    return { success: false };
+  }
+}
+
+function shouldUseMultiAgent(taskType, cmd) {
+  if (taskType === 'code') return true;
+  const lower = cmd.toLowerCase();
+  return /\b(write|draft)\b.{0,20}\barticle\b/.test(lower);
+}
+
+async function runMultiAgentPipeline(cmd, taskType) {
+  addAssistantMsg('assistant', `👥 **Multi-agent mode** — Drafter agent working…`);
+  const draft = await callGatewayRaw(
+    [
+      { role: 'system', content: 'You are the Drafter agent. Produce a complete, direct first draft of what the user asked for. Do not explain your reasoning, just produce the draft.' },
+      { role: 'user', content: cmd },
+    ],
+    taskType
+  );
+  if (!draft.success) return { success: false };
+
+  addAssistantMsg('assistant', `👥 **Drafter** (${draft.model}) produced a draft. **Reviewer agent** checking it…`);
+  const review = await callGatewayRaw(
+    [
+      { role: 'system', content: 'You are the Reviewer agent. You are given a user request and a draft response from another agent. Improve correctness, clarity, and completeness. Output ONLY the final improved version - no meta-commentary about what you changed.' },
+      { role: 'user', content: `Original request: ${cmd}\n\nDraft to review and improve:\n${draft.content}` },
+    ],
+    taskType
+  );
+  if (!review.success) return { success: true, content: draft.content, model: draft.model, agents: 'Drafter only (Reviewer unavailable)' };
+
+  return { success: true, content: review.content, model: review.model, agents: `Drafter: ${draft.model} → Reviewer: ${review.model}` };
+}
+
+// ═══════════════════════════════════════════════════════
+// MCP CONNECTOR - a real minimal MCP client speaking JSON-RPC 2.0 over
+// the "Streamable HTTP" transport from the MCP spec (2025-03-26+): POST
+// a JSON-RPC envelope to the server's single endpoint, read back a
+// JSON-RPC response (or an SSE stream - handled below by reading the
+// body as text and parsing out the last "data:" event's JSON, since
+// this is a plain fetch() with no EventSource wiring). Only reaches
+// remote MCP servers that explicitly allow cross-origin browser
+// requests - most existing MCP servers are local stdio processes for
+// desktop apps and are simply unreachable from a webpage, which is why
+// this is opt-in and clearly labeled in Settings rather than assumed.
+async function mcpRequest(method, params) {
+  const url = S.settings.mcpUrl;
+  if (!url) return { error: 'No MCP server URL configured' };
+  S.mcp.requestId++;
+  const body = { jsonrpc: '2.0', id: S.mcp.requestId, method, params: params || {} };
+  try {
+    const headers = { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream' };
+    if (S.mcp.sessionId) headers['Mcp-Session-Id'] = S.mcp.sessionId;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15000),
+    });
+    const sid = res.headers.get('Mcp-Session-Id');
+    if (sid) S.mcp.sessionId = sid;
+    const raw = await res.text();
+    let json;
+    if (raw.trim().startsWith('data:')) {
+      const lastEvent = raw.trim().split('\n\n').filter(Boolean).pop();
+      const dataLine = lastEvent.split('\n').find((l) => l.startsWith('data:'));
+      json = JSON.parse(dataLine.slice(5).trim());
+    } else {
+      json = JSON.parse(raw);
+    }
+    if (json.error) return { error: json.error.message || 'MCP server returned an error' };
+    return { result: json.result };
+  } catch (e) {
+    return { error: e.name === 'TimeoutError' ? 'MCP server timed out' : 'Could not reach MCP server (likely blocked by CORS - most MCP servers are local-only and not callable from a browser)' };
+  }
+}
+
+async function connectMCP() {
+  const status = $('mcpStatus');
+  const url = S.settings.mcpUrl?.trim();
+  if (!url) { status.textContent = 'Enter an MCP server URL first.'; return; }
+  status.textContent = 'Connecting…';
+  S.mcp.sessionId = null;
+  const init = await mcpRequest('initialize', {
+    protocolVersion: '2025-03-26',
+    capabilities: {},
+    clientInfo: { name: 'XFree Studio', version: '1.0.0' },
+  });
+  if (init.error) {
+    status.textContent = `⚠️ ${init.error}`;
+    S.mcp.connected = false;
+    return;
+  }
+  const list = await mcpRequest('tools/list');
+  if (list.error) {
+    status.textContent = `⚠️ Connected, but couldn't list tools: ${list.error}`;
+    S.mcp.connected = true;
+    return;
+  }
+  S.mcp.tools = list.result?.tools || [];
+  S.mcp.connected = true;
+  status.textContent = `✅ Connected — ${S.mcp.tools.length} tool${S.mcp.tools.length === 1 ? '' : 's'} available`;
+  $('mcpToolsList').innerHTML = S.mcp.tools.map((t) => `
+    <div class="nim-model"><div class="nim-model-status" style="background:var(--success)"></div>
+      <div class="nim-model-name">${escHtml(t.name)}<div style="font-size:10px;color:var(--text-muted);font-weight:400">${escHtml(t.description || '')}</div></div>
+    </div>`).join('');
+  showToast('MCP server connected', 'success');
+}
+
+async function callMCPTool(name, args) {
+  return mcpRequest('tools/call', { name, arguments: args || {} });
+}
+
 function updateNIMStatus(text) {
   const dot = S.nimModels.some(m => m.status === 'active') ? 'active' : S.nimModels.some(m => m.status === 'trying') ? 'pending' : 'error';
   const html = `<span class="nim-dot ${dot}"></span><span>${text}</span>`;
@@ -1038,6 +1264,13 @@ function updateNIMModels() {
   `).join('');
   const el1 = $('nimModelsList'); if(el1) el1.innerHTML = html;
   const el2 = $('nimModelsListModal'); if(el2) el2.innerHTML = html;
+
+  const sel = $('modelSelect');
+  if (sel && sel.options.length <= 1) {
+    sel.innerHTML = '<option value="auto">Auto (task-routed - recommended)</option>' +
+      S.nimModels.map(m => `<option value="${m.id}">${m.name} (${m.provider})</option>`).join('');
+    sel.value = S.settings.selectedModel || 'auto';
+  }
 }
 
 // Initial NIM check
@@ -1558,6 +1791,7 @@ function handleFiles(e) {
 
 function renderFileList() {
   $('fileCount').textContent = S.files.length;
+  renderAssistantFiles();
   if (!S.files.length) {
     $('fileList').innerHTML = '<div style="text-align:center;padding:20px 0"><span style="font-size:12px;color:var(--text-muted)">No files yet</span></div>';
     const ml=$('mobFileList'); if(ml) ml.innerHTML='';
@@ -1575,6 +1809,24 @@ function renderFileList() {
 }
 
 function removeFile(i) { S.files.splice(i,1); renderFileList(); playClickSound(); }
+
+// Mirrors the same real S.files array (shared with the main dashboard's
+// file list) into the assistant workspace's file chip row - one real
+// multi-file workspace, not a second parallel file system.
+function renderAssistantFiles() {
+  const el = $('awFiles');
+  if (!el) return;
+  el.innerHTML = S.files.map((f, i) => `
+    <span class="aw-file-chip">${getFileIcon(f.name)} ${escHtml(f.name)} <span class="aw-file-remove" onclick="removeFile(${i})">✕</span></span>
+  `).join('');
+  if (S.files.length && $('assistantWorkspace').style.display === 'none') {
+    $('awTitle').textContent = `Workspace · ${S.files.length} file${S.files.length > 1 ? 's' : ''}`;
+    $('awBody').textContent = WS.content || 'Files attached. Ask X to analyze, convert, or summarize them.';
+    $('assistantWorkspace').style.display = 'flex';
+  } else if (!S.files.length && !WS.content) {
+    hideWorkspace();
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // NOTIFICATIONS
@@ -1734,7 +1986,7 @@ function setMode(mode) {
 function openModal(type) {
   $('modalOverlay').classList.add('open');
   $$('.modal').forEach(m => m.style.display = 'none');
-  if (type === 'settings') { $('settingsModal').style.display = 'flex'; updateNIMModels(); }
+  if (type === 'settings') { $('settingsModal').style.display = 'flex'; updateNIMModels(); syncSettingsUI(); }
   if (type === 'reminder') $('reminderModal').style.display = 'flex';
   if (type === 'nim') { $('nimModal').style.display = 'flex'; updateNIMModels(); }
   playClickSound();
@@ -1745,11 +1997,30 @@ function closeModal() {
   $$('.modal').forEach(m => m.style.display = 'none');
 }
 
+// Reflects loaded S.settings into the Settings modal's controls - the
+// toggles/inputs otherwise show their hardcoded HTML defaults regardless
+// of what was actually loaded from localStorage.
+function syncSettingsUI() {
+  ['audio', 'desktop', 'chain'].forEach((key) => {
+    const el = $(`toggle${key.charAt(0).toUpperCase()+key.slice(1)}`);
+    el?.classList.toggle('on', Boolean(S.settings[key]));
+  });
+  if ($('ollamaUrlInput')) $('ollamaUrlInput').value = S.settings.ollamaUrl || '';
+  if ($('ollamaModelInput')) $('ollamaModelInput').value = S.settings.ollamaModel || '';
+  if ($('toneSelect')) $('toneSelect').value = S.settings.voiceTone || 'natural';
+  if ($('mcpUrlInput')) $('mcpUrlInput').value = S.settings.mcpUrl || '';
+  populateVoiceSelect();
+}
+
 function toggleSetting(key) {
   S.settings[key] = !S.settings[key];
-  const el = $(`#toggle${key.charAt(0).toUpperCase()+key.slice(1)}`);
-  el.classList.toggle('on', S.settings[key]);
-  
+  // Was $(`#toggle${...}`) - $ is getElementById, which needs a bare id
+  // (no leading "#"); that always returned null and threw on the next
+  // line, so no settings toggle in this modal ever visually updated.
+  const el = $(`toggle${key.charAt(0).toUpperCase()+key.slice(1)}`);
+  el?.classList.toggle('on', S.settings[key]);
+  saveAssistantSettings();
+
   if (key === 'desktop' && S.settings.desktop && Notification.permission !== 'granted') {
     Notification.requestPermission();
   }
@@ -1826,6 +2097,11 @@ function runEngineDirect(id) {
 // ═══════════════════════════════════════════════════════
 function init() {
   updateThemeIcon();
+  loadAssistantSettings();
+  if ('speechSynthesis' in window) {
+    populateVoiceSelect();
+    speechSynthesis.onvoiceschanged = populateVoiceSelect;
+  }
 
   // Engine shortcuts
   $('engineGrid').innerHTML = ENGINES.slice(0,10).map(e=>`<button class="engine-chip" onclick="runEngineDirect('${e.id}')">${e.icon} ${e.name}</button>`).join('');
@@ -1987,14 +2263,141 @@ function addAssistantMsg(role, text) {
   requestAnimationFrame(() => { $('assistantBody').scrollTop = $('assistantBody').scrollHeight; });
 }
 
+// ═══════════════════════════════════════════════════════
+// WORKSPACE CANVAS (ChatGPT-style output area above the input) - also
+// the artifact viewer: a fenced code block or long reply gets promoted
+// here instead of staying buried in a small chat bubble.
+// ═══════════════════════════════════════════════════════
+const WS = { content: '', filename: 'output.txt', imageUrl: null };
+const CODE_FENCE = /```(\w+)?\n([\s\S]*?)```/;
+
+function maybePromoteToWorkspace(title, text) {
+  const fence = CODE_FENCE.exec(text);
+  if (fence) {
+    const lang = fence[1] || 'text';
+    showWorkspace(`${title} · ${lang}`, fence[2].trim(), `output.${{python:'py',javascript:'js',typescript:'ts',html:'html',css:'css',json:'json',bash:'sh',sql:'sql'}[lang] || 'txt'}`);
+  } else if (text.length > 260) {
+    showWorkspace(title, text, 'output.txt');
+  }
+}
+
+function showWorkspace(title, content, filename) {
+  WS.content = content;
+  WS.filename = filename || 'output.txt';
+  WS.imageUrl = null;
+  $('awTitle').textContent = title;
+  $('awBody').style.display = 'block';
+  $('awBody').innerHTML = '';
+  $('awBody').textContent = content;
+  $('assistantWorkspace').style.display = 'flex';
+}
+
+function showWorkspaceImage(title, url) {
+  WS.content = '';
+  WS.imageUrl = url;
+  WS.filename = 'xfree-generated-image.jpg';
+  $('awTitle').textContent = title;
+  $('awBody').style.display = 'flex';
+  $('awBody').innerHTML = `<img src="${url}" alt="${escHtml(title)}" style="max-width:100%;border-radius:10px;margin:auto;display:block">`;
+  $('assistantWorkspace').style.display = 'flex';
+}
+
+// Real, free, keyless image generation (Pollinations.ai's public
+// text-to-image endpoint - no API key, no signup, no server round-trip
+// needed since it's a plain GET-with-params image URL). Genuinely free,
+// unlike the mockup's "Generate an image" chip, which had zero backend.
+function extractImagePrompt(cmd) {
+  const m = /\b(?:generate|create|draw|make|paint)\b.{0,25}\b(?:an?\s+)?(?:image|picture|photo|artwork|illustration|drawing)\b(?:\s+of\s+(.+)|\s*[:\-]\s*(.+))?/i.exec(cmd);
+  if (!m) return null;
+  const subject = (m[1] || m[2] || '').trim();
+  return subject || null;
+}
+
+async function runImageGeneration(prompt) {
+  addAssistantMsg('assistant', `🎨 Generating an image of **${escHtml(prompt)}**…`);
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&nologo=true&seed=${Math.floor(Math.random() * 1e6)}`;
+  showWorkspaceImage(`Image · ${prompt}`, url);
+  addAssistantMsg('assistant', `✨ Here's your image — open the workspace above, or download it from there.`);
+  playSuccessSound();
+}
+
+function hideWorkspace() {
+  $('assistantWorkspace').style.display = 'none';
+}
+
+function copyWorkspace() {
+  if (WS.imageUrl) { navigator.clipboard.writeText(WS.imageUrl).then(() => showToast('Image URL copied', 'success')); return; }
+  if (!WS.content) return;
+  navigator.clipboard.writeText(WS.content).then(() => showToast('Copied', 'success'));
+}
+
+function downloadWorkspace() {
+  if (WS.imageUrl) { window.open(WS.imageUrl, '_blank', 'noopener'); return; }
+  if (!WS.content) return;
+  const blob = new Blob([WS.content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = WS.filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Tone presets map to real SpeechSynthesisUtterance rate/pitch values -
+// there's no separate "voice persona" concept in the Web Speech API, so
+// tone is honestly implemented as pacing/pitch on top of whichever real
+// installed voice the visitor picked, not a fake distinct voice.
+const VOICE_TONES = {
+  natural: { rate: 1.02, pitch: 1.0 },
+  calm: { rate: 0.85, pitch: 0.92 },
+  energetic: { rate: 1.18, pitch: 1.12 },
+  formal: { rate: 0.95, pitch: 0.97 },
+};
+
+function populateVoiceSelect() {
+  if (!('speechSynthesis' in window)) return;
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return;
+  const sel = $('voiceSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Browser default</option>' +
+    voices.map((v) => `<option value="${escHtml(v.voiceURI)}">${escHtml(v.name)} (${escHtml(v.lang)})</option>`).join('');
+  sel.value = S.settings.voiceURI || '';
+}
+
 function speakAssistant(text) {
   if (AS.voiceMuted || !('speechSynthesis' in window)) return;
   try {
     const plain = text.replace(/\*\*(.+?)\*\*/g, '$1').replace(/`(.+?)`/g, '$1').replace(/[#*_]/g, '');
     const utter = new SpeechSynthesisUtterance(plain.slice(0, 600));
-    utter.rate = 1.02;
+    const tone = VOICE_TONES[S.settings.voiceTone] || VOICE_TONES.natural;
+    utter.rate = tone.rate;
+    utter.pitch = tone.pitch;
+    if (S.settings.voiceURI) {
+      const match = speechSynthesis.getVoices().find((v) => v.voiceURI === S.settings.voiceURI);
+      if (match) utter.voice = match;
+    }
     speechSynthesis.cancel();
     speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
+function previewVoice() {
+  const plain = "Hi, I'm X. This is how I'll sound.";
+  AS.voiceMuted = false;
+  speakAssistant(plain);
+}
+
+// Persists to localStorage so voice/tone/model/Ollama choices survive a
+// reload - none of S.settings was persisted before this.
+function saveAssistantSettings() {
+  try { localStorage.setItem('xfree-studio-settings', JSON.stringify(S.settings)); } catch (e) {}
+}
+
+function loadAssistantSettings() {
+  try {
+    const raw = localStorage.getItem('xfree-studio-settings');
+    if (raw) Object.assign(S.settings, JSON.parse(raw));
   } catch (e) {}
 }
 
@@ -2048,6 +2451,38 @@ async function runAssistantCommand(cmd) {
   const lower = cmd.toLowerCase();
   let matched = false;
 
+  const imagePrompt = extractImagePrompt(cmd);
+  if (imagePrompt) {
+    matched = true;
+    setJarvisStage('executing');
+    await runImageGeneration(imagePrompt);
+    setJarvisStage('complete');
+    $('assistantStatusLine').innerHTML = 'Tap the mic or type to <span class="accent">continue</span>';
+    setTimeout(resetJarvisStages, 1800);
+    return;
+  }
+
+  if (S.mcp.connected && S.mcp.tools.length) {
+    const mcpTool = S.mcp.tools.find((t) => lower.includes(t.name.replace(/[-_]/g, ' ').toLowerCase()));
+    if (mcpTool) {
+      matched = true;
+      setJarvisStage('executing');
+      addAssistantMsg('assistant', `🔌 Calling MCP tool **${mcpTool.name}**…`);
+      const mcpResult = await callMCPTool(mcpTool.name, { input: cmd });
+      if (mcpResult.error) {
+        addAssistantMsg('assistant', `⚠️ MCP tool failed: ${mcpResult.error}`);
+      } else {
+        const text = mcpResult.result?.content?.map((c) => c.text || '').join('\n') || JSON.stringify(mcpResult.result);
+        addAssistantMsg('assistant', `✅ **${mcpTool.name}**:\n\n${text}`);
+        maybePromoteToWorkspace(mcpTool.name, text);
+      }
+      setJarvisStage('complete');
+      $('assistantStatusLine').innerHTML = 'Tap the mic or type to <span class="accent">continue</span>';
+      setTimeout(resetJarvisStages, 1800);
+      return;
+    }
+  }
+
   for (const eng of ENGINES) {
     if (eng.keywords.some((k) => lower.includes(k))) {
       matched = true;
@@ -2070,6 +2505,7 @@ async function runAssistantCommand(cmd) {
     if (ollamaResult.success) {
       setJarvisStage('executing');
       addAssistantMsg('assistant', `🖥️ **${ollamaResult.model}** (local via Ollama):\n\n${ollamaResult.content}`);
+      maybePromoteToWorkspace(ollamaResult.model, ollamaResult.content);
       speakAssistant(ollamaResult.content);
       matched = true;
     }
@@ -2077,9 +2513,12 @@ async function runAssistantCommand(cmd) {
 
   if (!matched && S.mode === 'cloud') {
     setJarvisStage('executing');
-    const nimResult = await tryNIMFallback(cmd, taskType);
+    const useMultiAgent = shouldUseMultiAgent(taskType, cmd);
+    const nimResult = useMultiAgent ? await runMultiAgentPipeline(cmd, taskType) : await tryNIMFallback(cmd, taskType);
     if (nimResult.success) {
-      addAssistantMsg('assistant', `☁️ **${nimResult.model}**:\n\n${nimResult.content}`);
+      const header = useMultiAgent ? `👥 **${nimResult.agents}**` : `☁️ **${nimResult.model}**`;
+      addAssistantMsg('assistant', `${header}:\n\n${nimResult.content}`);
+      maybePromoteToWorkspace(nimResult.model || 'multi-agent', nimResult.content);
       speakAssistant(nimResult.content);
     } else if (nimResult.reason === 'not_configured') {
       addAssistantMsg('assistant', `Cloud Mode isn't configured on this server yet. I couldn't match "**${escHtml(cmd)}**" to a local tool either — try being more specific, or open Settings to add an Ollama/API key.`);
