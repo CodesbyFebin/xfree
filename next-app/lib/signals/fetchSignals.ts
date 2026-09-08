@@ -76,27 +76,34 @@ async function fetchOneFeed(source: SignalSource): Promise<SignalItem[]> {
   }
 }
 
-// Cap per-source before merging, not just overall. Without this, a
-// source that posts daily (Vercel, OpenAI) fills the entire global
-// top-N by pure recency and squeezes out sources that post less often
-// but are still core to XFree's identity (MDN, web.dev, Chrome) - the
-// exact "generic tech-news aggregator" outcome the curation is meant
-// to avoid.
-const MAX_ITEMS_PER_SOURCE = 8;
+/** Cap per-source before merging, not just overall - and cap
+ *  proportionally to each source's `weight` (see sources.ts), not
+ *  equally. Without this, a source that posts daily (Vercel, OpenAI)
+ *  fills the entire global top-N by pure recency and squeezes out
+ *  sources that post less often but are still core to XFree's identity
+ *  (MDN, web.dev, Chrome) - the exact "generic tech-news aggregator"
+ *  outcome the curation is meant to avoid. Oversample the pool 1.5x
+ *  past `limit` before the final recency sort/slice, so a lower-weight
+ *  source's cap isn't so small it starves out entirely once merged. */
+function sourceCap(weight: number, poolSize: number): number {
+  return Math.max(2, Math.round(weight * poolSize * 1.5));
+}
 
-/** Fetches all 10 sources in parallel, caps each source's contribution,
- *  deduplicates by URL, sorts by recency, and caps the overall result.
- *  Cached for 1 hour via each fetch()'s own `next.revalidate` (Next.js's
- *  data cache), so this is cheap to call from multiple pages/categories
- *  without re-fetching every feed on every request. */
+/** Fetches all 10 sources in parallel, caps each source's contribution
+ *  proportionally to its configured weight, deduplicates by URL, sorts
+ *  by recency, and caps the overall result. Cached for 1 hour via each
+ *  fetch()'s own `next.revalidate` (Next.js's data cache), so this is
+ *  cheap to call from multiple pages/categories without re-fetching
+ *  every feed on every request. */
 export async function getSignals(limit = 60): Promise<SignalItem[]> {
   const results = await Promise.all(SIGNAL_SOURCES.map(fetchOneFeed));
 
-  const balanced = results.flatMap((items) => {
+  const balanced = results.flatMap((items, i) => {
+    const cap = sourceCap(SIGNAL_SOURCES[i].weight, limit);
     const sorted = [...items].sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
-    return sorted.slice(0, MAX_ITEMS_PER_SOURCE);
+    return sorted.slice(0, cap);
   });
 
   const seen = new Set<string>();
