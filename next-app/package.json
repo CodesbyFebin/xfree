@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true npm run build",
+    "submit-indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.0",

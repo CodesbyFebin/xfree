@@ -1,0 +1,31 @@
+name: Submit sitemap to IndexNow
+
+# Runs against next-app specifically - the actual deployed codebase for
+# www.xfree.in. Unlike the other workflows in this repo (ci/security/
+# accessibility/performance), which all run against the repo root and
+# don't touch next-app at all.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'next-app/**'
+  workflow_dispatch: {}
+
+jobs:
+  submit:
+    name: Notify IndexNow (Bing, Yandex, Seznam, Naver)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Wait for deployment to go live
+        run: sleep 90
+
+      - name: Submit sitemap URLs to IndexNow
+        working-directory: next-app
+        run: node scripts/submit-indexnow.mjs
