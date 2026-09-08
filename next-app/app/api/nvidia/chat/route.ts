@@ -1,42 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { createChatCompletion, NvidiaNotConfiguredError, NvidiaApiError } from '@/lib/nvidia/client';
+import { NVIDIA_TASK_TYPES } from '@/lib/nvidia/types';
+import type { NvidiaChatMessage } from '@/lib/nvidia/types';
 
 // Backs Studio's (app.xfree.in) Cloud Mode. Studio's own vercel.json
 // rewrites every /api/* request there to www.xfree.in/api/*, so this
 // route - despite living in the marketing-site codebase - is Studio's
-// real backend for this path. The frontend (public/studio/index.html,
-// tryNIMFallback()) already expects exactly this contract: POST with
-// {taskType, messages, maxTokens}, a 503 when no provider is
-// configured, and {model, reply, wasFallback} on success. That
-// contract existed before this route did - the frontend was
-// previously calling a same-origin path with no backend behind it at
-// all (confirmed via a repo-wide search: no /api/nvidia/chat route
-// existed anywhere before this file).
+// real backend for this path.
+//
+// Provider order: NVIDIA NIM first, via the same dynamic model-discovery
+// + task-ranked cascading-fallback client already proven out in the root
+// app's Express server (src/server/nvidia/*, ported here verbatim except
+// for env access) - real /v1/models discovery, 6 task types scored
+// against each model id, and a 12-candidate fallback walk that skips
+// models this account's free tier 404s on. OpenRouter's smaller free
+// catalog is the second-tier fallback if NVIDIA has no key configured or
+// every NVIDIA candidate fails.
 const RequestSchema = z.object({
-  taskType: z.string().optional(),
+  model: z.string().trim().min(1).max(300).optional(),
+  taskType: z.enum(NVIDIA_TASK_TYPES).default('general'),
   messages: z
     .array(z.object({ role: z.enum(['user', 'assistant', 'system']), content: z.string() }))
-    .min(1),
-  maxTokens: z.number().int().positive().max(2048).optional().default(512),
+    .min(1)
+    .max(20),
+  temperature: z.number().min(0).max(1).optional(),
+  maxTokens: z.number().int().positive().max(4096).optional(),
 });
-
-// NVIDIA NIM's real free-tier catalog (build.nvidia.com), matching the
-// exact 5 model ids Studio's frontend already displays in its status
-// panel - S.nimModels in index.html.
-const NVIDIA_MODELS = [
-  'meta/llama-3.1-8b-instruct',
-  'google/gemma-2-9b-it',
-  'mistralai/mistral-7b-instruct-v0.3',
-  'microsoft/phi-3-mini-128k-instruct',
-  'nvidia/llama3-chatqa-1.5-8b',
-];
 
 // OpenRouter's real, currently-free model ids - verified live against
 // https://openrouter.ai/api/v1/models before writing this (a pasted
-// doc's suggested list was more than half fabricated/outdated
-// entries, e.g. "meta-llama/llama-3.3-70b-instruct:free" is not on
-// OpenRouter's free tier right now). Only the confirmed-real ones are
-// used here.
+// doc's suggested list was more than half fabricated/outdated entries).
+// Only used as a fallback tier below NVIDIA's much larger, dynamically
+// discovered catalog.
 const OPENROUTER_MODELS = [
   'nvidia/nemotron-3-super-120b-a12b:free',
   'nvidia/nemotron-3-ultra-550b-a55b:free',
@@ -44,15 +40,21 @@ const OPENROUTER_MODELS = [
   'cohere/north-mini-code:free',
 ];
 
-async function tryModel(
-  url: string,
+function routeOpenRouterModels(taskType: string): string[] {
+  const isCodeTask = taskType === 'code' || taskType === 'sql' || taskType === 'json';
+  if (!isCodeTask) return OPENROUTER_MODELS;
+  const codeModel = 'cohere/north-mini-code:free';
+  return [codeModel, ...OPENROUTER_MODELS.filter((m) => m !== codeModel)];
+}
+
+async function tryOpenRouterModel(
   apiKey: string,
   model: string,
   messages: { role: string; content: string }[],
   maxTokens: number
 ): Promise<string | null> {
   try {
-    const res = await fetch(url, {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({ model, messages, max_tokens: maxTokens }),
@@ -79,35 +81,42 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
-  const { messages, maxTokens } = parsed.data;
+  const { model, taskType, messages, temperature, maxTokens } = parsed.data;
 
-  // Cascading fallback: every configured NVIDIA model, in order, then
-  // every configured OpenRouter model, in order. First success wins.
   if (nvidiaKey) {
-    for (let i = 0; i < NVIDIA_MODELS.length; i++) {
-      const model = NVIDIA_MODELS[i];
-      const reply = await tryModel(
-        'https://integrate.api.nvidia.com/v1/chat/completions',
-        nvidiaKey,
-        model,
-        messages,
-        maxTokens
-      );
-      if (reply) return NextResponse.json({ model, reply, wasFallback: i > 0 });
+    try {
+      const result = await createChatCompletion({
+        requestedModel: model,
+        taskType,
+        messages: messages as NvidiaChatMessage[],
+        temperature,
+        maxTokens,
+      });
+      return NextResponse.json({
+        success: true,
+        provider: 'NVIDIA NIM',
+        model: result.usedModel,
+        wasFallback: result.wasFallback,
+        fallbackReason: result.fallbackReason,
+        reply: result.reply,
+        usage: result.usage,
+      });
+    } catch (err) {
+      // Not configured or every NVIDIA candidate failed - fall through to
+      // OpenRouter below rather than erroring out, as long as it's set up.
+      if (!(err instanceof NvidiaNotConfiguredError) && !(err instanceof NvidiaApiError)) {
+        throw err;
+      }
     }
   }
 
   if (openrouterKey) {
-    for (let i = 0; i < OPENROUTER_MODELS.length; i++) {
-      const model = OPENROUTER_MODELS[i];
-      const reply = await tryModel(
-        'https://openrouter.ai/api/v1/chat/completions',
-        openrouterKey,
-        model,
-        messages,
-        maxTokens
-      );
-      if (reply) return NextResponse.json({ model, reply, wasFallback: true });
+    const routed = routeOpenRouterModels(taskType);
+    for (let i = 0; i < routed.length; i++) {
+      const reply = await tryOpenRouterModel(openrouterKey, routed[i], messages, maxTokens ?? 512);
+      if (reply) {
+        return NextResponse.json({ success: true, provider: 'OpenRouter', model: routed[i], reply, wasFallback: true });
+      }
     }
   }
 

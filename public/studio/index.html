@@ -354,6 +354,81 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 .nim-model-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .nim-model-name{font-size:12px;font-weight:500;flex:1}
 .nim-model-tag{font-size:10px;color:var(--text-muted);background:var(--bg-elevated);padding:2px 6px;border-radius:4px}
+
+/* ═══════════════════════════════════════════════════════
+   AI ASSISTANT VIEW
+   ═══════════════════════════════════════════════════════ */
+.assistant-view{position:fixed;inset:0;z-index:40;background:var(--bg-deep);display:none;flex-direction:column;overflow:hidden}
+.assistant-view.open{display:flex}
+.assistant-header{flex-shrink:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--glass-border);background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.assistant-header-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.assistant-header-title .dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+
+.jarvis-panel{position:absolute;top:64px;right:14px;z-index:2;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:10px;font-family:'SF Mono',monospace;min-width:150px;box-shadow:var(--shadow)}
+.jarvis-panel-title{color:var(--accent);font-weight:700;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.jarvis-panel-title .dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+.jarvis-stage{display:flex;align-items:center;gap:6px;padding:2px 0;color:var(--text-muted)}
+.jarvis-stage .ring{width:6px;height:6px;border-radius:50%;border:1.5px solid var(--text-muted);flex-shrink:0}
+.jarvis-stage.done{color:var(--text-secondary)}
+.jarvis-stage.done .ring{background:var(--success);border-color:var(--success)}
+.jarvis-stage.active{color:var(--accent);font-weight:600}
+.jarvis-stage.active .ring{background:var(--accent);border-color:var(--accent);animation:pulse 1s infinite}
+
+.assistant-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:20px 16px 8px;position:relative}
+.assistant-orb-wrap{position:relative;width:220px;height:220px;margin:8px auto 6px;flex-shrink:0}
+.assistant-orb-ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--border);opacity:.5}
+.assistant-orb-ring.r2{inset:14px;border-color:rgba(99,102,241,.2);animation:orbSpin 12s linear infinite}
+.assistant-orb-ring.r3{inset:28px;border-color:rgba(16,185,129,.15);animation:orbSpin 18s linear infinite reverse}
+@keyframes orbSpin{to{transform:rotate(360deg)}}
+.assistant-orb{position:absolute;inset:60px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 20px rgba(16,185,129,.35))}
+.assistant-orb svg{width:100%;height:100%;transition:transform .3s ease}
+.assistant-view.listening .assistant-orb svg{transform:scale(1.08)}
+.assistant-view.listening .assistant-orb-ring.r2{animation-duration:4s}
+
+.assistant-status-line{font-size:11px;font-family:'SF Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);text-align:center;margin-bottom:14px}
+.assistant-status-line .accent{color:var(--accent)}
+
+.assistant-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:6px 0 16px;font-size:10px;color:var(--text-muted);font-weight:500}
+.assistant-badges span{display:flex;align-items:center;gap:4px}
+.assistant-badges svg{color:var(--success)}
+
+.assistant-greeting{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;text-align:center;max-width:340px;margin:0 auto 16px;box-shadow:var(--shadow)}
+.assistant-greeting-title{font-size:16px;font-weight:700;margin-bottom:2px}
+.assistant-greeting-sub{font-size:12px;color:var(--text-secondary)}
+
+.assistant-log{width:100%;max-width:480px;margin:0 auto;flex:1}
+.assistant-log:empty{display:none}
+
+.assistant-wave{display:flex;align-items:center;justify-content:center;gap:2px;height:28px;margin:6px 0}
+.assistant-wave .bar{width:2.5px;border-radius:2px;background:var(--accent);height:4px;opacity:.35;transition:height .08s ease,opacity .08s ease}
+.assistant-view.listening .assistant-wave .bar{opacity:.9}
+
+.assistant-controls{flex-shrink:0;padding:10px 20px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:10px}
+.assistant-mic-row{display:flex;align-items:center;justify-content:center;gap:22px}
+.assistant-side-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.assistant-side-btn:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.assistant-side-btn.muted{color:var(--danger);border-color:rgba(239,68,68,.3)}
+.assistant-mic-btn{width:72px;height:72px;border-radius:50%;border:2px solid var(--accent);background:var(--accent-glow);color:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative}
+.assistant-mic-btn:hover{background:rgba(99,102,241,.22)}
+.assistant-mic-btn.live{background:var(--accent);color:#fff;animation:glow 1.4s ease-in-out infinite}
+.assistant-mic-btn:disabled{opacity:.35;cursor:not-allowed}
+.assistant-hint{font-size:11px;color:var(--text-muted);text-align:center}
+.assistant-hint .accent{color:var(--success);font-weight:600}
+
+.assistant-suggestions{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:520px;margin:0 auto 8px}
+
+.assistant-inputbar{width:100%;max-width:520px;margin:6px auto 0;display:flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:6px 6px 6px 14px}
+.assistant-inputbar input{flex:1;background:transparent;border:none;outline:none;color:var(--text-primary);font-size:13px;font-family:inherit}
+.assistant-inputbar input::placeholder{color:var(--text-muted)}
+.assistant-inputbar button{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.assistant-inputbar button:hover{background:var(--accent-hover)}
+
+.assistant-voice-unsupported{font-size:10px;color:var(--warning);text-align:center;margin-top:2px}
+
+@media(max-width:520px){
+  .jarvis-panel{display:none}
+  .assistant-orb-wrap{width:180px;height:180px}
+}
 </style>
 </head>
 <body>
@@ -388,6 +463,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
       </button>
       <button class="icon-btn" onclick="openModal('settings')" title="Settings">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <button class="icon-btn" onclick="openAssistant()" title="AI Assistant" style="border-color:rgba(99,102,241,.3);color:var(--accent)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"/></svg>
       </button>
     </div>
   </header>
@@ -497,6 +575,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
     <button class="mob-tab" data-tab="results" onclick="switchMobTab('results')">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
       Results
+    </button>
+    <button class="mob-tab" data-tab="ai" onclick="openAssistant()">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z"/></svg>
+      AI
     </button>
   </nav>
 </div>
@@ -617,6 +699,102 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
   </div>
 </div>
 
+<!-- AI ASSISTANT VIEW -->
+<div class="assistant-view" id="assistantView">
+  <header class="assistant-header">
+    <div class="assistant-header-title"><span class="dot"></span> X · Your AI Assistant</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="assistantModeBadge" class="cmd-mode local" style="margin:0"><span class="mode-dot"></span>Local</span>
+      <button class="icon-btn" onclick="closeAssistant()" title="Close" style="width:32px;height:32px">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="jarvis-panel desktop-only">
+    <div class="jarvis-panel-title"><span class="dot"></span> JARVIS MODE</div>
+    <div id="jarvisStages">
+      <div class="jarvis-stage" data-stage="listening"><span class="ring"></span> Listening</div>
+      <div class="jarvis-stage" data-stage="understanding"><span class="ring"></span> Understanding</div>
+      <div class="jarvis-stage" data-stage="planning"><span class="ring"></span> Planning</div>
+      <div class="jarvis-stage" data-stage="executing"><span class="ring"></span> Executing</div>
+      <div class="jarvis-stage" data-stage="complete"><span class="ring"></span> Complete</div>
+    </div>
+  </div>
+
+  <div class="assistant-body" id="assistantBody">
+    <div class="assistant-orb-wrap">
+      <div class="assistant-orb-ring"></div>
+      <div class="assistant-orb-ring r2"></div>
+      <div class="assistant-orb-ring r3"></div>
+      <div class="assistant-orb">
+        <svg viewBox="0 0 100 100" fill="none">
+          <path d="M50 8 L58 42 L92 50 L58 58 L50 92 L42 58 L8 50 L42 42 Z" fill="url(#xg1)" stroke="var(--accent)" stroke-width="1" stroke-opacity=".5"/>
+          <defs><linearGradient id="xg1" x1="0" y1="0" x2="100" y2="100"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs>
+        </svg>
+      </div>
+    </div>
+
+    <div class="assistant-wave" id="assistantWave"></div>
+    <div class="assistant-status-line" id="assistantStatusLine">Tap the mic or type to <span class="accent">get started</span></div>
+
+    <div class="assistant-badges">
+      <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Fast</span>
+      <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>Private</span>
+      <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Local</span>
+      <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>Unlimited</span>
+      <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>Yours</span>
+    </div>
+
+    <div class="assistant-greeting" id="assistantGreeting">
+      <div class="assistant-greeting-title">Hey! I'm X 👋</div>
+      <div class="assistant-greeting-sub">How can I help you today?</div>
+    </div>
+
+    <div class="assistant-log" id="assistantLog"></div>
+
+    <div class="assistant-suggestions" id="assistantSuggestions">
+      <button class="suggestion-chip" onclick="runAssistantSuggestion('Create a Python script that ', 'code')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>Create a Python script
+      </button>
+      <button class="suggestion-chip" onclick="runAssistantSuggestion('Analyze the file I attached and summarize what it contains.')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Analyze this file
+      </button>
+      <button class="suggestion-chip" onclick="runAssistantSuggestion('Summarize this text: ', 'summarization')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg>Summarize this text
+      </button>
+      <button class="suggestion-chip" onclick="openSeoTools()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 19a8 8 0 100-16 8 8 0 000 16zm10 2l-4.35-4.35"/></svg>Open SEO tools
+      </button>
+      <button class="suggestion-chip" onclick="runAssistantSuggestion('Write a short article about ')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Write an article
+      </button>
+    </div>
+  </div>
+
+  <div class="assistant-controls">
+    <div class="assistant-mic-row">
+      <button class="assistant-side-btn" id="assistantKeyboardBtn" onclick="focusAssistantInput()" title="Type instead">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zM6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
+      </button>
+      <button class="assistant-mic-btn" id="assistantMicBtn" onclick="toggleAssistantMic()" title="Tap to speak">
+        <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4"/></svg>
+      </button>
+      <button class="assistant-side-btn" id="assistantMuteBtn" onclick="toggleAssistantVoiceOut()" title="Mute voice replies">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+      </button>
+    </div>
+    <div class="assistant-hint" id="assistantHint">Tap to speak — <span class="accent">or just type below</span></div>
+    <div class="assistant-voice-unsupported" id="assistantVoiceUnsupported" style="display:none">Voice input isn't supported in this browser — Chrome or Edge required. Text works everywhere.</div>
+    <form class="assistant-inputbar" onsubmit="event.preventDefault(); submitAssistantText()">
+      <input type="text" id="assistantInput" placeholder="Or type your request here…" autocomplete="off">
+      <button type="submit" title="Send">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -733,7 +911,7 @@ async function tryOllamaFallback(prompt) {
 // ═══════════════════════════════════════════════════════
 // NVIDIA NIM FALLBACK LOOP
 // ═══════════════════════════════════════════════════════
-async function tryNIMFallback(prompt) {
+async function tryNIMFallback(prompt, taskType) {
   // Calls this same origin's real backend (POST /api/nvidia/chat), which
   // holds the actual NVIDIA_API_KEY server-side and does its own model
   // selection/fallback across the catalog - a previous version of this
@@ -753,7 +931,7 @@ async function tryNIMFallback(prompt) {
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
-        taskType: 'general',
+        taskType: taskType || 'general',
         messages: [{ role: 'user', content: prompt }],
         maxTokens: 512,
       }),
@@ -1491,6 +1669,7 @@ function setMode(mode) {
     addMsg('assistant', '☁️ **Cloud Mode** activated. Commands will attempt NVIDIA NIM, then OpenRouter free models, with automatic fallback to local processing.\n\nYour data is sent only when you explicitly use Cloud Mode.');
     addNotification('Cloud Mode Active', 'NVIDIA NIM + OpenRouter fallback loop enabled', 'info');
   }
+  syncAssistantModeBadge();
   playClickSound();
 }
 
@@ -1655,6 +1834,293 @@ function init() {
 }
 
 function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+
+// ═══════════════════════════════════════════════════════
+// AI ASSISTANT VIEW (voice + text, same real engine/Ollama/NIM
+// pipeline as the main command bar - not a separate fake system)
+// ═══════════════════════════════════════════════════════
+const AS = {
+  open: false,
+  listening: false,
+  voiceMuted: false,
+  recognition: null,
+  audioCtx: null,
+  analyser: null,
+  micStream: null,
+  waveRaf: null,
+  waveBars: 28,
+};
+
+function buildWaveBars() {
+  const el = $('assistantWave');
+  if (!el || el.children.length) return;
+  el.innerHTML = Array.from({ length: AS.waveBars }, () => '<div class="bar"></div>').join('');
+}
+
+function openAssistant() {
+  AS.open = true;
+  $('assistantView').classList.add('open');
+  buildWaveBars();
+  closeModal();
+  syncAssistantModeBadge();
+  setTimeout(() => $('assistantInput')?.focus(), 250);
+  // Voice input needs Chrome/Edge's SpeechRecognition - feature-detect
+  // rather than assume, and fall back to text-only everywhere else.
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    $('assistantMicBtn').disabled = true;
+    $('assistantVoiceUnsupported').style.display = 'block';
+    $('assistantHint').style.display = 'none';
+  }
+}
+
+function closeAssistant() {
+  AS.open = false;
+  $('assistantView').classList.remove('open');
+  stopAssistantMic();
+}
+
+function focusAssistantInput() {
+  $('assistantInput')?.focus();
+}
+
+function setJarvisStage(stage) {
+  const stages = ['listening', 'understanding', 'planning', 'executing', 'complete'];
+  const idx = stages.indexOf(stage);
+  $$('.jarvis-stage').forEach((el) => {
+    const elIdx = stages.indexOf(el.dataset.stage);
+    el.classList.toggle('done', idx >= 0 && elIdx < idx);
+    el.classList.toggle('active', elIdx === idx);
+  });
+}
+
+function resetJarvisStages() {
+  $$('.jarvis-stage').forEach((el) => el.classList.remove('done', 'active'));
+}
+
+function addAssistantMsg(role, text) {
+  const log = $('assistantLog');
+  if (!log) return;
+  $('assistantGreeting').style.display = 'none';
+  const d = document.createElement('div');
+  d.className = 'msg anim-fade-up';
+  if (role === 'user') {
+    d.classList.add('msg-user');
+    d.innerHTML = `<div class="msg-bubble">${escHtml(text)}</div>`;
+  } else {
+    d.classList.add('msg-assistant');
+    d.innerHTML = `<div class="msg-avatar">✨</div><div class="msg-bubble-sys">${fmtMd(text)}</div>`;
+  }
+  log.appendChild(d);
+  requestAnimationFrame(() => { $('assistantBody').scrollTop = $('assistantBody').scrollHeight; });
+}
+
+function speakAssistant(text) {
+  if (AS.voiceMuted || !('speechSynthesis' in window)) return;
+  try {
+    const plain = text.replace(/\*\*(.+?)\*\*/g, '$1').replace(/`(.+?)`/g, '$1').replace(/[#*_]/g, '');
+    const utter = new SpeechSynthesisUtterance(plain.slice(0, 600));
+    utter.rate = 1.02;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+  } catch (e) {}
+}
+
+function toggleAssistantVoiceOut() {
+  AS.voiceMuted = !AS.voiceMuted;
+  $('assistantMuteBtn').classList.toggle('muted', AS.voiceMuted);
+  if (AS.voiceMuted) speechSynthesis.cancel();
+  showToast(AS.voiceMuted ? 'Voice replies muted' : 'Voice replies on', 'info');
+}
+
+function submitAssistantText() {
+  const input = $('assistantInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  runAssistantCommand(text);
+}
+
+function runAssistantSuggestion(text, taskType) {
+  const input = $('assistantInput');
+  AS.lastTaskType = taskType;
+  if (text.endsWith(' ')) {
+    // Needs the user's own specifics (e.g. "Write an article about ") -
+    // drop it in the box for them to finish rather than sending it half-formed.
+    // AS.lastTaskType stays set until they submit, so the routing hint
+    // survives the trip through the plain text input.
+    input.value = text;
+    input.focus();
+    return;
+  }
+  runAssistantCommand(text);
+}
+
+function openSeoTools() {
+  window.open('https://www.xfree.in/pillars/seo-audit-tools', '_blank', 'noopener');
+}
+
+// Core pipeline - deliberately the SAME building blocks as the main
+// command bar's handleCommand() (runEngine/finishEngine for the 16
+// deterministic engines, tryOllamaFallback for the visitor's own local
+// LLM, tryNIMFallback for NVIDIA NIM + OpenRouter) so the assistant view
+// isn't a parallel fake system - it drives the real pipeline and mirrors
+// the same result into the main Results panel.
+async function runAssistantCommand(cmd) {
+  const taskType = AS.lastTaskType;
+  AS.lastTaskType = undefined;
+  addAssistantMsg('user', cmd);
+  setJarvisStage('understanding');
+  $('assistantStatusLine').innerHTML = 'Thinking…';
+
+  const lower = cmd.toLowerCase();
+  let matched = false;
+
+  for (const eng of ENGINES) {
+    if (eng.keywords.some((k) => lower.includes(k))) {
+      matched = true;
+      setJarvisStage('executing');
+      try {
+        const result = await runEngine(eng.id, cmd);
+        finishEngine(eng, result);
+        addAssistantMsg('assistant', `✅ **${eng.name}** completed — check the Results panel for the full output.`);
+        speakAssistant(`${eng.name} is done.`);
+      } catch (e) {
+        addAssistantMsg('assistant', `⚠️ ${e.message}`);
+      }
+      break;
+    }
+  }
+
+  if (!matched) {
+    setJarvisStage('planning');
+    const ollamaResult = await tryOllamaFallback(cmd);
+    if (ollamaResult.success) {
+      setJarvisStage('executing');
+      addAssistantMsg('assistant', `🖥️ **${ollamaResult.model}** (local via Ollama):\n\n${ollamaResult.content}`);
+      speakAssistant(ollamaResult.content);
+      matched = true;
+    }
+  }
+
+  if (!matched && S.mode === 'cloud') {
+    setJarvisStage('executing');
+    const nimResult = await tryNIMFallback(cmd, taskType);
+    if (nimResult.success) {
+      addAssistantMsg('assistant', `☁️ **${nimResult.model}**:\n\n${nimResult.content}`);
+      speakAssistant(nimResult.content);
+    } else if (nimResult.reason === 'not_configured') {
+      addAssistantMsg('assistant', `Cloud Mode isn't configured on this server yet. I couldn't match "**${escHtml(cmd)}**" to a local tool either — try being more specific, or open Settings to add an Ollama/API key.`);
+    } else {
+      addAssistantMsg('assistant', `Cloud request failed, and "**${escHtml(cmd)}**" didn't match a local tool. Try again in a moment.`);
+    }
+  } else if (!matched) {
+    addAssistantMsg('assistant', `I couldn't match "**${escHtml(cmd)}**" to a local tool, and Cloud Mode is off. Switch to **Cloud** (top of the app) for AI answers, or configure Ollama in Settings.`);
+  }
+
+  setJarvisStage('complete');
+  $('assistantStatusLine').innerHTML = 'Tap the mic or type to <span class="accent">continue</span>';
+  setTimeout(resetJarvisStages, 1800);
+}
+
+// ═══════════════════════════════════════════════════════
+// VOICE INPUT (Web Speech API - Chrome/Edge only, feature-detected
+// in openAssistant(); text input is always the real fallback)
+// ═══════════════════════════════════════════════════════
+function toggleAssistantMic() {
+  if (AS.listening) { stopAssistantMic(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+
+  AS.recognition = new SR();
+  AS.recognition.continuous = false;
+  AS.recognition.interimResults = true;
+  AS.recognition.lang = 'en-US';
+
+  AS.recognition.onstart = () => {
+    AS.listening = true;
+    $('assistantView').classList.add('listening');
+    $('assistantMicBtn').classList.add('live');
+    setJarvisStage('listening');
+    $('assistantStatusLine').textContent = "I'm listening…";
+    startWaveMeter();
+  };
+  AS.recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map((r) => r[0].transcript).join('');
+    $('assistantInput').value = transcript;
+    if (e.results[e.results.length - 1].isFinal) {
+      stopAssistantMic();
+      if (transcript.trim()) {
+        $('assistantInput').value = '';
+        runAssistantCommand(transcript.trim());
+      }
+    }
+  };
+  AS.recognition.onerror = () => stopAssistantMic();
+  AS.recognition.onend = () => stopAssistantMic();
+  try { AS.recognition.start(); } catch (e) {}
+}
+
+function stopAssistantMic() {
+  if (AS.recognition) { try { AS.recognition.stop(); } catch (e) {} AS.recognition = null; }
+  AS.listening = false;
+  $('assistantView')?.classList.remove('listening');
+  $('assistantMicBtn')?.classList.remove('live');
+  $('assistantStatusLine') && ($('assistantStatusLine').innerHTML = 'Tap the mic or type to <span class="accent">get started</span>');
+  stopWaveMeter();
+}
+
+// Drives the waveform bars from the visitor's real mic input level
+// while listening (getUserMedia + AnalyserNode) - not a canned animation.
+async function startWaveMeter() {
+  try {
+    AS.micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    AS.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = AS.audioCtx.createMediaStreamSource(AS.micStream);
+    AS.analyser = AS.audioCtx.createAnalyser();
+    AS.analyser.fftSize = 64;
+    source.connect(AS.analyser);
+    const data = new Uint8Array(AS.analyser.frequencyBinCount);
+    const bars = $$('#assistantWave .bar');
+    const tick = () => {
+      if (!AS.listening) return;
+      AS.analyser.getByteFrequencyData(data);
+      bars.forEach((bar, i) => {
+        const v = data[i % data.length] / 255;
+        bar.style.height = `${4 + v * 24}px`;
+      });
+      AS.waveRaf = requestAnimationFrame(tick);
+    };
+    tick();
+  } catch (e) {
+    // Mic permission denied or unavailable - recognition can still work
+    // without the live waveform, so this fails silently into a static bar.
+  }
+}
+
+function stopWaveMeter() {
+  if (AS.waveRaf) cancelAnimationFrame(AS.waveRaf);
+  AS.waveRaf = null;
+  if (AS.micStream) { AS.micStream.getTracks().forEach((t) => t.stop()); AS.micStream = null; }
+  if (AS.audioCtx) { AS.audioCtx.close().catch(() => {}); AS.audioCtx = null; }
+  $$('#assistantWave .bar').forEach((bar) => { bar.style.height = '4px'; });
+}
+
+// Keep the assistant's mode badge in sync with the app-wide Local/Cloud
+// toggle rather than tracking its own separate copy of that state.
+function syncAssistantModeBadge() {
+  const badge = $('assistantModeBadge');
+  if (!badge) return;
+  badge.className = `cmd-mode ${S.mode}`;
+  badge.innerHTML = `<span class="mode-dot"></span>${S.mode === 'cloud' ? 'Cloud' : 'Local'}`;
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && AS.open) closeAssistant();
+});
+$('assistantInput')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); submitAssistantText(); }
+});
 
 // Boot
 init();
