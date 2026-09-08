@@ -61,7 +61,7 @@ export const LeadSchema = z.object({
   recommendedToolTitle: z.string().max(300).optional(),
   source: z.enum(["popup", "exit-intent", "cta", "manual"]).default("popup"),
   path: z.string().max(500).optional(),
-  consent: z.literal(true, { errorMap: () => ({ message: "consent required" }) }),
+  consent: z.literal(true, { error: "consent required" }),
   website: z.string().max(0).optional(),
 });
 

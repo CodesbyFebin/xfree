@@ -47,6 +47,13 @@ import { GUIDES } from "../data/guides";
 import { PILLARS_60, PILLAR_CATEGORIES } from "../data/pillarRegistry";
 import { getSignals } from "./signals";
 
+// Express route params are typed string | string[] (wildcard/repeated
+// segments can capture multiple values) - every route here expects a
+// single path segment, so this narrows to the first value.
+function firstParam(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
 export interface AppOptions {
   attachStatic?: (app: Express) => void | Promise<void>;
   attachSpaFallback?: (app: Express) => void | Promise<void>;
@@ -387,7 +394,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
 
     app.post("/api/v1/solve/:problem*", solveRateLimit, async (req, res, next) => {
       try {
-        const problem = decodeURIComponent(req.params.problem || "");
+        const problem = decodeURIComponent(firstParam(req.params.problem) || "");
         const context = {
           userId: req.headers["x-user-id"] as string,
           organizationId: req.headers["x-org-id"] as string,
@@ -405,7 +412,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
 
     app.post("/api/v1/execute/:toolId", executionRateLimit, async (req, res, next) => {
       try {
-        const toolId = req.params.toolId;
+        const toolId = firstParam(req.params.toolId);
         const context = {
           userId: req.headers["x-user-id"] as string,
           organizationId: req.headers["x-org-id"] as string,
@@ -432,7 +439,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
 
     app.post("/api/v1/verify/:toolId", executionRateLimit, async (req, res, next) => {
       try {
-        const toolId = req.params.toolId;
+        const toolId = firstParam(req.params.toolId);
         const tool = findToolBySlug(toolId);
         if (!tool) {
           return res.status(404).json({ error: "Tool not found" });

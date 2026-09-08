@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ToolDefinition } from "../../types";
-import { Eye, Copy, Check, Share2, Globe, Twitter, Facebook, Linkedin } from "lucide-react";
+import { Eye, Copy, Check, Share2, Globe, X as XIcon } from "lucide-react";
 
 interface MetaTagOpenGraphPreviewProps {
   tool: ToolDefinition;
@@ -161,7 +161,7 @@ export const MetaTagOpenGraphPreview: React.FC<MetaTagOpenGraphPreviewProps> = (
                   activeTab === "twitter" ? "bg-emerald-500 text-zinc-950" : "bg-zinc-800 text-zinc-300"
                 }`}
               >
-                <Twitter className="w-3.5 h-3.5" /> Twitter / X Card
+                <XIcon className="w-3.5 h-3.5" /> Twitter / X Card
               </button>
               <button
                 onClick={() => setActiveTab("facebook")}
@@ -169,7 +169,7 @@ export const MetaTagOpenGraphPreview: React.FC<MetaTagOpenGraphPreviewProps> = (
                   activeTab === "facebook" ? "bg-emerald-500 text-zinc-950" : "bg-zinc-800 text-zinc-300"
                 }`}
               >
-                <Facebook className="w-3.5 h-3.5" /> Social Card
+                <Share2 className="w-3.5 h-3.5" /> Social Card
               </button>
               <button
                 onClick={() => setActiveTab("code")}
