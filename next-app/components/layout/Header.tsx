@@ -63,7 +63,6 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group" aria-label="XFree homepage">
-          {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size logo, next/image's srcset generation isn't a fit for a hand-built 1x/2x pair */}
           <picture className="shrink-0">
             <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
             <img

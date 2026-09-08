@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { TOOLS, CATEGORIES } from '@/lib/data/tools';
 import { PILLARS } from '@/lib/data/pillars';
 
-export const runtime = 'edge';
-
 export async function GET() {
   const capabilities = {
     '@context': [

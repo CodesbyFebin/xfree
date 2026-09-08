@@ -154,7 +154,6 @@ export default function HomePage() {
       <header id="mainNav" className={`sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3 ${scrolled ? 'scrolled' : ''}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group" aria-label="XFree homepage">
-            {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size logo, see components/layout/Header.tsx */}
             <picture className="shrink-0">
               <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
               <img
@@ -227,7 +226,6 @@ export default function HomePage() {
           <div className="hero-orb w-[400px] h-[400px] bg-cyber-magenta top-1/4 -right-32" aria-hidden="true" />
           <div className="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" aria-hidden="true" />
 
-          {/* eslint-disable-next-line @next/next/no-img-element -- decorative, masked/faded background art, not a content image */}
           <picture>
             <source srcSet="/hero-earth-960.webp 960w, /hero-earth-1920.webp 1920w" type="image/webp" />
             <img

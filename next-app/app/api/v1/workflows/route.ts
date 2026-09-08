@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TOOLS } from '@/lib/data/tools';
 
-export const runtime = 'edge';
-
 const WORKFLOWS = [
   {
     id: 'seo-audit',

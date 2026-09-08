@@ -105,7 +105,6 @@ export function AccessibilityAudit() {
     if (isOpen) {
       runAudit();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const errorCount = issues.filter(i => i.type === 'error').length;

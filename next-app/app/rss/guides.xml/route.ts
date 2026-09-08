@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { GUIDES } from '@/lib/data/guides';
 
-export const runtime = 'edge';
-
 export async function GET() {
   const lastBuildDate = new Date().toUTCString();
 

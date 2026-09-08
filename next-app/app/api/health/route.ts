@@ -3,8 +3,6 @@ import { TOOLS } from '@/lib/data/tools';
 import { PILLARS } from '@/lib/data/pillars';
 import { GUIDES } from '@/lib/data/guides';
 
-export const runtime = 'edge';
-
 export async function GET() {
   return NextResponse.json({
     status: 'operational',

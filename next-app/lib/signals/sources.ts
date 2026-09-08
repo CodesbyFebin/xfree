@@ -13,6 +13,12 @@ export interface SignalSource {
    *  developer/web-platform/open-source identity; Vercel/Stack Overflow
    *  lowest so the feed doesn't drift into generic tech-news territory. */
   weight: number;
+  /** Set for feeds whose response exceeds Next.js's ~2MB data-cache
+   *  entry limit (verified: vercel.com/atom is ~3.5MB) - Next silently
+   *  fails to cache these regardless of `revalidate`, so requesting
+   *  caching for them just repeats a doomed cache-write attempt (and
+   *  logs a warning) on every fetch instead of once per hour. */
+  skipCache?: boolean;
 }
 
 // Real, publicly documented feed URLs for each source - verified against
@@ -25,7 +31,7 @@ export const SIGNAL_SOURCES: SignalSource[] = [
   { id: 'web-dev', name: 'web.dev', feedUrl: 'https://web.dev/feed.xml', defaultCategories: ['web-development', 'browser'], weight: 0.10 },
   { id: 'hugging-face', name: 'Hugging Face Blog', feedUrl: 'https://huggingface.co/blog/feed.xml', defaultCategories: ['ai', 'open-source'], weight: 0.10 },
   { id: 'openai-news', name: 'OpenAI News', feedUrl: 'https://openai.com/news/rss.xml', defaultCategories: ['ai'], weight: 0.10 },
-  { id: 'vercel-blog', name: 'Vercel Blog', feedUrl: 'https://vercel.com/atom', defaultCategories: ['web-development'], weight: 0.05 },
+  { id: 'vercel-blog', name: 'Vercel Blog', feedUrl: 'https://vercel.com/atom', defaultCategories: ['web-development'], weight: 0.05, skipCache: true },
   { id: 'stack-overflow', name: 'Stack Overflow Blog', feedUrl: 'https://stackoverflow.blog/feed/', defaultCategories: ['web-development'], weight: 0.05 },
   { id: 'mdn', name: 'MDN Web Docs', feedUrl: 'https://developer.mozilla.org/en-US/blog/rss.xml', defaultCategories: ['browser', 'web-development'], weight: 0.10 },
 ];

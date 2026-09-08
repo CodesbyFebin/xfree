@@ -39,6 +39,24 @@ function hslToHex(h: number, s: number, l: number): string {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
+function Swatches({ colors, copied, onCopy }: { colors: string[]; copied: string; onCopy: (swatch: string) => void }) {
+  return (
+    <div className="flex gap-2 flex-wrap">
+      {colors.map((c) => (
+        <button
+          key={c}
+          onClick={() => onCopy(c)}
+          className="group flex flex-col items-center gap-1"
+          title={c}
+        >
+          <div className="w-12 h-12 rounded-lg border border-cyber-border" style={{ backgroundColor: c }} />
+          <span className="text-[9px] font-mono text-cyber-muted group-hover:text-cyber-glow">{copied === c ? 'COPIED' : c}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function ColorPaletteTool() {
   const [hex, setHex] = useState('#39ff14');
   const [copied, setCopied] = useState('');
@@ -60,22 +78,6 @@ export function ColorPaletteTool() {
     setCopied(swatch);
     setTimeout(() => setCopied(''), 1500);
   };
-
-  const Swatches = ({ colors }: { colors: string[] }) => (
-    <div className="flex gap-2 flex-wrap">
-      {colors.map((c) => (
-        <button
-          key={c}
-          onClick={() => handleCopy(c)}
-          className="group flex flex-col items-center gap-1"
-          title={c}
-        >
-          <div className="w-12 h-12 rounded-lg border border-cyber-border" style={{ backgroundColor: c }} />
-          <span className="text-[9px] font-mono text-cyber-muted group-hover:text-cyber-glow">{copied === c ? 'COPIED' : c}</span>
-        </button>
-      ))}
-    </div>
-  );
 
   return (
     <div className="space-y-4">
@@ -99,19 +101,19 @@ export function ColorPaletteTool() {
         <div className="space-y-4">
           <div>
             <h3 className="text-xs uppercase tracking-wider text-cyber-cyan font-mono font-semibold mb-2">Complementary</h3>
-            <Swatches colors={palettes.complementary} />
+            <Swatches colors={palettes.complementary} copied={copied} onCopy={handleCopy} />
           </div>
           <div>
             <h3 className="text-xs uppercase tracking-wider text-cyber-cyan font-mono font-semibold mb-2">Analogous</h3>
-            <Swatches colors={palettes.analogous} />
+            <Swatches colors={palettes.analogous} copied={copied} onCopy={handleCopy} />
           </div>
           <div>
             <h3 className="text-xs uppercase tracking-wider text-cyber-cyan font-mono font-semibold mb-2">Triadic</h3>
-            <Swatches colors={palettes.triadic} />
+            <Swatches colors={palettes.triadic} copied={copied} onCopy={handleCopy} />
           </div>
           <div>
             <h3 className="text-xs uppercase tracking-wider text-cyber-cyan font-mono font-semibold mb-2">Shades</h3>
-            <Swatches colors={palettes.shades} />
+            <Swatches colors={palettes.shades} copied={copied} onCopy={handleCopy} />
           </div>
         </div>
       )}

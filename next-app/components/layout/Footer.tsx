@@ -11,7 +11,6 @@ export function Footer() {
 
   return (
     <footer className="relative border-t border-cyber-border bg-cyber-surface py-14 px-4 overflow-hidden" role="contentinfo">
-      {/* eslint-disable-next-line @next/next/no-img-element -- decorative full-bleed background art */}
       <picture>
         <source srcSet="/footer-skyline-1000.webp 1000w, /footer-skyline-2000.webp 2000w" type="image/webp" />
         <img
@@ -30,7 +29,6 @@ export function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.2fr_3fr]">
           <section aria-labelledby="footer-brand">
             <Link href="/" className="inline-flex items-center gap-2" aria-label="XFree homepage">
-              {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size logo, see Header.tsx */}
               <picture className="shrink-0">
                 <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
                 <img

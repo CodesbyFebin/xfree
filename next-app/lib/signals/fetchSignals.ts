@@ -60,7 +60,9 @@ async function fetchOneFeed(source: SignalSource): Promise<SignalItem[]> {
   try {
     const res = await fetch(source.feedUrl, {
       headers: { 'User-Agent': 'XFreeSignals/1.0 (+https://www.xfree.in)' },
-      next: { revalidate: 3600 },
+      // Feeds over Next's data-cache entry limit can never be cached -
+      // don't ask Next to try (see SignalSource.skipCache).
+      ...(source.skipCache ? { cache: 'no-store' as const } : { next: { revalidate: 3600 } }),
       // Any one of 10 external feeds going slow shouldn't stall the
       // whole page - Promise.all below waits for the slowest source.
       signal: AbortSignal.timeout(8000),

@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { TOOLS, CATEGORIES } from '@/lib/data/tools';
 
-export const runtime = 'edge';
-
 export async function GET() {
   const toolsJson = {
     '@context': 'https://schema.org',

@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { TOOLS } from '@/lib/data/tools';
 
-export const runtime = 'edge';
-
 export async function GET() {
   const toolCount = TOOLS.filter((t) => t.indexable).length;
 

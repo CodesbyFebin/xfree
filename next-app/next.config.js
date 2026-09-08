@@ -7,6 +7,14 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig = {
   output: 'standalone',
+  // next-app lives inside the root xfree-platform repo, which has its
+  // own package-lock.json - without this, Turbopack infers the parent
+  // directory as the workspace root (picking up that sibling lockfile)
+  // and resolves pages relative to the wrong tree, causing spurious
+  // "Cannot find module for page" build errors.
+  turbopack: {
+    root: __dirname,
+  },
   images: {
     remotePatterns: [
       {
