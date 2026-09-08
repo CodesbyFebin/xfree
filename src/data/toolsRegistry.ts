@@ -601,7 +601,10 @@ The detector supports multiple analysis modes including overall AI probability s
     iconName: "FileText",
     execution: "local",
     status: "published",
-    indexable: true,
+    // Not indexable yet: no real interactive widget exists (see
+    // renderInteractiveTool in App.tsx) — don't publicly index/promote a
+    // page that claims annotation functionality it doesn't have.
+    indexable: false,
     lastModified: "2026-09-06",
     tags: ["pdf editor", "edit pdf", "pdf annotations", "pdf comments", "pdf markup", "free pdf", "online pdf editor"],
     exampleInput: "Sample PDF content for editing demonstration. Replace this text with your own PDF content to edit.",
@@ -642,7 +645,10 @@ Privacy is paramount when handling documents. Our PDF editor processes everythin
     iconName: "Video",
     execution: "local",
     status: "published",
-    indexable: true,
+    // Not indexable yet: no real interactive widget exists (see
+    // renderInteractiveTool in App.tsx) — don't publicly index/promote a
+    // page that claims download functionality it doesn't have.
+    indexable: false,
     lastModified: "2026-09-06",
     tags: ["video downloader", "download video", "video saver", "free video download", "online video downloader"],
     exampleInput: "https://example.com/sample-video",
@@ -812,7 +818,10 @@ The tool also provides practical advice for password management including recomm
     iconName: "Code2",
     execution: "local",
     status: "published",
-    indexable: true,
+    // Not indexable yet: no real interactive widget exists (see
+    // renderInteractiveTool in App.tsx) — don't publicly index/promote a
+    // page that claims an interactive exercise environment it doesn't have.
+    indexable: false,
     lastModified: "2026-09-06",
     tags: ["coding practice", "learn to code", "programming exercises", "code challenges", "javascript practice", "python practice", "free coding"],
     exampleInput: "function helloWorld() {\n  return 'Hello, World!';\n}",
