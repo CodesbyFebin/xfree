@@ -70,11 +70,11 @@ export async function generateMetadata({
     metadataBase: new URL(baseUrl),
     applicationName: 'XFree App',
     title: {
-      default: 'XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup',
+      default: 'XFree App: Free Developer, SEO & AI Tools',
       template: 'XFree: %s',
     },
     description:
-      'XFree is the ultimate free online app for developers. Access privacy-first SEO tools, XFree JSON formatters, XFree HTML minifiers, and XFree crypto utilities. 100% client-side, no signup required.',
+      'XFree is a free online app for developer, SEO, and AI tools — no signup required. JSON formatters, HTML minifiers, and crypto utilities that run 100% client-side in your browser.',
     authors: [{ name: 'XFree Contributors' }],
     creator: 'XFree',
     publisher: 'XFree',
@@ -95,9 +95,9 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       siteName: 'XFree',
-      title: 'XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup',
+      title: 'XFree App: Free Developer, SEO & AI Tools',
       description:
-        'XFree is the ultimate free online app for developers. Access privacy-first SEO tools, JSON formatters, HTML minifiers, and crypto utilities. 100% client-side, no signup required.',
+        'XFree is a free online app for developer, SEO, and AI tools — no signup required. JSON formatters, HTML minifiers, and crypto utilities that run 100% client-side in your browser.',
       url: canonicalHomeUrl,
       images: [
         {
@@ -114,8 +114,8 @@ export async function generateMetadata({
       card: 'summary_large_image',
       site: '@xfreein',
       creator: '@xfreein',
-      title: 'XFree: Free Developer, SEO & Privacy Micro-Tools | No Signup',
-      description: 'XFree is the ultimate free online app for developers. Privacy-first tools. 100% client-side, no signup.',
+      title: 'XFree App: Free Developer, SEO & AI Tools',
+      description: 'A free online app for developer, SEO, and AI tools — no signup required. 100% client-side.',
       images: ['/twitter-image'],
     },
     icons: {
