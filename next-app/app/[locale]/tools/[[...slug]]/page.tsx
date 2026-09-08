@@ -346,11 +346,22 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
               {/* Live Tool */}
               {(() => {
                 const LiveTool = TOOL_COMPONENTS[tool.id];
+                const studioEngineId = STUDIO_ENGINE_IDS[tool.id];
                 return LiveTool ? (
                   <section className="cyber-card p-6 border-cyber-glow/30" aria-labelledby="live-tool-heading">
-                    <h2 id="live-tool-heading" className="text-lg font-bold text-cyber-text font-mono mb-4">
-                      <span className="text-cyber-glow">$</span> Use XFree {tool.title} Now
-                    </h2>
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <h2 id="live-tool-heading" className="text-lg font-bold text-cyber-text font-mono">
+                        <span className="text-cyber-glow">$</span> Use XFree {tool.title} Now
+                      </h2>
+                      {studioEngineId && (
+                        <a
+                          href={`https://app.xfree.in/?tool=${studioEngineId}`}
+                          className="text-[10px] text-cyber-cyan hover:text-cyber-text font-mono transition-colors whitespace-nowrap shrink-0 mt-1"
+                        >
+                          Try in Studio →
+                        </a>
+                      )}
+                    </div>
                     <LiveTool />
                   </section>
                 ) : (
