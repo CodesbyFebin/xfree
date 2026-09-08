@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// Applied before first paint to avoid a flash of the wrong theme -
+// same technique next-app's layout.tsx already uses for www.xfree.in.
+try {
+  if (localStorage.getItem('xfree-studio-theme') === 'light') {
+    document.documentElement.dataset.theme = 'light';
+  }
+} catch (e) {}
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XFree Studio — Universal Command Center</title>
@@ -30,6 +39,20 @@
   --radius:12px;--radius-lg:16px;--radius-xl:20px;
   --shadow:0 4px 24px rgba(0,0,0,0.4);
   --shadow-lg:0 8px 40px rgba(0,0,0,0.5);
+}
+/* Light theme - same token names, light values. Functional/semantic
+   colors (accent, local, cloud, danger, warning, success) are kept
+   identical across both themes since they read fine on either
+   background, matching next-app's light theme (this session's earlier
+   work on www.xfree.in used the same approach: only bg/border/text
+   tokens actually change between themes). */
+[data-theme="light"]{
+  --bg-deep:#f7f7f9;--bg-surface:#ffffff;--bg-card:#ffffff;--bg-elevated:#f0f0f4;
+  --border:#e2e2e8;--border-hover:#cbcbd6;
+  --text-primary:#16161d;--text-secondary:#55566b;--text-muted:#8a8b9c;
+  --glass:rgba(255,255,255,0.75);--glass-border:rgba(0,0,0,0.08);
+  --shadow:0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.12);
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:var(--text-primary);-webkit-font-smoothing:antialiased}
@@ -358,6 +381,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
       <button class="notif-btn" onclick="toggleNotifPanel()" id="notifBtn">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
         <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+      </button>
+      <button class="icon-btn" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle light/dark theme">
+        <svg id="themeIconMoon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg id="themeIconSun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       </button>
       <button class="icon-btn" onclick="openModal('settings')" title="Settings">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1496,6 +1523,25 @@ function toggleSetting(key) {
 }
 
 // ═══════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════
+function updateThemeIcon() {
+  const isLight = document.documentElement.dataset.theme === 'light';
+  const moon = $('themeIconMoon'), sun = $('themeIconSun');
+  if (moon) moon.style.display = isLight ? 'none' : '';
+  if (sun) sun.style.display = isLight ? '' : 'none';
+}
+
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  if (next === 'light') document.documentElement.dataset.theme = 'light';
+  else delete document.documentElement.dataset.theme;
+  try { localStorage.setItem('xfree-studio-theme', next); } catch (e) {}
+  updateThemeIcon();
+  playClickSound();
+}
+
+// ═══════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════
 function showToast(msg, type='info') {
@@ -1545,6 +1591,8 @@ function runEngineDirect(id) {
 // INIT
 // ═══════════════════════════════════════════════════════
 function init() {
+  updateThemeIcon();
+
   // Engine shortcuts
   $('engineGrid').innerHTML = ENGINES.slice(0,10).map(e=>`<button class="engine-chip" onclick="runEngineDirect('${e.id}')">${e.icon} ${e.name}</button>`).join('');
   
