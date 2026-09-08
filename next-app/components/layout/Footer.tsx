@@ -107,13 +107,38 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pillars/seo-audit-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
-                    {t('seoTools')}
+                  <Link href="/pillars/regex-pattern-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('regexTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pillars/encoding-conversion-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('encodingTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pillars/hash-generator-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('hashTools')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/pillars/password-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('securityTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pillars/generator-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('generatorTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pillars/seo-audit-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('seoTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pillars/dns-lookup-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('networkTools')}
                   </Link>
                 </li>
               </ul>
