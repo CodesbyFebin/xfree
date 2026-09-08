@@ -1,0 +1,83 @@
+name: SEO & AI Crawl Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/llms.txt'
+      - 'public/ai.txt'
+      - 'public/robots.txt'
+      - 'public/sitemap*.xml'
+      - 'src/utils/generateSitemap.ts'
+      - 'src/scripts/generateSitemap.ts'
+      - 'next-app/app/sitemap.ts'
+      - 'next-app/lib/static.ts'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'public/llms.txt'
+      - 'public/ai.txt'
+      - 'public/robots.txt'
+      - 'public/sitemap*.xml'
+      - 'src/utils/generateSitemap.ts'
+      - 'src/scripts/generateSitemap.ts'
+      - 'next-app/app/sitemap.ts'
+      - 'next-app/lib/static.ts'
+
+jobs:
+  seo-audit:
+    name: SEO / AI Crawl / GEO Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Regenerate sitemap & AI crawl files
+        run: npm run generate:sitemap
+
+      - name: Verify no uncommitted changes after regeneration
+        run: |
+          git diff --exit-code -- public/ || {
+            echo "::error::Sitemap/AI crawl files are out of sync. Run 'npm run generate:sitemap' and commit."
+            exit 1
+          }
+
+      - name: Validate sitemap.xml format
+        run: |
+          grep -q '<urlset' public/sitemap.xml
+          grep -q '<url>' public/sitemap.xml
+          grep -q 'https://www.xfree.in' public/sitemap.xml
+          echo "Sitemap format: OK"
+
+      - name: Verify AI crawl files exist
+        run: |
+          test -f public/llms.txt && echo "llms.txt: OK" || (echo "llms.txt: MISSING" && exit 1)
+          test -f public/llms-full.txt && echo "llms-full.txt: OK" || (echo "llms-full.txt: MISSING" && exit 1)
+          test -f public/ai.txt && echo "ai.txt: OK" || (echo "ai.txt: MISSING" && exit 1)
+          test -f public/capabilities.json && echo "capabilities.json: OK" || (echo "capabilities.json: MISSING" && exit 1)
+          test -f public/tools.json && echo "tools.json: OK" || (echo "tools.json: MISSING" && exit 1)
+          test -f public/.well-known/llms.txt && echo ".well-known/llms.txt: OK" || (echo ".well-known/llms.txt: MISSING" && exit 1)
+          test -f public/.well-known/ai.txt && echo ".well-known/ai.txt: OK" || (echo ".well-known/ai.txt: MISSING" && exit 1)
+
+      - name: Verify robots.txt directives
+        run: |
+          grep -q 'Sitemap:' public/robots.txt
+          grep -q 'ai.txt' public/robots.txt
+          grep -q 'llms.txt' public/robots.txt
+          echo "Robots.txt: OK"
+
+      - name: Verify README metadata
+        run: |
+          grep -q '<!-- ai:project' README.md && echo "README AI metadata: OK" || (echo "README missing AI metadata" && exit 1)
+          grep -q '<!-- seo:title' README.md && echo "README SEO metadata: OK" || (echo "README missing SEO metadata" && exit 1)
+
+      - name: Verify CONTENT.md exists
+        run: |
+          test -f CONTENT.md && echo "CONTENT.md: OK" || (echo "CONTENT.md: MISSING" && exit 1)

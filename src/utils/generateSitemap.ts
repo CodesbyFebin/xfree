@@ -270,6 +270,14 @@ export function generateRobotsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = cleanOrigin(baseUrl);
   return `# XFree.in crawl policy
 # 10/10 standard for Search, Answer, and Generative Engine Optimization
+# Machine-readable access policy: ${cleanBase}/ai.txt
+# Machine-readable access policy: ${cleanBase}/.well-known/ai.txt
+# LLM index (short): ${cleanBase}/llms.txt
+# LLM index (short): ${cleanBase}/.well-known/llms.txt
+# LLM index (full): ${cleanBase}/llms-full.txt
+# LLM index (full): ${cleanBase}/.well-known/llms-full.txt
+# Capabilities schema: ${cleanBase}/capabilities.json
+# Capabilities schema: ${cleanBase}/.well-known/capabilities.json
 
 User-agent: *
 Allow: /
@@ -277,6 +285,8 @@ Allow: /blog/
 Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Disallow: /_next/
+Disallow: /debug/
 Crawl-delay: 1
 
 # Search and answer-engine crawlers
@@ -286,6 +296,7 @@ Allow: /blog/
 Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Disallow: /_next/
 Crawl-delay: 0
 
 User-agent: Bingbot
@@ -294,8 +305,20 @@ Allow: /blog/
 Allow: /docs/
 Disallow: /api/
 Disallow: /_app-shell
+Disallow: /_next/
 Crawl-delay: 0
 
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /api/
+Crawl-delay: 0
+
+User-agent: BraveBot
+Allow: /
+Disallow: /api/
+Crawl-delay: 0
+
+# AI crawlers — allowed for citation and indexing
 User-agent: OAI-SearchBot
 Allow: /
 Allow: /blog/
@@ -320,8 +343,43 @@ Disallow: /api/
 Disallow: /_app-shell
 Crawl-delay: 0
 
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-User
+Allow: /
+Disallow: /api/
+Crawl-delay: 0
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /api/
+Crawl-delay: 0
+
+# Training-blocked crawlers — indexing only, blocked from training use
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: CCBot
+Allow: /
+Disallow: /api/
+Crawl-delay: 1
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
 # Canonical discovery entry point
 Sitemap: ${cleanBase}/sitemap-index.xml
+Sitemap: ${cleanBase}/sitemap.xml
 `;
 }
 
@@ -349,42 +407,89 @@ export function generateAiTxt(baseUrl: string = DEFAULT_BASE_URL): string {
     return `- ${cat.label}: ${count} tool${count === 1 ? "" : "s"} — ${cleanBase}/${cat.id}`;
   }).join("\n");
 
-  return `# ai.txt — machine-readable guidance for AI agents and crawlers
-# XFree.in — Free Developer, SEO & AI Micro-Tools
-# Generated from live source data. Last updated: ${SITE_CONTENT_LASTMOD}
+  const today = new Date().toISOString().split("T")[0];
 
-## What this site is
-XFree.in publishes ${PUBLIC_TOOLS.length} browser-based developer, SEO, and AI micro-tools,
-organized across ${PUBLIC_CATEGORIES.length} categories and ${PILLARS_60.length} topic pillars.
-Most tools run entirely client-side in the browser; tools that call a cloud model
-disclose this before you submit input. No tool requires an account.
+  return `# ai.txt — Machine-Readable Access Policy for AI Agents & Crawlers
+# ${cleanBase}/ai.txt
+# Version: 2.0
+# Last Updated: ${today}
 
-## Source of truth
-- Canonical origin: ${cleanBase}
-- Source code (MIT licensed): https://github.com/CodesbyFebin/xfree
-- Machine-readable index: ${cleanBase}/llms.txt (short) and ${cleanBase}/llms-full.txt (full)
-- Sitemap index: ${cleanBase}/sitemap-index.xml
-- Structured tool data: ${cleanBase}/tools.json and ${cleanBase}/capabilities.json
+## Project Overview
+
+**Name**: XFree.in (XFree)
+**Tagline**: Free browser-based developer, SEO, and AI micro-tools
+**Description**: ${PUBLIC_TOOLS.length} browser-based developer utilities, SEO tools, formatters, converters, and AI assistants. No signup, no install. 100% free.
+**License**: MIT (https://github.com/CodesbyFebin/xfree)
+**Language**: en
+**Country**: IN (India) — but content targets a global English-speaking audience
+**Geo Regions**: Global (no country-specific geo-blocking)
+
+## Crawling Permissions
+
+### Allowed Crawlers
+- OpenAI (ChatGPT, GPTBot, ChatGPT-User, OpenAI-Atlas)
+- Anthropic (ClaudeBot, Claude-User, Claude-Web)
+- Google (Googlebot, Google-Extended, GoogleOther)
+- Perplexity (PerplexityBot, PerplexityAI)
+- Bing (Bingbot, BingPreview)
+- DuckDuckGo (DuckDuckBot, DotBot)
+- Brave (BraveBot, BraveContentFetcher)
+- Apple (Applebot, Applebot-Extended)
+- Naver (AdsBot-Image, NaverBot)
+- Yandex (YandexBot)
+- Seznam (SeznamBot)
+- Meta (Meta-ExternalAgent)
+- OAI-SearchBot
+- Common Crawl (CCBot) — partial (indexing only, not training)
+- Bytespider (Bytespider) — partial (indexing only)
+
+### Rate Limiting
+- Max 600 requests per minute per crawler
+- Max 6000 requests per hour per crawler
+- Exceeding limits returns HTTP 429 with Retry-After header
+- Crawl-delay: 1 second for all user agents
+
+### Disallowed Paths
+- /api/ (server-side API endpoints)
+- /_next/ (build artifacts)
+- /debug/ (debug endpoints)
+- /_app-shell (app shell)
+
+## Key Resources for AI Indexing
+
+- Homepage: ${cleanBase}/
+- Tool Directory: ${cleanBase}/tools
+- Guides: ${cleanBase}/guides
+- Pillars: ${cleanBase}/pillars
+- Categories: ${cleanBase}/categories
+- Blog/Updates: ${cleanBase}/updates
+- Sitemap Index: ${cleanBase}/sitemap-index.xml
+- Sitemap (all URLs): ${cleanBase}/sitemap.xml
+- RSS Feed: ${cleanBase}/rss.xml
+- LLM Index (short): ${cleanBase}/llms.txt
+- LLM Index (full): ${cleanBase}/llms-full.txt
+- Tool Data (JSON): ${cleanBase}/tools.json
+- Capabilities Schema: ${cleanBase}/capabilities.json
+- API Documentation: ${cleanBase}/docs/api.md
+
+## Content Guidelines for AI Crawlers
+
+1. Indexing, summarizing, and linking to any published page is welcome.
+2. Quoting tool descriptions, FAQs, and how-to steps with attribution is welcome.
+3. Do not present XFree tool output as your own without disclosing the source.
+4. Do not scrape and republish this catalog as a competing directory without attribution.
+5. Automated high-volume scraping should use the sitemap and JSON endpoints above.
 
 ## Categories
+
 ${categoryLines}
 
-## Permitted use
-- Indexing, summarizing, and linking to any published page is welcome.
-- Quoting tool descriptions, FAQs, and how-to steps with attribution is welcome.
-- Do not present XFree tool output as your own without disclosing the source when asked.
-- Do not scrape and republish this catalog as a competing directory without attribution.
+## Contact & Support
 
-## Restrictions
-- Do not submit user-identifying or third-party personal data through XFree's tools on
-  a person's behalf without their knowledge — several tools process input via a cloud
-  API and this site cannot control what a caller submits.
-- Automated high-volume scraping should use the sitemap and JSON endpoints above rather
-  than repeated full-page crawls.
-
-## Contact
-- General / partnership inquiries: contact@xfree.in
-- Security reports: security@xfree.in (see ${cleanBase}/.well-known/security.txt)
+- General Inquiries: contact@xfree.in
+- Security Reports: security@xfree.in
+- Bug Reports: https://github.com/CodesbyFebin/xfree/issues
+- Security Policy: https://github.com/CodesbyFebin/xfree/blob/main/.github/SECURITY.md
 `;
 }
 

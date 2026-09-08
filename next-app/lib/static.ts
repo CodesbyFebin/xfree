@@ -137,7 +137,7 @@ export function generateLlmsTxt(): string {
     '- All tools run client-side in your browser',
     '- Your data never leaves your device',
     '- Privacy-first approach with zero tracking',
-    '- Optimized for both humans and AI crawlers',
+    `- Optimized for both humans and AI crawlers`,
     '',
     `## Available Tools (${indexableTools.length})`,
     ...toolLines,

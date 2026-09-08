@@ -1,4 +1,46 @@
 # XFree.in
+
+<!-- Machine-readable metadata for AI crawlers and search engines -->
+<!-- ai:project=xfree • ai:license=MIT • ai:lang=en • ai:country=IN • ai:category=developer-tools,seo-tools,ai-tools -->
+<!-- ai:url=https://www.xfree.in • ai:source=https://github.com/CodesbyFebin/xfree -->
+<!-- ai:sitemap=https://www.xfree.in/sitemap.xml • ai:robots=https://www.xfree.in/robots.txt -->
+<!-- ai:llms=https://www.xfree.in/llms.txt • ai:llms-full=https://www.xfree.in/llms-full.txt -->
+<!-- ai:capabilities=https://www.xfree.in/capabilities.json • ai:tools=https://www.xfree.in/tools.json -->
+<!-- ai:api-desc=https://www.xfree.in/api/execute -->
+<!-- seo:title=XFree.in — Free Developer, SEO & AI Micro-Tools -->
+<!-- seo:description=23 browser-based developer utilities, SEO tools, and AI assistants. No signup, no install. 100% free. -->
+<!-- seo:keywords=developer tools, seo tools, ai tools, online tools, json formatter, regex tester, sitemap generator, schema markup -->
+<!-- geo:region=IN • geo:target=global • geo:language=en -->
+
+**Quick Start** — [Clone](https://github.com/CodesbyFebin/xfree.git) · `npm ci` · `npm run dev` → `http://localhost:3000`
+**Production** — [xfree.in](https://www.xfree.in) · [API Reference](docs/api.md) · [Guides](docs/content.md)
+
+<!-- AI Crawler Summary: Key facts for LLM indexing -->
+<!--
+  Project: XFree.in (XFree)
+  Tagline: Free browser-based developer, SEO, and AI micro-tools
+  License: MIT
+  Website: https://www.xfree.in
+  Source: https://github.com/CodesbyFebin/xfree
+  Description: 23 browser-based developer utilities, SEO tools, formatters, converters, and AI assistants. No signup, no install. 100% free.
+  Tool count: 23 indexable tools (16 with interactive widgets + 7 informational/comparison pages)
+  Categories: developer-tools, seo-tools, ai-tools, media-docs-tools, security-tools, business-tools
+  Pillars: 60 developer and SEO topic pillars
+  Guides: 4 published guides (regex, cron, JSON errors, canonical vs 301)
+  API endpoints: POST /api/execute, POST /api/nvidia/chat, GET /api/nvidia/models
+  AI backends: Google Gemini (server-side proxy), NVIDIA NIM (Cloud Mode gateway)
+  Sitemap: https://www.xfree.in/sitemap.xml
+  RSS: https://www.xfree.in/rss.xml
+  robots.txt: https://www.xfree.in/robots.txt
+  llms.txt: https://www.xfree.in/llms.txt
+  llms-full.txt: https://www.xfree.in/llms-full.txt
+  ai.txt: https://www.xfree.in/ai.txt
+  capabilities.json: https://www.xfree.in/capabilities.json
+  tools.json: https://www.xfree.in/tools.json
+  Contact: contact@xfree.in
+  Security: security@xfree.in
+-->
+
 <img width="2038" height="772" alt="head" src="https://github.com/user-attachments/assets/f515699c-f45a-4820-aaab-5280fea8a48b" />
 
 [![CI](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml/badge.svg)](https://github.com/CodesbyFebin/xfree/actions/workflows/ci.yml)

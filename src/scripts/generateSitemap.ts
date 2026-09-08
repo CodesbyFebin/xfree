@@ -53,13 +53,23 @@ function runGenerator() {
     fs.writeFileSync(path.join(publicDir, name), content, "utf-8");
   }
 
-  // RFC 9116 security.txt belongs at /.well-known/security.txt (canonical);
-  // keep a copy at /security.txt too since some scanners still look there.
   const securityTxt = generateSecurityTxt(baseUrl);
   fs.writeFileSync(path.join(wellKnownDir, "security.txt"), securityTxt, "utf-8");
   fs.writeFileSync(path.join(publicDir, "security.txt"), securityTxt, "utf-8");
 
-  const generated = [...Object.keys(files), ".well-known/security.txt", "security.txt"];
+  // AI crawler discovery files — also place at /.well-known/ (RFC 9116 pattern)
+  // so crawlers that probe .well-known/ find them automatically.
+  const wellKnownFiles: Record<string, string> = {
+    "ai.txt": generateAiTxt(baseUrl),
+    "llms.txt": generateLlmsTxt(baseUrl),
+    "llms-full.txt": generateLlmsFullTxt(baseUrl),
+    "capabilities.json": generateCapabilitiesJson(baseUrl),
+  };
+  for (const [name, content] of Object.entries(wellKnownFiles)) {
+    fs.writeFileSync(path.join(wellKnownDir, name), content, "utf-8");
+  }
+
+  const generated = [...Object.keys(files), ".well-known/security.txt", "security.txt", ".well-known/ai.txt", ".well-known/llms.txt", ".well-known/llms-full.txt", ".well-known/capabilities.json"];
   console.log(`Successfully generated ${generated.length} machine-readable files in /public: ${generated.join(", ")}`);
 }
 

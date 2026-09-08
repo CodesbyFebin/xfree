@@ -150,28 +150,6 @@
       ]
     },
     {
-      "id": "https://www.xfree.in/tools/free-pdf-editor",
-      "url": "https://www.xfree.in/tools/free-pdf-editor",
-      "title": "Free PDF Editor — Edit PDF Online",
-      "summary": "Edit PDF text, annotate, highlight, and add comments directly in your browser. No software installation, no signup, completely free PDF editor.",
-      "content_text": "The XFree PDF Editor is a free, browser-based tool that lets you edit PDF documents without installing any software. Whether you need to annotate a research paper, highlight important sections in a contract, add comments to a collaborative document, or simply fill in PDF forms, our tool provides a straightforward solution that works entirely in your browser.\n\nUnlike desktop PDF editors that cost hundreds of dollars per year, our free PDF editor provides essential editing capabilities at no cost. There are no usage limits, no watermarks on your output, and no subscription required. Your documents are processed locally on your device, ensuring that sensitive information never leaves your hands.\n\nThe editor supports multiple annotation types including text highlighting with customizable colors, sticky note comments that attach to specific passages, freehand drawing tools for markup, text box insertion for adding new content, and strikethrough/underlining for indicating revisions. Each annotation can be positioned precisely where needed and edited or deleted before exporting.\n\nOne of the key advantages of our browser-based approach is accessibility. You can edit PDFs from any device — Windows PC, Mac, Linux, Chromebook, tablet, or even your phone. There's no software to install or update, and you always have access to the latest version of the editor without manual upgrades.\n\nPrivacy is paramount when handling documents. Our PDF editor processes everything locally in your browser. Your documents are never uploaded to external servers, making it safe for confidential business documents, legal papers, medical records, or any other sensitive content. When you close the browser tab, all data is permanently deleted from memory.",
-      "date_published": "2026-09-06T00:00:00.000Z",
-      "tags": [
-        "Media & Documents Tools"
-      ]
-    },
-    {
-      "id": "https://www.xfree.in/tools/free-video-downloader",
-      "url": "https://www.xfree.in/tools/free-video-downloader",
-      "title": "Free Video Downloader — Download Videos Online",
-      "summary": "Download videos from popular platforms. Enter a video URL and get download links for various quality options. Free, no signup required.",
-      "content_text": "The XFree Video Downloader is a free browser-based tool that helps you obtain download links for online videos. Simply paste a video URL from supported platforms, and our tool analyzes the video page to extract available download options including different quality levels and formats.\n\nThis downloader works by analyzing the video page structure rather than downloading through our servers. The actual download happens directly from the source platform to your device, making the process fast and ensuring we don't impose bandwidth limitations. Our tool simply locates the correct download endpoints.\n\nThe tool supports various quality options including high definition (1080p, 720p), standard definition (480p, 360p), and audio-only formats for music videos or podcasts. You choose which quality best suits your needs — higher quality means larger file sizes, so select based on your storage and data preferences.\n\nPrivacy-conscious users appreciate that our video downloader operates differently than many alternatives. Rather than proxying downloads through third-party servers (which can log your activity, add watermarks, or limit speeds), our tool simply provides information. The download itself goes directly from the source to you.\n\nThis approach also means unlimited downloads with no daily caps or waiting periods. Whether you need one video or one hundred, our free video downloader is available whenever you need it. There's no account creation, no subscription fees, and no artificial limitations on how much you can download.",
-      "date_published": "2026-09-06T00:00:00.000Z",
-      "tags": [
-        "Media & Documents Tools"
-      ]
-    },
-    {
       "id": "https://www.xfree.in/tools/free-photo-editor",
       "url": "https://www.xfree.in/tools/free-photo-editor",
       "title": "Free Photo Editor — Edit Images Online",
@@ -180,17 +158,6 @@
       "date_published": "2026-09-06T00:00:00.000Z",
       "tags": [
         "Media & Documents Tools"
-      ]
-    },
-    {
-      "id": "https://www.xfree.in/tools/free-coding-practice-sites",
-      "url": "https://www.xfree.in/tools/free-coding-practice-sites",
-      "title": "Coding Practice Platform — Learn to Code",
-      "summary": "Practice coding with interactive exercises, challenges, and immediate feedback. Learn JavaScript, Python, and more with our free browser-based coding practice environment.",
-      "content_text": "The XFree Coding Practice Platform is a free browser-based environment where you can sharpen your programming skills through hands-on exercises and immediate feedback. Whether you're a complete beginner learning your first language or an experienced developer brushing up on fundamentals, our interactive challenges provide a safe space to practice without pressure or performance monitoring.\n\nThe platform supports multiple programming languages including JavaScript (the primary focus, running directly in your browser via Node.js sandbox), Python basics, HTML structure validation, CSS property practice, and SQL query building. Each language has curated exercise sets ranging from absolute beginner (variables, data types, simple functions) to intermediate (recursion, data structures, algorithms) difficulty levels.\n\nExercises present a problem description, required inputs, and expected outputs. You write code to solve the problem, submit it, and receive immediate feedback showing whether your solution passed all test cases or which cases failed. Unlike video tutorials where you passively watch, you must actively solve problems — the proven way to actually retain programming knowledge.\n\nThe browser-based approach means zero setup time. No installing Python, no configuring IDEs, no switching between windows. Just open the tool, read the challenge, write your solution, and submit. This frictionless workflow encourages quick practice sessions during breaks, commutes, or whenever you have a few minutes to spare. You can complete one exercise or ten in any session length.\n\nProgress tracking shows your completion history, success rate per language, and streak data that gamifies consistent practice. While we don't require accounts (privacy-first approach), browser local storage maintains your progress across sessions on the same device. This lets you return to where you left off without creating yet another login credential.\n\nCommunity features let you share solutions after completing exercises, compare approaches with other learners, and learn multiple ways to solve the same problem. Seeing how others tackled a challenge often reveals new techniques, efficiency improvements, or programming idioms you hadn't encountered. The discussion sections for each exercise become mini knowledge bases accumulated from thousands of learner contributions.",
-      "date_published": "2026-09-06T00:00:00.000Z",
-      "tags": [
-        "Developer Tools"
       ]
     },
     {

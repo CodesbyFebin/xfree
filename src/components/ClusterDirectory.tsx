@@ -36,9 +36,9 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({ onSelectKeyw
               <Layers className="w-3.5 h-3.5" />
               <span>Search Intent Directory</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight font-mono">
-              {KEYWORD_CLUSTERS.length} Keyword Clusters
-            </h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight font-mono">
+                {KEYWORD_CLUSTERS.length} Keyword Clusters
+              </h1>
             <p className="text-xs sm:text-sm text-cyber-muted max-w-3xl">
               Search-intent keyword clusters mapped to XFree's real, published tool catalogue.
             </p>
@@ -81,7 +81,7 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({ onSelectKeyw
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full p-2.5 bg-cyber-bg border border-cyber-border rounded-lg font-mono text-xs text-white uppercase focus:outline-none focus:border-cyber-glow cursor-pointer"
             >
-              <option value="all">All Categories ({KEYWORD_CLUSTERS.length} Clusters)</option>
+                <option value="all">All Categories ({KEYWORD_CLUSTERS.length} Clusters)</option>
               {categories.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
@@ -93,10 +93,10 @@ export const ClusterDirectory: React.FC<ClusterDirectoryProps> = ({ onSelectKeyw
       {/* Cluster Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-white font-mono flex items-center gap-2">
-            <Layers className="w-4 h-4 text-cyber-glow" />
-            <span>Showing {filteredClusters.length} of {KEYWORD_CLUSTERS.length} clusters</span>
-          </h2>
+            <h2 className="text-sm font-bold text-white font-mono flex items-center gap-2">
+              <Layers className="w-4 h-4 text-cyber-glow" />
+              <span>Showing {filteredClusters.length} of {KEYWORD_CLUSTERS.length} clusters</span>
+            </h2>
           {searchQuery && (
             <button onClick={() => setSearchQuery("")} className="text-xs text-cyber-glow hover:text-white transition-colors focus-ring font-mono">
               Clear search
