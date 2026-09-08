@@ -509,7 +509,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
         <div class="toggle on" id="toggleChain" onclick="toggleSetting('chain')"></div>
       </div>
       <div style="margin-top:16px">
-        <div class="panel-section-title" style="margin-bottom:10px">NVIDIA NIM Free Models (Fallback)</div>
+        <div class="panel-section-title" style="margin-bottom:10px">Cloud Fallback Models (NVIDIA + OpenRouter)</div>
         <div id="nimModelsList"></div>
       </div>
     </div>
@@ -550,12 +550,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
   <!-- NIM Info Modal -->
   <div class="modal" id="nimModal" style="display:none">
     <div class="modal-header">
-      <h2>☁️ Cloud AI — NIM Fallback</h2>
+      <h2>☁️ Cloud AI — Provider Fallback</h2>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
       <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">
-        When Cloud Mode is active, XFree Studio attempts to use <strong style="color:var(--text-primary)">NVIDIA NIM free-tier endpoints</strong> in a cascading fallback loop. If all cloud endpoints fail, processing falls back to local engines automatically.
+        When Cloud Mode is active, XFree Studio attempts <strong style="color:var(--text-primary)">NVIDIA NIM</strong>, then <strong style="color:var(--text-primary)">OpenRouter</strong> free-tier models, in a cascading fallback loop. If all cloud endpoints fail, processing falls back to local engines automatically.
       </p>
       <div class="nim-status" id="nimStatusModal">
         <span class="nim-dot pending"></span>
@@ -597,6 +597,10 @@ const S = {
     { id: 'mistralai/mistral-7b-instruct-v0.3', name: 'Mistral 7B v0.3', status: 'checking', provider: 'NVIDIA' },
     { id: 'microsoft/phi-3-mini-128k-instruct', name: 'Phi-3 Mini', status: 'checking', provider: 'NVIDIA' },
     { id: 'nvidia/llama3-chatqa-1.5-8b', name: 'ChatQA 1.5 8B', status: 'checking', provider: 'NVIDIA' },
+    { id: 'nvidia/nemotron-3-super-120b-a12b:free', name: 'Nemotron 3 Super', status: 'checking', provider: 'OpenRouter' },
+    { id: 'nvidia/nemotron-3-ultra-550b-a55b:free', name: 'Nemotron 3 Ultra', status: 'checking', provider: 'OpenRouter' },
+    { id: 'google/gemma-4-31b-it:free', name: 'Gemma 4 31B', status: 'checking', provider: 'OpenRouter' },
+    { id: 'cohere/north-mini-code:free', name: 'North Mini Code', status: 'checking', provider: 'OpenRouter' },
   ],
   activeNimModel: null
 };
@@ -701,7 +705,7 @@ function updateNIMModels() {
   const html = S.nimModels.map(m => `
     <div class="nim-model">
       <div class="nim-model-status" style="background:${m.status==='active'?'var(--success)':m.status==='trying'?'var(--warning)':m.status==='error'?'var(--danger)':'var(--text-muted)'}"></div>
-      <div class="nim-model-name">${m.name}</div>
+      <div class="nim-model-name">${m.name} <span style="opacity:.55;font-size:10px">${m.provider}</span></div>
       <div class="nim-model-tag">${m.status==='active'?'Active':m.status==='trying'?'Trying…':m.status==='error'?'Failed':'Idle'}</div>
     </div>
   `).join('');
@@ -983,7 +987,7 @@ async function handleCommand() {
   // Cloud mode: try NIM if no local match
   if (!matched && S.mode === 'cloud') {
     removeThinking();
-    addMsg('assistant', `☁️ Trying NVIDIA NIM fallback loop…`);
+    addMsg('assistant', `☁️ Trying cloud fallback loop…`);
     const nimResult = await tryNIMFallback(cmd);
     if (nimResult.success) {
       addMsg('assistant', `✅ **${nimResult.model}** responded:\n\n${nimResult.content}`);
@@ -1001,9 +1005,9 @@ async function handleCommand() {
   if (!matched && S.mode === 'local') {
     removeThinking();
     if (lower.includes('help') || lower.includes('what can')) {
-      addMsg('assistant', "Here's what I can do:\n\n• **JSON → CSV** / **CSV → JSON**\n• **Base64** encode/decode\n• **SHA-256** hash\n• **UUID** generator\n• **Word counter** & **case converter**\n• **JSON** format/minify\n• **Regex** tester\n• **Image** info\n• **URL** encode/decode\n• **Line sorter**\n• **Color** converter\n• **Lorem** ipsum generator\n\nSwitch to **Cloud Mode** for AI-powered responses via NVIDIA NIM!");
+      addMsg('assistant', "Here's what I can do:\n\n• **JSON → CSV** / **CSV → JSON**\n• **Base64** encode/decode\n• **SHA-256** hash\n• **UUID** generator\n• **Word counter** & **case converter**\n• **JSON** format/minify\n• **Regex** tester\n• **Image** info\n• **URL** encode/decode\n• **Line sorter**\n• **Color** converter\n• **Lorem** ipsum generator\n\nSwitch to **Cloud Mode** for AI-powered responses via NVIDIA NIM or OpenRouter!");
     } else {
-      addMsg('assistant', `I couldn't match "**${escHtml(cmd)}**". Try:\n• "Convert JSON to CSV"\n• "Generate UUID"\n• "Hash with SHA-256"\n• Type **help** for all commands\n\n💡 Switch to **Cloud Mode** for AI assistance via NVIDIA NIM.`);
+      addMsg('assistant', `I couldn't match "**${escHtml(cmd)}**". Try:\n• "Convert JSON to CSV"\n• "Generate UUID"\n• "Hash with SHA-256"\n• Type **help** for all commands\n\n💡 Switch to **Cloud Mode** for AI assistance via NVIDIA NIM or OpenRouter.`);
     }
   }
   
@@ -1374,8 +1378,8 @@ function setMode(mode) {
   } else {
     cb.className='mode-btn active-cloud'; lb.className='mode-btn';
     $('cmdMode').className='cmd-mode cloud'; $('cmdMode').innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> Cloud';
-    addMsg('assistant', '☁️ **Cloud Mode** activated. Commands will attempt NVIDIA NIM free models with automatic fallback to local processing.\n\nYour data is sent only when you explicitly use Cloud Mode.');
-    addNotification('Cloud Mode Active', 'NVIDIA NIM fallback loop enabled', 'info');
+    addMsg('assistant', '☁️ **Cloud Mode** activated. Commands will attempt NVIDIA NIM, then OpenRouter free models, with automatic fallback to local processing.\n\nYour data is sent only when you explicitly use Cloud Mode.');
+    addNotification('Cloud Mode Active', 'NVIDIA NIM + OpenRouter fallback loop enabled', 'info');
   }
   playClickSound();
 }
