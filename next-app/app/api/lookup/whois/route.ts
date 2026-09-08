@@ -27,11 +27,13 @@ export async function GET(req: NextRequest) {
       },
     });
     if (!res.ok) {
+      console.error('RDAP lookup non-OK response', res.status, await res.text().catch(() => ''));
       return NextResponse.json({ error: `No registration data found (${res.status})` }, { status: res.status === 404 ? 404 : 502 });
     }
     const data = await res.json();
     return NextResponse.json(data);
-  } catch {
+  } catch (e) {
+    console.error('RDAP lookup failed', e);
     return NextResponse.json({ error: 'WHOIS/RDAP lookup service unavailable' }, { status: 502 });
   }
 }
