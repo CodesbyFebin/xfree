@@ -754,6 +754,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
           <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" class="form-btn form-btn-ghost" style="text-decoration:none;font-size:12px">NVIDIA NIM keys ↗</a>
           <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" class="form-btn form-btn-ghost" style="text-decoration:none;font-size:12px">OpenRouter keys ↗</a>
         </div>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5">
+          Video generation ("Generate a video of…") needs a <strong style="color:var(--text-secondary)">paid</strong> <code>FAL_API_KEY</code> - unlike everything else here, no free/keyless video-generation provider exists yet.
+        </p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener noreferrer" class="form-btn form-btn-ghost" style="text-decoration:none;font-size:12px">fal.ai keys ↗</a>
+        </div>
       </div>
     </div>
   </div>
@@ -891,6 +897,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
     <div class="aw-header">
       <div class="aw-title"><span class="aw-dot"></span><span id="awTitle">Workspace</span></div>
       <div class="aw-actions">
+        <button class="assistant-side-btn" id="awArtifactToggle" onclick="toggleArtifactView()" title="Toggle preview/code" style="width:30px;height:30px;display:none">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        </button>
         <button class="assistant-side-btn" id="awUploadBtn" onclick="$('fileInput').click()" title="Upload a file" style="width:30px;height:30px">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
         </button>
@@ -2283,14 +2292,19 @@ function addAssistantMsg(role, text) {
 // the artifact viewer: a fenced code block or long reply gets promoted
 // here instead of staying buried in a small chat bubble.
 // ═══════════════════════════════════════════════════════
-const WS = { content: '', filename: 'output.txt', imageUrl: null };
+const WS = { content: '', filename: 'output.txt', imageUrl: null, videoUrl: null };
 const CODE_FENCE = /```(\w+)?\n([\s\S]*?)```/;
 
 function maybePromoteToWorkspace(title, text) {
   const fence = CODE_FENCE.exec(text);
   if (fence) {
     const lang = fence[1] || 'text';
-    showWorkspace(`${title} · ${lang}`, fence[2].trim(), `output.${{python:'py',javascript:'js',typescript:'ts',html:'html',css:'css',json:'json',bash:'sh',sql:'sql'}[lang] || 'txt'}`);
+    const code = fence[2].trim();
+    if (lang === 'html') {
+      showWorkspaceArtifact(`${title} · html`, code);
+    } else {
+      showWorkspace(`${title} · ${lang}`, code, `output.${{python:'py',javascript:'js',typescript:'ts',css:'css',json:'json',bash:'sh',sql:'sql'}[lang] || 'txt'}`);
+    }
   } else if (text.length > 260) {
     showWorkspace(title, text, 'output.txt');
   }
@@ -2300,6 +2314,9 @@ function showWorkspace(title, content, filename) {
   WS.content = content;
   WS.filename = filename || 'output.txt';
   WS.imageUrl = null;
+  WS.videoUrl = null;
+  WS.artifactMode = null;
+  $('awArtifactToggle').style.display = 'none';
   $('awTitle').textContent = title;
   $('awBody').style.display = 'block';
   $('awBody').innerHTML = '';
@@ -2307,9 +2324,54 @@ function showWorkspace(title, content, filename) {
   $('assistantWorkspace').style.display = 'flex';
 }
 
+// "Artifact generator" / web dev preview: HTML the assistant generates
+// renders live in a sandboxed iframe (srcdoc, sandbox="allow-scripts" -
+// no allow-same-origin, so generated code can't read/write this page's
+// own storage or DOM), with a real toggle back to the raw source.
+function showWorkspaceArtifact(title, html) {
+  WS.content = html;
+  WS.imageUrl = null;
+  WS.videoUrl = null;
+  WS.filename = 'artifact.html';
+  WS.artifactMode = 'preview';
+  $('awTitle').textContent = title;
+  $('awArtifactToggle').style.display = 'flex';
+  renderArtifactView();
+  $('assistantWorkspace').style.display = 'flex';
+}
+
+function renderArtifactView() {
+  const body = $('awBody');
+  body.innerHTML = '';
+  if (WS.artifactMode === 'code') {
+    body.style.display = 'block';
+    body.textContent = WS.content;
+  } else {
+    body.style.display = 'flex';
+    // Set .srcdoc as a JS property, not an HTML attribute string - the
+    // attribute-string approach (srcdoc="${content}") breaks the moment
+    // the generated HTML contains a literal double-quote (e.g. any
+    // style="..." attribute), which truncates the srcdoc value right
+    // there. The property assignment has no such escaping problem.
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('sandbox', 'allow-scripts');
+    iframe.style.cssText = 'width:100%;height:100%;min-height:320px;border:0;border-radius:8px;background:#fff';
+    body.appendChild(iframe);
+    iframe.srcdoc = WS.content;
+  }
+}
+
+function toggleArtifactView() {
+  WS.artifactMode = WS.artifactMode === 'preview' ? 'code' : 'preview';
+  renderArtifactView();
+}
+
 function showWorkspaceImage(title, url) {
   WS.content = '';
   WS.imageUrl = url;
+  WS.videoUrl = null;
+  WS.artifactMode = null;
+  $('awArtifactToggle').style.display = 'none';
   WS.filename = 'xfree-generated-image.jpg';
   $('awTitle').textContent = title;
   $('awBody').style.display = 'flex';
@@ -2336,17 +2398,66 @@ async function runImageGeneration(prompt) {
   playSuccessSound();
 }
 
+// Video generation - unlike image gen, no free/keyless provider exists
+// (verified before building this). Real infrastructure, honestly gated:
+// /api/video/generate needs a server-side FAL_API_KEY the site owner
+// hasn't necessarily set, and this reports that plainly rather than
+// pretending it worked.
+function extractVideoPrompt(cmd) {
+  const m = /\b(?:generate|create|make)\b.{0,25}\b(?:an?\s+)?video\b(?:\s+of\s+(.+)|\s*[:\-]\s*(.+))?/i.exec(cmd);
+  if (!m) return null;
+  const subject = (m[1] || m[2] || '').trim();
+  return subject || null;
+}
+
+async function runVideoGeneration(prompt) {
+  addAssistantMsg('assistant', `🎬 Generating a video of **${escHtml(prompt)}**… this can take up to a minute.`);
+  try {
+    const res = await fetch('/api/video/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+      signal: AbortSignal.timeout(70000),
+    });
+    const data = await res.json();
+    if (res.status === 503) {
+      addAssistantMsg('assistant', `Video generation isn't configured on this server yet - it needs a paid fal.ai API key (no free/keyless video provider exists, unlike image generation). Ask the site owner to add \`FAL_API_KEY\`.`);
+      return;
+    }
+    if (!res.ok || !data.videoUrl) {
+      addAssistantMsg('assistant', `⚠️ Video generation failed: ${data.error || 'unknown error'}.`);
+      return;
+    }
+    WS.content = '';
+    WS.imageUrl = null;
+    WS.artifactMode = null;
+    $('awArtifactToggle').style.display = 'none';
+    WS.filename = 'xfree-generated-video.mp4';
+    WS.videoUrl = data.videoUrl;
+    $('awTitle').textContent = `Video · ${prompt}`;
+    $('awBody').style.display = 'flex';
+    $('awBody').innerHTML = `<video src="${data.videoUrl}" controls autoplay loop style="max-width:100%;border-radius:10px;margin:auto;display:block"></video>`;
+    $('assistantWorkspace').style.display = 'flex';
+    addAssistantMsg('assistant', `✨ Here's your video — open the workspace above.`);
+    playSuccessSound();
+  } catch (e) {
+    addAssistantMsg('assistant', `⚠️ Video generation timed out or failed. Try again in a moment.`);
+  }
+}
+
 function hideWorkspace() {
   $('assistantWorkspace').style.display = 'none';
 }
 
 function copyWorkspace() {
+  if (WS.videoUrl) { navigator.clipboard.writeText(WS.videoUrl).then(() => showToast('Video URL copied', 'success')); return; }
   if (WS.imageUrl) { navigator.clipboard.writeText(WS.imageUrl).then(() => showToast('Image URL copied', 'success')); return; }
   if (!WS.content) return;
   navigator.clipboard.writeText(WS.content).then(() => showToast('Copied', 'success'));
 }
 
 function downloadWorkspace() {
+  if (WS.videoUrl) { window.open(WS.videoUrl, '_blank', 'noopener'); return; }
   if (WS.imageUrl) { window.open(WS.imageUrl, '_blank', 'noopener'); return; }
   if (!WS.content) return;
   const blob = new Blob([WS.content], { type: 'text/plain' });
@@ -2465,6 +2576,17 @@ async function runAssistantCommand(cmd) {
 
   const lower = cmd.toLowerCase();
   let matched = false;
+
+  const videoPrompt = extractVideoPrompt(cmd);
+  if (videoPrompt) {
+    matched = true;
+    setJarvisStage('executing');
+    await runVideoGeneration(videoPrompt);
+    setJarvisStage('complete');
+    $('assistantStatusLine').innerHTML = 'Tap the mic or type to <span class="accent">continue</span>';
+    setTimeout(resetJarvisStages, 1800);
+    return;
+  }
 
   const imagePrompt = extractImagePrompt(cmd);
   if (imagePrompt) {
