@@ -24,6 +24,30 @@ import { RobotsTxtGeneratorTool } from '@/components/tools/RobotsTxtGeneratorToo
 import { MetaTagGeneratorTool } from '@/components/tools/MetaTagGeneratorTool';
 import { CronGeneratorTool } from '@/components/tools/CronGeneratorTool';
 import { UrlEncoderTool } from '@/components/tools/UrlEncoderTool';
+import { WordCounterTool } from '@/components/tools/WordCounterTool';
+import { CaseConverterTool } from '@/components/tools/CaseConverterTool';
+import { SlugGeneratorTool } from '@/components/tools/SlugGeneratorTool';
+import { DiffTool } from '@/components/tools/DiffTool';
+import { MarkdownTableGeneratorTool } from '@/components/tools/MarkdownTableGeneratorTool';
+import { JsonToCsvTool } from '@/components/tools/JsonToCsvTool';
+import { CsvToJsonTool } from '@/components/tools/CsvToJsonTool';
+import { ColorConverterTool } from '@/components/tools/ColorConverterTool';
+import { ColorPaletteTool } from '@/components/tools/ColorPaletteTool';
+import { RandomStringTool } from '@/components/tools/RandomStringTool';
+import { RandomNumberTool } from '@/components/tools/RandomNumberTool';
+import { RandomColorTool } from '@/components/tools/RandomColorTool';
+import { UtmBuilderTool } from '@/components/tools/UtmBuilderTool';
+import { BulkUrlExtractorTool } from '@/components/tools/BulkUrlExtractorTool';
+import { EmailValidatorTool } from '@/components/tools/EmailValidatorTool';
+import { UrlValidatorTool } from '@/components/tools/UrlValidatorTool';
+import { CreditCardValidatorTool } from '@/components/tools/CreditCardValidatorTool';
+import { XmlValidatorTool } from '@/components/tools/XmlValidatorTool';
+import { HmacGeneratorTool } from '@/components/tools/HmacGeneratorTool';
+import { JwtEncoderTool } from '@/components/tools/JwtEncoderTool';
+import { HtmlMinifierTool } from '@/components/tools/HtmlMinifierTool';
+import { CssMinifierTool } from '@/components/tools/CssMinifierTool';
+import { RegexExplainerTool } from '@/components/tools/RegexExplainerTool';
+import { RegexBuilderTool } from '@/components/tools/RegexBuilderTool';
 
 // Only these tool ids have a real, working interactive component. Every
 // other tool page shows content/SEO copy only, with a link out to XFree
@@ -49,6 +73,34 @@ const TOOL_COMPONENTS: Record<string, ComponentType> = {
   'cron-parser': CronGeneratorTool,
   'url-encode': UrlEncoderTool,
   'url-decode': UrlEncoderTool,
+  'word-counter': WordCounterTool,
+  'case-converter': CaseConverterTool,
+  'slug-generator': SlugGeneratorTool,
+  'diff-tool': DiffTool,
+  'table-generator': MarkdownTableGeneratorTool,
+  'json-to-csv': JsonToCsvTool,
+  'csv-to-json': CsvToJsonTool,
+  'json-minify': JsonFormatterTool,
+  'json-validator': JsonFormatterTool,
+  'color-converter': ColorConverterTool,
+  'hex-to-rgb': ColorConverterTool,
+  'rgb-to-hex': ColorConverterTool,
+  'color-palette': ColorPaletteTool,
+  'random-string': RandomStringTool,
+  'random-number': RandomNumberTool,
+  'random-color': RandomColorTool,
+  'utm-builder': UtmBuilderTool,
+  'bulk-url-extractor': BulkUrlExtractorTool,
+  'email-validator': EmailValidatorTool,
+  'url-validator': UrlValidatorTool,
+  'credit-card-validator': CreditCardValidatorTool,
+  'xml-validator': XmlValidatorTool,
+  'hmac-generator': HmacGeneratorTool,
+  'jwt-encoder': JwtEncoderTool,
+  'html-minifier': HtmlMinifierTool,
+  'css-minifier': CssMinifierTool,
+  'regex-explainer': RegexExplainerTool,
+  'regex-builder': RegexBuilderTool,
 };
 
 interface Props {
