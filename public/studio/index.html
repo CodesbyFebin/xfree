@@ -509,8 +509,32 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
         <div class="toggle on" id="toggleChain" onclick="toggleSetting('chain')"></div>
       </div>
       <div style="margin-top:16px">
+        <div class="panel-section-title" style="margin-bottom:10px">Local AI via Ollama (pre-routed before cloud)</div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6">
+          If Ollama is running on your own machine, commands that don't match a built-in tool are tried against it first - nothing leaves your device. Requires Ollama started with <code>OLLAMA_ORIGINS=https://app.xfree.in ollama serve</code> (its default CORS policy otherwise blocks this page from reaching it) and the model already pulled (<code>ollama pull llama3.2:1b</code>).
+        </p>
+        <div class="form-group">
+          <label class="form-label">Ollama URL</label>
+          <input class="form-input" id="ollamaUrlInput" value="http://localhost:11434" oninput="S.settings.ollamaUrl = this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Model</label>
+          <input class="form-input" id="ollamaModelInput" value="llama3.2:1b" oninput="S.settings.ollamaModel = this.value">
+        </div>
+      </div>
+      <div style="margin-top:16px">
         <div class="panel-section-title" style="margin-bottom:10px">Cloud Fallback Models (NVIDIA + OpenRouter)</div>
         <div id="nimModelsList"></div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="panel-section-title" style="margin-bottom:8px">Get a Free API Key</div>
+        <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6">
+          Cloud Mode needs at least one of these set as a server environment variable (<code>NVIDIA_API_KEY</code> or <code>OPENROUTER_API_KEY</code>) - this is done once by the site owner, not per-visitor.
+        </p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="https://build.nvidia.com" target="_blank" rel="noopener noreferrer" class="form-btn form-btn-ghost" style="text-decoration:none;font-size:12px">NVIDIA NIM keys ↗</a>
+          <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" class="form-btn form-btn-ghost" style="text-decoration:none;font-size:12px">OpenRouter keys ↗</a>
+        </div>
       </div>
     </div>
   </div>
@@ -590,7 +614,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 const S = {
   files: [], results: [], messages: [], notifications: [], reminders: [],
   mode: 'local', isProcessing: false, lastResult: null, mobTab: 'chat',
-  settings: { audio: true, desktop: false, chain: true },
+  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b' },
   nimModels: [
     { id: 'meta/llama-3.1-8b-instruct', name: 'Llama 3.1 8B', status: 'checking', provider: 'NVIDIA' },
     { id: 'google/gemma-2-9b-it', name: 'Gemma 2 9B', status: 'checking', provider: 'NVIDIA' },
@@ -635,6 +659,49 @@ function playSuccessSound() { playTone(523, 0.1, 'sine', 0.08); setTimeout(() =>
 function playErrorSound() { playTone(300, 0.2, 'square', 0.05); setTimeout(() => playTone(250, 0.3, 'square', 0.04), 150); }
 function playReminderSound() { for(let i=0;i<3;i++) setTimeout(()=>playTone(660+i*110,0.15,'sine',0.07),i*180); }
 function playClickSound() { playTone(600, 0.05, 'sine', 0.04); }
+
+// ═══════════════════════════════════════════════════════
+// OLLAMA (LOCAL LLM) - PRE-ROUTED BEFORE CLOUD
+// ═══════════════════════════════════════════════════════
+// Ollama runs on the visitor's own machine (typically
+// http://localhost:11434), not on XFree's server - unlike NVIDIA/
+// OpenRouter, this can only ever be called client-side, and only
+// works for a visitor who has Ollama actually running locally with
+// the configured model pulled. Kept to a short timeout so visitors
+// without Ollama installed (the common case) get a fast, silent
+// fall-through to the existing cloud/local behavior rather than a
+// multi-second hang waiting for a connection that will never come.
+// Requires the visitor's own Ollama instance to allow this origin
+// (OLLAMA_ORIGINS=https://app.xfree.in, or "*") - Ollama's default
+// CORS policy otherwise blocks browser requests from other origins.
+// That failure looks identical to "Ollama not running" from here, so
+// no attempt is made to distinguish the two - both just fall through.
+async function tryOllamaFallback(prompt) {
+  const { ollamaUrl, ollamaModel } = S.settings;
+  if (!ollamaUrl || !ollamaModel) return { success: false };
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(`${ollamaUrl}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: ollamaModel,
+        messages: [{ role: 'user', content: prompt }],
+        stream: false,
+      }),
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return { success: false };
+    const data = await res.json();
+    const content = data?.message?.content;
+    if (!content) return { success: false };
+    return { success: true, content, model: ollamaModel };
+  } catch {
+    return { success: false };
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // NVIDIA NIM FALLBACK LOOP
@@ -984,8 +1051,24 @@ async function handleCommand() {
     }
   }
   
-  // Cloud mode: try NIM if no local match
-  if (!matched && S.mode === 'cloud') {
+  // Pre-routed local LLM check: try the visitor's own Ollama instance
+  // before anything else, in both modes - it's genuinely local/private
+  // (nothing leaves the device), so it's strictly preferable to a cloud
+  // call when available, and a fast-fail when it isn't (see
+  // tryOllamaFallback's comment for why the failure path is silent).
+  let ollamaHandled = false;
+  if (!matched) {
+    const ollamaResult = await tryOllamaFallback(cmd);
+    if (ollamaResult.success) {
+      removeThinking();
+      addMsg('assistant', `🖥️ **${ollamaResult.model}** (local via Ollama) responded:\n\n${ollamaResult.content}`);
+      playSuccessSound();
+      ollamaHandled = true;
+    }
+  }
+
+  // Cloud mode: try NIM/OpenRouter if no local match and Ollama didn't handle it
+  if (!matched && !ollamaHandled && S.mode === 'cloud') {
     removeThinking();
     addMsg('assistant', `☁️ Trying cloud fallback loop…`);
     const nimResult = await tryNIMFallback(cmd);
@@ -1001,16 +1084,16 @@ async function handleCommand() {
       playErrorSound();
     }
   }
-  
-  if (!matched && S.mode === 'local') {
+
+  if (!matched && !ollamaHandled && S.mode === 'local') {
     removeThinking();
     if (lower.includes('help') || lower.includes('what can')) {
-      addMsg('assistant', "Here's what I can do:\n\n• **JSON → CSV** / **CSV → JSON**\n• **Base64** encode/decode\n• **SHA-256** hash\n• **UUID** generator\n• **Word counter** & **case converter**\n• **JSON** format/minify\n• **Regex** tester\n• **Image** info\n• **URL** encode/decode\n• **Line sorter**\n• **Color** converter\n• **Lorem** ipsum generator\n\nSwitch to **Cloud Mode** for AI-powered responses via NVIDIA NIM or OpenRouter!");
+      addMsg('assistant', "Here's what I can do:\n\n• **JSON → CSV** / **CSV → JSON**\n• **Base64** encode/decode\n• **SHA-256** hash\n• **UUID** generator\n• **Word counter** & **case converter**\n• **JSON** format/minify\n• **Regex** tester\n• **Image** info\n• **URL** encode/decode\n• **Line sorter**\n• **Color** converter\n• **Lorem** ipsum generator\n\nSwitch to **Cloud Mode** for AI-powered responses via NVIDIA NIM or OpenRouter, or configure Ollama in Settings for local AI!");
     } else {
-      addMsg('assistant', `I couldn't match "**${escHtml(cmd)}**". Try:\n• "Convert JSON to CSV"\n• "Generate UUID"\n• "Hash with SHA-256"\n• Type **help** for all commands\n\n💡 Switch to **Cloud Mode** for AI assistance via NVIDIA NIM or OpenRouter.`);
+      addMsg('assistant', `I couldn't match "**${escHtml(cmd)}**". Try:\n• "Convert JSON to CSV"\n• "Generate UUID"\n• "Hash with SHA-256"\n• Type **help** for all commands\n\n💡 Switch to **Cloud Mode** for AI assistance, or configure Ollama in Settings for local AI.`);
     }
   }
-  
+
   S.isProcessing = false;
   $('sendBtn').disabled = false;
 }
