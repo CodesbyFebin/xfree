@@ -67,7 +67,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const toolRoutes = TOOLS.filter((t) => t.indexable).flatMap((tool) =>
     localizedEntries(`/tools/${tool.slug}`, {
       changeFrequency: 'weekly',
-      priority: tool.searchVolume ? Math.min(0.9, 0.7 + tool.searchVolume / 1000000) : 0.8,
+      // Rounded to 2dp - the raw computation (0.7 + volume/1000000) hits
+      // binary floating-point imprecision for most inputs (e.g. produces
+      // 0.7739999999999999 instead of 0.774), which XML sitemaps render
+      // as literal 16-digit decimals. Real sitemap validators/crawlers
+      // don't need that precision; a clean 2-decimal value is standard.
+      priority: Math.round(Math.min(0.9, tool.searchVolume ? 0.7 + tool.searchVolume / 1000000 : 0.8) * 100) / 100,
     })
   );
 
