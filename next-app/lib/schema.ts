@@ -168,7 +168,7 @@ export function generateOrganizationSchema() {
       contactType: 'customer service',
     },
     sameAs: [
-      'https://twitter.com/xfreein',
+      'https://github.com/CodesbyFebin/xfree',
     ],
     knowsAbout: [
       'Developer Tools',
@@ -205,7 +205,7 @@ export function generateWebSiteSchema() {
       'query-input': 'required name=search_term_string',
     },
     sameAs: [
-      'https://twitter.com/xfreein',
+      'https://github.com/CodesbyFebin/xfree',
     ],
   };
 }

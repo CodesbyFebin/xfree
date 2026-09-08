@@ -227,6 +227,24 @@ export default function HomePage() {
           <div className="hero-orb w-[400px] h-[400px] bg-cyber-magenta top-1/4 -right-32" aria-hidden="true" />
           <div className="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" aria-hidden="true" />
 
+          {/* eslint-disable-next-line @next/next/no-img-element -- decorative, masked/faded background art, not a content image */}
+          <picture aria-hidden="true">
+            <source srcSet="/hero-earth-960.webp 960w, /hero-earth-1920.webp 1920w" type="image/webp" />
+            <img
+              src="/hero-earth-1920.webp"
+              alt=""
+              className="hero-earth-bg"
+              width={1920}
+              height={800}
+              decoding="async"
+              fetchPriority="high"
+            />
+          </picture>
+
+          <p className="font-script text-cyber-glow text-2xl sm:text-3xl absolute top-24 right-6 sm:right-12 -rotate-6 opacity-90 hidden sm:block" aria-hidden="true">
+            {t('heroHandwritten')}
+          </p>
+
           <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-6 neon-box-green anim-slide-up">
               <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse" aria-hidden="true" />
@@ -285,9 +303,6 @@ export default function HomePage() {
             <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyber-dim mt-8 anim-slide-up" style={{ animationDelay: '0.6s' }}>
               {t('heroSideLine1')}<br />
               <span className="text-cyber-text">{t('heroSideLine2')}</span>
-            </p>
-            <p className="font-script text-cyber-glow text-3xl sm:text-4xl mt-2 -rotate-3 anim-slide-up" style={{ animationDelay: '0.7s' }}>
-              {t('heroHandwritten')}
             </p>
           </div>
         </section>

@@ -10,8 +10,23 @@ export function Footer() {
   const t = useTranslations('Footer');
 
   return (
-    <footer className="border-t border-cyber-border bg-cyber-surface py-14 px-4" role="contentinfo">
-      <div className="max-w-7xl mx-auto">
+    <footer className="relative border-t border-cyber-border bg-cyber-surface py-14 px-4 overflow-hidden" role="contentinfo">
+      {/* eslint-disable-next-line @next/next/no-img-element -- decorative full-bleed background art */}
+      <picture aria-hidden="true">
+        <source srcSet="/footer-skyline-1000.webp 1000w, /footer-skyline-2000.webp 2000w" type="image/webp" />
+        <img
+          src="/footer-skyline-2000.webp"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.07] blur-[2px] saturate-150 pointer-events-none"
+          width={2000}
+          height={750}
+          decoding="async"
+          loading="lazy"
+        />
+      </picture>
+      <div className="absolute inset-0 bg-gradient-to-t from-cyber-surface via-cyber-surface/92 to-cyber-surface/85 pointer-events-none" aria-hidden="true" />
+
+      <div className="relative max-w-7xl mx-auto">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_3fr]">
           <section aria-labelledby="footer-brand">
             <Link href="/" className="inline-flex items-center gap-2" aria-label="XFree homepage">
@@ -66,13 +81,33 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/categories/ai-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
-                    {t('aiTools')}
+                  <Link href="/categories/security-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('securityTools')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/categories/security-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
-                    {t('securityTools')}
+                  <Link href="/categories/text-tools" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('textTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/categories/converters" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('convertersTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/categories/generators" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('categoryGenerators')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/categories/validators" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('validatorTools')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/tools" className="text-sm text-cyber-glow transition-colors hover:text-cyber-text">
+                    {t('allTools')} →
                   </Link>
                 </li>
               </ul>
@@ -192,6 +227,44 @@ export function Footer() {
                   <Link href="/terms" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('terms')}
                   </Link>
+                </li>
+              </ul>
+            </section>
+
+            <section aria-labelledby="footer-community">
+              <h2 id="footer-community" className="text-sm font-semibold text-cyber-glow font-mono">
+                {t('communityHeading')}
+              </h2>
+              <ul className="mt-4 space-y-2.5">
+                <li>
+                  <a
+                    href="https://github.com/CodesbyFebin/xfree"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-cyber-muted transition-colors hover:text-cyber-text inline-flex items-center gap-1"
+                  >
+                    {t('githubRepo')} <span aria-hidden="true" className="text-[10px]">↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/CodesbyFebin/xfree/issues/new"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-cyber-muted transition-colors hover:text-cyber-text inline-flex items-center gap-1"
+                  >
+                    {t('reportIssue')} <span aria-hidden="true" className="text-[10px]">↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/CodesbyFebin/xfree/fork"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-cyber-muted transition-colors hover:text-cyber-text inline-flex items-center gap-1"
+                  >
+                    {t('contribute')} <span aria-hidden="true" className="text-[10px]">↗</span>
+                  </a>
                 </li>
               </ul>
             </section>

@@ -426,6 +426,20 @@
     pointer-events: none;
   }
 
+  .hero-earth-bg {
+    position: absolute;
+    bottom: -8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1600px, 150vw);
+    max-width: none;
+    opacity: 0.16;
+    filter: blur(1.5px) saturate(1.1);
+    pointer-events: none;
+    mask-image: linear-gradient(to top, black 20%, transparent 65%);
+    -webkit-mask-image: linear-gradient(to top, black 20%, transparent 65%);
+  }
+
   .corner-brackets {
     position: relative;
   }
