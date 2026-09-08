@@ -61,6 +61,9 @@ async function fetchOneFeed(source: SignalSource): Promise<SignalItem[]> {
     const res = await fetch(source.feedUrl, {
       headers: { 'User-Agent': 'XFreeSignals/1.0 (+https://www.xfree.in)' },
       next: { revalidate: 3600 },
+      // Any one of 10 external feeds going slow shouldn't stall the
+      // whole page - Promise.all below waits for the slowest source.
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return [];
     const xml = await res.text();
