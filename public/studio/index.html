@@ -720,14 +720,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
         </div>
       </div>
       <div style="margin-top:16px">
-        <div class="panel-section-title" style="margin-bottom:10px">Cloud Fallback Models (NVIDIA + OpenRouter)</div>
+        <div class="panel-section-title" style="margin-bottom:10px">Cloud Fallback Models (NVIDIA, OpenRouter, Venice, DeepSeek)</div>
         <div class="form-group">
           <label class="form-label">Preferred model</label>
           <select class="form-select" id="modelSelect" onchange="S.settings.selectedModel = this.value; saveAssistantSettings()">
             <option value="auto">Auto (task-routed - recommended)</option>
           </select>
           <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5">
-            "Auto" lets the gateway pick the best available free model per request (real NVIDIA catalog discovery + task scoring). Picking one here requests it specifically - the gateway still falls back automatically if it's unavailable.
+            "Auto" only ever uses the free NVIDIA and OpenRouter tiers (real NVIDIA catalog discovery + task scoring) - it never spends money. Picking a free model here requests it specifically, with automatic fallback if it's unavailable. Venice and DeepSeek are paid APIs: picking one calls it directly with no fallback, so you'll see a clear error instead if it's unavailable.
           </p>
         </div>
         <div id="nimModelsList"></div>
@@ -977,6 +977,8 @@ const S = {
     { id: 'nvidia/nemotron-3-ultra-550b-a55b:free', name: 'Nemotron 3 Ultra', status: 'checking', provider: 'OpenRouter' },
     { id: 'google/gemma-4-31b-it:free', name: 'Gemma 4 31B', status: 'checking', provider: 'OpenRouter' },
     { id: 'cohere/north-mini-code:free', name: 'North Mini Code', status: 'checking', provider: 'OpenRouter' },
+    { id: 'venice-uncensored', name: 'Venice Uncensored', status: 'idle', provider: 'Venice · paid, unfiltered' },
+    { id: 'deepseek-v4-flash', name: 'DeepSeek V4 Flash', status: 'idle', provider: 'DeepSeek · paid' },
   ],
   activeNimModel: null
 };

@@ -17,6 +17,14 @@ import type { NvidiaChatMessage } from '@/lib/nvidia/types';
 // models this account's free tier 404s on. OpenRouter's smaller free
 // catalog is the second-tier fallback if NVIDIA has no key configured or
 // every NVIDIA candidate fails.
+//
+// Venice AI and DeepSeek are a separate, explicit-pick-only tier - both
+// are real paid APIs (verified against their own pricing docs: no free
+// tier on either), and this endpoint is public/anonymous with no
+// per-visitor auth or spend cap. They are ONLY reached when a caller
+// requests their exact model id by name; the "auto" cascade above never
+// falls through to them, so ordinary/anonymous traffic never spends
+// money. See VENICE_MODELS / DEEPSEEK_MODELS below.
 const RequestSchema = z.object({
   model: z.string().trim().min(1).max(300).optional(),
   taskType: z.enum(NVIDIA_TASK_TYPES).default('general'),
@@ -54,14 +62,17 @@ function routeOpenRouterModels(taskType: string, requestedModel?: string): strin
   return [codeModel, ...OPENROUTER_MODELS.filter((m) => m !== codeModel)];
 }
 
-async function tryOpenRouterModel(
+// Shared by every OpenAI-compatible provider (OpenRouter, Venice, DeepSeek
+// all expose the identical /chat/completions request/response shape).
+async function tryOpenAICompatibleModel(
+  baseUrl: string,
   apiKey: string,
   model: string,
   messages: { role: string; content: string }[],
   maxTokens: number
 ): Promise<string | null> {
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetch(baseUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({ model, messages, max_tokens: maxTokens }),
@@ -76,11 +87,23 @@ async function tryOpenRouterModel(
   }
 }
 
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const VENICE_URL = 'https://api.venice.ai/api/v1/chat/completions';
+const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
+
+// Explicit-pick-only paid providers (see comment above POST). Neither list
+// participates in the "auto" cascade - they're only reached via the exact
+// model-id match in POST below.
+const VENICE_MODELS = ['venice-uncensored'];
+const DEEPSEEK_MODELS = ['deepseek-v4-flash'];
+
 export async function POST(req: NextRequest) {
   const nvidiaKey = process.env.NVIDIA_API_KEY;
   const openrouterKey = process.env.OPENROUTER_API_KEY;
+  const veniceKey = process.env.VENICE_API_KEY;
+  const deepseekKey = process.env.DEEPSEEK_API_KEY;
 
-  if (!nvidiaKey && !openrouterKey) {
+  if (!nvidiaKey && !openrouterKey && !veniceKey && !deepseekKey) {
     return NextResponse.json({ error: 'Cloud Mode is not configured on this server yet' }, { status: 503 });
   }
 
@@ -89,6 +112,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
   const { model, taskType, messages, temperature, maxTokens } = parsed.data;
+
+  // Explicit-pick-only paid tier: only reached when the caller names the
+  // exact model id, and it takes priority over the free auto cascade below
+  // so an explicit request never gets silently redirected to a free model.
+  if (model && VENICE_MODELS.includes(model)) {
+    if (!veniceKey) {
+      return NextResponse.json({ error: 'Venice is not configured on this server' }, { status: 503 });
+    }
+    const reply = await tryOpenAICompatibleModel(VENICE_URL, veniceKey, model, messages, maxTokens ?? 512);
+    if (reply) {
+      return NextResponse.json({ success: true, provider: 'Venice', model, reply, wasFallback: false });
+    }
+    return NextResponse.json({ error: 'Venice request failed' }, { status: 502 });
+  }
+
+  if (model && DEEPSEEK_MODELS.includes(model)) {
+    if (!deepseekKey) {
+      return NextResponse.json({ error: 'DeepSeek is not configured on this server' }, { status: 503 });
+    }
+    const reply = await tryOpenAICompatibleModel(DEEPSEEK_URL, deepseekKey, model, messages, maxTokens ?? 512);
+    if (reply) {
+      return NextResponse.json({ success: true, provider: 'DeepSeek', model, reply, wasFallback: false });
+    }
+    return NextResponse.json({ error: 'DeepSeek request failed' }, { status: 502 });
+  }
 
   if (nvidiaKey) {
     try {
@@ -120,7 +168,7 @@ export async function POST(req: NextRequest) {
   if (openrouterKey) {
     const routed = routeOpenRouterModels(taskType, model);
     for (let i = 0; i < routed.length; i++) {
-      const reply = await tryOpenRouterModel(openrouterKey, routed[i], messages, maxTokens ?? 512);
+      const reply = await tryOpenAICompatibleModel(OPENROUTER_URL, openrouterKey, routed[i], messages, maxTokens ?? 512);
       if (reply) {
         return NextResponse.json({ success: true, provider: 'OpenRouter', model: routed[i], reply, wasFallback: true });
       }
