@@ -59,13 +59,21 @@ export default function PrivacyPage() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-xl font-bold text-cyber-text">Client-Side Only, Today</h2>
+              <h2 className="text-xl font-bold text-cyber-text">Client-Side Tools, With Three Disclosed Exceptions</h2>
               <p>
-                Every tool currently published on XFree runs entirely in Local Mode: no tool input is
-                transmitted to any XFree server or third-party AI service. If a future tool ever needs to
-                send data off-device to work (for example, calling an external API), that will be disclosed
-                directly on that tool&apos;s page with an explicit privacy notice before you use it - not
-                assumed or buried in this policy.
+                Almost every tool on XFree runs entirely in Local Mode: your input never leaves your
+                device. Three tools are the exception - IP Lookup, DNS Lookup, and WHOIS Lookup - because
+                looking up an IP address, DNS record, or domain registration inherently requires querying
+                a service that holds that data; no browser-only implementation of these is possible.
+              </p>
+              <p>
+                For those three tools only: the value you enter is sent to XFree&apos;s own server, which
+                queries a public lookup service (ipwho.is for IP lookups, Cloudflare&apos;s DNS-over-HTTPS
+                resolver for DNS lookups, RDAP via rdap.org for WHOIS lookups) and returns the result. XFree
+                does not log or store these queries. Each of these three tool pages states this plainly
+                before you use it - not assumed or buried in this policy. If any future tool needs to send
+                data off-device, the same disclosure standard applies: stated on that tool&apos;s own page,
+                not just here.
               </p>
             </section>
 
