@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
@@ -11,6 +12,44 @@ import { buildCanonical, buildLanguageAlternates } from '@/lib/canonical';
 import { generateToolSchema, generateFAQSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { USE_CASES } from '@/lib/data/content';
 import type { Locale } from '@/i18n/routing';
+import { JsonFormatterTool } from '@/components/tools/JsonFormatterTool';
+import { RegexTesterTool } from '@/components/tools/RegexTesterTool';
+import { Base64Tool } from '@/components/tools/Base64Tool';
+import { HashGeneratorTool } from '@/components/tools/HashGeneratorTool';
+import { PasswordGeneratorTool } from '@/components/tools/PasswordGeneratorTool';
+import { UuidGeneratorTool } from '@/components/tools/UuidGeneratorTool';
+import { JwtDecoderTool } from '@/components/tools/JwtDecoderTool';
+import { SitemapGeneratorTool } from '@/components/tools/SitemapGeneratorTool';
+import { RobotsTxtGeneratorTool } from '@/components/tools/RobotsTxtGeneratorTool';
+import { MetaTagGeneratorTool } from '@/components/tools/MetaTagGeneratorTool';
+import { CronGeneratorTool } from '@/components/tools/CronGeneratorTool';
+import { UrlEncoderTool } from '@/components/tools/UrlEncoderTool';
+
+// Only these tool ids have a real, working interactive component. Every
+// other tool page shows content/SEO copy only, with a link out to XFree
+// Studio to actually run it - do not claim in-page interactivity for an
+// id that isn't in this map, and do not add an id here without a real
+// component behind it (see the "Quick Answer" copy on the ToolDetail
+// component below, which reads directly off this map).
+const TOOL_COMPONENTS: Record<string, ComponentType> = {
+  'json-formatter': JsonFormatterTool,
+  'regex-tester': RegexTesterTool,
+  'base64-encode': Base64Tool,
+  'base64-decode': Base64Tool,
+  'hash-generator': HashGeneratorTool,
+  'sha256-hash': HashGeneratorTool,
+  'md5-hash': HashGeneratorTool,
+  'password-generator': PasswordGeneratorTool,
+  'uuid-generator': UuidGeneratorTool,
+  'jwt-decoder': JwtDecoderTool,
+  'xml-sitemap-generator': SitemapGeneratorTool,
+  'robots-txt-generator': RobotsTxtGeneratorTool,
+  'meta-tag-generator': MetaTagGeneratorTool,
+  'cron-generator': CronGeneratorTool,
+  'cron-parser': CronGeneratorTool,
+  'url-encode': UrlEncoderTool,
+  'url-decode': UrlEncoderTool,
+};
 
 interface Props {
   params: Promise<{ slug?: string[]; locale: Locale }>;
@@ -187,8 +226,52 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
             </div>
           </header>
 
+          {/* Quick Answer - zero-click AEO block. Text is derived from
+              tool.explanation (already fact-checked per-tool, not new
+              copy), and the CTA honestly differs based on whether this
+              id actually has a live component below or only a Studio
+              link - never claims in-page use for an unwired tool. */}
+          <section className="cyber-card p-4 mb-6 border-cyber-cyan/30 bg-cyber-cyan/5" aria-labelledby="quick-answer-heading">
+            <h2 id="quick-answer-heading" className="text-xs uppercase tracking-wider text-cyber-cyan font-mono font-semibold mb-2">
+              ⚡ Quick Answer
+            </h2>
+            <p className="text-sm text-cyber-text">
+              {tool.explanation} {TOOL_COMPONENTS[tool.id]
+                ? 'Use XFree ' + tool.title + ' free, right on this page, no signup required.'
+                : 'Open XFree Studio to use it free, no signup required.'}
+            </p>
+          </section>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
+              {/* Live Tool */}
+              {(() => {
+                const LiveTool = TOOL_COMPONENTS[tool.id];
+                return LiveTool ? (
+                  <section className="cyber-card p-6 border-cyber-glow/30" aria-labelledby="live-tool-heading">
+                    <h2 id="live-tool-heading" className="text-lg font-bold text-cyber-text font-mono mb-4">
+                      <span className="text-cyber-glow">$</span> Use XFree {tool.title} Now
+                    </h2>
+                    <LiveTool />
+                  </section>
+                ) : (
+                  <section className="cyber-card p-6" aria-labelledby="live-tool-heading">
+                    <h2 id="live-tool-heading" className="text-lg font-bold text-cyber-text font-mono mb-3">
+                      <span className="text-cyber-glow">$</span> Use XFree {tool.title}
+                    </h2>
+                    <p className="text-sm text-cyber-muted mb-4">
+                      Open XFree Studio to use {tool.title} in your browser.
+                    </p>
+                    <a
+                      href="https://app.xfree.in/"
+                      className="cyber-btn text-xs px-6 py-2.5 rounded inline-block"
+                    >
+                      Open in XFree Studio →
+                    </a>
+                  </section>
+                );
+              })()}
+
               {/* How to Use */}
               <section className="cyber-card p-6" aria-labelledby="howto-heading">
                 <h2 id="howto-heading" className="text-lg font-bold text-cyber-text font-mono mb-4"><span className="text-cyber-glow">$</span> How to Use XFree {tool.title}</h2>
