@@ -35,6 +35,5 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: 'https://www.xfree.in/sitemap.xml',
-    host: 'https://www.xfree.in',
   };
 }
