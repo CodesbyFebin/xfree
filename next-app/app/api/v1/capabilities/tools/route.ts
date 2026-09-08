@@ -26,8 +26,8 @@ export async function GET() {
       },
       keywords: tool.tags.join(', '),
       featureList: tool.howToUse.join('; '),
-      requirements: tool.execution === 'local' ? 'Web Browser' : 'Web Browser + AI API',
-      privacy: tool.execution === 'local' ? 'All processing happens client-side in browser' : tool.privacyNotice,
+      requirements: tool.execution === 'ai' ? 'Web Browser + AI API' : tool.execution === 'workflow' ? 'Web Browser + XFree Server' : 'Web Browser',
+      privacy: tool.privacyNotice,
       inputExample: tool.exampleInput,
       outputFormat: tool.explanation,
       relatedTool: tool.relatedToolIds.map(id => {

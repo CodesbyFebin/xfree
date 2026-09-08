@@ -48,6 +48,17 @@ import { HtmlMinifierTool } from '@/components/tools/HtmlMinifierTool';
 import { CssMinifierTool } from '@/components/tools/CssMinifierTool';
 import { RegexExplainerTool } from '@/components/tools/RegexExplainerTool';
 import { RegexBuilderTool } from '@/components/tools/RegexBuilderTool';
+import { JsonToYamlTool, YamlToJsonTool, YamlValidatorTool } from '@/components/tools/YamlTool';
+import { TomlValidatorTool } from '@/components/tools/TomlValidatorTool';
+import { QrCodeGeneratorTool } from '@/components/tools/QrCodeGeneratorTool';
+import { BarcodeGeneratorTool } from '@/components/tools/BarcodeGeneratorTool';
+import { SqlFormatterTool } from '@/components/tools/SqlFormatterTool';
+import { PhoneValidatorTool } from '@/components/tools/PhoneValidatorTool';
+import { MarkdownEditorTool } from '@/components/tools/MarkdownEditorTool';
+import { JsMinifierTool } from '@/components/tools/JsMinifierTool';
+import { IpLookupTool } from '@/components/tools/IpLookupTool';
+import { DnsLookupTool } from '@/components/tools/DnsLookupTool';
+import { WhoisLookupTool } from '@/components/tools/WhoisLookupTool';
 
 // Only these tool ids have a real, working interactive component. Every
 // other tool page shows content/SEO copy only, with a link out to XFree
@@ -101,6 +112,19 @@ const TOOL_COMPONENTS: Record<string, ComponentType> = {
   'css-minifier': CssMinifierTool,
   'regex-explainer': RegexExplainerTool,
   'regex-builder': RegexBuilderTool,
+  'json-to-yaml': JsonToYamlTool,
+  'yaml-to-json': YamlToJsonTool,
+  'yaml-validator': YamlValidatorTool,
+  'toml-validator': TomlValidatorTool,
+  'qr-code-generator': QrCodeGeneratorTool,
+  'barcode-generator': BarcodeGeneratorTool,
+  'sql-formatter': SqlFormatterTool,
+  'phone-validator': PhoneValidatorTool,
+  'markdown-editor': MarkdownEditorTool,
+  'js-minifier': JsMinifierTool,
+  'ip-lookup': IpLookupTool,
+  'dns-lookup': DnsLookupTool,
+  'whois-lookup': WhoisLookupTool,
 };
 
 interface Props {

@@ -18,9 +18,11 @@ export function generateToolSchema(tool: ToolDefinition) {
       availability: 'https://schema.org/InStock',
     },
     featureList: tool.howToUse.join(', '),
-    requirements: tool.execution === 'local'
-      ? 'Web browser with JavaScript'
-      : 'Web browser with JavaScript and AI API access',
+    requirements: tool.execution === 'ai'
+      ? 'Web browser with JavaScript and AI API access'
+      : tool.execution === 'workflow'
+      ? 'Web browser with JavaScript (queries an external service via XFree\'s server)'
+      : 'Web browser with JavaScript',
     inputMethod: tool.exampleInput ? `Example: ${tool.exampleInput}` : undefined,
     keywords: tool.tags.join(', '),
     about: {
