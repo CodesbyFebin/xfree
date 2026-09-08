@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 const DEFAULT_MD = `# XFree Markdown Editor
 
@@ -24,8 +25,12 @@ export function MarkdownEditorTool() {
 
   useEffect(() => {
     let cancelled = false;
+    // marked passes raw HTML embedded in the markdown source straight
+    // through (that's standard CommonMark behavior) - sanitize before
+    // rendering via dangerouslySetInnerHTML, or typing a <script> tag
+    // into the editor executes it.
     Promise.resolve(marked.parse(markdown)).then((result) => {
-      if (!cancelled) setHtml(result as string);
+      if (!cancelled) setHtml(DOMPurify.sanitize(result as string));
     });
     return () => {
       cancelled = true;

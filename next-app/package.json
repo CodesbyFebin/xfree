@@ -12,7 +12,9 @@
     "submit-indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
+    "@types/dompurify": "^3.0.5",
     "clsx": "^2.1.0",
+    "dompurify": "^3.4.15",
     "fast-xml-parser": "^5.11.1",
     "js-yaml": "^5.4.1",
     "jsbarcode": "^3.12.3",
