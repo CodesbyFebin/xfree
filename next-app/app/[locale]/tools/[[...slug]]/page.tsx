@@ -45,13 +45,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `${tool.title} online`,
     ].filter(Boolean);
 
+    // "No Signup" is a real, universally-true modifier for every tool on
+    // this site (verified repeatedly - there is no account system at
+    // all), so it's safe to add to every tool's title without per-tool
+    // accuracy risk, unlike a feature claim (e.g. "& Validator") that
+    // would be wrong for tools that aren't validators.
     return {
-      title: `XFree ${tool.title} | Free Online Tool`,
+      title: `XFree ${tool.title} — Free Online, No Signup`,
       description: fullDescription,
       keywords: allKeywords,
       alternates: { canonical, languages: buildLanguageAlternates(`/tools/${tool.slug}`) },
       openGraph: {
-        title: `XFree ${tool.title}`,
+        title: `XFree ${tool.title} — Free, No Signup`,
         description: fullDescription,
         url: canonical,
         type: 'article',
@@ -166,7 +171,9 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
                   <span className="text-3xl">{tool.id === 'json-formatter' ? '{ }' : tool.id === 'regex-tester' ? '.*' : '⚡'}</span>
                 </div>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">XFree {tool.title}</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">
+                    XFree {tool.title} <span className="text-cyber-muted font-normal">— Free, No Signup</span>
+                  </h1>
                   <p className="text-cyber-muted mt-1">{categoryInfo?.label}</p>
                 </div>
               </div>

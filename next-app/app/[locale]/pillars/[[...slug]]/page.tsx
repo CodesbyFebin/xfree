@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const canonical = buildCanonical(path, locale);
       const allKeywords = [...(pillar.keywords || []), 'XFree', 'pillar', 'tool hub', pillar.category].filter(Boolean);
       return {
-        title: `XFree ${pillar.name} | Free Tool Hub`,
+        title: `XFree ${pillar.name} — Free, No Signup`,
         description: pillar.description,
         keywords: allKeywords,
         alternates: { canonical, languages: buildLanguageAlternates(path) },
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const canonical = buildCanonical(path, locale);
       const allKeywords = [...(pillar.keywords || []), 'XFree', pillar.category].filter(Boolean);
       return {
-        title: `XFree ${pillar.name} | ${pillar.toolCount} Free Tools`,
+        title: `XFree ${pillar.name} | ${pillar.toolCount} Free Tools, No Signup`,
         description: pillar.description,
         keywords: allKeywords,
         alternates: { canonical, languages: buildLanguageAlternates(path) },
@@ -201,7 +201,9 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
                 <span className="text-3xl">{pillar.icon}</span>
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">XFree {pillar.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">
+                  XFree {pillar.name} <span className="text-cyber-muted font-normal">— Free, No Signup</span>
+                </h1>
                 <p className="text-cyber-muted mt-1">{categoryInfo?.label} • {pillar.toolCount || pillarTools.length} tools</p>
               </div>
             </div>
