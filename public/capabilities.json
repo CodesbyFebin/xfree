@@ -216,38 +216,6 @@
     {
       "@type": "ListItem",
       "position": 14,
-      "url": "https://www.xfree.in/capabilities/free-pdf-editor-capability",
-      "item": {
-        "@type": "DefinedTerm",
-        "@id": "https://www.xfree.in/capabilities/free-pdf-editor-capability",
-        "name": "free-pdf-editor-capability",
-        "description": "Edit PDF text, annotate, highlight, and add comments directly in your browser. No software installation, no signup, completely free PDF editor.",
-        "hasDefinedTerm": {
-          "@type": "Tool",
-          "name": 1,
-          "toolName": "Free PDF Editor — Edit PDF Online"
-        }
-      }
-    },
-    {
-      "@type": "ListItem",
-      "position": 15,
-      "url": "https://www.xfree.in/capabilities/free-video-downloader-capability",
-      "item": {
-        "@type": "DefinedTerm",
-        "@id": "https://www.xfree.in/capabilities/free-video-downloader-capability",
-        "name": "free-video-downloader-capability",
-        "description": "Download videos from popular platforms. Enter a video URL and get download links for various quality options. Free, no signup required.",
-        "hasDefinedTerm": {
-          "@type": "Tool",
-          "name": 1,
-          "toolName": "Free Video Downloader — Download Videos Online"
-        }
-      }
-    },
-    {
-      "@type": "ListItem",
-      "position": 16,
       "url": "https://www.xfree.in/capabilities/free-photo-editor-capability",
       "item": {
         "@type": "DefinedTerm",
@@ -263,23 +231,7 @@
     },
     {
       "@type": "ListItem",
-      "position": 17,
-      "url": "https://www.xfree.in/capabilities/free-coding-practice-sites-capability",
-      "item": {
-        "@type": "DefinedTerm",
-        "@id": "https://www.xfree.in/capabilities/free-coding-practice-sites-capability",
-        "name": "free-coding-practice-sites-capability",
-        "description": "Practice coding with interactive exercises, challenges, and immediate feedback. Learn JavaScript, Python, and more with our free browser-based coding practice environment.",
-        "hasDefinedTerm": {
-          "@type": "Tool",
-          "name": 1,
-          "toolName": "Coding Practice Platform — Learn to Code"
-        }
-      }
-    },
-    {
-      "@type": "ListItem",
-      "position": 18,
+      "position": 15,
       "url": "https://www.xfree.in/capabilities/best-free-cloud-storage-capability",
       "item": {
         "@type": "DefinedTerm",
@@ -295,7 +247,7 @@
     },
     {
       "@type": "ListItem",
-      "position": 19,
+      "position": 16,
       "url": "https://www.xfree.in/capabilities/free-mobile-capability",
       "item": {
         "@type": "DefinedTerm",
@@ -311,7 +263,7 @@
     },
     {
       "@type": "ListItem",
-      "position": 20,
+      "position": 17,
       "url": "https://www.xfree.in/capabilities/free-online-games-capability",
       "item": {
         "@type": "DefinedTerm",
@@ -327,7 +279,7 @@
     },
     {
       "@type": "ListItem",
-      "position": 21,
+      "position": 18,
       "url": "https://www.xfree.in/capabilities/free-vpn-capability",
       "item": {
         "@type": "DefinedTerm",
@@ -343,7 +295,7 @@
     },
     {
       "@type": "ListItem",
-      "position": 22,
+      "position": 19,
       "url": "https://www.xfree.in/capabilities/wetransfer-free-capability",
       "item": {
         "@type": "DefinedTerm",
@@ -359,7 +311,7 @@
     },
     {
       "@type": "ListItem",
-      "position": 23,
+      "position": 20,
       "url": "https://www.xfree.in/capabilities/canva-free-capability",
       "item": {
         "@type": "DefinedTerm",

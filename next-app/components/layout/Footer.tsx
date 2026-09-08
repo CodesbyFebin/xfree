@@ -12,7 +12,7 @@ export function Footer() {
   return (
     <footer className="relative border-t border-cyber-border bg-cyber-surface py-14 px-4 overflow-hidden" role="contentinfo">
       {/* eslint-disable-next-line @next/next/no-img-element -- decorative full-bleed background art */}
-      <picture aria-hidden="true">
+      <picture>
         <source srcSet="/footer-skyline-1000.webp 1000w, /footer-skyline-2000.webp 2000w" type="image/webp" />
         <img
           src="/footer-skyline-2000.webp"

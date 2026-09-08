@@ -3,7 +3,7 @@
 # Generated from live source data. Last updated: 2026-09-06
 
 ## What this site is
-XFree.in publishes 23 browser-based developer, SEO, and AI micro-tools,
+XFree.in publishes 20 browser-based developer, SEO, and AI micro-tools,
 organized across 6 categories and 60 topic pillars.
 Most tools run entirely client-side in the browser; tools that call a cloud model
 disclose this before you submit input. No tool requires an account.
@@ -16,10 +16,10 @@ disclose this before you submit input. No tool requires an account.
 - Structured tool data: https://www.xfree.in/tools.json and https://www.xfree.in/capabilities.json
 
 ## Categories
-- Developer & Data Tools: 9 tools — https://www.xfree.in/dev-data
+- Developer & Data Tools: 8 tools — https://www.xfree.in/dev-data
 - Web & SEO Tools: 5 tools — https://www.xfree.in/web-seo
 - AI & Automation Tools: 1 tool — https://www.xfree.in/ai-auto
-- Media & Documents Tools: 3 tools — https://www.xfree.in/media-docs
+- Media & Documents Tools: 1 tool — https://www.xfree.in/media-docs
 - Security & Privacy Tools: 2 tools — https://www.xfree.in/security
 - Business & Productivity Tools: 3 tools — https://www.xfree.in/business
 

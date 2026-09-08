@@ -228,7 +228,7 @@ export default function HomePage() {
           <div className="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" aria-hidden="true" />
 
           {/* eslint-disable-next-line @next/next/no-img-element -- decorative, masked/faded background art, not a content image */}
-          <picture aria-hidden="true">
+          <picture>
             <source srcSet="/hero-earth-960.webp 960w, /hero-earth-1920.webp 1920w" type="image/webp" />
             <img
               src="/hero-earth-1920.webp"

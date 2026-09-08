@@ -1350,7 +1350,11 @@ const fmtSize = b => { if(!b) return '0 B'; const k=1024,s=['B','KB','MB','GB'];
 const uid = () => crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2,9);
 
 function fmtMd(t) {
-  return t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+  // Escape first: t is raw LLM/assistant response text rendered via
+  // innerHTML - without this, a reply containing literal HTML (e.g. an
+  // echoed <script> tag from prompt injection or pasted user content)
+  // would execute in the browser instead of rendering as text.
+  return escHtml(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
 }
 
 function highlightJson(s) {
@@ -1824,12 +1828,12 @@ function renderFileList() {
   const html = S.files.map((f,i) => `
     <div class="file-item">
       <div class="file-icon ${f.isImage?'img':''}">${f.isImage&&f.content?`<img src="${f.content}">`:getFileIcon(f.name)}</div>
-      <div class="file-info"><div class="file-name">${f.name}</div><div class="file-meta">${fmtSize(f.size)}</div></div>
+      <div class="file-info"><div class="file-name">${escHtml(f.name)}</div><div class="file-meta">${fmtSize(f.size)}</div></div>
       <div class="file-remove" onclick="event.stopPropagation();removeFile(${i})"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div>
     </div>
   `).join('');
   $('fileList').innerHTML = html;
-  const ml=$('mobFileList'); if(ml) ml.innerHTML=S.files.map((f,i)=>`<div class="file-item"><div class="file-icon">${getFileIcon(f.name)}</div><div class="file-info"><div class="file-name">${f.name}</div><div class="file-meta">${fmtSize(f.size)}</div></div><div class="file-remove" onclick="removeFile(${i})"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div></div>`).join('');
+  const ml=$('mobFileList'); if(ml) ml.innerHTML=S.files.map((f,i)=>`<div class="file-item"><div class="file-icon">${getFileIcon(f.name)}</div><div class="file-info"><div class="file-name">${escHtml(f.name)}</div><div class="file-meta">${fmtSize(f.size)}</div></div><div class="file-remove" onclick="removeFile(${i})"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></div></div>`).join('');
 }
 
 function removeFile(i) { S.files.splice(i,1); renderFileList(); playClickSound(); }
@@ -2078,7 +2082,9 @@ function showToast(msg, type='info') {
   const t=document.createElement('div');
   t.className=`toast ${type}`;
   const icons = { success:'✓', error:'✕', info:'ℹ' };
-  t.innerHTML=`<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  // msg can carry user-typed text (e.g. a reminder title) - escape it,
+  // no caller here relies on passing real markup through.
+  t.innerHTML=`<span>${icons[type]||'ℹ'}</span><span>${escHtml(msg)}</span>`;
   c.appendChild(t);
   setTimeout(()=>{t.classList.add('removing');setTimeout(()=>t.remove(),300)},2500);
 }

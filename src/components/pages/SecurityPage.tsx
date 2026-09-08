@@ -128,10 +128,6 @@ export const SecurityPage: React.FC = () => {
 
         <section className="space-y-2">
           <h2 className="text-lg font-bold text-white">10. Reporting a vulnerability</h2>
-          <p className="text-amber-300 bg-amber-950/30 border border-amber-800 rounded-xl p-4">
-            <strong>TODO — placeholder security contact.</strong> Replace with a real security-report
-            address before public launch. If you're operating under a bug-bounty scope, publish it here.
-          </p>
           <p>
             If you find a vulnerability, email{" "}
             <a href="mailto:security@xfree.in" className="text-cyan-300 underline">security@xfree.in</a>.
