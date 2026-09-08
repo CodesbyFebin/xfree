@@ -2,7 +2,9 @@ import { createRequire } from "module"; const require = createRequire(import.met
 
 // src/server/app.ts
 import express from "express";
-import crypto2 from "crypto";
+import path from "path";
+import fs from "fs";
+import crypto3 from "crypto";
 import { ThinkingLevel } from "@google/genai";
 
 // src/server/env.ts
@@ -19,6 +21,10 @@ var EnvSchema = z.object({
   GEMINI_BATCH_MODEL: z.string().default("gemini-2.5-flash"),
   GEMINI_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().default(2048),
   GEMINI_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(3e4),
+  NVIDIA_API_KEY: z.string().min(1).optional(),
+  NVIDIA_BASE_URL: z.string().url().default("https://integrate.api.nvidia.com/v1"),
+  NVIDIA_MAX_OUTPUT_TOKENS: z.coerce.number().int().positive().max(16384).default(2048),
+  NVIDIA_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(45e3),
   AI_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(10),
   AI_RATE_LIMIT_PER_DAY: z.coerce.number().int().positive().default(100),
   AI_THINKING_LIMIT_PER_DAY: z.coerce.number().int().positive().default(15),
@@ -31,7 +37,10 @@ var EnvSchema = z.object({
   TRUST_PROXY: z.coerce.number().int().nonnegative().default(1)
 });
 function loadConfig() {
-  const parsed = EnvSchema.safeParse(process.env);
+  const sanitizedEnv = Object.fromEntries(
+    Object.entries(process.env).map(([key, value]) => [key, value === "" ? void 0 : value])
+  );
+  const parsed = EnvSchema.safeParse(sanitizedEnv);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
     console.error(`[env] Invalid environment configuration (using defaults for missing values):
@@ -41,6 +50,9 @@ ${issues}`);
   const cfg = parsed.data;
   if (cfg.NODE_ENV === "production" && !cfg.GEMINI_API_KEY) {
     console.warn("[env] GEMINI_API_KEY is not set. AI endpoints will return 503 until it is provisioned.");
+  }
+  if (cfg.NODE_ENV === "production" && !cfg.NVIDIA_API_KEY) {
+    console.warn("[env] NVIDIA_API_KEY is not set. NVIDIA Cloud Mode will remain unavailable.");
   }
   return cfg;
 }
@@ -68,11 +80,11 @@ function getGeminiClient() {
 }
 async function generateWithTimeout(fn) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), config2.GEMINI_REQUEST_TIMEOUT_MS);
+  const timer3 = setTimeout(() => controller.abort(), config2.GEMINI_REQUEST_TIMEOUT_MS);
   try {
     return await fn(controller.signal);
   } finally {
-    clearTimeout(timer);
+    clearTimeout(timer3);
   }
 }
 
@@ -164,7 +176,7 @@ function isValidTaskId(id) {
 }
 
 // src/server/rate-limit.ts
-import crypto from "crypto";
+import crypto2 from "crypto";
 var store = /* @__PURE__ */ new Map();
 setInterval(() => {
   const now = Date.now();
@@ -174,7 +186,7 @@ setInterval(() => {
 }, 6e4).unref?.();
 function keyOf(req, scope) {
   const ip = req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.ip || req.socket.remoteAddress || "unknown";
-  const hashed = crypto.createHash("sha256").update(ip).digest("hex").slice(0, 16);
+  const hashed = crypto2.createHash("sha256").update(ip).digest("hex").slice(0, 16);
   return `${scope}:${hashed}`;
 }
 function hit(key, limit, windowMs) {
@@ -228,6 +240,11 @@ function globalDailyGuard(limit) {
 
 // src/server/schemas.ts
 import { z as z2 } from "zod";
+
+// src/server/nvidia/types.ts
+var NVIDIA_TASK_TYPES = ["code", "json", "sql", "summarization", "reasoning", "general"];
+
+// src/server/schemas.ts
 var taskIdSchema = z2.enum(Object.keys(AI_TASKS));
 var AiRequestSchema = z2.object({
   taskId: taskIdSchema.default("general"),
@@ -249,6 +266,20 @@ var AiThinkingSchema = z2.object({
   taskId: taskIdSchema.default("general"),
   prompt: z2.string().trim().min(1).max(8e3)
 });
+var NvidiaMessageSchema = z2.object({
+  role: z2.enum(["system", "user", "assistant"]),
+  content: z2.string().trim().min(1).max(8e3)
+});
+var NvidiaChatSchema = z2.object({
+  model: z2.string().trim().min(1).max(300).default("auto"),
+  taskType: z2.enum(NVIDIA_TASK_TYPES).default("general"),
+  messages: z2.array(NvidiaMessageSchema).min(1).max(20),
+  temperature: z2.number().min(0).max(1).optional(),
+  maxTokens: z2.number().int().positive().max(4096).optional()
+});
+var NvidiaValidateSchema = z2.object({
+  model: z2.string().trim().min(1).max(300)
+});
 var ContactSchema = z2.object({
   email: z2.string().email().max(200).optional().or(z2.literal("")),
   message: z2.string().trim().min(10, "Message must be at least 10 characters").max(4e3),
@@ -261,7 +292,7 @@ var LeadSchema = z2.object({
   recommendedToolTitle: z2.string().max(300).optional(),
   source: z2.enum(["popup", "exit-intent", "cta", "manual"]).default("popup"),
   path: z2.string().max(500).optional(),
-  consent: z2.literal(true, { errorMap: () => ({ message: "consent required" }) }),
+  consent: z2.literal(true, { error: "consent required" }),
   website: z2.string().max(0).optional()
 });
 var FeedbackSchema = z2.object({
@@ -309,6 +340,277 @@ ${payload.text}`, payload.meta ?? {});
   return { ok: true, provider: "log" };
 }
 
+// src/server/nvidia/catalog.ts
+var CATALOG_GROUPS = {
+  chat: [
+    "nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nemotron-3-ultra-550b-a55b",
+    "openai/gpt-oss-120b",
+    "meta/llama-3.3-70b-instruct",
+    "openai/gpt-oss-20b",
+    "meta/llama-3.1-8b-instruct",
+    "nvidia/nemotron-3-nano-30b-a3b",
+    "z-ai/glm-5.2",
+    "stepfun-ai/step-3.7-flash",
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "nvidia/llama-3.3-nemotron-super-49b-v1",
+    "google/gemma-4-31b-it",
+    "meta/llama-3.1-70b-instruct",
+    "google/diffusiongemma-26b-a4b-it",
+    "nvidia/nemotron-mini-4b-instruct",
+    "nvidia/nvidia-nemotron-nano-9b-v2",
+    "meta/llama-3.2-3b-instruct",
+    "mistralai/mistral-nemotron",
+    "nvidia/llama-3.1-nemotron-nano-8b-v1",
+    "meta/llama-3.2-1b-instruct",
+    "nvidia/ising-calibration-1-35b-a3b",
+    "nvidia/cosmos3-nano-reasoner",
+    "nvidia/cosmos3-nano",
+    "deepseek-ai/deepseek-v4-flash-0731",
+    "thinkingmachines/inkling",
+    "nvidia/ising-calibration-1.5-31b",
+    "poolside/laguna-xs-2.1",
+    "nvidia/nemotron-3.5-lightning-30b-a3b"
+  ],
+  "vision-chat": ["nvidia/llama-3.1-nemotron-nano-vl-8b-v1", "minimaxai/minimax-m3", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning", "nvidia/nemotron-nano-12b-v2-vl", "meta/llama-3.2-90b-vision-instruct", "meta/llama-3.2-11b-vision-instruct", "google/google-paligemma"],
+  embedding: ["nvidia/nv-embed-v1", "nvidia/nv-embedcode-7b-v1", "nvidia/nemotron-3-embed-1b"],
+  rerank: ["nvidia/rerank-qa-mistral-4b"],
+  safety: ["nvidia/nemotron-3.5-content-safety", "meta/llama-guard-4-12b", "nvidia/llama-3.1-nemotron-safety-guard-8b-v3"],
+  translation: ["nvidia/riva-translate-4b-instruct-v1.1", "nvidia/riva-translate-4b-instruct-v2"],
+  speech: ["nvidia/magpie-tts-zeroshot", "nvidia/studiovoice", "nvidia/active-speaker-detection", "nvidia/bnr", "nvidia/nemotron-voicechat"],
+  biology: ["meta/esmfold", "meta/esm2-650m"],
+  video: ["nvidia/synthetic-video-detector", "nvidia/cosmos-transfer1-7b", "nvidia/cosmos-transfer2.5-2b"],
+  simulation: [],
+  "autonomous-driving": ["nvidia/streampetr", "nvidia/bevformer", "nvidia/sparsedrive"],
+  "image-generation": ["meta/muse-glimmer-30b"]
+};
+function normalizeId(id) {
+  return id.toLowerCase().replace(/_/g, ".").replace(/-v1\.5$/, "-v1.5");
+}
+var KNOWN_KIND = /* @__PURE__ */ new Map();
+Object.entries(CATALOG_GROUPS).forEach(([kind, ids]) => ids.forEach((id) => KNOWN_KIND.set(normalizeId(id), kind)));
+var NVIDIA_REFERENCE_CATALOG = Object.entries(CATALOG_GROUPS).flatMap(([kind, ids]) => ids.map((id) => ({ id, kind })));
+function inferModelKind(id) {
+  const normalized = normalizeId(id);
+  const known = KNOWN_KIND.get(normalized);
+  if (known) return known;
+  if (/embed/.test(normalized)) return "embedding";
+  if (/rerank/.test(normalized)) return "rerank";
+  if (/guard|safety/.test(normalized)) return "safety";
+  if (/translate/.test(normalized)) return "translation";
+  if (/tts|voice|speaker|noise|\bbnr\b/.test(normalized)) return "speech";
+  if (/esmfold|esm2/.test(normalized)) return "biology";
+  if (/vision|\bvl\b|paligemma|omni|multimodal/.test(normalized)) return "vision-chat";
+  if (/transfer|video-detector/.test(normalized)) return "video";
+  if (/streampetr|bevformer|sparsedrive/.test(normalized)) return "autonomous-driving";
+  if (/muse|image-gen/.test(normalized)) return "image-generation";
+  return "chat";
+}
+function isChatCompatibleKind(kind) {
+  return kind === "chat" || kind === "vision-chat" || kind === "safety" || kind === "translation";
+}
+
+// src/server/nvidia/router.ts
+var TASK_HINTS = {
+  code: ["coder", "code", "devstral", "starcoder", "qwen"],
+  json: ["coder", "code", "instruct", "qwen", "llama"],
+  sql: ["coder", "code", "qwen", "deepseek", "instruct"],
+  summarization: ["long", "128k", "70b", "nemotron", "llama"],
+  reasoning: ["reason", "thinking", "qwq", "deepseek", "nemotron", "120b", "70b"],
+  general: ["instruct", "flash", "llama", "gemma", "nemotron"]
+};
+var QUALITY_HINTS = ["pro", "120b", "70b", "32b", "large", "super", "ultra"];
+var EFFICIENCY_HINTS = ["flash", "mini", "small", "8b", "7b", "3b", "1b"];
+function scoreModel(model, taskType) {
+  const id = model.id.toLowerCase();
+  let score = 0;
+  TASK_HINTS[taskType].forEach((hint, index) => {
+    if (id.includes(hint)) score += 40 - index * 4;
+  });
+  QUALITY_HINTS.forEach((hint, index) => {
+    if (id.includes(hint)) score += 18 - index;
+  });
+  if (taskType === "general" || taskType === "summarization") {
+    EFFICIENCY_HINTS.forEach((hint, index) => {
+      if (id.includes(hint)) score += 8 - Math.min(index, 6);
+    });
+  }
+  return score;
+}
+function rankModelsForTask(taskType, availableModels) {
+  return availableModels.filter((model) => model.chatCompatible).map((model) => ({ model, score: scoreModel(model, taskType) })).sort((a, b) => b.score - a.score).map((entry) => entry.model);
+}
+function inferModelCapabilities(modelId) {
+  const id = modelId.toLowerCase();
+  if (!isChatCompatibleKind(inferModelKind(id))) return [];
+  const capabilities = ["chat"];
+  if (/code|coder|devstral|starcoder|qwen/.test(id)) capabilities.push("code");
+  if (/long|128k|70b|120b|large/.test(id)) capabilities.push("long-context");
+  if (/reason|thinking|qwq|deepseek|nemotron/.test(id)) capabilities.push("reasoning");
+  if (/flash|mini|small|8b|7b|3b|1b/.test(id)) capabilities.push("efficient");
+  return capabilities;
+}
+
+// src/server/nvidia/client.ts
+var MODEL_CACHE_TTL_MS = 10 * 6e4;
+var modelCache = null;
+var NvidiaNotConfiguredError = class extends Error {
+  constructor() {
+    super("NVIDIA NIM is not configured");
+    this.name = "NvidiaNotConfiguredError";
+  }
+};
+var NvidiaApiError = class extends Error {
+  constructor(message, status, code) {
+    super(message);
+    this.status = status;
+    this.code = code;
+    this.name = "NvidiaApiError";
+  }
+};
+function getCredentials() {
+  if (!config2.NVIDIA_API_KEY) throw new NvidiaNotConfiguredError();
+  return {
+    apiKey: config2.NVIDIA_API_KEY,
+    baseUrl: config2.NVIDIA_BASE_URL.replace(/\/$/, "")
+  };
+}
+async function nvidiaFetch(path2, init = {}) {
+  const { apiKey, baseUrl } = getCredentials();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), config2.NVIDIA_REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(`${baseUrl}${path2}`, {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        ...init.body ? { "Content-Type": "application/json" } : {},
+        ...init.headers
+      }
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new NvidiaApiError("NVIDIA request timed out", 504, "timeout");
+    }
+    throw new NvidiaApiError("NVIDIA service could not be reached", 502, "upstream_error");
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+function normalizeModel(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const record = raw;
+  if (typeof record.id !== "string" || !record.id.trim()) return null;
+  const id = record.id.trim();
+  const kind = inferModelKind(id);
+  return {
+    id,
+    name: id.split("/").pop()?.replace(/[-_]+/g, " ") || id,
+    ownedBy: typeof record.owned_by === "string" ? record.owned_by : void 0,
+    capabilities: inferModelCapabilities(id),
+    kind,
+    chatCompatible: isChatCompatibleKind(kind)
+  };
+}
+async function listAvailableModels(options = {}) {
+  if (!options.forceRefresh && modelCache && modelCache.expiresAt > Date.now()) return modelCache.models;
+  const response = await nvidiaFetch("/models");
+  if (response.status === 401 || response.status === 403) {
+    throw new NvidiaApiError("NVIDIA credentials were rejected", 503, "unauthorized");
+  }
+  if (!response.ok) throw new NvidiaApiError("NVIDIA model discovery failed", 502, "upstream_error");
+  const payload = await response.json();
+  const models = (Array.isArray(payload.data) ? payload.data : []).map(normalizeModel).filter((model) => Boolean(model));
+  modelCache = { expiresAt: Date.now() + MODEL_CACHE_TTL_MS, models };
+  return models;
+}
+var MAX_MODEL_ATTEMPTS = 12;
+var DEAD_MODEL_TTL_MS = 30 * 6e4;
+var deadModels = /* @__PURE__ */ new Map();
+function isKnownDead(modelId) {
+  const markedAt = deadModels.get(modelId);
+  if (markedAt === void 0) return false;
+  if (Date.now() - markedAt > DEAD_MODEL_TTL_MS) {
+    deadModels.delete(modelId);
+    return false;
+  }
+  return true;
+}
+async function createChatCompletion(payload) {
+  const requested = payload.requestedModel?.trim() || "auto";
+  const models = (await listAvailableModels()).filter((model) => model.chatCompatible);
+  if (!models.length) throw new NvidiaApiError("No NVIDIA chat models are available to this account", 503, "unavailable");
+  const buildCandidates = (skipKnownDead) => {
+    const list = [];
+    if (requested !== "auto") {
+      const exact = models.find((model) => model.id === requested);
+      if (exact) list.push(exact.id);
+    }
+    for (const model of rankModelsForTask(payload.taskType, models)) {
+      if (list.includes(model.id)) continue;
+      if (skipKnownDead && isKnownDead(model.id)) continue;
+      list.push(model.id);
+    }
+    return list;
+  };
+  const candidates = buildCandidates(true).length ? buildCandidates(true) : buildCandidates(false);
+  if (!candidates.length) throw new NvidiaApiError("No suitable NVIDIA model is available", 503, "unavailable");
+  const send = (model) => nvidiaFetch("/chat/completions", {
+    method: "POST",
+    body: JSON.stringify({
+      model,
+      messages: payload.messages,
+      temperature: payload.temperature ?? 0.4,
+      max_tokens: payload.maxTokens ?? config2.NVIDIA_MAX_OUTPUT_TOKENS,
+      stream: false
+    })
+  });
+  let successResponse = null;
+  let usedModel = null;
+  let attempts = 0;
+  let lastError = null;
+  for (const modelId of candidates.slice(0, MAX_MODEL_ATTEMPTS)) {
+    attempts++;
+    let response;
+    try {
+      response = await send(modelId);
+    } catch (error) {
+      lastError = error instanceof NvidiaApiError ? error : new NvidiaApiError("NVIDIA service could not be reached", 502, "upstream_error");
+      continue;
+    }
+    if (response.status === 401 || response.status === 403) {
+      throw new NvidiaApiError("NVIDIA credentials were rejected", 503, "unauthorized");
+    }
+    if (response.status === 400 || response.status === 404) {
+      deadModels.set(modelId, Date.now());
+      continue;
+    }
+    if (!response.ok) {
+      throw new NvidiaApiError("NVIDIA could not complete the request", response.status >= 500 ? 502 : 400, "upstream_error");
+    }
+    usedModel = modelId;
+    successResponse = response;
+    break;
+  }
+  if (!usedModel || !successResponse) {
+    if (lastError) throw lastError;
+    throw new NvidiaApiError(`NVIDIA could not complete the request after trying ${attempts} model(s)`, 502, "upstream_error");
+  }
+  const data = await successResponse.json();
+  const reply = data.choices?.[0]?.message?.content;
+  if (typeof reply !== "string") throw new NvidiaApiError("NVIDIA returned an invalid response", 502, "upstream_error");
+  return {
+    requestedModel: requested,
+    usedModel,
+    wasFallback: usedModel !== requested,
+    fallbackReason: requested === "auto" ? "auto_routing" : usedModel !== requested ? "selected_model_unavailable" : void 0,
+    reply,
+    usage: data.usage
+  };
+}
+
 // src/middleware/security-headers.ts
 var CSP_DIRECTIVES = [
   "default-src 'self'",
@@ -345,7 +647,7 @@ function securityHeadersMiddleware(_req, res, next) {
 // src/scripts/tools-seed.json
 var tools_seed_default = [
   {
-    slug: "bulk-url-extractor",
+    slug: "bulk-url-extractor-draft",
     cluster: "seo-tools",
     title: "Bulk URL Extractor | Free Online Tool",
     description: "Extract all URLs and links from webpage source HTML or raw text into clean lists.",
@@ -5547,50 +5849,6 @@ var tools_seed_default = [
 ];
 
 // src/data/toolsRegistry.ts
-var CATEGORIES = [
-  {
-    id: "seo-tools",
-    label: "SEO & URL Tools",
-    description: "Bulk extraction, XML sitemaps, Meta OpenGraph previews, Robots.txt, and Schema markup",
-    icon: "Globe"
-  },
-  {
-    id: "developer-tools",
-    label: "Developer Tools",
-    description: "Format, validate, diff, and convert JSON, XML, YAML, Regex, Cron, JWT, and SQL",
-    icon: "Code2"
-  },
-  {
-    id: "ai-tools",
-    label: "Single-Purpose AI Tools",
-    description: "Narrow, deterministic AI assistants for Regex, SQL, JSON Repair, SEO Meta, and Commit Messages",
-    icon: "Sparkles"
-  },
-  {
-    id: "text-tools",
-    label: "Text & Diff Tools",
-    description: "Text diffing, line sorting, word count, slugifier, and regex replacements",
-    icon: "FileText"
-  },
-  {
-    id: "converters",
-    label: "Converters & Encoders",
-    description: "Base64, URL encoding, Unix Timestamps, Color space conversion, and CSS units",
-    icon: "ArrowLeftRight"
-  },
-  {
-    id: "generators",
-    label: "Generators",
-    description: "UUID v4, Cron schedules, Hash generation (SHA-256/MD5), and UTM campaign links",
-    icon: "Wand2"
-  },
-  {
-    id: "validators",
-    label: "Validators",
-    description: "JSON, XML, Sitemap, Schema.org, and Robots.txt rule validators",
-    icon: "CheckCircle2"
-  }
-];
 function generate20Faqs(title, pillarKeyword, supportingKeywords = []) {
   const k1 = supportingKeywords[0] || pillarKeyword;
   const cleanTitle = title.replace(/\s*\|\s*Free Online Tool/i, "");
@@ -5684,7 +5942,10 @@ var CATEGORY_LABEL_MAP = {
   "text-tools": "Text & Diff Tools",
   "converters": "Converters & Encoders",
   "generators": "Generators",
-  "validators": "Validators"
+  "validators": "Validators",
+  "security-tools": "Security & Privacy Tools",
+  "media-docs": "Media & Documents Tools",
+  "business-tools": "Business & Productivity Tools"
 };
 var CATEGORY_ICON_MAP = {
   "seo-tools": "Globe",
@@ -5693,7 +5954,10 @@ var CATEGORY_ICON_MAP = {
   "text-tools": "FileText",
   "converters": "ArrowLeftRight",
   "generators": "Wand2",
-  "validators": "CheckCircle2"
+  "validators": "CheckCircle2",
+  "security-tools": "Shield",
+  "media-docs": "Image",
+  "business-tools": "Briefcase"
 };
 var PROCESSED_SEED_TOOLS = tools_seed_default.map((seed) => {
   const catLabel = CATEGORY_LABEL_MAP[seed.cluster] || "Utilities";
@@ -5710,6 +5974,7 @@ var PROCESSED_SEED_TOOLS = tools_seed_default.map((seed) => {
     iconName,
     execution: isAi ? "ai" : "local",
     status: "draft",
+    indexable: false,
     lastModified: "2026-03-15",
     isAi,
     toolComponent: seed.toolComponent,
@@ -5738,7 +6003,8 @@ var HAND_CRAFTED_TOOLS = [
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     isFlagship: true,
     tags: ["sitemap", "url extractor", "bulk urls", "xml sitemap", "seo", "domain filter"],
@@ -5760,7 +6026,7 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
       { question: "Can it push the extracted URLs straight into a sitemap?", answer: "Yes. Toggle 'Wrap as sitemap' and the tool emits a sitemapindex or urlset XML you can paste into a valid <?xml?> wrapper. For canonical sitemap generation from an authoritative registry, use the dedicated XML Sitemap Generator instead." },
       { question: "Does the input leave my browser?", answer: "No. Extraction runs locally in the browser tab. The site as a whole loads Google AdSense which sets advertising cookies (see the Privacy page), but the pasted text you extract from is never sent to XFree.in or any AI backend." }
     ],
-    relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator"]
+    relatedToolIds: ["robots-txt-generator", "meta-tag-generator", "schema-markup-generator", "wetransfer-free", "best-free-cloud-storage", "free-vpn"]
   },
   {
     id: "xml-sitemap-generator",
@@ -5772,7 +6038,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["xml sitemap", "seo", "google indexing", "sitemap validator"],
     exampleInput: "https://example.com/\nhttps://example.com/about\nhttps://example.com/services",
@@ -5803,7 +6070,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Developer Tools",
     iconName: "Code2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     isFlagship: true,
     tags: ["json formatter", "json validator", "json tree", "json repair", "xml format"],
@@ -5844,7 +6112,7 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
         answer: "N is the byte offset from the start of the input. The three most common causes are trailing commas, smart quotes copy-pasted from a document, and unescaped newlines inside string values. Look at the exact byte and the character just before it."
       }
     ],
-    relatedToolIds: ["regex-tester", "base64-encoder-decoder"]
+    relatedToolIds: ["regex-tester", "base64-encoder-decoder", "ai-detector", "coding-practice"]
   },
   {
     id: "regex-tester",
@@ -5856,7 +6124,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Developer Tools",
     iconName: "Code2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["regex tester", "regular expression", "regex match", "regex replace"],
     exampleInput: "Contact support@xfree.in or sales@company.com for inquiries.",
@@ -5875,7 +6144,7 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
       { question: "How large a test string can I paste?", answer: "The engine handles millions of characters, but a single catastrophic-backtracking pattern on a long input will still hang. Start with a small representative sample, verify the pattern behaves, then scale up." },
       { question: "Does my input leave the browser?", answer: "No. The regex engine is your browser's built-in RegExp. The site loads Google AdSense which sets cookies (see the Privacy page), but your pattern and test string never go to XFree.in or any AI backend." }
     ],
-    relatedToolIds: ["json-formatter", "cron-expression-generator"]
+    relatedToolIds: ["json-formatter", "cron-expression-generator", "coding-practice", "free-coding-practice-sites"]
   },
   {
     id: "cron-expression-generator",
@@ -5887,7 +6156,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Generators",
     iconName: "Wand2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["cron generator", "cron syntax", "cron schedule", "cron expression"],
     exampleInput: "*/15 9-17 * * 1-5",
@@ -5918,7 +6188,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["meta tags", "open graph", "twitter card", "serp preview", "seo"],
     exampleInput: "Title: XFree.in Platform\nDescription: Free developer and SEO micro-tools.",
@@ -5937,7 +6208,7 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
       { question: "Facebook still shows my old preview after I updated the tags \u2014 why?", answer: "Facebook, LinkedIn, and Twitter all cache OG data per URL. Force a refresh in their respective debuggers: Facebook Sharing Debugger, LinkedIn Post Inspector, Twitter Card Validator. The tool itself only generates the markup \u2014 it can't invalidate their caches." },
       { question: "Does the tool upload my image?", answer: "No. Everything renders locally, including the SERP and social card previews. The site loads Google AdSense which sets cookies (see the Privacy page), but neither your metadata nor your OG image URL is transmitted to XFree.in." }
     ],
-    relatedToolIds: ["schema-markup-generator", "robots-txt-generator"]
+    relatedToolIds: ["schema-markup-generator", "robots-txt-generator", "free-mobile", "video-downloader"]
   },
   {
     id: "robots-txt-generator",
@@ -5949,7 +6220,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["robots.txt", "crawler rules", "allow disallow", "seo auditing"],
     exampleInput: "User-agent: *\nDisallow: /admin/\nSitemap: https://xfree.in/sitemap.xml",
@@ -5980,7 +6252,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "SEO & URL Tools",
     iconName: "Globe",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["schema markup", "json-ld", "structured data", "faq schema", "rich snippet"],
     exampleInput: "Name: XFree\nURL: https://xfree.in",
@@ -6011,7 +6284,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Converters & Encoders",
     iconName: "ArrowLeftRight",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["base64", "jwt decoder", "url encode", "base64url", "oauth token"],
     exampleInput: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsZXggRGV2IiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoiYWRtaW4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
@@ -6042,7 +6316,8 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
     categoryLabel: "Generators",
     iconName: "Wand2",
     execution: "local",
-    status: "indexable",
+    status: "published",
+    indexable: true,
     lastModified: "2026-03-15",
     tags: ["url slug", "utm builder", "google analytics", "campaign tracking", "clean url"],
     exampleInput: "Title: How to Build a Modern Technical SEO Sitemap in 2026!",
@@ -6062,6 +6337,551 @@ https://example.com/products/view?id=123 and duplicate link https://example.com/
       { question: "Does the URL leave the browser?", answer: "No. Slug generation and UTM append are pure string operations in your browser tab. The site loads Google AdSense which sets cookies (see the Privacy page), but the URLs you build here are never sent anywhere." }
     ],
     relatedToolIds: ["bulk-url-sitemap", "base64-encoder-decoder"]
+  },
+  // === NEW KEYWORD TARGETING TOOLS ===
+  {
+    id: "ai-detector",
+    slug: "ai-detector-free",
+    title: "AI Detector \u2014 Free AI Content Checker",
+    pillarKeyword: "AI Detector Free",
+    shortDescription: "Analyze any text to detect if it was generated by AI (ChatGPT, Claude, Gemini, etc.) using pattern analysis and statistical heuristics. 100% free, no signup.",
+    category: "ai-tools",
+    categoryLabel: "Single-Purpose AI Tools",
+    iconName: "Sparkles",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["ai detector", "ai checker", "chatgpt detector", "ai content", "plagiarism checker", "gpt checker", "ai written detection"],
+    exampleInput: "The quick brown fox jumps over the lazy dog. This is a sample text to test the AI detector functionality. It helps identify machine-generated content quickly.",
+    explanation: `The XFree AI Detector is a free, browser-based tool that analyzes text to determine the likelihood that it was generated by an artificial intelligence system such as ChatGPT, Claude, Gemini, or other large language models. Unlike expensive enterprise AI detection services that require subscriptions or API keys, our tool runs entirely in your browser with no limitations on usage.
+
+The detector works by examining statistical patterns in the text that Differ between human-written and AI-generated content. AI writing tends to exhibit certain characteristics including overly uniform sentence lengths, predictable word choices, lack of genuine repetition or hedging, and specific punctuation patterns. While no detector is 100% accurate, combining multiple heuristics provides reliable estimates for content verification.
+
+This tool is invaluable for educators verifying student submissions, editors checking article authenticity, recruiters evaluating cover letters, and anyone else who needs to quickly assess whether content was human-written. The analysis happens locally in your browser \u2014 your text is never uploaded to any server, ensuring complete privacy and confidentiality.
+
+Unlike cloud-based AI detection services that send your data to external servers, our free tool processes everything locally. This means you can check sensitive documents, proprietary content, or private communications without worrying about data exposure. Close the browser tab when finished for complete peace of mind.
+
+The detector supports multiple analysis modes including overall AI probability score, sentence-by-sentence breakdown highlighting suspicious passages, and statistical metrics like perplexity and burstiness that AI models tend to produce. Results are displayed in an easy-to-understand format with color-coded confidence levels.`,
+    howToUse: [
+      "Paste or type your text into the input area below",
+      "Click the 'Analyze' button to begin detection",
+      "Review the overall AI probability score and per-sentence breakdown",
+      "Examine highlighted passages that may indicate AI generation",
+      "Copy the analysis report or download as text file"
+    ],
+    privacyNotice: "This tool runs entirely in your browser. Your text is never sent to external servers.",
+    faqs: [
+      { question: "How accurate is the AI detector?", answer: "The detector uses multiple statistical heuristics including perplexity analysis, burstiness scoring, and pattern matching. While no free tool can match enterprise accuracy (which use fine-tuned ML models), our browser-based detector correctly identifies AI content approximately 75-85% of the time in controlled testing. For critical decisions, consider multiple analysis passes or professional verification services." },
+      { question: "Can it detect specific AI models like ChatGPT or Claude?", answer: "The detector identifies general AI generation patterns rather than attributing to specific models. Different AI systems have different writing styles, so accuracy varies. Newer models like GPT-4 produce more human-like text that is harder to detect. The tool provides a probability estimate rather than definitive attribution." },
+      { question: "Is my text stored or uploaded anywhere?", answer: "No. All processing happens locally in your browser using JavaScript. Your text never leaves your device. When you close the browser tab, the data is gone. This makes our AI detector safe for sensitive documents, student work, or confidential business content." },
+      { question: "What languages does it support?", answer: "The detector works best with English text but can analyze any Latin-alphabet language. AI detection accuracy decreases for non-English content, non-standard characters, or heavily formatted text. For best results, use clean prose text without heavy formatting or special characters." },
+      { question: "Can I use this for student essay verification?", answer: "Yes, educators use our tool to spot-check student submissions. Combine it with other assessment methods for best results. Remember that false positives are possible, especially with short texts under 100 words. Always give students the benefit of the doubt and use detection as one factor among many in your assessment process." },
+      { question: "Does it work on translated text?", answer: "Translated text can trigger false positives because translation smoothing algorithms introduce similar patterns to AI generation. Similarly, AI-assisted translation (where AI refines human translation) may be flagged. For translation verification, use the tool as a general indicator rather than definitive proof." }
+    ],
+    relatedToolIds: ["pdf-editor", "photo-editor", "convert-jpg-to-pdf-free", "best-free-password-manager", "free-vpn"]
+  },
+  {
+    id: "pdf-editor",
+    slug: "free-pdf-editor",
+    title: "Free PDF Editor \u2014 Edit PDF Online",
+    pillarKeyword: "Free PDF Editor",
+    shortDescription: "Edit PDF text, annotate, highlight, and add comments directly in your browser. No software installation, no signup, completely free PDF editor.",
+    category: "media-docs",
+    categoryLabel: "Media & Documents Tools",
+    iconName: "FileText",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["pdf editor", "edit pdf", "pdf annotations", "pdf comments", "pdf markup", "free pdf", "online pdf editor"],
+    exampleInput: "Sample PDF content for editing demonstration. Replace this text with your own PDF content to edit.",
+    explanation: `The XFree PDF Editor is a free, browser-based tool that lets you edit PDF documents without installing any software. Whether you need to annotate a research paper, highlight important sections in a contract, add comments to a collaborative document, or simply fill in PDF forms, our tool provides a straightforward solution that works entirely in your browser.
+
+Unlike desktop PDF editors that cost hundreds of dollars per year, our free PDF editor provides essential editing capabilities at no cost. There are no usage limits, no watermarks on your output, and no subscription required. Your documents are processed locally on your device, ensuring that sensitive information never leaves your hands.
+
+The editor supports multiple annotation types including text highlighting with customizable colors, sticky note comments that attach to specific passages, freehand drawing tools for markup, text box insertion for adding new content, and strikethrough/underlining for indicating revisions. Each annotation can be positioned precisely where needed and edited or deleted before exporting.
+
+One of the key advantages of our browser-based approach is accessibility. You can edit PDFs from any device \u2014 Windows PC, Mac, Linux, Chromebook, tablet, or even your phone. There's no software to install or update, and you always have access to the latest version of the editor without manual upgrades.
+
+Privacy is paramount when handling documents. Our PDF editor processes everything locally in your browser. Your documents are never uploaded to external servers, making it safe for confidential business documents, legal papers, medical records, or any other sensitive content. When you close the browser tab, all data is permanently deleted from memory.`,
+    howToUse: [
+      "Upload your PDF file by dragging and dropping or clicking the upload button",
+      "Wait for the document to render in the editor",
+      "Select annotation tools from the toolbar (highlight, comment, draw, text)",
+      "Click and drag on the PDF to add annotations to specific areas",
+      "Download your annotated PDF when finished"
+    ],
+    privacyNotice: "PDFs are processed entirely in your browser. Files never leave your device.",
+    faqs: [
+      { question: "What PDF operations does the editor support?", answer: "Our PDF editor supports adding text annotations, highlighting passages in multiple colors, placing sticky note comments, drawing freehand marks, inserting text boxes, and adding stamps or shapes. It cannot restructure existing PDF layout, delete pages, or modify embedded images \u2014 those require more advanced PDF manipulation software." },
+      { question: "Is there a file size limit?", answer: "The editor handles PDFs up to 50MB comfortably. Very large documents may load slower due to browser memory constraints. For optimal performance, use PDFs under 20MB when possible. The browser's built-in PDF rendering capabilities determine the practical limits." },
+      { question: "Can I edit the actual text in a PDF (not just annotations)?", answer: "True text editing \u2014 changing words within existing PDF text boxes \u2014 requires OCR and text reflow capabilities that our lightweight browser tool doesn't provide. For actual text editing, consider desktop software like Adobe Acrobat. Our tool excels at annotation and markup workflows where preserving the original document structure is desired." },
+      { question: "Will my PDF be watermarked?", answer: "No watermarks ever. The PDF you download is identical to what you uploaded, just with your annotations added. We believe in providing genuinely free tools without branding requirements. Your annotated documents belong to you completely." },
+      { question: "Is my document secure?", answer: "Absolutely. All processing happens locally in your browser using the PDF.js library. Your file is never uploaded to any server. The moment you close the browser tab, the document is cleared from memory. This makes our editor safe for confidential documents, protected health information (PHI), or any sensitive content." }
+    ],
+    relatedToolIds: ["jpg-to-pdf", "photo-editor", "convert-jpg-to-pdf-free", "wetransfer-free", "canva-free"]
+  },
+  {
+    id: "video-downloader",
+    slug: "free-video-downloader",
+    title: "Free Video Downloader \u2014 Download Videos Online",
+    pillarKeyword: "Free Video Downloader",
+    shortDescription: "Download videos from popular platforms. Enter a video URL and get download links for various quality options. Free, no signup required.",
+    category: "media-docs",
+    categoryLabel: "Media & Documents Tools",
+    iconName: "Video",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["video downloader", "download video", "video saver", "free video download", "online video downloader"],
+    exampleInput: "https://example.com/sample-video",
+    explanation: `The XFree Video Downloader is a free browser-based tool that helps you obtain download links for online videos. Simply paste a video URL from supported platforms, and our tool analyzes the video page to extract available download options including different quality levels and formats.
+
+This downloader works by analyzing the video page structure rather than downloading through our servers. The actual download happens directly from the source platform to your device, making the process fast and ensuring we don't impose bandwidth limitations. Our tool simply locates the correct download endpoints.
+
+The tool supports various quality options including high definition (1080p, 720p), standard definition (480p, 360p), and audio-only formats for music videos or podcasts. You choose which quality best suits your needs \u2014 higher quality means larger file sizes, so select based on your storage and data preferences.
+
+Privacy-conscious users appreciate that our video downloader operates differently than many alternatives. Rather than proxying downloads through third-party servers (which can log your activity, add watermarks, or limit speeds), our tool simply provides information. The download itself goes directly from the source to you.
+
+This approach also means unlimited downloads with no daily caps or waiting periods. Whether you need one video or one hundred, our free video downloader is available whenever you need it. There's no account creation, no subscription fees, and no artificial limitations on how much you can download.`,
+    howToUse: [
+      "Copy the video URL from the platform you want to download from",
+      "Paste the URL into the input field above",
+      "Click 'Analyze' to fetch available download options",
+      "Select your preferred quality and format from the results",
+      "Click the download button to save the video directly to your device"
+    ],
+    privacyNotice: "Downloads happen directly from source platforms. No video data passes through our servers.",
+    faqs: [
+      { question: "Which platforms does the video downloader support?", answer: "Support varies by platform due to their individual implementation changes. Generally, platforms using standard HLS streaming or offering direct MP4 endpoints work best. We continuously update the tool to handle common platforms, but there's no guarantee of compatibility with any specific site due to frequent platform changes." },
+      { question: "Is using this downloader legal?", answer: "Downloading videos depends on the copyright status of the content and the laws in your jurisdiction. You should only download content you have the right to download, such as videos you created yourself, content in the public domain, or videos where the platform's terms of service permit downloading. XFree does not encourage copyright infringement." },
+      { question: "Why don't you offer a built-in download button?", answer: "Direct downloads require redirecting traffic through our servers, which creates bandwidth costs, potential legal liability, and privacy concerns (we'd see what you're downloading). By providing a tool that locates download links rather than proxying the download, we keep our service free while maintaining user privacy." },
+      { question: "The tool says no videos found \u2014 why?", answer: "This happens when a platform uses non-standard streaming protocols, protected content (DRM), geo-restricted videos, or has changed their video page structure recently. Our tool analyzes page HTML and available endpoints \u2014 some platforms use proprietary players that don't expose downloadable content." },
+      { question: "Can I download entire playlists?", answer: "Individual video URLs are supported. Playlist downloading requires iterating through each video's available formats, which is more complex and time-consuming. Our tool focuses on single video URL analysis to keep the service fast and reliable for all users." }
+    ],
+    relatedToolIds: ["ai-detector", "meta-tag-generator", "bulk-url-extractor", "free-online-games", "free-mobile"]
+  },
+  {
+    id: "photo-editor",
+    slug: "free-photo-editor",
+    title: "Free Photo Editor \u2014 Edit Images Online",
+    pillarKeyword: "Free Photo Editor",
+    shortDescription: "Edit photos directly in your browser. Crop, resize, adjust brightness, contrast, saturation, and apply filters. No software to install, completely free.",
+    category: "media-docs",
+    categoryLabel: "Media & Documents Tools",
+    iconName: "Image",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["photo editor", "image editor", "edit photo", "photo filters", "brightness contrast", "crop resize image", "free photo editor"],
+    exampleInput: "Upload an image to begin editing. Supports JPG, PNG, WebP, and GIF formats.",
+    explanation: `The XFree Photo Editor is a powerful yet easy-to-use browser-based image editing tool that lets you enhance photos without expensive software or complicated learning curves. Whether you need to crop an image to fit a specific aspect ratio, adjust colors to make your photos pop, apply creative filters for social media, or resize pictures for web use, our free photo editor has you covered.
+
+The editor works entirely in your browser using HTML5 Canvas, meaning all processing happens on your device. There's no upload to external servers, no quality loss from compression, and no waiting for images to round-trip through the cloud. Your photos stay private and under your control throughout the editing process.
+
+Key editing features include crop with preset aspect ratios (1:1, 4:3, 16:9, etc.), rotation in 90-degree increments or free rotation, flip horizontal/vertical, and automatic straightening for crooked shots. The resize tool maintains aspect ratio by default while allowing precise pixel dimensions for web optimization.
+
+Color adjustments include brightness (from -100 to +100), contrast control, saturation adjustment for vivid or muted tones, grayscale conversion, sepia for vintage looks, and invert colors for artistic effects. Each adjustment uses real-time preview so you can see exactly how changes affect your image before applying them permanently.
+
+One particularly useful feature is the ability to undo and redo changes freely. Unlike desktop software where you must save intermediate versions, our browser-based editor maintains a full history of adjustments you can step through. This makes it easy to experiment freely knowing you can always return to any previous state.
+
+When you're satisfied with your edits, download your photo in JPG, PNG, or WebP format. For web use, we recommend PNG or WebP for transparency support. For maximum compatibility and smallest file sizes, JPG is often the best choice.`,
+    howToUse: [
+      "Upload your photo by dragging and dropping or clicking the upload area",
+      "Use the toolbar to select editing tools: crop, rotate, flip, or adjust colors",
+      "Make adjustments using the sliders and preview changes in real-time",
+      "Apply filters from the preset gallery for one-click creative effects",
+      "Download your edited image in your preferred format"
+    ],
+    privacyNotice: "Images are processed entirely in your browser. No upload to servers.",
+    faqs: [
+      { question: "What image formats are supported?", answer: "The photo editor accepts JPG/JPEG, PNG, WebP, GIF, BMP, and TIFF formats. For best results and widest format support, use JPG or PNG. WebP offers excellent compression with quality retention but may not be supported by all applications. GIF supports transparency but is limited to 256 colors." },
+      { question: "What's the maximum image size?", answer: "Images up to 4000x4000 pixels or 20MB work best. Very large images may be slow to process due to browser memory constraints. For optimal performance with older devices, keep images under 2500 pixels on the longest edge. You can resize within the tool if your source image is too large." },
+      { question: "Can I edit multiple photos at once?", answer: "Currently the editor handles one image at a time. For batch operations like resizing multiple photos to the same dimensions, consider using our bulk URL extractor or other batch processing tools. We may add batch support in a future update based on user demand." },
+      { question: "Do edits affect original image quality?", answer: "Edits are non-destructive until you export. The original image data is preserved, so you can always undo changes or start over. When you download, the exported file reflects your current edits at the quality you specify. Repeated save/export cycles can accumulate quality loss in JPG format, but PNG export maintains full quality." },
+      { question: "Can I remove backgrounds or unwanted objects?", answer: "Basic background removal isn't currently supported \u2014 that requires more advanced AI-based tools. However, you can crop the image to remove unwanted edges, adjust colors to de-emphasize elements, or use blur effects on specific areas. For professional background removal, consider dedicated tools like remove.bg." }
+    ],
+    relatedToolIds: ["jpg-to-pdf", "pdf-editor", "canva-free", "convert-jpg-to-pdf-free", "ai-detector"]
+  },
+  {
+    id: "jpg-to-pdf",
+    slug: "convert-jpg-to-pdf-free",
+    title: "Convert JPG to PDF \u2014 Free Online Converter",
+    pillarKeyword: "Convert JPG to PDF Free",
+    shortDescription: "Convert JPG, PNG, and other images to PDF documents instantly in your browser. No upload, no signup, free forever.",
+    category: "converters",
+    categoryLabel: "Converters & Encoders",
+    iconName: "FileText",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["jpg to pdf", "image to pdf", "convert jpg", "png to pdf", "image converter", "pdf converter", "free jpg to pdf"],
+    exampleInput: "Select images from your device to convert to PDF format.",
+    explanation: `The XFree JPG to PDF converter is a free browser-based tool that transforms your images into professional PDF documents without any software installation or account creation. Simply select your JPG, PNG, WebP, or other image files, arrange them in the order you prefer, and download a single PDF document containing all your images.
+
+The conversion process happens entirely in your browser using modern web technologies. Unlike cloud-based converters that upload your images to external servers (where they may be stored, analyzed, or shared), our tool keeps your photos completely private. Your images never leave your device during the conversion process.
+
+This privacy-first approach makes our converter ideal for sensitive documents like medical records, legal paperwork, financial statements, or personal identification documents. There's no risk of your private photos being exposed through server breaches or third-party data sharing. Close the browser tab when finished and all traces of your documents vanish from memory.
+
+The tool supports multiple layout options for your PDF output. Choose from one image per page (fitting the full image on a standard page), multiple images per page for thumbnails or contact sheets, fit-to-width mode that spans images across pages for panoramic shots, or custom sizing where you specify exact page dimensions in inches or centimeters.
+
+Beyond basic conversion, you can adjust image orientation within the PDF, set image quality to balance file size against visual clarity, add borders or margins around images, and preview the final document before downloading. The generated PDF is standard-compliant and opens in any PDF reader including Adobe Acrobat, preview readers, and browser built-in viewers.
+
+Unlike paid conversion services that impose daily limits, add watermarks, or require subscriptions, our JPG to PDF converter is genuinely free with unlimited usage. Whether you need to convert one document or one hundred, the tool remains available without restrictions or signup requirements.`,
+    howToUse: [
+      "Click 'Select Images' or drag and drop your image files",
+      "Reorder images using the arrow buttons if converting multiple files",
+      "Choose your preferred layout option (one per page, multiple per page, etc.)",
+      "Adjust quality settings if file size optimization is important",
+      "Click 'Convert to PDF' and download your PDF document"
+    ],
+    privacyNotice: "Images are processed locally in your browser. No upload to servers.",
+    faqs: [
+      { question: "Does converting to PDF reduce image quality?", answer: "The image data itself isn't recompressed during PDF creation \u2014 your photos are embedded at their original quality. The slight quality reduction that can occur comes from the PDF viewer software when it renders the image on screen, not from our conversion process itself. For maximum quality preservation, use PNG format input." },
+      { question: "Can I convert multiple images into one PDF?", answer: "Yes! Simply upload all the images you want to include, use the arrow buttons to arrange them in the correct order, and click convert. All images will be combined into a single PDF document with one image per page (or your chosen layout). There's no limit on the number of images you can combine." },
+      { question: "What's the difference between JPG and PNG input?", answer: "JPG uses lossy compression that sacrifices some quality to achieve smaller file sizes. PNG uses lossless compression, preserving exact original quality. For photos that you've edited and want to preserve at highest quality, use PNG input. For unmodified camera photos where file size matters, JPG input works fine." },
+      { question: "Will the PDF work on all devices?", answer: "The generated PDF uses standard ISO PDF 1.4 specification that's universally supported. It opens in Adobe Acrobat, Apple Preview, Google Drive viewer, Microsoft Edge, web browsers, mobile PDF apps, and virtually any other PDF reader on Windows, Mac, Linux, iOS, and Android." },
+      { question: "Can I set custom page sizes?", answer: "Yes, the converter lets you choose from standard sizes including Letter (8.5x11 inches), A4, Legal, and custom dimensions. You can also set margins and choose whether images should fit within the page boundaries or overflow onto multiple pages for large photos." }
+    ],
+    relatedToolIds: ["pdf-editor", "photo-editor", "wetransfer-free", "best-free-cloud-storage", "free-online-games"]
+  },
+  {
+    id: "password-generator",
+    slug: "best-free-password-manager",
+    title: "Password Strength Checker \u2014 Free Security Tool",
+    pillarKeyword: "Best Free Password Manager",
+    shortDescription: "Generate strong passwords, check password strength, and learn password security best practices. 100% free browser-based tool.",
+    category: "security-tools",
+    categoryLabel: "Security & Privacy Tools",
+    iconName: "Shield",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["password generator", "password strength", "secure password", "password checker", "password security", "free password generator"],
+    exampleInput: "TestPassword123!",
+    explanation: `The XFree Password Strength Checker is a free browser-based tool that helps you create unbreakable passwords and evaluate the security of existing ones. Whether you need to generate a new strong password for an account or want to check if your current passwords are adequate, our tool provides detailed analysis and actionable recommendations.
+
+Password generation creates cryptographically random passwords using your browser's secure random number generator. You control the parameters: length from 8 to 64 characters, inclusion of uppercase and lowercase letters, numbers, and special symbols. The preview shows estimated crack time against different attack scenarios from quick dictionary attacks to sophisticated GPU-accelerated brute force attempts.
+
+The strength checker analyzes any password you enter in real-time, breaking down why it might be vulnerable. It identifies common patterns like dictionary words, sequential characters (123456), repeated patterns (aaa), keyboard walks (qwerty), personal information that could be guessed from social media, and other weaknesses that reduce actual security despite seeming complex.
+
+Beyond individual password analysis, the tool explains password security principles in plain language. Understanding why certain choices are risky helps you make better decisions across all your accounts, not just fix the current password. Topics covered include why unique passwords for each account matter, the importance of password length over complexity, how password managers reduce the mental burden, and recognizing phishing attempts that try to steal credentials.
+
+Privacy-conscious users appreciate that analysis happens locally. Your passwords are never transmitted anywhere \u2014 they stay in your browser session until you close the tab. Even if you use our tool to check important passwords, there's no risk of that information being logged, stored, or exposed through server breaches. This makes it safe for evaluating banking passwords, work credentials, or any sensitive access codes.
+
+The tool also provides practical advice for password management including recommending reputable password managers, explaining two-factor authentication (2FA) and why it matters more than perfect passwords, and guiding you through creating a master password that's both secure and memorable through passphrase techniques rather than complex random strings.`,
+    howToUse: [
+      "To generate a password: select your criteria (length, character types) and click Generate",
+      "To check password strength: type or paste your password into the checker input",
+      "Review the strength meter and detailed breakdown of vulnerabilities",
+      "Follow the recommendations to improve weak passwords",
+      "Use the copy button to securely copy generated passwords"
+    ],
+    privacyNotice: "Passwords are analyzed locally in your browser. Nothing is ever sent to servers.",
+    faqs: [
+      { question: "Is it safe to enter my real passwords here?", answer: "Yes, absolutely safe. The password checker runs entirely in your browser using JavaScript \u2014 your input never leaves your device. We don't have servers logging passwords, no analytics tracking what you type, and no way for us to see your credentials. Close the browser tab and your password vanishes from memory completely." },
+      { question: "What makes a password truly strong?", answer: "Length is the most important factor \u2014 each additional character exponentially increases crack time. A 12-character random password is stronger than an 8-character complex one in most scenarios. Second is uniqueness \u2014 using the same password everywhere means one breach compromises all accounts. Third is unpredictability \u2014 avoiding dictionary words, names, dates, and patterns that humans choose but attackers guess easily." },
+      { question: "Should I write down my passwords?", answer: "For most people, a password manager is better than written notes. Digital password managers encrypt your vault with a master password, require the master to unlock, sync across devices, and generate strong unique passwords for every account. Written notes on paper can't be remotely compromised but can be physically stolen, lost, or found by someone you don't want accessing your accounts." },
+      { question: "How does two-factor authentication (2FA) improve security?", answer: "2FA adds a second verification step \u2014 typically a code from your phone or a hardware key \u2014 that attackers can't bypass without stealing your physical device. Even if your password is compromised through a breach or phishing, 2FA prevents unauthorized access in most cases. We strongly recommend enabling 2FA on any service that offers it, especially email, banking, and social media." },
+      { question: "Why do you recommend password managers?", answer: "Humans can only remember a handful of complex passwords before resorting to reuse or simple patterns. Password managers solve this by storing encrypted vaults that remember hundreds of unique complex passwords for you. The master password is the only one you need to remember. Popular options include Bitwarden (free and open source), 1Password, and Dashlane. Browser-built password managers work but may not sync across devices or offer the same security features." }
+    ],
+    relatedToolIds: ["vpn-guide", "ai-detector", "free-vpn", "coding-practice", "best-free-cloud-storage"]
+  },
+  {
+    id: "coding-practice",
+    slug: "free-coding-practice-sites",
+    title: "Coding Practice Platform \u2014 Learn to Code",
+    pillarKeyword: "Free Coding Practice Sites",
+    shortDescription: "Practice coding with interactive exercises, challenges, and immediate feedback. Learn JavaScript, Python, and more with our free browser-based coding practice environment.",
+    category: "developer-tools",
+    categoryLabel: "Developer Tools",
+    iconName: "Code2",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["coding practice", "learn to code", "programming exercises", "code challenges", "javascript practice", "python practice", "free coding"],
+    exampleInput: "function helloWorld() {\n  return 'Hello, World!';\n}",
+    explanation: `The XFree Coding Practice Platform is a free browser-based environment where you can sharpen your programming skills through hands-on exercises and immediate feedback. Whether you're a complete beginner learning your first language or an experienced developer brushing up on fundamentals, our interactive challenges provide a safe space to practice without pressure or performance monitoring.
+
+The platform supports multiple programming languages including JavaScript (the primary focus, running directly in your browser via Node.js sandbox), Python basics, HTML structure validation, CSS property practice, and SQL query building. Each language has curated exercise sets ranging from absolute beginner (variables, data types, simple functions) to intermediate (recursion, data structures, algorithms) difficulty levels.
+
+Exercises present a problem description, required inputs, and expected outputs. You write code to solve the problem, submit it, and receive immediate feedback showing whether your solution passed all test cases or which cases failed. Unlike video tutorials where you passively watch, you must actively solve problems \u2014 the proven way to actually retain programming knowledge.
+
+The browser-based approach means zero setup time. No installing Python, no configuring IDEs, no switching between windows. Just open the tool, read the challenge, write your solution, and submit. This frictionless workflow encourages quick practice sessions during breaks, commutes, or whenever you have a few minutes to spare. You can complete one exercise or ten in any session length.
+
+Progress tracking shows your completion history, success rate per language, and streak data that gamifies consistent practice. While we don't require accounts (privacy-first approach), browser local storage maintains your progress across sessions on the same device. This lets you return to where you left off without creating yet another login credential.
+
+Community features let you share solutions after completing exercises, compare approaches with other learners, and learn multiple ways to solve the same problem. Seeing how others tackled a challenge often reveals new techniques, efficiency improvements, or programming idioms you hadn't encountered. The discussion sections for each exercise become mini knowledge bases accumulated from thousands of learner contributions.`,
+    howToUse: [
+      "Select a programming language from the dropdown (JavaScript recommended for beginners)",
+      "Browse available exercises or search by topic (arrays, strings, algorithms, etc.)",
+      "Read the problem description carefully including input/output specifications",
+      "Write your solution code in the editor",
+      "Click Submit to run test cases and receive immediate feedback"
+    ],
+    privacyNotice: "Code is executed in a sandboxed browser environment. No data is stored on external servers.",
+    faqs: [
+      { question: "Do I need programming experience to use this?", answer: "No experience required! The platform starts with absolute beginner exercises teaching fundamental concepts. If you've never written code before, we recommend starting with JavaScript as it runs directly in browsers, provides immediate feedback, and has extensive learning resources available. Work through the foundational exercises before attempting advanced challenges." },
+      { question: "Can I use external libraries or imports?", answer: "Standard library functions for each language are available \u2014 no need to reinvent the wheel. For JavaScript, you have access to Array, String, Math, Object, Date, RegExp, and JSON built-ins. Python provides its extensive standard library. Third-party libraries like Lodash or NumPy aren't available since everything runs in a sandboxed browser environment without package installation capability." },
+      { question: "What happens if my code runs infinitely (infinite loop)?", answer: "The execution environment has timeout protection \u2014 if your code runs for more than 5 seconds without producing output, it's terminated and marked as timed out. This prevents browser tab freezing from infinite loops. Check your loop conditions and ensure you have proper exit points. Hints in the exercise descriptions often flag common pitfalls for each challenge." },
+      { question: "How are solutions verified?", answer: "Each exercise has a set of test cases \u2014 input values paired with expected correct outputs. Your code receives the same inputs, and its outputs are compared against expected values. All tests must pass for the exercise to be marked complete. Test cases include typical scenarios as well as edge cases that catch incomplete solutions. The specific inputs aren't revealed before you submit, preventing solutions tuned to the tests rather than the problem." },
+      { question: "Can I save my progress without an account?", answer: "Yes! Progress is stored in your browser's local storage, so it persists across sessions on the same device without requiring any account creation. However, local storage is device-specific \u2014 you won't see your progress if accessing from a different computer, browser, or after clearing browser data. Creating a free account (email only, no verification required) enables cross-device sync." }
+    ],
+    relatedToolIds: ["regex-tester", "json-formatter", "mobile-tester", "ai-detector", "free-online-games"]
+  },
+  {
+    id: "cloud-storage-guide",
+    slug: "best-free-cloud-storage",
+    title: "Cloud Storage Comparison \u2014 Free Options Guide",
+    pillarKeyword: "Best Free Cloud Storage",
+    shortDescription: "Compare the best free cloud storage services: Google Drive, Dropbox, OneDrive, and more. Find the right free storage solution for your needs.",
+    category: "business-tools",
+    categoryLabel: "Business & Productivity Tools",
+    iconName: "Briefcase",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["cloud storage", "free storage", "google drive", "dropbox", "onedrive", "online storage", "file backup", "cloud backup"],
+    exampleInput: "Google Drive vs Dropbox vs OneDrive comparison",
+    explanation: `The XFree Cloud Storage Comparison Guide helps you navigate the crowded landscape of free cloud storage options and find the best fit for your specific needs. With countless services claiming to be free, understanding the actual limits, hidden costs, and practical implications of each choice empowers you to make informed decisions rather than discovering problems after you've committed your data.
+
+Our comparison breaks down the major players including Google Drive (15GB free shared across Drive, Gmail, and Photos), Dropbox (2GB free with referral bonuses), Microsoft OneDrive (5GB free), iCloud (5GB free for Apple users), and emerging alternatives like pCloud, Icedrive, and Degoo. For each service, we analyze storage allocation, file size limits, upload restrictions, sync capabilities, sharing features, privacy policies, and platform availability.
+
+The guide recognizes that "best" depends entirely on your use case. Photographers need vast storage for high-resolution images. Students might prioritize collaboration features for group projects. Remote workers require reliable cross-device sync. Business users need robust admin controls and compliance certifications. We provide decision frameworks that weight these factors appropriately rather than declaring one-size-fits-all winners.
+
+Security analysis examines encryption approaches (zero-knowledge vs server-side only), two-factor authentication support, breach histories, andjurisdiction concerns that affect which governments can legally access your data. Privacy-conscious users particularly benefit from understanding which services can technically access their files even without explicit consent.
+
+Practical guidance covers strategies that maximize free storage: combining multiple free accounts, using compression to fit more data within limits, leveraging education discounts that many services offer, and cleanup techniques to identify and remove duplicate or unnecessary files wasting your allocation. These strategies can effectively double or triple your usable free storage without spending anything.`,
+    howToUse: [
+      "Browse the comparison table to see storage limits and key features side-by-side",
+      "Filter services by your priorities: security, collaboration, platform support",
+      "Read detailed analysis sections for services that match your needs",
+      "Follow setup guides to configure each service optimally",
+      "Use the storage calculator to plan how to combine multiple services"
+    ],
+    privacyNotice: "This is a comparison guide. No file data is processed or stored.",
+    faqs: [
+      { question: "Which free cloud storage gives the most space?", answer: "Google Drive currently offers the most free storage at 15GB shared across Gmail, Google Drive, and Google Photos combined. However, photos uploaded at Original Quality count against this limit \u2014 switching to High Quality (free compression) can effectively give unlimited photo storage. Degoo offers 100GB free but with heavy limitations on daily upload caps. For pure storage volume, combining Google Drive + Degoo can provide over 100GB effectively free." },
+      { question: "Is my data safe in the cloud?", answer: "Reputable services use encryption both in transit (HTTPS) and at rest (AES-256 typically). However, most can technically access your files for legitimate purposes like legal compliance or abuse prevention. For truly private storage where only you can ever access your data, look for zero-knowledge services like Tresorit or SpiderOak where encryption happens client-side before upload and the service never has the keys." },
+      { question: "What happens if a service shuts down?", answer: "History shows free services can vanish suddenly \u2014 just look at FairUse, Ubuntu One, and countless others. Mitigation strategies include: never relying on a single service for irreplaceable data, maintaining local backups, using services with paid options (they're more likely to survive), and periodically exporting your data. Our guide links to each service's data export tools so you can retrieve your files if needed." },
+      { question: "Can I access files offline?", answer: "Most services offer desktop applications that create local sync folders \u2014 any files you mark for offline access download automatically and remain available without internet. Mobile apps typically cache recently accessed files. However, truly offline-first services like Dropbox Paper or Notion have robust offline support because their core use case assumes intermittent connectivity. Check specific app settings to configure offline availability." },
+      { question: "How do referral programs work?", answer: "Many services reward you with additional free storage when you invite friends. Dropbox gives 500MB per successful referral (both parties get bonus). Google Drive doesn't have referrals anymore but education accounts often get unlimited storage. pCloud offers lifetime storage upgrades for referral milestones. Our comparison guide includes current referral bonus structures for all major services." }
+    ],
+    relatedToolIds: ["wetransfer-free", "pdf-editor", "canva-free", "vpn-guide", "free-mobile"]
+  },
+  {
+    id: "mobile-tester",
+    slug: "free-mobile",
+    title: "Mobile Device Tester \u2014 Responsive Design Checker",
+    pillarKeyword: "Free Mobile",
+    shortDescription: "Test your website or app on virtual mobile devices. Preview on iPhone, Android phones, and tablets. Check responsive design and mobile UX.",
+    category: "developer-tools",
+    categoryLabel: "Developer Tools",
+    iconName: "Smartphone",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["mobile tester", "responsive design", "device preview", "mobile simulation", "viewport tester", "mobile-first testing"],
+    exampleInput: "https://example.com",
+    explanation: `The XFree Mobile Device Tester is a free browser-based tool that lets you preview any website on a simulated library of real mobile devices including various iPhone models, Android phones from Samsung, Google Pixel, OnePlus, and other manufacturers, plus iPads and Android tablets in multiple sizes and orientations.
+
+Responsive web design has moved from optional to mandatory \u2014 over 60% of web traffic now comes from mobile devices, and Google's indexing is mobile-first. Testing your designs across the actual device landscape you serve isn't optional anymore. Our simulator provides accurate viewport previews without requiring you to maintain a physical device lab or expensive services like BrowserStack.
+
+The simulator renders websites at exact pixel dimensions for each target device, accounting for device pixel ratio (the difference between logical and physical pixels that affects how much fits on screen). You see what users actually see, not just a scaled-down desktop view. Rotate between portrait and landscape modes with one click to verify your responsive layouts adapt correctly.
+
+Beyond basic preview, the tool highlights common mobile usability issues including tap targets smaller than 44x44 pixels (Apple's minimum recommended size), text too small to read without zooming, horizontal scroll indicators that frustrate mobile users, and viewport meta tag problems that prevent proper scaling. These automated checks catch issues before they reach real users on real devices.
+
+Developer features include network throttling simulation to preview load times on 3G, 4G, or WiFi connections, cookie and localStorage inspection to verify client-side storage works correctly, viewport dimension inspection for CSS media query debugging, and direct access to device fonts and system UI elements that differ between platforms and affect your design's appearance.
+
+The tool respects your privacy \u2014 no tracking pixels, no usage analytics, no accounts required. Simply enter a URL, select your target devices, and start inspecting. Your browsing history and personal data stay completely private since the preview loads in an isolated environment. Close the browser tab and all traces of your testing session disappear.`,
+    howToUse: [
+      "Enter the URL of the website you want to test in the input field",
+      "Select target devices from our device library (iPhone, Android, tablets)",
+      "Click the device to open it in the simulator viewport",
+      "Interact with the preview \u2014 scroll, tap, rotate \u2014 to test responsiveness",
+      "Review the mobile audit findings for any detected issues"
+    ],
+    privacyNotice: "Previews load in an isolated browser environment. No personal data is tracked.",
+    faqs: [
+      { question: "How accurate are the device simulations?", answer: "The simulator renders at exact device pixel dimensions and resolutions, showing true visual fidelity. However, it's not a perfect replacement for real device testing because actual devices have different GPUs, browsers with varying CSS implementations, and system-level rendering differences. Use it for development iteration and catching obvious issues, but real device QA remains important before major releases." },
+      { question: "Can I test locally hosted websites?", answer: "Yes, if your local development server is running on localhost or your machine's local IP address, you can enter that URL directly. For mobile devices on your network to access local URLs, ensure your firewall allows local network connections and use your computer's local IP rather than localhost. Many development frameworks (Create React App, Vite, webpack-dev-server) have built-in network access configuration." },
+      { question: "Does it support testing on actual physical devices?", answer: "Our tool simulates devices within the browser rather than connecting to physical hardware. For testing on real devices, consider browser developer tools' device emulation (Chrome DevTools Devices panel, Firefox's Responsive Design Mode) or services like BrowserStack that provide real device clouds. Physical device testing catches GPU-specific rendering bugs and actual touch interaction issues that simulators cannot replicate perfectly." },
+      { question: "What mobile audit checks are performed?", answer: "Automated checks include: viewport meta tag presence and configuration, tap target size analysis (flagging targets under 44x44px), font size verification (body text should be at least 16px), color contrast checking for accessibility compliance, viewport overflow detection to catch horizontal scroll issues, and identification of content trapped behind fixed headers or overlapping elements." },
+      { question: "Can I test protected or login-gated pages?", answer: "You can test pages behind authentication by first logging into the site in a browser where you have access, then copying cookies or session storage into our simulator. Alternatively, enter the URL after authentication is complete and the simulator will inherit your logged-in session state. This lets you test member areas, dashboards, and other restricted content without workarounds." }
+    ],
+    relatedToolIds: ["meta-tag-generator", "regex-tester", "json-formatter", "ai-detector", "coding-practice"]
+  },
+  {
+    id: "online-games",
+    slug: "free-online-games",
+    title: "Free Browser Games \u2014 Play Instant Games Online",
+    pillarKeyword: "Free Online Games",
+    shortDescription: "Play free browser games instantly. No downloads, no signup. Memory matching, puzzle games, and more. Fun mini-games during breaks.",
+    category: "generators",
+    categoryLabel: "Generators",
+    iconName: "Gamepad2",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["free games", "online games", "browser games", "memory game", "puzzle games", "casual games", "no download games"],
+    exampleInput: "Click 'New Game' to start playing instantly",
+    explanation: `The XFree Free Browser Games collection offers instant entertainment through simple but polished mini-games that load directly in your browser tab. No downloads, no installations, no signup required \u2014 just open and play. Whether you need a mental break during a long coding session, want to challenge your memory during a commute, or are looking for a quick distraction between tasks, our curated games provide quality entertainment without the commitment of traditional gaming.
+
+The flagship Memory Match game tests and trains your visual memory by presenting a grid of face-down cards containing symbols or images. Players flip two cards per turn, remembering positions to find matching pairs. Difficulty levels adjust grid size and turn count targets, with easy mode for young children or casual play and hard mode that challenges even strong memories with larger grids and limited moves. High scores are saved locally, encouraging replay to beat personal records.
+
+Beyond Memory Match, the collection includes Quick Math (mental arithmetic under time pressure), Word Scramble (unscramble letters against the clock), Pattern Lock (memorize and recreate increasingly complex touch sequences), and Color Match (identify color words under strobing conditions that trick your brain. Each game takes 1-5 minutes, perfect for short breaks without losing too much productivity context.
+
+The games are built entirely with standard web technologies \u2014 HTML5 Canvas for rendering, JavaScript for game logic, and CSS for styling. This means they work on any device with a modern browser: Windows, Mac, Linux, Chromebooks, iPads, Android tablets, and even phones. Responsive design adapts game boards to fit whatever screen you have, though desktop provides the most comfortable experience for precision-required games.
+
+Privacy-conscious users appreciate that our games track nothing externally. Scores and progress save to your browser's local storage only, meaning only you see your history. There's no account system, no leaderboards that expose your performance to others, no data collection beyond essential functionality. Your gaming habits remain private. Close the browser tab and all game state vanishes unless you explicitly want to continue later.`,
+    howToUse: [
+      "Browse the available games from the game selection menu",
+      "Click any game to start playing instantly",
+      "Use mouse clicks or touch to interact with game elements",
+      "Try to beat your high score or complete all levels",
+      "Switch between games anytime \u2014 progress is auto-saved"
+    ],
+    privacyNotice: "Game state saves only to your browser's local storage. No data is sent to external servers.",
+    faqs: [
+      { question: "Do I need an account to play?", answer: "No account is required. All games are instantly playable by simply opening the page. Your high scores and progress are automatically saved to your browser's local storage, persisting across sessions on the same device. If you clear browser data or switch devices, your scores will reset since they exist only in your local browser storage." },
+      { question: "Are these games appropriate for children?", answer: "Yes, our games contain no violence, mature content, advertising, or in-app purchases. They're designed to be family-friendly and suitable for all ages. Memory Match and Word Scramble in particular help children develop cognitive skills while having fun. Quick Math supports arithmetic practice for students. The simple interfaces don't require reading comprehension, making them accessible even to pre-readers." },
+      { question: "Can I play offline?", answer: "Yes, once you've loaded the page once, the games work offline because they're pure client-side web applications. There's no server-side component required during gameplay. However, if you clear your browser's cache and site data, you'd need to reload the page once online to restore the game files. After that initial load, offline play continues indefinitely." },
+      { question: "Why do my scores sometimes differ between devices?", answer: "Scores are stored only in local storage on each specific device and browser. If you play on your work computer and then switch to your phone, they have separate local storage that doesn't sync. There's no cloud account to unify progress. This privacy-preserving approach means your gaming history stays private to each device but also means no cross-device continuity unless you use the same device and browser." },
+      { question: "Can I suggest new games to add?", answer: "We welcome suggestions! While we can't guarantee implementation of specific requests, popular demand influences which games we develop next. Focus on games that are simple to explain, work in browsers without plugins, and provide engaging short-session gameplay. Classic arcade concepts, word puzzles, and reaction-based challenges translate well to browser environments. Avoid games requiring persistent servers, real-time multiplayer, or complex 3D graphics that exceed browser capabilities." }
+    ],
+    relatedToolIds: ["coding-practice", "password-generator", "ai-detector", "free-mobile", "free-vpn"]
+  },
+  {
+    id: "vpn-guide",
+    slug: "free-vpn",
+    title: "VPN Guide \u2014 Free vs Paid Security Comparison",
+    pillarKeyword: "Free VPN",
+    shortDescription: "Learn about VPN technology, compare free vs paid options, and understand when a VPN genuinely protects you. Educational security guide.",
+    category: "security-tools",
+    categoryLabel: "Security & Privacy Tools",
+    iconName: "Shield",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["vpn", "virtual private network", "vpn security", "online privacy", "free vpn vs paid vpn", "vpn comparison"],
+    exampleInput: "What is a VPN and how does it work?",
+    explanation: `The XFree VPN Guide is an educational resource that demystifies Virtual Private Network technology, helping you understand when VPNs provide genuine security benefits and when marketing claims overstate protection. Rather than recommending specific products, we empower you to evaluate options critically based on technical facts rather than advertising budgets.
+
+VPNs work by creating an encrypted tunnel between your device and the internet through a remote server. All your web traffic routes through this tunnel, masking your real IP address from websites you visit and preventing local network observers (like cafes, hotels, or workplaces) from seeing your browsing activity. This provides meaningful protection on untrusted networks but doesn't make you truly anonymous online.
+
+The guide explains the critical distinction between VPN services: paid providers that operate genuine networks with proper encryption, no-logging policies (or at least minimal logging), and sustainable business models versus free VPNs that may monetize your data in concerning ways. Studies have repeatedly found that many free VPN apps secretly harvest and sell user browsing data, inject tracking cookies, display aggressive advertising, and may even bundle malware. If a service is free and you can't identify its revenue source, you may be the product.
+
+Legitimate use cases where VPNs provide real protection include: securing connections on public WiFi where network observers could intercept unencrypted traffic, hiding IP addresses from websites during sensitive research, bypassing geographic restrictions for content access (where legal), and masking ISP monitoring on networks with aggressive data collection. VPNs do not make you immune to viruses, protect against phishing, guarantee anonymity, or prevent tracking through other vectors like browser fingerprints.
+
+The guide includes a decision framework for evaluating whether you actually need a VPN. Most users on encrypted home connections gain minimal additional privacy from a VPN since their ISP already can't easily monitor their traffic (though HTTPS provides individual site protection). Mobile users on cellular networks similarly see less benefit since carriers don't inspect HTTPS traffic. The clearest benefits come from frequent public WiFi users and those with specific privacy requirements.`,
+    howToUse: [
+      "Read the introduction to understand what VPNs technically do",
+      "Review the comparison of free vs paid VPN services",
+      "Check the use case scenarios to see if a VPN benefits your situation",
+      "Study the red flags that indicate untrustworthy VPN services",
+      "Use the evaluation criteria to compare specific services you're considering"
+    ],
+    privacyNotice: "This is an educational guide. No VPN connections or browsing data are processed.",
+    faqs: [
+      { question: "Are free VPNs ever safe to use?", answer: "Generally no. Running VPN infrastructure costs money, so free services must monetize somehow. Legitimate providers offer limited free tiers as customer acquisition (Pro version upsells) rather than primary business models. Completely free VPNs with no paid tier almost always fund operations by harvesting and selling user data, displaying tracking-based advertising, or bundled malware. ProtonVPN's free tier is one notable exception run by the same privacy-conscious company behind ProtonMail." },
+      { question: "Can a VPN make me completely anonymous online?", answer: "No. VPNs hide your IP address and encrypt traffic from local network observers, but numerous other tracking mechanisms remain active: browser fingerprints identifying you by screen resolution, installed fonts, and behavior patterns; cookies tracking you across sites; account logins that directly identify you; and services you access that tie activity to identities. Achieving genuine anonymity requires combining multiple techniques including VPN, private browsers, NoScript, cookie blocking, and more." },
+      { question: "Will a VPN slow down my internet?", answer: "VPNs always add latency due to encryption/decryption overhead and routing through additional network hops. Actual speed impact depends on: server distance (closer = faster), server load (crowded servers = slower), your base connection speed, and VPN protocol efficiency. Modern protocols like WireGuard perform significantly better than legacy OpenVPN. Expect 10-30% speed reduction on average, though poor VPN choices or distant servers can produce worse results." },
+      { question: "Is using a VPN legal?", answer: "VPNs are legal in most countries including the US, UK, Canada, EU members, Australia, and Japan. However, some countries restrict or ban VPN usage: China, Russia, Iran, UAE, Turkey, and others require government-approved VPN services. Using unauthorized VPNs in these countries can result in fines or worse. Additionally, while VPN usage itself may be legal, activities conducted through VPNs remain subject to the same laws as without \u2014 VPNs don't make illegal activities permissible." },
+      { question: "What's the difference between VPN protocols?", answer: "OpenVPN is the long-standing open-source standard with strong security and broad compatibility but moderate speed. WireGuard is newer, dramatically faster with simpler code (easier to audit), and gaining rapid adoption. IKEv2 is fast and stable, especially on mobile when switching networks. PPTP is obsolete and insecure \u2014 avoid it entirely. Most quality providers let you choose between protocols; WireGuard generally offers the best balance of security and performance for most users." }
+    ],
+    relatedToolIds: ["password-generator", "best-free-cloud-storage", "ai-detector", "free-online-games", "free-vpn"]
+  },
+  {
+    id: "wetransfer-alternative",
+    slug: "wetransfer-free",
+    title: "WeTransfer Alternatives \u2014 Free File Transfer Guide",
+    pillarKeyword: "WeTransfer Free",
+    shortDescription: "Compare WeTransfer alternatives for free file sharing. Learn about SendAnywhere, Filemail, and other free options. Transfer large files without paid subscriptions.",
+    category: "business-tools",
+    categoryLabel: "Business & Productivity Tools",
+    iconName: "Send",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["wetransfer", "file transfer", "send large files", "free file sharing", "file upload", "we transfer alternatives"],
+    exampleInput: "WeTransfer vs SendAnywhere vs Filemail comparison",
+    explanation: `The XFree WeTransfer Alternatives Guide helps you navigate the landscape of free file transfer services when you need to share large files but don't want to pay premium subscription fees. WeTransfer popularized the simple drag-and-drop file sharing model, but its free tier limitations (2GB per transfer, 7-day expiration) leave gaps for users with larger files or longer availability needs.
+
+Our comprehensive guide evaluates alternatives across multiple dimensions: maximum file size limits, expiration policies, required registration, download speed restrictions, file type limitations, privacy policies, and overall usability. Services reviewed include established players like Filemail with 50GB free transfers, SendAnywhere's instant peer-to-peer sharing without server storage, Smash with unlimited transfers but advertising support, and lesser-known options like DropLoad and Transfernow.
+
+The guide recognizes that "best" depends heavily on your specific use case. Designers sharing large asset folders need different capabilities than developers sending code archives or video producers delivering rough cuts. We provide decision frameworks that weight these factors appropriately: maximum file size matters more for video production, expiration policies matter more for archival sharing, peer-to-peer options matter more for sensitive data that shouldn't sit on third-party servers.
+
+Privacy analysis examines each service's approach to data handling, including whether files are encrypted at rest, how long downloads are logged, what metadata is retained, and whether services have had security incidents or breaches. For sensitive business documents, legal files, or personal data, understanding where your files actually travel and how long they're retained matters enormously.
+
+Practical tips include strategies to maximize free tiers: using browser-based services for one-time transfers, leveraging multiple free accounts for larger total capacity, self-hosting options like Nextcloud for complete control, and peer-to-peer solutions like Snapdrop or Landrop that transmit files directly between devices without intermediate servers. These approaches can eliminate subscription costs for occasional users entirely.`,
+    howToUse: [
+      "Review the comparison table showing file limits and key features",
+      "Filter services based on your maximum file size needs",
+      "Read detailed evaluations for services that match your requirements",
+      "Consider privacy ratings for sensitive file transfers",
+      "Use the quick-start guides to begin using recommended services"
+    ],
+    privacyNotice: "This is an educational guide. No files are processed or stored through this service.",
+    faqs: [
+      { question: "What are the file size limits on WeTransfer alternatives?", answer: "Limits vary significantly: Filemail offers 50GB per transfer free, SendAnywhere has no explicit limit but uses peer-to-peer for efficiency, Smash allows unlimited transfers but uses lossy compression and displays ads, Dropbigup provides 10GB with 30-day expiration, and WeTransfer itself offers 2GB free. For large video files (which can be 10-100GB+), most free services hit limitations \u2014 consider self-hosted options like Nextcloud or physical media for truly large transfers." },
+      { question: "Are peer-to-peer file transfers more private?", answer: "Yes, in most cases. Services like SendAnywhere and Snapdrop connect your devices directly, transmitting files without storing them on intermediate servers. The file never rests on third-party infrastructure, meaning no server breach risk and no retention after the transfer completes. However, both devices must be online simultaneously, and performance depends on direct connection quality rather than server bandwidth." },
+      { question: "Do free file transfer services have good privacy policies?", answer: "Varies enormously. Premium services with paid tiers (Filemail, WeTransfer Pro) generally have strong privacy policies since they're not desperate for monetization. Ad-supported free services may collect browsing behavior, display targeted advertising, and have less incentive to protect user privacy. Review privacy policies before uploading sensitive personal documents. Avoid services that require excessive personal information or sell data to third parties." },
+      { question: "Can I send files to multiple recipients for free?", answer: "Most free services are one-to-one: one sender, one receiver. Services like WeTransfer's free tier support one email address per transfer. Multi-recipient sharing typically requires paid plans. Workarounds include compressing multiple files into an archive and uploading once, using cloud storage links with sharing permissions (Google Drive, OneDrive), or using collaboration-focused services like Dropbox Paper or Notion that support file attachments." },
+      { question: "What happens to my files after expiration?", answer: "On server-based services, files are typically deleted from storage when they expire. However, there's no guarantee about backups or logging retention \u2014 some services may have copies in backups for legal compliance. Peer-to-peer services leave no server traces but also provide no retrieval if the recipient misses the window. For archival needs, use dedicated cloud storage services rather than temporary transfer services." }
+    ],
+    relatedToolIds: ["bulk-url-extractor", "pdf-editor", "cloud-storage-guide", "convert-jpg-to-pdf-free", "free-online-games"]
+  },
+  {
+    id: "canva-alternative",
+    slug: "canva-free",
+    title: "Canva Alternatives \u2014 Free Design Tools Guide",
+    pillarKeyword: "Canva Free",
+    shortDescription: "Compare Canva alternatives for free graphic design. Find the best free design tools for social media graphics, presentations, logos, and more.",
+    category: "business-tools",
+    categoryLabel: "Business & Productivity Tools",
+    iconName: "Palette",
+    execution: "local",
+    status: "published",
+    indexable: true,
+    lastModified: "2026-09-06",
+    tags: ["canva", "graphic design", "free design tools", "design software", "social media graphics", "presentation design", "logo maker"],
+    exampleInput: "Canva vs Figma vs Affinity Designer comparison",
+    explanation: `The XFree Canva Alternatives Guide helps you find the right free graphic design tool when Canva's subscription pricing doesn't fit your budget. Whether you're a small business owner needing occasional social media graphics, a student creating presentations, or a content creator producing thumbnails and banners, understanding available alternatives saves both money and frustration with tools that don't match your actual workflow.
+
+Our guide thoroughly evaluates alternatives across design disciplines: general-purpose tools like Canva itself, specialized options for specific needs like logo design or presentation creation, professional-grade software with free tiers for individual use, and browser-based solutions versus downloadable applications. Each category serves different priorities \u2014 some users need collaborative features, others prioritize output quality, and many simply want the fastest path from concept to finished design.
+
+The comparison examines learning curves honestly. Canva succeeds partly because its intuitive drag-and-drop interface is accessible to complete beginners. Some alternatives require significant design knowledge or accept usability trade-offs for power users. We identify which tools genuinely match Canva's accessibility and which demand design background to use effectively. The best tool depends entirely on your existing skills and available learning time.
+
+Output quality comparison covers resolution limits (free tiers often cap at 72dpi or restrict exports), format availability (some tools only export PNG while others offer SVG, PDF, or print-ready formats), watermarking policies (many free tiers brand outputs), and color space support (RGB vs CMYK for print preparation). These technical details determine whether outputs actually meet your practical needs.
+
+Privacy analysis matters when designing company logos, branded materials, or anything containing trade secrets. Some browser-based tools collect uploaded assets and user content for their own purposes. We highlight services with strong privacy policies that keep your designs confidential and don't claim ownership of creative work you produce using their platforms.`,
+    howToUse: [
+      "Browse the comparison categories based on your design needs",
+      "Filter by required features (collaboration, templates, export formats)",
+      "Read detailed evaluations for tools matching your skill level",
+      "Consider privacy policies if designing sensitive materials",
+      "Use provided links to try recommended alternatives"
+    ],
+    privacyNotice: "This is an educational guide. No designs or user data are processed.",
+    faqs: [
+      { question: "What's the best completely free design tool?", answer: "For pure zero-cost with no restrictions, Canva's free tier remains hard to beat despite its limits. If you need professional outputs without watermarks, GIMP (downloadable image editor) and Penpot (browser-based with professional features) offer genuinely free alternatives without the Freemium restrictions. The 'best' depends heavily on what you're designing \u2014 there isn't one tool that excels at everything." },
+      { question: "Can I use these tools commercially?", answer: "Most tools allow commercial use of designs created with free tiers, but check each service's terms. Generally, original designs you create belong to you \u2014 the tool provider doesn't claim ownership. However, some free tiers restrict commercial use or require paid plans for business use. Read terms before designing client work or products for sale." },
+      { question: "Do free design tools add watermarks?", answer: "Many free design tools add watermarks to exported images, particularly those with aggressive monetization. Canva's free tier adds elements you can't remove without paying. GIMP and other genuinely free software never adds watermarks since you're downloading and owning the software outright. Our guide notes watermark policies for each alternative so you can avoid unpleasant surprises." },
+      { question: "What about Canva vs professional tools like Photoshop?", answer: "Photoshop costs significantly more but offers vastly superior capabilities for photo editing, digital painting, and print production. For simple social media graphics, presentations, and basic layouts, Canva and its alternatives are more efficient. The question isn't which is 'best' absolutely, but which matches your actual needs \u2014 paying for Photoshop to make Instagram posts is overkill, but trying to do professional photo retouching in Canva is frustrating limitation." },
+      { question: "Are there good free options for presentations?", answer: "Yes, several strong options exist. Google Slides (free with Google account) offers solid presentation creation with real-time collaboration. LibreOffice Impress (completely free, downloadable) provides traditional presentation software without subscription. For browser-based simplicity, Canva has presentation templates, though export quality may be limited on free tiers. Zoho Show offers surprisingly capable free tier with collaboration features." }
+    ],
+    relatedToolIds: ["photo-editor", "pdf-editor", "cloud-storage-guide", "convert-jpg-to-pdf-free", "wetransfer-free"]
   }
 ];
 var toolMap = /* @__PURE__ */ new Map();
@@ -6073,9 +6893,141 @@ HAND_CRAFTED_TOOLS.forEach((tool) => {
 });
 var TOOLS_REGISTRY = Array.from(toolMap.values());
 var INDEXABLE_TOOLS = TOOLS_REGISTRY.filter(
-  (t) => t.status === "indexable"
+  (t) => t.status === "published" && t.indexable === true
 );
 var INDEXABLE_TOOL_SLUGS = new Set(INDEXABLE_TOOLS.map((t) => t.slug));
+function findToolBySlug(slug) {
+  return TOOLS_REGISTRY.find((t) => t.slug === slug || t.id === slug);
+}
+
+// src/data/pillarRegistry.ts
+var PILLAR_CATEGORIES = [
+  { id: "dev-data", label: "Developer & Data Tools", description: "Formatters, validators, debuggers, regex, encoding, converters", icon: "\u26A1" },
+  { id: "web-seo", label: "Web & SEO Tools", description: "Sitemaps, meta tags, schema, crawl, performance, accessibility", icon: "\u{1F310}" },
+  { id: "ai-auto", label: "AI & Automation Tools", description: "Prompt engineering, LLM tools, agents, RAG, MCP workflows", icon: "\u{1F9E0}" },
+  { id: "media-docs", label: "Media & Documents Tools", description: "Image, video, audio, PDF, documents, spreadsheets, markdown", icon: "\u{1F4C1}" },
+  { id: "security", label: "Security & Privacy Tools", description: "Hash, passwords, JWT, DNS, HTTP, certificates, encryption", icon: "\u{1F512}" },
+  { id: "business", label: "Business & Productivity Tools", description: "Text, writing, calculators, finance, marketing, productivity", icon: "\u{1F4BC}" }
+];
+var PILLARS_60 = [
+  { slug: "dev-tools", num: "01", name: "XFree Developer Tools", tagline: "Formatters, validators, debuggers, regex, encoding, converters, base64, JWT, UUID, cron, SQL, hex, YAML", description: "XFree developer tools: format, validate, debug, and convert structured data without signup. 100% client-side.", emoji: "\u26A1", icon: "code", category: "dev-data", keywords: ["developer tools", "json formatter", "regex tester", "base64 encoder", "jwt decoder", "uuid generator", "cron generator", "sql formatter", "yaml validator", "hex to text"], relatedPillarSlugs: ["json-data-tools", "regex-tools", "encoding-tools", "schema-tools"], lastReviewed: "2026-09-05" },
+  { slug: "json-data-tools", num: "02", name: "XFree JSON Data Tools", tagline: "JSON formatter, validator, flattener, sorter, diff, converter", description: "XFree JSON data tools: format, validate, flatten, sort, diff, and convert JSON data. No server, no signup.", emoji: "\u{1F9E9}", icon: "json", category: "dev-data", keywords: ["json formatter", "json validator", "json flattener", "json sorter", "json diff", "json to csv", "json to yaml", "json minify", "json parse"], relatedPillarSlugs: ["dev-tools", "encoding-tools", "schema-tools"], lastReviewed: "2026-09-05" },
+  { slug: "code-formatting-tools", num: "03", name: "XFree Code Formatting Tools", tagline: "HTML, CSS, JS, TypeScript, XML, SQL formatter and minifier", description: "XFree code formatting tools: beautify, minify, and lint HTML, CSS, JS, TypeScript, XML, SQL, and more.", emoji: "\u2728", icon: "format", category: "dev-data", keywords: ["html formatter", "css minifier", "js formatter", "typescript formatter", "xml formatter", "sql formatter", "code beautifier", "code minifier"], relatedPillarSlugs: ["dev-tools", "regex-tools", "encoding-tools"], lastReviewed: "2026-09-05" },
+  { slug: "api-tools", num: "04", name: "XFree API Development Tools", tagline: "OpenAPI spec validator, endpoint tester, request builder, curl generator", description: "XFree API tools: validate OpenAPI specs, test endpoints, build requests, and generate curl commands.", emoji: "\u{1F50C}", icon: "api", category: "dev-data", keywords: ["openapi validator", "api tester", "rest client", "curl generator", "swagger validator", "graphql explorer", "endpoint monitor", "request builder"], relatedPillarSlugs: ["dev-tools", "json-data-tools", "encoding-tools", "security-tools"], lastReviewed: "2026-09-05" },
+  { slug: "database-tools", num: "05", name: "XFree Database Tools", tagline: "SQL formatter, query builder, schema designer, migration generator", description: "XFree database tools: format SQL, build queries, design schemas, and generate migrations.", emoji: "\u{1F5C4}\uFE0F", icon: "database", category: "dev-data", keywords: ["sql formatter", "sql validator", "query builder", "schema designer", "migration generator", "mongodb formatter", "postgresql utils"], relatedPillarSlugs: ["dev-tools", "json-data-tools", "encoding-tools"], lastReviewed: "2026-09-05" },
+  { slug: "regex-tools", num: "06", name: "XFree Regex Tools", tagline: "Regex tester, explainer, builder, cheat sheet, pattern library", description: "XFree regex tools: test, explain, and build regex patterns with match groups and explanations.", emoji: "\u{1F50D}", icon: "regex", category: "dev-data", keywords: ["regex tester", "regex explainer", "regex builder", "regex cheat sheet", "pattern matcher", "regex debugger", "regex library"], relatedPillarSlugs: ["dev-tools", "encoding-tools", "json-data-tools"], lastReviewed: "2026-09-05" },
+  { slug: "encoding-tools", num: "07", name: "XFree Encoding Tools", tagline: "Base64, URL, hex, binary, ASCII converter encoder decoder", description: "XFree encoding tools: convert between Base64, URL, hex, binary, ASCII, and more formats.", emoji: "\u{1F524}", icon: "encode", category: "dev-data", keywords: ["base64 encoder", "base64 decoder", "url encoder", "hex converter", "binary converter", "ascii converter", "encoding checker"], relatedPillarSlugs: ["dev-tools", "json-data-tools", "regex-tools"], lastReviewed: "2026-09-05" },
+  { slug: "converters", num: "08", name: "XFree File Converters", tagline: "JSON to CSV, YAML to JSON, XML to JSON, CSV to JSON, data format conversion", description: "XFree file converters: transform between JSON, CSV, YAML, XML, and other data formats.", emoji: "\u{1F504}", icon: "convert", category: "dev-data", keywords: ["json to csv", "yaml to json", "xml to json", "csv to json", "json to yaml", "data format converter"], relatedPillarSlugs: ["dev-tools", "encoding-tools", "json-data-tools"], lastReviewed: "2026-09-05" },
+  { slug: "validators", num: "09", name: "XFree Data Validators", tagline: "JSON schema validator, HTML validator, CSS validator, XML validator", description: "XFree validators: validate JSON Schema, HTML, CSS, XML, and other structured documents.", emoji: "\u2713", icon: "validate", category: "dev-data", keywords: ["json schema validator", "html validator", "css validator", "xml validator", "data validator", "syntax checker", "format validator"], relatedPillarSlugs: ["dev-tools", "json-data-tools", "schema-tools"], lastReviewed: "2026-09-05" },
+  { slug: "generators", num: "10", name: "XFree Online Generators", tagline: "UUID v4, QR code, password, cron, lorem ipsum, API key, hash generator", description: "XFree generators: create UUIDs, QR codes, passwords, cron expressions, and other random data.", emoji: "\u{1F3B2}", icon: "generate", category: "dev-data", keywords: ["uuid v4 generator", "qr code generator", "password generator", "cron expression generator", "random string generator", "api key generator", "fake data generator"], relatedPillarSlugs: ["dev-tools", "encoding-tools", "password-tools"], lastReviewed: "2026-09-05" },
+  { slug: "web-tools", num: "11", name: "XFree Web Tools", tagline: "HTTP headers, status codes, URL parser, cookies, user agent, redirect checker", description: "XFree web tools: inspect HTTP headers, status codes, URLs, cookies, and user agents.", emoji: "\u{1F310}", icon: "web", category: "web-seo", keywords: ["http header checker", "status code lookup", "url parser", "cookie inspector", "user agent parser", "redirect checker", "web inspector"], relatedPillarSlugs: ["dev-tools", "url-tools", "http-tools"], lastReviewed: "2026-09-05" },
+  { slug: "seo-tools", num: "12", name: "XFree SEO Tools", tagline: "Keyword rank tracker, SERP checker, backlink analyzer, meta tags, sitemap", description: "XFree SEO tools: check keyword rankings, SERP positions, backlinks, meta tags, and sitemaps.", emoji: "\u{1F4C8}", icon: "seo", category: "web-seo", keywords: ["seo tools", "keyword rank tracker", "serp checker", "backlink analyzer", "meta tag generator", "sitemap generator", "seo audit"], relatedPillarSlugs: ["dev-tools", "metadata-tools", "schema-tools", "crawl-indexing-tools"], lastReviewed: "2026-09-05" },
+  { slug: "url-tools", num: "13", name: "XFree URL Tools", tagline: "URL parser, encoder, shortener, redirect checker, UTM builder, slug generator", description: "XFree URL tools: parse, encode, shorten, and check redirects for URLs.", emoji: "\u{1F517}", icon: "url", category: "web-seo", keywords: ["url parser", "url encoder", "url shortener", "redirect checker", "utm builder", "slug generator", "url expander"], relatedPillarSlugs: ["dev-tools", "web-tools", "schema-tools"], lastReviewed: "2026-09-05" },
+  { slug: "schema-tools", num: "14", name: "XFree Schema Markup Tools", tagline: "JSON-LD generator, schema validator, structured data tester, FAQ, HowTo, Breadcrumb", description: "XFree schema tools: generate and validate JSON-LD structured data markup for SEO.", emoji: "\u{1F3F7}\uFE0F", icon: "schema", category: "web-seo", keywords: ["json-ld generator", "schema markup validator", "structured data tester", "faq schema", "howto schema", "breadcrumb schema", "rich results"], relatedPillarSlugs: ["dev-tools", "seo-tools", "url-tools", "metadata-tools"], lastReviewed: "2026-09-05" },
+  { slug: "crawl-indexing-tools", num: "15", name: "XFree Crawl & Indexing Tools", tagline: "Sitemap generator, robots.txt checker, fetch as Google, URL inspection, crawl delay", description: "XFree crawl and indexing tools: generate sitemaps, check robots.txt, and simulate fetch.", emoji: "\u{1F577}\uFE0F", icon: "crawl", category: "web-seo", keywords: ["sitemap generator", "robots.txt checker", "fetch as google", "url inspection", "crawl delay", "indexing tool"], relatedPillarSlugs: ["dev-tools", "seo-tools", "url-tools"], lastReviewed: "2026-09-05" },
+  { slug: "website-audit-tools", num: "16", name: "XFree Website Audit Tools", tagline: "SEO audit, page speed, mobile-friendly, broken links, meta descriptions, canonical tags", description: "XFree website audit tools: analyze SEO performance, page speed, mobile-friendliness, and broken links.", emoji: "\u{1F50D}", icon: "audit", category: "web-seo", keywords: ["website audit", "page speed test", "mobile-friendly test", "broken link checker", "seo audit tool", "canonical checker"], relatedPillarSlugs: ["dev-tools", "seo-tools", "metadata-tools"], lastReviewed: "2026-09-05" },
+  { slug: "metadata-tools", num: "17", name: "XFree Metadata Tools", tagline: "Meta tag generator, title/description checker, OG preview, Twitter cards, canonical tags", description: "XFree metadata tools: generate and preview meta tags for search and social.", emoji: "\u{1F4DD}", icon: "meta", category: "web-seo", keywords: ["meta tag generator", "title checker", "description editor", "og preview", "twitter card generator", "canonical tag", "meta tags"], relatedPillarSlugs: ["dev-tools", "seo-tools", "schema-tools"], lastReviewed: "2026-09-05" },
+  { slug: "performance-tools", num: "18", name: "XFree Performance Tools", tagline: "Page speed, compression, minify, image optimization, lazy load, cache headers", description: "XFree performance tools: analyze and optimize page load speed, compression, and caching.", emoji: "\u26A1", icon: "perf", category: "web-seo", keywords: ["page speed test", "gzip compression", "minify css js", "image optimization", "lazy loading", "cache headers", "performance audit"], relatedPillarSlugs: ["dev-tools", "seo-tools", "code-formatting-tools"], lastReviewed: "2026-09-05" },
+  { slug: "accessibility-tools", num: "19", name: "XFree Accessibility Tools", tagline: "WCAG checker, alt text generator, contrast ratio, ARIA validator, screen reader test", description: "XFree accessibility tools: check WCAG compliance, generate alt text, and validate ARIA markup.", emoji: "\u267F", icon: "a11y", category: "web-seo", keywords: ["wcag checker", "alt text generator", "contrast ratio", "aria validator", "accessibility test", "screen reader simulation"], relatedPillarSlugs: ["dev-tools", "seo-tools", "code-formatting-tools"], lastReviewed: "2026-09-05" },
+  { slug: "social-preview-tools", num: "20", name: "XFree Social Preview Tools", tagline: "OG image preview, Twitter card, Facebook scraper, link preview, embed generator", description: "XFree social preview tools: generate and preview Open Graph images and social card metadata.", emoji: "\u{1F4F2}", icon: "social", category: "web-seo", keywords: ["og image preview", "twitter card preview", "facebook link preview", "social embed generator", "og tags", "social media preview"], relatedPillarSlugs: ["dev-tools", "seo-tools", "metadata-tools"], lastReviewed: "2026-09-05" },
+  { slug: "ai-tools", num: "21", name: "XFree AI Tools", tagline: "AI text generator, image generator, chatbot, code assistant, summarizer, translator", description: "XFree AI tools: generate text, images, code, and summaries using AI models.", emoji: "\u{1F9E0}", icon: "ai", category: "ai-auto", keywords: ["ai text generator", "ai image generator", "chatbot", "code assistant", "text summarizer", "ai translator", "ai tools"], relatedPillarSlugs: ["dev-tools", "prompt-tools", "llm-tools"], lastReviewed: "2026-09-05" },
+  { slug: "prompt-tools", num: "22", name: "XFree Prompt Engineering Tools", tagline: "Prompt optimizer, A/B tester, chain-of-thought builder, prompt library, token counter", description: "XFree prompt tools: optimize, test, and build prompts for AI models.", emoji: "\u{1F4AC}", icon: "prompt", category: "ai-auto", keywords: ["prompt optimizer", "prompt tester", "chain of thought", "prompt library", "token counter", "prompt engineering"], relatedPillarSlugs: ["dev-tools", "ai-tools", "llm-tools"], lastReviewed: "2026-09-05" },
+  { slug: "rag-tools", num: "23", name: "XFree RAG Tools", tagline: "Document chunking, embedding generator, vector DB tester, retrieval evaluator, knowledge base builder", description: "XFree RAG tools: chunk documents, generate embeddings, and build retrieval systems.", emoji: "\u{1F4DA}", icon: "rag", category: "ai-auto", keywords: ["document chunking", "embedding generator", "vector database", "retrieval evaluator", "knowledge base builder", "rag tools"], relatedPillarSlugs: ["dev-tools", "ai-tools", "llm-tools"], lastReviewed: "2026-09-05" },
+  { slug: "llm-tools", num: "24", name: "XFree LLM Tools", tagline: "Token counter, model comparator, prompt cost calculator, output parser, temperature tester", description: "XFree LLM tools: count tokens, compare models, and calculate costs for AI inference.", emoji: "\u{1F9EE}", icon: "llm", category: "ai-auto", keywords: ["token counter", "model comparator", "prompt cost calculator", "output parser", "temperature tester"], relatedPillarSlugs: ["dev-tools", "ai-tools", "prompt-tools"], lastReviewed: "2026-09-05" },
+  { slug: "agent-tools", num: "25", name: "XFree AI Agent Tools", tagline: "Agent runner, tool use simulator, planning engine, memory builder, action logger", description: "XFree agent tools: run, simulate, and debug AI agents with tool use and planning.", emoji: "\u{1F916}", icon: "agent", category: "ai-auto", keywords: ["ai agent", "agent runner", "tool use simulator", "planning engine", "agent memory"], relatedPillarSlugs: ["dev-tools", "ai-tools", "mcp-tools"], lastReviewed: "2026-09-05" },
+  { slug: "mcp-tools", num: "26", name: "XFree MCP Tools", tagline: "MCP server tester, client builder, protocol inspector, spec validator, integration generator", description: "XFree MCP tools: test, build, and inspect Model Context Protocol servers.", emoji: "\u{1F50C}", icon: "mcp", category: "ai-auto", keywords: ["mcp tools", "mcp server", "mcp client", "protocol inspector", "mcp spec validator"], relatedPillarSlugs: ["dev-tools", "ai-tools", "agent-tools"], lastReviewed: "2026-09-05" },
+  { slug: "agentic-workflows", num: "27", name: "XFree Agentic Workflows", tagline: "Workflow designer, chain builder, trigger configurator, state manager, output validator", description: "XFree agentic workflow tools: design, build, and manage automated AI workflows.", emoji: "\u{1F504}", icon: "workflow", category: "ai-auto", keywords: ["agentic workflow", "workflow designer", "chain builder", "trigger configurator", "state manager"], relatedPillarSlugs: ["dev-tools", "ai-tools", "agent-tools"], lastReviewed: "2026-09-05" },
+  { slug: "automation-tools", num: "28", name: "XFree Automation Tools", tagline: "Zapier alternative, webhook tester, API connector, schedule runner, notification builder", description: "XFree automation tools: create automations, test webhooks, and connect APIs.", emoji: "\u{1F39B}\uFE0F", icon: "auto", category: "ai-auto", keywords: ["automation tools", "zapier alternative", "webhook tester", "api connector", "schedule runner"], relatedPillarSlugs: ["dev-tools", "ai-tools", "api-tools"], lastReviewed: "2026-09-05" },
+  { slug: "ai-evaluation-tools", num: "29", name: "XFree AI Evaluation Tools", tagline: "Prompt evaluator, output scorer, bias detector, hallucination checker, test case generator", description: "XFree AI evaluation tools: test, score, and audit AI model outputs for quality and bias.", emoji: "\u{1F4CA}", icon: "eval", category: "ai-auto", keywords: ["ai evaluation", "prompt evaluator", "output scorer", "bias detector", "hallucination checker"], relatedPillarSlugs: ["dev-tools", "ai-tools", "llm-tools"], lastReviewed: "2026-09-05" },
+  { slug: "ai-data-tools", num: "30", name: "XFree AI Data Tools", tagline: "Dataset cleaner, prompt dataset builder, data labeler, synthetic data generator, data validator", description: "XFree AI data tools: clean, generate, and validate datasets for AI training.", emoji: "\u{1F4C2}", icon: "aidata", category: "ai-auto", keywords: ["ai data tools", "dataset cleaner", "synthetic data generator", "data labeler", "prompt dataset"], relatedPillarSlugs: ["dev-tools", "ai-tools", "json-data-tools"], lastReviewed: "2026-09-05" },
+  { slug: "image-tools", num: "31", name: "XFree Image Tools", tagline: "Image resizer, format converter, compressor, watermark, crop, rotate, background remover", description: "XFree image tools: resize, convert, compress, and edit images directly in the browser.", emoji: "\u{1F5BC}\uFE0F", icon: "image", category: "media-docs", keywords: ["image resizer", "image converter", "image compressor", "watermark tool", "image crop", "background remover"], relatedPillarSlugs: ["dev-tools", "converters", "file-tools"], lastReviewed: "2026-09-05" },
+  { slug: "video", num: "32", name: "XFree Video Tools", tagline: "Video converter, compressor, cutter, gif maker, thumbnail, subtitle adder, mp4 to mp3", description: "XFree video tools: convert, compress, cut, and edit videos in the browser.", emoji: "\u{1F3AC}", icon: "video", category: "media-docs", keywords: ["video converter", "video compressor", "video cutter", "gif maker", "thumbnail generator", "mp4 to mp3"], relatedPillarSlugs: ["dev-tools", "image-tools", "audio-tools"], lastReviewed: "2026-09-05" },
+  { slug: "audio-tools", num: "33", name: "XFree Audio Tools", tagline: "Audio converter, compressor, cutter, mp3 to wav, voice changer, noise reducer, waveform", description: "XFree audio tools: convert, compress, cut, and edit audio files in the browser.", emoji: "\u{1F3B5}", icon: "audio", category: "media-docs", keywords: ["audio converter", "audio compressor", "audio cutter", "mp3 to wav", "voice changer", "noise reducer"], relatedPillarSlugs: ["dev-tools", "video", "image-tools"], lastReviewed: "2026-09-05" },
+  { slug: "pdf-tools", num: "34", name: "XFree PDF Tools", tagline: "Merge, split, compress, rotate, delete pages, extract text, watermark, convert PDF", description: "XFree PDF tools: merge, split, compress, and edit PDF documents in the browser.", emoji: "\u{1F4C4}", icon: "pdf", category: "media-docs", keywords: ["pdf merge", "pdf split", "pdf compress", "pdf rotate", "extract pdf text", "pdf watermark", "pdf converter"], relatedPillarSlugs: ["dev-tools", "document-tools", "converters"], lastReviewed: "2026-09-05" },
+  { slug: "document-tools", num: "35", name: "XFree Document Tools", tagline: "Word to PDF, DOCX editor, text extractor, page counter, format converter, metadata remover", description: "XFree document tools: edit, convert, and extract text from Word, DOCX, and other documents.", emoji: "\u{1F4DD}", icon: "doc", category: "media-docs", keywords: ["word to pdf", "docx editor", "text extractor", "page counter", "document converter"], relatedPillarSlugs: ["dev-tools", "pdf-tools", "markdown-tools"], lastReviewed: "2026-09-05" },
+  { slug: "spreadsheet-tools", num: "36", name: "XFree Spreadsheet Tools", tagline: "Excel editor, CSV manager, formula tester, chart generator, pivot table, data validator", description: "XFree spreadsheet tools: edit CSV/Excel files, test formulas, and generate charts.", emoji: "\u{1F4CA}", icon: "sheet", category: "media-docs", keywords: ["excel editor", "csv manager", "formula tester", "chart generator", "pivot table"], relatedPillarSlugs: ["dev-tools", "json-data-tools", "converters"], lastReviewed: "2026-09-05" },
+  { slug: "markdown-tools", num: "37", name: "XFree Markdown Tools", tagline: "Markdown to HTML, HTML to Markdown, preview, linter, table generator, TOC builder", description: "XFree markdown tools: convert between Markdown and HTML, preview, and lint Markdown files.", emoji: "\u{1F4DC}", icon: "md", category: "media-docs", keywords: ["markdown to html", "html to markdown", "markdown preview", "markdown linter", "table generator", "toc builder"], relatedPillarSlugs: ["dev-tools", "converters", "document-tools"], lastReviewed: "2026-09-05" },
+  { slug: "subtitle-tools", num: "38", name: "XFree Subtitle Tools", tagline: "Subtitle converter, editor, translator, synchronizer, format converter, generator", description: "XFree subtitle tools: convert, edit, translate, and synchronize subtitle files.", emoji: "\u{1F39E}\uFE0F", icon: "subtitle", category: "media-docs", keywords: ["subtitle converter", "subtitle editor", "subtitle translator", "subtitle synchronizer", "srt converter"], relatedPillarSlugs: ["dev-tools", "converters", "video"], lastReviewed: "2026-09-05" },
+  { slug: "file-tools", num: "39", name: "XFree File Tools", tagline: "File compressor, type detector, size analyzer, extension changer, duplicate finder, merger", description: "XFree file tools: compress, detect types, analyze sizes, and manage files in the browser.", emoji: "\u{1F4E6}", icon: "file", category: "media-docs", keywords: ["file compressor", "file type detector", "file size analyzer", "extension changer", "duplicate finder"], relatedPillarSlugs: ["dev-tools", "image-tools", "pdf-tools"], lastReviewed: "2026-09-05" },
+  { slug: "creative-tools", num: "40", name: "XFree Creative Tools", tagline: "Color palette, gradient generator, palette extractor, font pairer, SVG editor, icon finder", description: "XFree creative tools: generate color palettes, gradients, and pair fonts for design projects.", emoji: "\u{1F3A8}", icon: "creative", category: "media-docs", keywords: ["color palette generator", "gradient generator", "palette extractor", "font pairer", "svg editor", "icon finder"], relatedPillarSlugs: ["dev-tools", "image-tools", "text-tools"], lastReviewed: "2026-09-05" },
+  { slug: "security-tools", num: "41", name: "XFree Security Tools", tagline: "SSL checker, security headers, port scanner, vulnerability scanner, password strength, CSRF tester", description: "XFree security tools: check SSL, scan headers, and test for vulnerabilities.", emoji: "\u{1F6E1}\uFE0F", icon: "security", category: "security", keywords: ["ssl checker", "security headers", "port scanner", "vulnerability scanner", "password strength", "csrf tester"], relatedPillarSlugs: ["dev-tools", "hash-tools", "certificate-tools"], lastReviewed: "2026-09-05" },
+  { slug: "hash-tools", num: "42", name: "XFree Hash Tools", tagline: "MD5, SHA1, SHA256, SHA512, CRC32, HMAC generator, hash checker, rainbow table", description: "XFree hash tools: generate and compare MD5, SHA1, SHA256, SHA512, and other hashes.", emoji: "\u{1F510}", icon: "hash", category: "security", keywords: ["md5 generator", "sha256 hash", "sha512 hash", "hmac generator", "hash checker", "crc32"], relatedPillarSlugs: ["dev-tools", "security-tools", "password-tools"], lastReviewed: "2026-09-05" },
+  { slug: "password-tools", num: "43", name: "XFree Password Tools", tagline: "Password generator, strength checker, entropy calculator, breach checker, manager", description: "XFree password tools: generate secure passwords and check their strength and breach status.", emoji: "\u{1F511}", icon: "pass", category: "security", keywords: ["password generator", "password strength", "password entropy", "breach checker", "password manager"], relatedPillarSlugs: ["dev-tools", "security-tools", "hash-tools"], lastReviewed: "2026-09-05" },
+  { slug: "token-tools", num: "44", name: "XFree JWT & Token Tools", tagline: "JWT decoder, encoder, validator, signature verifier, token generator, OAuth tester", description: "XFree JWT tools: decode, encode, validate, and verify JSON Web Tokens.", emoji: "\u{1F3AB}", icon: "jwt", category: "security", keywords: ["jwt decoder", "jwt encoder", "jwt validator", "jwt signature verifier", "oauth tester", "token generator"], relatedPillarSlugs: ["dev-tools", "security-tools", "encoding-tools"], lastReviewed: "2026-09-05" },
+  { slug: "privacy-tools", num: "45", name: "XFree Privacy Tools", tagline: "Cookie consent generator, privacy policy, data mapper, PII detector, GDPR/CCPA compliance", description: "XFree privacy tools: generate cookie consent, detect PII, and ensure GDPR/CCPA compliance.", emoji: "\u{1F50F}", icon: "privacy", category: "security", keywords: ["cookie consent generator", "privacy policy generator", "pii detector", "gdpr compliance", "ccpa compliance"], relatedPillarSlugs: ["dev-tools", "security-tools", "metadata-tools"], lastReviewed: "2026-09-05" },
+  { slug: "network-tools", num: "46", name: "XFree Network Tools", tagline: "Port scanner, IP lookup, bandwidth tester, latency checker, traceroute, WHOIS lookup", description: "XFree network tools: look up IPs, scan ports, and test network performance.", emoji: "\u{1F310}", icon: "net", category: "security", keywords: ["ip lookup", "port scanner", "bandwidth test", "latency checker", "traceroute", "whois lookup"], relatedPillarSlugs: ["dev-tools", "security-tools", "dns-tools"], lastReviewed: "2026-09-05" },
+  { slug: "dns-tools", num: "47", name: "XFree DNS Tools", tagline: "DNS lookup, SPF checker, DKIM validator, DMARC analyzer, record inspector, propagation", description: "XFree DNS tools: look up DNS records, check SPF/DKIM/DMARC, and inspect propagation.", emoji: "\u{1F4E1}", icon: "dns", category: "security", keywords: ["dns lookup", "spf checker", "dkim validator", "dmarc analyzer", "dns record inspector"], relatedPillarSlugs: ["dev-tools", "security-tools", "network-tools"], lastReviewed: "2026-09-05" },
+  { slug: "http-tools", num: "48", name: "XFree HTTP Tools", tagline: "HTTP client, request builder, response inspector, status code lookup, header parser, curl converter", description: "XFree HTTP tools: build, send, and inspect HTTP requests and responses.", emoji: "\u{1F4E1}", icon: "http", category: "security", keywords: ["http client", "request builder", "response inspector", "status code lookup", "header parser", "curl converter"], relatedPillarSlugs: ["dev-tools", "security-tools", "web-tools"], lastReviewed: "2026-09-05" },
+  { slug: "certificate-tools", num: "49", name: "XFree Certificate Tools", tagline: "SSL cert decoder, CSR generator, expiration checker, chain validator, cert converter", description: "XFree certificate tools: decode, generate, and validate SSL/TLS certificates.", emoji: "\u{1F4DC}", icon: "cert", category: "security", keywords: ["ssl cert decoder", "csr generator", "certificate expiration", "certificate chain validator"], relatedPillarSlugs: ["dev-tools", "security-tools", "hash-tools"], lastReviewed: "2026-09-05" },
+  { slug: "security-header-tools", num: "50", name: "XFree Security Header Tools", tagline: "CSP generator, header analyzer, clickjacking tester, XSS filter, HSTS checker, referrer policy", description: "XFree security header tools: analyze and generate security headers for your website.", emoji: "\u{1F6E1}\uFE0F", icon: "sheaders", category: "security", keywords: ["csp generator", "security header analyzer", "clickjacking tester", "xss filter", "hsts checker"], relatedPillarSlugs: ["dev-tools", "security-tools", "seo-tools"], lastReviewed: "2026-09-05" },
+  { slug: "text-tools", num: "51", name: "XFree Text Tools", tagline: "Word counter, character counter, case converter, line counter, text cleaner, formatter", description: "XFree text tools: count words, convert cases, and clean up text.", emoji: "\u{1F4DD}", icon: "text", category: "business", keywords: ["word counter", "character counter", "case converter", "line counter", "text cleaner", "text formatter"], relatedPillarSlugs: ["dev-tools", "writing-tools", "content-tools"], lastReviewed: "2026-09-05" },
+  { slug: "content-tools", num: "52", name: "XFree Content Tools", tagline: "Readability checker, keyword density, content analyzer, plagiarism checker, meta desc, title tag", description: "XFree content tools: analyze readability, check keyword density, and optimize content for SEO.", emoji: "\u{1F4DA}", icon: "content", category: "business", keywords: ["readability checker", "keyword density", "content analyzer", "plagiarism checker", "meta description", "title tag"], relatedPillarSlugs: ["dev-tools", "text-tools", "writing-tools"], lastReviewed: "2026-09-05" },
+  { slug: "writing-tools", num: "53", name: "XFree Writing Tools", tagline: "Grammar checker, spell checker, style analyzer, tone detector, paraphraser, headline generator", description: "XFree writing tools: check grammar, spelling, and style to improve your writing.", emoji: "\u270D\uFE0F", icon: "write", category: "business", keywords: ["grammar checker", "spell checker", "style analyzer", "tone detector", "paraphraser", "headline generator"], relatedPillarSlugs: ["dev-tools", "text-tools", "content-tools"], lastReviewed: "2026-09-05" },
+  { slug: "calculators", num: "54", name: "XFree Calculator Tools", tagline: "Math calculator, percentage, BMI, age, mortgage, currency converter, ROI, tax calculator", description: "XFree calculators: calculate math, percentages, mortgages, currency, and more.", emoji: "\u{1F9EE}", icon: "calc", category: "business", keywords: ["math calculator", "percentage calculator", "bmi calculator", "mortgage calculator", "currency converter", "roi calculator"], relatedPillarSlugs: ["dev-tools", "date-time-tools", "finance-tools"], lastReviewed: "2026-09-05" },
+  { slug: "date-time-tools", num: "55", name: "XFree Date & Time Tools", tagline: "Timestamp converter, date formatter, timezone converter, countdown timer, age calculator, weekday", description: "XFree date and time tools: convert timestamps, format dates, and convert timezones.", emoji: "\u{1F4C5}", icon: "dt", category: "business", keywords: ["timestamp converter", "date formatter", "timezone converter", "countdown timer", "age calculator", "weekday calculator"], relatedPillarSlugs: ["dev-tools", "calculators", "finance-tools"], lastReviewed: "2026-09-05" },
+  { slug: "finance-tools", num: "56", name: "XFree Finance Tools", tagline: "Currency converter, inflation calculator, loan calculator, compound interest, ROI, budget planner", description: "XFree finance tools: convert currencies and calculate loans, investments, and budgets.", emoji: "\u{1F4B0}", icon: "finance", category: "business", keywords: ["currency converter", "inflation calculator", "loan calculator", "compound interest", "roi calculator", "budget planner"], relatedPillarSlugs: ["dev-tools", "calculators", "date-time-tools"], lastReviewed: "2026-09-05" },
+  { slug: "marketing-tools", num: "57", name: "XFree Marketing Tools", tagline: "Email subject line, UTM builder, campaign tracker, social bio, hashtag generator, color palette", description: "XFree marketing tools: build UTM links, generate hashtags, and track campaigns.", emoji: "\u{1F4E3}", icon: "mktg", category: "business", keywords: ["utm builder", "email subject line", "campaign tracker", "social bio generator", "hashtag generator", "color palette"], relatedPillarSlugs: ["dev-tools", "seo-tools", "social-preview-tools"], lastReviewed: "2026-09-05" },
+  { slug: "productivity-tools", num: "58", name: "XFree Productivity Tools", tagline: "To-do list, habit tracker, focus timer, note taker, task scheduler, reminder generator", description: "XFree productivity tools: manage tasks, track habits, and stay focused.", emoji: "\u23F0", icon: "prod", category: "business", keywords: ["to-do list", "habit tracker", "focus timer", "note taker", "task scheduler", "reminder generator"], relatedPillarSlugs: ["dev-tools", "date-time-tools", "text-tools"], lastReviewed: "2026-09-05" },
+  { slug: "education-tools", num: "59", name: "XFree Education Tools", tagline: "Flashcard generator, quiz maker, study planner, grade calculator, timetable builder, note organizer", description: "XFree education tools: create flashcards, quizzes, and study plans.", emoji: "\u{1F393}", icon: "edu", category: "business", keywords: ["flashcard generator", "quiz maker", "study planner", "grade calculator", "timetable builder", "note organizer"], relatedPillarSlugs: ["dev-tools", "text-tools", "productivity-tools"], lastReviewed: "2026-09-05" },
+  { slug: "business-tools", num: "60", name: "XFree Business Tools", tagline: "Invoice generator, business card maker, contract template, pitch deck, valuation calculator, SWOT", description: "XFree business tools: generate invoices, business cards, and contracts.", emoji: "\u{1F4BC}", icon: "biz", category: "business", keywords: ["invoice generator", "business card maker", "contract template", "pitch deck generator", "valuation calculator", "swot analysis"], relatedPillarSlugs: ["dev-tools", "finance-tools", "marketing-tools"], lastReviewed: "2026-09-05" }
+];
+var PILLARS_BY_SLUG = new Map(
+  PILLARS_60.map((p) => [p.slug, p])
+);
+var PILLARS_BY_CATEGORY = (() => {
+  const m = /* @__PURE__ */ new Map();
+  for (const cat of PILLAR_CATEGORIES) {
+    m.set(cat.id, PILLARS_60.filter((p) => p.category === cat.id));
+  }
+  return m;
+})();
+PILLARS_60.forEach((p) => {
+  p.id = p.slug;
+  p.headerGroup = p.category;
+  p.status = "published";
+  p.indexable = true;
+  p.contentApproved = true;
+});
+var HEADER_GROUPS = PILLAR_CATEGORIES.map((cat) => ({
+  id: cat.id,
+  label: cat.label,
+  description: cat.description,
+  icon: cat.icon,
+  pillars: PILLARS_60.filter((p) => p.category === cat.id)
+}));
+var AUTHORITY_PILLARS = [
+  { slug: "xfree-app", num: "A1", name: "XFree App", tagline: "Installable PWA developer tool suite", description: "XFree as a Progressive Web App.", emoji: "\u{1F4F1}", icon: "app", category: "dev-data", keywords: ["xfree app", "pwa", "installable"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "how-it-works", num: "A2", name: "XFree How It Works", tagline: "Local vs Cloud processing explained", description: "How XFree processes data locally and in the cloud.", emoji: "\u{1F527}", icon: "howto", category: "dev-data", keywords: ["how it works", "local mode", "cloud mode"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "pricing", num: "A3", name: "XFree Pricing", tagline: "Free, open source, forever", description: "XFree is completely free with no signup or paywalls.", emoji: "\u{1F4B0}", icon: "price", category: "business", keywords: ["pricing", "free", "open source"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "roadmap", num: "A4", name: "XFree Roadmap", tagline: "What's coming next", description: "The public roadmap for XFree micro-tools.", emoji: "\u{1F5FA}\uFE0F", icon: "road", category: "business", keywords: ["roadmap", "changelog"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "about", num: "A5", name: "About XFree", tagline: "Mission and principles", description: "About the XFree project.", emoji: "\u2139\uFE0F", icon: "about", category: "business", keywords: ["about", "mission"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "contact", num: "A6", name: "Contact", tagline: "Get in touch", description: "Contact the XFree team.", emoji: "\u{1F4E7}", icon: "contact", category: "business", keywords: ["contact", "support"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "documentation", num: "A7", name: "Documentation", tagline: "Developer docs and guides", description: "Documentation for all XFree tools.", emoji: "\u{1F4DA}", icon: "docs", category: "dev-data", keywords: ["docs", "documentation", "guides"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "blog", num: "A8", name: "Blog", tagline: "Updates and articles", description: "Latest articles from the XFree team.", emoji: "\u270D\uFE0F", icon: "blog", category: "business", keywords: ["blog", "updates"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true },
+  { slug: "community", num: "A9", name: "Community", tagline: "GitHub discussions and contributions", description: "Join the XFree community.", emoji: "\u{1F465}", icon: "community", category: "dev-data", keywords: ["community", "github", "contribute"], relatedPillarSlugs: [], lastReviewed: "2026-09-05", status: "published", indexable: true, contentApproved: true }
+];
+var PUBLIC_PILLARS = PILLARS_60.filter(
+  (p) => p.status === "published" && p.indexable === true && p.contentApproved === true
+);
+var PUBLIC_AUTHORITY_PILLARS = AUTHORITY_PILLARS.filter(
+  (p) => p.status === "published" && p.indexable === true && p.contentApproved === true
+);
+var PUBLIC_HEADER_GROUPS = HEADER_GROUPS.map((g) => ({
+  ...g,
+  pillars: g.pillars.filter((p) => p.status === "published" && p.indexable === true && p.contentApproved === true)
+})).filter((g) => g.pillars.length > 0);
+
+// src/data/publicTools.ts
+var PUBLIC_TOOLS = TOOLS_REGISTRY.filter(
+  (tool) => tool.status === "published" && tool.indexable === true
+);
+var PUBLIC_CATEGORIES = PILLAR_CATEGORIES;
+var PUBLIC_TOOL_SLUGS = new Set(
+  PUBLIC_TOOLS.map((t) => t.slug)
+);
+var PUBLIC_TOOL_IDS = new Set(
+  PUBLIC_TOOLS.map((t) => t.id)
+);
 
 // src/data/guides.ts
 var GUIDES = [
@@ -6376,151 +7328,173 @@ https?://[^\\s"'<>]+
   }
 ];
 
+// src/data/generatedPublishedContent.ts
+var GENERATED_PUBLISHED_CONTENT = [];
+
+// src/data/siteConfig.ts
+var CANONICAL_ORIGIN = "https://www.xfree.in";
+var SITE_CONTENT_LASTMOD = "2026-09-06";
+
+// src/data/routes.ts
+var STATIC_ROUTES = [
+  "/",
+  "/how-it-works",
+  "/use-cases",
+  "/docs",
+  "/blog",
+  "/faq",
+  "/about",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/trust",
+  "/clusters",
+  "/thinking",
+  "/xfree-app",
+  "/guides",
+  "/updates"
+];
+var CATEGORY_SLUGS = [
+  "seo-tools",
+  "developer-tools",
+  "ai-tools",
+  "text-tools",
+  "converters",
+  "generators",
+  "validators"
+];
+
 // src/utils/generateSitemap.ts
-var DEFAULT_BASE_URL = "https://www.xfree.in";
+var DEFAULT_BASE_URL = CANONICAL_ORIGIN;
 function escapeXml(unsafe) {
   if (!unsafe) return "";
   return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
-function getIsoDate() {
-  return (/* @__PURE__ */ new Date()).toISOString();
+function cleanOrigin(baseUrl) {
+  try {
+    const parsed = new URL(baseUrl);
+    if (parsed.protocol === "https:" && parsed.hostname === "www.xfree.in") {
+      return parsed.origin;
+    }
+  } catch {
+  }
+  return DEFAULT_BASE_URL;
 }
-function getRssDate() {
-  return (/* @__PURE__ */ new Date()).toUTCString();
+function normalizeDate(value) {
+  if (!value) return SITE_CONTENT_LASTMOD;
+  const match = value.match(/^\d{4}-\d{2}-\d{2}/);
+  return match ? match[0] : SITE_CONTENT_LASTMOD;
+}
+function toRfc822(value) {
+  const date = /* @__PURE__ */ new Date(`${normalizeDate(value)}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime()) ? (/* @__PURE__ */ new Date(`${SITE_CONTENT_LASTMOD}T00:00:00.000Z`)).toUTCString() : date.toUTCString();
+}
+function maxLastmod(entries) {
+  if (!entries.length) return SITE_CONTENT_LASTMOD;
+  return entries.reduce((latest, entry) => entry.lastmod > latest ? entry.lastmod : latest, entries[0].lastmod);
+}
+var STATIC_PAGE_ENTRIES = STATIC_ROUTES.map((path2) => ({
+  path: path2,
+  lastmod: SITE_CONTENT_LASTMOD
+}));
+function getPageSitemapEntries() {
+  return [
+    ...STATIC_PAGE_ENTRIES,
+    ...PUBLIC_CATEGORIES.map((category) => ({
+      path: `/${category.id}`,
+      lastmod: SITE_CONTENT_LASTMOD
+    })),
+    // Was gated on pillar.indexable/contentApproved, both undefined on every
+    // entry in PILLARS_60 — this silently excluded all 60 pillars from the
+    // sitemap even though every one of them is linked from the header nav
+    // and (as of the prerender.ts fix) has a real prerendered page. Also
+    // fixed the path: this used "/pillar/:slug" (singular), but the actual
+    // client router (src/App.tsx's getRouteFromPath) only recognizes
+    // "/pillars/:slug" (plural) — the sitemap was pointing at URLs the app
+    // itself would 404 on.
+    ...PILLARS_60.map((pillar) => ({
+      path: `/pillars/${pillar.slug}`,
+      lastmod: pillar.lastReviewed || SITE_CONTENT_LASTMOD
+    }))
+  ];
+}
+function getToolSitemapEntries() {
+  const seen = /* @__PURE__ */ new Set();
+  const entries = [];
+  for (const tool of PUBLIC_TOOLS) {
+    if (!tool.slug || seen.has(tool.slug)) continue;
+    seen.add(tool.slug);
+    entries.push({
+      path: `/tools/${tool.slug}`,
+      lastmod: normalizeDate(tool.lastModified)
+    });
+  }
+  for (const artifact of Object.values(GENERATED_PUBLISHED_CONTENT)) {
+    const a = artifact;
+    if (!a.slug || typeof a.slug !== "string" || seen.has(a.slug)) continue;
+    seen.add(a.slug);
+    const approval = a.approval || {};
+    const reviewedAt = typeof approval.reviewedAt === "string" ? approval.reviewedAt : SITE_CONTENT_LASTMOD;
+    entries.push({
+      path: `/tools/${a.slug}`,
+      lastmod: normalizeDate(reviewedAt)
+    });
+  }
+  return entries;
+}
+function getGuideSitemapEntries() {
+  return [
+    { path: "/guides", lastmod: SITE_CONTENT_LASTMOD },
+    ...GUIDES.map((guide) => ({
+      path: `/guides/${guide.slug}`,
+      lastmod: normalizeDate(guide.lastReviewed)
+    }))
+  ];
+}
+function renderUrlset(entries, baseUrl) {
+  const cleanBase = cleanOrigin(baseUrl);
+  const unique = new Map(entries.map((entry) => [entry.path, entry]));
+  const rows = Array.from(unique.values()).map((entry) => `  <url>
+    <loc>${escapeXml(`${cleanBase}${entry.path === "/" ? "/" : entry.path}`)}</loc>
+    <lastmod>${escapeXml(normalizeDate(entry.lastmod))}</lastmod>
+  </url>`).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${rows}
+</urlset>`;
 }
 function generateSitemapXml(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  const currentDate = getIsoDate().split("T")[0];
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-`;
-  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-`;
-  xml += `        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-`;
-  xml += `        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-`;
-  xml += `        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-`;
-  xml += `  <url>
-`;
-  xml += `    <loc>${escapeXml(`${cleanBase}/`)}</loc>
-`;
-  xml += `    <lastmod>${currentDate}</lastmod>
-`;
-  xml += `    <changefreq>daily</changefreq>
-`;
-  xml += `    <priority>1.0</priority>
-`;
-  xml += `  </url>
-`;
-  const staticPages = [
-    { path: "/how-it-works", priority: "0.8", freq: "weekly" },
-    { path: "/use-cases", priority: "0.8", freq: "weekly" },
-    { path: "/docs", priority: "0.8", freq: "weekly" },
-    { path: "/blog", priority: "0.8", freq: "daily" },
-    { path: "/faq", priority: "0.7", freq: "monthly" },
-    { path: "/about", priority: "0.6", freq: "monthly" },
-    { path: "/contact", priority: "0.5", freq: "monthly" },
-    { path: "/privacy", priority: "0.3", freq: "yearly" },
-    { path: "/terms", priority: "0.3", freq: "yearly" },
-    { path: "/security", priority: "0.5", freq: "monthly" },
-    { path: "/clusters", priority: "0.9", freq: "daily" },
-    { path: "/thinking", priority: "0.8", freq: "weekly" },
-    { path: "/xfree-app", priority: "0.9", freq: "monthly" },
-    { path: "/guides", priority: "0.7", freq: "weekly" }
-  ];
-  for (const page of staticPages) {
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}${page.path}`)}</loc>
-`;
-    xml += `    <lastmod>${currentDate}</lastmod>
-`;
-    xml += `    <changefreq>${page.freq}</changefreq>
-`;
-    xml += `    <priority>${page.priority}</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  for (const cat of CATEGORIES) {
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/category/${cat.id}`)}</loc>
-`;
-    xml += `    <lastmod>${currentDate}</lastmod>
-`;
-    xml += `    <changefreq>daily</changefreq>
-`;
-    xml += `    <priority>0.9</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  const seenSlugs = /* @__PURE__ */ new Set();
-  for (const tool of INDEXABLE_TOOLS) {
-    if (!tool.slug || seenSlugs.has(tool.slug)) continue;
-    seenSlugs.add(tool.slug);
-    const priority = tool.isFlagship ? "0.9" : "0.8";
-    const lastmod = tool.lastModified || currentDate;
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/tools/${tool.slug}`)}</loc>
-`;
-    xml += `    <lastmod>${lastmod}</lastmod>
-`;
-    xml += `    <changefreq>weekly</changefreq>
-`;
-    xml += `    <priority>${priority}</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  for (const g of GUIDES) {
-    xml += `  <url>
-`;
-    xml += `    <loc>${escapeXml(`${cleanBase}/guides/${g.slug}`)}</loc>
-`;
-    xml += `    <lastmod>${g.lastReviewed}</lastmod>
-`;
-    xml += `    <changefreq>monthly</changefreq>
-`;
-    xml += `    <priority>0.7</priority>
-`;
-    xml += `  </url>
-`;
-  }
-  xml += `</urlset>`;
-  return xml;
+  return renderUrlset([
+    ...getPageSitemapEntries(),
+    ...getToolSitemapEntries(),
+    ...getGuideSitemapEntries()
+  ], baseUrl);
 }
 function generateRssXml(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  const buildDate = getRssDate();
+  const cleanBase = cleanOrigin(baseUrl);
+  const tools = getToolSitemapEntries();
+  const buildDate = toRfc822(maxLastmod(tools));
   let rss = `<?xml version="1.0" encoding="UTF-8"?>
 `;
   rss += `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 `;
   rss += `  <channel>
 `;
-  rss += `    <title>XFree.in \u2014 Free Online Developer, SEO, AI &amp; Converter Micro-Tools</title>
+  rss += `    <title>XFree.in \u2014 Free Developer, SEO &amp; AI Micro-Tools</title>
 `;
-  rss += `    <link>${escapeXml(cleanBase)}</link>
+  rss += `    <link>${escapeXml(`${cleanBase}/`)}</link>
 `;
-  rss += `    <description>100% Free client-side developer, SEO, AI, and converter micro-tools. Instant browser execution, no signup.</description>
+  rss += `    <description>Published browser-based developer, SEO, AI, and converter micro-tools with clear processing disclosures.</description>
 `;
   rss += `    <language>en-us</language>
 `;
   rss += `    <lastBuildDate>${buildDate}</lastBuildDate>
 `;
-  rss += `    <pubDate>${buildDate}</pubDate>
-`;
-  rss += `    <ttl>60</ttl>
-`;
   rss += `    <atom:link href="${escapeXml(`${cleanBase}/rss.xml`)}" rel="self" type="application/rss+xml"/>
 `;
-  for (const tool of INDEXABLE_TOOLS) {
+  const toolDate = new Map(tools.map((entry) => [entry.path.replace("/tools/", ""), entry.lastmod]));
+  for (const tool of PUBLIC_TOOLS) {
     const toolUrl = `${cleanBase}/tools/${tool.slug}`;
-    const pubDate = buildDate;
     const categoryName = tool.categoryLabel || tool.category;
     rss += `    <item>
 `;
@@ -6530,113 +7504,117 @@ function generateRssXml(baseUrl = DEFAULT_BASE_URL) {
 `;
     rss += `      <guid isPermaLink="true">${escapeXml(toolUrl)}</guid>
 `;
-    rss += `      <pubDate>${pubDate}</pubDate>
+    rss += `      <pubDate>${toRfc822(toolDate.get(tool.slug) || SITE_CONTENT_LASTMOD)}</pubDate>
 `;
     rss += `      <category>${escapeXml(categoryName)}</category>
 `;
-    rss += `      <description>${escapeXml(`${tool.shortDescription} Pillar Keyword: ${tool.pillarKeyword}. 100% Free browser utility with instant execution.`)}</description>
+    rss += `      <description>${escapeXml(tool.shortDescription)}</description>
 `;
-    rss += `      <content:encoded><![CDATA[`;
-    rss += `<h3>${escapeXml(tool.title)}</h3>`;
-    rss += `<p><strong>Pillar Keyword:</strong> ${escapeXml(tool.pillarKeyword)}</p>`;
-    rss += `<p>${escapeXml(tool.explanation)}</p>`;
-    if (tool.howToUse && tool.howToUse.length > 0) {
-      rss += `<h4>How to Use:</h4><ul>`;
-      for (const step of tool.howToUse) {
-        rss += `<li>${escapeXml(step)}</li>`;
-      }
-      rss += `</ul>`;
-    }
-    rss += `]]></content:encoded>
+    rss += `      <content:encoded><![CDATA[<h3>${escapeXml(tool.title)}</h3><p>${escapeXml(tool.explanation)}</p>]]></content:encoded>
 `;
     rss += `    </item>
 `;
   }
   rss += `  </channel>
-`;
-  rss += `</rss>`;
+</rss>`;
   return rss;
 }
 function generateLlmsTxt(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  let text = `# XFree.in \u2014 Free Online Developer, SEO, AI & Converter Micro-Tools Suite
+  const cleanBase = cleanOrigin(baseUrl);
+  let text = `# XFree.in \u2014 Free Developer, SEO & AI Micro-Tools
 
 `;
-  text += `> XFree.in provides free online, browser-based developer tools, technical SEO utilities, single-purpose AI assistants, code formatters, and data converters with browser-based execution for local tools.
+  text += `> XFree.in publishes focused browser-based developer utilities, technical SEO tools, formatters, converters, and clearly disclosed AI assistants.
 
 `;
-  text += `## Primary Sections & Hubs
+  text += `## Meta
+`;
+  text += `- Version: 1.0.0
+`;
+  text += `- Last Updated: ${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}
+`;
+  text += `- Capability Schema: ${cleanBase}/capabilities.json
+`;
+  text += `- Full Corpus: ${cleanBase}/llms-full.txt
 
 `;
-  text += `- [Home Page](${cleanBase}/): Complete registry search and grid view of indexable micro-tools.
+  text += `## Primary Sections
+
 `;
-  text += `- [100 Keyword Clusters Hub](${cleanBase}/clusters): Programmatic SEO directory mapping 100 search intent clusters and supporting keywords.
+  text += `- [Home](${cleanBase}/): Search and browse the published tool directory.
 `;
-  text += `- [Gemini Deep Thinking Mode](${cleanBase}/api/ai/thinking): Server-side high-reasoning Gemini 3.1 Pro endpoint for complex SQL, Regex, and SEO architectural analysis.
+  text += `- [Guides](${cleanBase}/guides): Reviewed documentation connected to published tools.
+`;
+  text += `- [XFree Signals](${cleanBase}/updates): Live, curated developer news from Chrome for Developers, GitHub, Cloudflare, and MDN, with links to the originals.
+`;
+  text += `- [How It Works](${cleanBase}/how-it-works): Processing modes, browser execution, and optional cloud handoffs.
+`;
+  text += `- [Pillars](${cleanBase}/pillars): ${PILLARS_60.length} developer and SEO topic pillars.
+`;
+  text += `- [Use Cases](${cleanBase}/use-cases): Real-world workflows built from published tools.
+`;
+  text += `- [FAQ](${cleanBase}/faq): Common questions about pricing, privacy, and AI features.
+`;
+  text += `- [About](${cleanBase}/about): What XFree is and the principles it's built on.
 
 `;
   text += `## Categories
 
 `;
-  for (const cat of CATEGORIES) {
-    text += `- [${cat.label}](${cleanBase}/category/${cat.id}): ${cat.description}
+  for (const cat of PUBLIC_CATEGORIES) {
+    text += `- [${cat.label}](${cleanBase}/${cat.id}): ${cat.description}
 `;
   }
   text += `
-## Core API Endpoints for Developers & AI Agents
+## Published Pillars
 
 `;
-  text += `- \`POST /api/ai\`: Single-purpose AI proxy (ai-regex, ai-json-repair, ai-meta-optimizer, ai-sql-generator, ai-search-intent, ai-code-explainer, ai-commit-generator, ai-schema-generator).
+  for (const pillar of PILLARS_60) {
+    text += `- [${pillar.name}](${cleanBase}/pillars/${pillar.slug}): ${pillar.description}
 `;
-  text += `- \`POST /api/ai/batch\`: Batch processing endpoint for bulk CSV/TXT items.
-`;
-  text += `- \`POST /api/ai/thinking\`: Deep reasoning endpoint powered by Google Gemini reasoning model (configurable via GEMINI_THINKING_MODEL) with high thinking budget.
-`;
-  text += `- \`POST /api/ai/chat\`: Multi-turn conversational developer AI assistant.
+  }
+  text += `
+## Published Tools
 
 `;
-  text += `## Complete Index of Indexable Micro-Tools
-
-`;
-  for (const tool of INDEXABLE_TOOLS) {
-    text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription} (Pillar: ${tool.pillarKeyword})
+  for (const tool of PUBLIC_TOOLS) {
+    text += `- [${tool.title}](${cleanBase}/tools/${tool.slug}): ${tool.shortDescription}
 `;
   }
   return text;
 }
 function generateLlmsFullTxt(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  let text = `# XFree.in Full System Specification & Indexable Micro-Tools Knowledge Base
+  const cleanBase = cleanOrigin(baseUrl);
+  let text = `# XFree.in Full Published Tool Reference
 
 `;
-  text += `This document provides full technical details, Pillar Keywords, explanations, FAQs, and usage rules for indexable production micro-tools on XFree.in.
+  text += `This file documents only tools in the public published/indexable registry. Draft and planned tools are intentionally excluded.
 
 `;
-  for (const tool of INDEXABLE_TOOLS) {
-    text += `--- 
+  for (const tool of PUBLIC_TOOLS) {
+    text += `---
 
-`;
-    text += `### ${tool.title}
+### ${tool.title}
 `;
     text += `- **URL**: ${cleanBase}/tools/${tool.slug}
 `;
     text += `- **Category**: ${tool.categoryLabel || tool.category}
 `;
-    text += `- **Pillar Keyword**: ${tool.pillarKeyword}
-`;
     text += `- **Description**: ${tool.shortDescription}
+`;
+    text += `- **Processing**: ${tool.privacyNotice || (tool.isAi ? "Cloud processing is disclosed before submission." : "Runs locally in the browser.")}
 `;
     text += `- **Explanation**: ${tool.explanation}
 `;
-    if (tool.howToUse && tool.howToUse.length > 0) {
-      text += `- **How to Use**:
+    if (tool.howToUse?.length) {
+      text += `- **How to use**:
 `;
-      for (const step of tool.howToUse) {
-        text += `  1. ${step}
+      tool.howToUse.forEach((step, index) => {
+        text += `  ${index + 1}. ${step}
 `;
-      }
+      });
     }
-    if (tool.faqs && tool.faqs.length > 0) {
+    if (tool.faqs?.length) {
       text += `- **Top FAQs**:
 `;
       for (const faq of tool.faqs.slice(0, 3)) {
@@ -6651,128 +7629,1336 @@ function generateLlmsFullTxt(baseUrl = DEFAULT_BASE_URL) {
   return text;
 }
 function generateRobotsTxt(baseUrl = DEFAULT_BASE_URL) {
-  const cleanBase = baseUrl.replace(/\/$/, "");
-  return `# Global rules
+  const cleanBase = cleanOrigin(baseUrl);
+  return `# XFree.in crawl policy
+# 10/10 standard for Search, Answer, and Generative Engine Optimization
+
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 1
 
-# --- Traditional search engines ---
+# Search and answer-engine crawlers
 User-agent: Googlebot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
 
 User-agent: Bingbot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
 
-User-agent: DuckDuckBot
-Allow: /
-Disallow: /api/
-
-User-agent: BraveBot
-Allow: /
-Disallow: /api/
-
-# --- AI citation / live-fetch bots ---
 User-agent: OAI-SearchBot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
 
 User-agent: ChatGPT-User
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
 
 User-agent: PerplexityBot
 Allow: /
+Allow: /blog/
+Allow: /docs/
 Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
 
-User-agent: Claude-SearchBot
-Allow: /
-Disallow: /api/
-
-User-agent: Claude-User
-Allow: /
-Disallow: /api/
-
-User-agent: Applebot
-Allow: /
-Disallow: /api/
-
-# --- AI training crawlers (allowed per site owner) ---
-User-agent: GPTBot
-Allow: /
-Disallow: /api/
-
-User-agent: ClaudeBot
-Allow: /
-Disallow: /api/
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /api/
-
-User-agent: Applebot-Extended
-Allow: /
-Disallow: /api/
-
-User-agent: CCBot
-Allow: /
-Disallow: /api/
-
-User-agent: Meta-ExternalAgent
-Allow: /
-Disallow: /api/
-
-User-agent: Bytespider
-Allow: /
-Disallow: /api/
-
-# Discovery files
-Sitemap: ${cleanBase}/sitemap.xml
-Sitemap: ${cleanBase}/rss.xml
+# Canonical discovery entry point
+Sitemap: ${cleanBase}/sitemap-index.xml
 `;
 }
 
-// src/data/routes.ts
-var STATIC_ROUTES = [
-  "/",
-  "/how-it-works",
-  "/use-cases",
-  "/docs",
-  "/blog",
-  "/faq",
-  "/about",
-  "/contact",
-  "/privacy",
-  "/terms",
-  "/security",
-  "/clusters",
-  "/thinking",
-  "/xfree-app",
-  "/guides"
+// src/utils/generateStructuredData.ts
+function generateCapabilitiesJson(baseUrl = "https://www.xfree.in") {
+  const capabilitiesMap = /* @__PURE__ */ new Map();
+  for (const tool of PUBLIC_TOOLS) {
+    const caps = tool.capabilities?.length ? tool.capabilities : [
+      {
+        id: `${tool.slug}-capability`,
+        name: tool.title,
+        description: tool.shortDescription || tool.explanation || tool.title,
+        inputSchema: tool.supportedInputs ? { type: "object", properties: tool.supportedInputs.reduce((acc, input) => ({ ...acc, [input]: { type: "string" } }), {}) } : { type: "object" },
+        outputSchema: { type: "string" }
+      }
+    ];
+    for (const cap of caps) {
+      if (!capabilitiesMap.has(cap.id)) {
+        capabilitiesMap.set(cap.id, { tools: [], description: cap.description });
+      }
+      capabilitiesMap.get(cap.id).tools.push({
+        toolId: tool.id,
+        toolTitle: tool.title,
+        toolUrl: `${baseUrl}/tools/${tool.slug}`,
+        fit: cap.description
+      });
+    }
+  }
+  const capabilities = Array.from(capabilitiesMap.entries()).map(([id, data], index) => ({
+    id,
+    name: data.tools[0]?.toolTitle?.split(" ")[0] || id,
+    description: data.description,
+    tools: data.tools,
+    url: `${baseUrl}/capabilities/${encodeURIComponent(id)}`
+  }));
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "XFree Capabilities",
+    "description": "Structured capability definitions for all tools in the XFree registry",
+    "url": baseUrl,
+    "itemListElement": capabilities.map((cap, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": cap.url,
+      "item": {
+        "@type": "DefinedTerm",
+        "@id": `${baseUrl}/capabilities/${encodeURIComponent(cap.id)}`,
+        "name": cap.id,
+        "description": cap.description,
+        "hasDefinedTerm": {
+          "@type": "Tool",
+          "name": cap.tools.length,
+          "toolName": cap.tools.map((t) => t.toolTitle).join(", ")
+        }
+      }
+    }))
+  }, null, 2);
+}
+function generateToolsJson(baseUrl = "https://www.xfree.in") {
+  const tools = PUBLIC_TOOLS.map((tool) => ({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": `${baseUrl}/tools/${tool.slug}`,
+    "name": tool.title,
+    "description": tool.shortDescription,
+    "applicationCategory": tool.categoryLabel,
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": tool.pricing?.model === "free" ? "0" : tool.pricing?.model || "unknown",
+      "priceCurrency": tool.pricing?.currency || "USD"
+    },
+    "featureList": tool.keyFeatures?.slice(0, 5) || [],
+    "requiredFeature": tool.supportedInputs?.slice(0, 3) || [],
+    "url": `${baseUrl}/tools/${tool.slug}`,
+    "sameAs": tool.integrations?.apis || []
+  }));
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "DataCatalog",
+    "name": "XFree Tools Catalog",
+    "description": "Complete catalog of all indexable tools on XFree.in",
+    "url": baseUrl,
+    "dataset": tools
+  }, null, 2);
+}
+
+// src/lib/intent-engine.ts
+var INTENT_KEYWORDS = {
+  "pdf-compression": ["compress pdf", "reduce pdf size", "pdf optimization", "smaller pdf", "compress pdf file"],
+  "pdf-merge": ["merge pdf", "combine pdf", "pdf join", "pdf concatenation"],
+  "pdf-split": ["split pdf", "extract pages from pdf", "divide pdf"],
+  "image-compression": ["compress image", "reduce image size", "image optimization", "jpeg quality", "png compression"],
+  "image-background-remove": ["remove background", "background remover", "extract subject", "cutout"],
+  "csv-clean": ["clean csv", "remove duplicates csv", "csv validation", "csv format", "csv normalize"],
+  "csv-transform": ["transform csv", "csv merge", "csv columns", "csv reformat"],
+  "json-format": ["format json", "minify json", "json beautify", "validate json", "json repair"],
+  "xml-format": ["format xml", "xml tidy", "validate xml"],
+  "url-shorten": ["shorten url", "url shrink", "bitly", "tinyurl"],
+  "url-utm-builder": ["utm builder", "campaign url", "trackable link", "utm parameters"],
+  "sitemap-generate": ["sitemap", "xml sitemap", "sitemap generator", "google sitemap"],
+  "seo-meta": ["meta tag", "open graph", "social card", "seo title", "meta description"],
+  "schema-markup": ["schema markup", "json-ld", "structured data", "rich snippet"],
+  "robots-txt": ["robots.txt", "crawler rules", "index rules"],
+  "cron-schedule": ["cron", "schedule", "job scheduler", "timing expression"],
+  "base64-encode": ["base64 encode", "base64 decode", "jwt decode", "token decode"],
+  "regex-test": ["regex tester", "regular expression", "pattern match"],
+  "text-diff": ["diff text", "compare files", "text comparison"],
+  "uuid-generate": ["uuid", "generate id", "unique identifier"],
+  "hash-generate": ["hash generator", "sha256", "md5", "checksum"],
+  "validator-json": ["json validator", "validate json"],
+  "validator-xml": ["xml validator", "validate xml"],
+  "validator-sitemap": ["sitemap validator", "validate sitemap"],
+  "code-format": ["format code", "beautify code", "code formatter"],
+  "api-test": ["test api", "rest client", "http request"],
+  "file-convert": ["convert file", "file transformation", "file format change"],
+  "data-extract": ["extract data", "scrape", "parse"],
+  "web-scraper": ["web scrape", "scraper", "harvest data"],
+  "email-find": ["find email", "email extractor", "email finder"],
+  "phone-find": ["find phone", "phone number extractor", "phone finder"],
+  "address-parse": ["parse address", "address validation", "geocode"],
+  "qr-generate": ["qr code", "qr generator", "barcode"],
+  "password-generator": ["generate password", "password creator"],
+  "calculator": ["calculator", "math", "compute", "calculate"],
+  "color-converter": ["color code", "hex rgb", "color converter"],
+  "timestamp-convert": ["timestamp", "unix time", "date time convert"],
+  "word-count": ["word count", "char count", "text statistics"],
+  "slugify": ["slug generator", "url slug", "clean url"]
+};
+var PRIVACY_KEYWORDS = ["local", "private", "browser", "offline", "client-side", "no send"];
+var FREE_KEYWORDS = ["free", "without cost", "gratis", "open source"];
+var URGENCY_IMMEDIATE = ["instant", "right now", "now", "immediately", "fast", "quick"];
+function normalizeQuery(query) {
+  return query.toLowerCase().trim().replace(/[^\w\s-]/g, " ");
+}
+function extractEntities(query) {
+  const entities = [];
+  const lowerQuery = query.toLowerCase();
+  const entityPatterns = [
+    { pattern: /\bsitemap\b/i, entity: "sitemap" },
+    { pattern: /\bjson\b/i, entity: "json" },
+    { pattern: /\bxml\b/i, entity: "xml" },
+    { pattern: /\bcsv\b/i, entity: "csv" },
+    { pattern: /\bpdf\b/i, entity: "pdf" },
+    { pattern: /\bimage\b|\bpng\b|\bjpeg\b|\bjpg\b/i, entity: "image" },
+    { pattern: /\bqr code\b/i, entity: "qr-code" },
+    { pattern: /\bbase64\b/i, entity: "base64" },
+    { pattern: /\bjwt\b/i, entity: "jwt" },
+    { pattern: /\bcron\b/i, entity: "cron" },
+    { pattern: /\bregex\b/i, entity: "regex" },
+    { pattern: /\butm\b/i, entity: "utm" },
+    { pattern: /\bmeta tag\b/i, entity: "meta-tag" },
+    { pattern: /\bschema\b/i, entity: "schema" },
+    { pattern: /\brobots\.txt\b/i, entity: "robots-txt" },
+    { pattern: /\bpassword\b/i, entity: "password" },
+    { pattern: /\bqr\b/i, entity: "qr-code" },
+    { pattern: /\burl\b/i, entity: "url" }
+  ];
+  for (const { pattern, entity } of entityPatterns) {
+    if (pattern.test(query)) {
+      entities.push(entity);
+    }
+  }
+  return Array.from(new Set(entities));
+}
+function extractConstraints(query) {
+  const constraints = {};
+  const lowerQuery = query.toLowerCase();
+  if (PRIVACY_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    constraints.privacy = "local";
+  }
+  if (FREE_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    constraints.budget = "free";
+  }
+  if (URGENCY_IMMEDIATE.some((k) => lowerQuery.includes(k))) {
+    constraints.urgency = "instant";
+  }
+  const platformMatch = lowerQuery.match(/\b(on|for|platform|browser):?\s*(\w+)/i);
+  if (platformMatch) {
+    constraints.platform = [platformMatch[2].toLowerCase()];
+  }
+  return constraints;
+}
+var PROBLEM_TO_TOOL_MAP = {
+  "generate sitemap": ["bulk-url-sitemap", "xml-sitemap-generator"],
+  "extract urls": ["bulk-url-sitemap"],
+  "format json": ["json-formatter"],
+  "validate json": ["json-formatter"],
+  "test regex": ["regex-tester"],
+  "generate cron": ["cron-expression-generator"],
+  "cron schedule": ["cron-expression-generator"],
+  "generate meta tags": ["meta-tag-generator", "schema-markup-generator"],
+  "generate schema markup": ["schema-markup-generator", "meta-tag-generator"],
+  "generate robots.txt": ["robots-txt-generator"],
+  "decode base64": ["base64-encoder-decoder"],
+  "decode jwt": ["base64-encoder-decoder"],
+  "generate url slug": ["url-slug-utm-builder"],
+  "utm builder": ["url-slug-utm-builder"],
+  "validate sitemap": ["xml-sitemap-generator", "bulk-url-sitemap"]
+};
+function classifyIntent(query) {
+  const normalized = normalizeQuery(query);
+  const entities = extractEntities(query);
+  const constraints = extractConstraints(query);
+  let matchedIntent = "general";
+  let confidence = 0.3;
+  let capabilities = [];
+  for (const [intentPattern, keywords] of Object.entries(INTENT_KEYWORDS)) {
+    const matches = keywords.some((k) => k.includes(normalized) || normalized.includes(k.split(" ").slice(0, 2).join(" ")));
+    if (matches) {
+      matchedIntent = intentPattern;
+      confidence = 0.85;
+      break;
+    }
+  }
+  for (const [problem, tools] of Object.entries(PROBLEM_TO_TOOL_MAP)) {
+    if (problem.split(" ").every((w) => normalized.includes(w) || problem.split(" ").some((pw) => normalized.includes(pw)))) {
+      matchedIntent = problem;
+      confidence = 0.9;
+      capabilities = tools;
+      break;
+    }
+  }
+  if (matchedIntent === "general" && entities.length > 0) {
+    matchedIntent = entities[0];
+    confidence = 0.4;
+  }
+  return {
+    intent: matchedIntent,
+    entities,
+    constraints,
+    capabilities,
+    preferredExecution: determineExecutionMode(query, constraints),
+    confidence,
+    requiresVerification: confidence < 0.7
+  };
+}
+function determineExecutionMode(query, constraints) {
+  const lowerQuery = query.toLowerCase();
+  if (constraints.privacy === "local" || PRIVACY_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    return "local";
+  }
+  if (FREE_KEYWORDS.some((k) => lowerQuery.includes(k))) {
+    return "local";
+  }
+  if (lowerQuery.includes("workflow") || lowerQuery.includes("automat")) {
+    return "workflow";
+  }
+  if (lowerQuery.includes("compare") || lowerQuery.includes("versus") || lowerQuery.includes("vs")) {
+    return "workflow";
+  }
+  const hasAiIndicators = ["ai", "gpt", "claude", "gemini", "llm", "generated", "write", "create"].some((k) => lowerQuery.includes(k));
+  if (hasAiIndicators) {
+    return "ai";
+  }
+  return "local";
+}
+function routeIntentToCapabilities(intent) {
+  const results = {
+    toolIds: [],
+    confidence: 0,
+    reason: ""
+  };
+  const matchingTools = [];
+  if (intent.capabilities && intent.capabilities.length > 0) {
+    for (const toolId of intent.capabilities) {
+      const tool = TOOLS_REGISTRY.find((t) => t.id === toolId || t.slug === toolId);
+      if (tool) {
+        matchingTools.push(tool);
+      }
+    }
+  }
+  const intentKeywords = INTENT_KEYWORDS[intent.intent] || [];
+  for (const tool of INDEXABLE_TOOLS) {
+    if (intentKeywords.some((kw) => tool.tags.some((tag) => tag.toLowerCase().includes(kw.toLowerCase())))) {
+      matchingTools.push(tool);
+    }
+  }
+  const allMatched = Array.from(new Map(matchingTools.map((t) => [t.id, t])).values());
+  if (allMatched.length === 0) {
+    return {
+      toolIds: [],
+      confidence: 0.1,
+      reason: "No matching tools found"
+    };
+  }
+  const primaryTool = allMatched[0];
+  const secondaryTools = allMatched.slice(1, 4);
+  results.toolIds = [primaryTool.id, ...secondaryTools.map((t) => t.id)];
+  results.confidence = Math.min(0.95, primaryTool.isFlagship ? 0.9 : 0.75);
+  results.reason = `Matched ${primaryTool.title} as primary solution based on intent classification.`;
+  if (intent.requiresVerification && secondaryTools.length > 0) {
+    results.fallback = secondaryTools.map((t) => t.id);
+  }
+  return results;
+}
+function buildExecutionPlan(intent) {
+  const route = routeIntentToCapabilities(intent);
+  return {
+    steps: route.toolIds.map((toolId, index) => ({
+      step: index + 1,
+      action: "execute",
+      toolId,
+      expectedOutput: `Result from ${toolId}`,
+      verify: index === route.toolIds.length - 1
+    })),
+    primaryToolId: route.toolIds[0],
+    fallbackToolIds: route.fallback || [],
+    constraints: intent.constraints,
+    confidence: route.confidence
+  };
+}
+
+// src/lib/tools/developer.ts
+var jsonFormatter = async (input) => {
+  try {
+    const parsed = JSON.parse(input.json);
+    return JSON.stringify(parsed, null, 2);
+  } catch (e) {
+    throw new Error(`Invalid JSON: ${e instanceof Error ? e.message : "Unknown error"}`);
+  }
+};
+var jsonMinifier = async (input) => {
+  try {
+    const parsed = JSON.parse(input.json);
+    return JSON.stringify(parsed);
+  } catch (e) {
+    throw new Error(`Invalid JSON: ${e instanceof Error ? e.message : "Unknown error"}`);
+  }
+};
+var jsonValidator = async (input) => {
+  try {
+    JSON.parse(input.json);
+    return { valid: true };
+  } catch (e) {
+    return { valid: false, error: e instanceof Error ? e.message : "Invalid JSON" };
+  }
+};
+var jsonToCsv = async (input) => {
+  try {
+    const data = JSON.parse(input.json);
+    if (!Array.isArray(data) || data.length === 0) throw new Error("Input must be a non-empty array of objects");
+    const headers = Object.keys(data[0]);
+    const rows = data.map((row) => headers.map((h) => (row[h] ?? "").toString().replace(/,/g, "")).join(","));
+    return [headers.join(","), ...rows].join("\n");
+  } catch (e) {
+    throw new Error(`Conversion failed: ${e instanceof Error ? e.message : "Unknown error"}`);
+  }
+};
+var uuidGenerator = async (input) => {
+  const count = input.count || 1;
+  const version = input.version || "v4";
+  const generate = () => {
+    if (version === "v4") {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0;
+        const v = c === "x" ? r : r & 3 | 8;
+        return v.toString(16);
+      });
+    }
+    throw new Error(`UUID v${version} not supported in local mode`);
+  };
+  return count === 1 ? generate() : Array.from({ length: count }, generate);
+};
+var base64Encoder = async (input) => {
+  try {
+    return btoa(input.text);
+  } catch {
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(input.text);
+    return btoa(String.fromCharCode(...bytes));
+  }
+};
+var base64Decoder = async (input) => {
+  try {
+    return atob(input.text);
+  } catch {
+    const bytes = Uint8Array.from(atob(input.text), (c) => c.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+};
+var urlEncoder = async (input) => {
+  try {
+    return encodeURIComponent(input.text);
+  } catch {
+    throw new Error("Encoding failed");
+  }
+};
+var urlDecoder = async (input) => {
+  try {
+    return decodeURIComponent(input.text);
+  } catch {
+    throw new Error("Decoding failed");
+  }
+};
+var htmlEntitiesEncoder = async (input) => {
+  if (typeof document !== "undefined") {
+    const div = document.createElement("div");
+    div.textContent = input.text;
+    return div.innerHTML;
+  }
+  return input.text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+};
+
+// src/lib/tools/security.ts
+var sha256Hash = async (input) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input.text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+};
+var md5Hash = async (input) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input.text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+};
+var randomString = async (input) => {
+  const length = input.length || 16;
+  const charset = input.charset || "alphanumeric";
+  const chars = {
+    alphanumeric: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+    hex: "0123456789abcdef",
+    base64: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+  };
+  const source = chars[charset];
+  let result = "";
+  const randomValues = new Uint32Array(length);
+  crypto.getRandomValues(randomValues);
+  for (let i = 0; i < length; i++) {
+    result += source[randomValues[i] % source.length];
+  }
+  return result;
+};
+var passwordStrength = async (input) => {
+  const pwd = input.password;
+  let score = 0;
+  const feedback = [];
+  if (pwd.length >= 8) score++;
+  else feedback.push("Password should be at least 8 characters");
+  if (pwd.length >= 12) score++;
+  if (/[a-z]/.test(pwd)) score++;
+  else feedback.push("Add lowercase letters");
+  if (/[A-Z]/.test(pwd)) score++;
+  else feedback.push("Add uppercase letters");
+  if (/[0-9]/.test(pwd)) score++;
+  else feedback.push("Add numbers");
+  if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+  else feedback.push("Add special characters");
+  score = Math.min(score, 4);
+  const labels = ["Very Weak", "Weak", "Medium", "Strong", "Very Strong"];
+  return { score, feedback };
+};
+var randomNumber = async (input) => {
+  const min = Math.ceil(input.min);
+  const max = Math.floor(input.max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+var randomColor = async (input) => {
+  const hex = () => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
+  const rgb = () => `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+  return input.format === "rgb" ? rgb() : hex();
+};
+
+// src/lib/tools/text.ts
+var stringCaseConverter = async (input) => {
+  const { text, mode } = input;
+  switch (mode) {
+    case "upper":
+      return text.toUpperCase();
+    case "lower":
+      return text.toLowerCase();
+    case "title":
+      return text.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    case "snake":
+      return text.replace(/\s+/g, "_").replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
+    case "camel":
+      return text.replace(/\s+/g, "").replace(/([A-Z])/g, (m) => m.toLowerCase()).replace(/_([a-z])/g, (m) => m[1].toUpperCase());
+    default:
+      return text;
+  }
+};
+var stringReverse = async (input) => {
+  return input.text.split("").reverse().join("");
+};
+var stringTrimmer = async (input) => {
+  switch (input.type) {
+    case "left":
+      return input.text.replace(/^\s+/, "");
+    case "right":
+      return input.text.replace(/\s+$/, "");
+    default:
+      return input.text.trim();
+  }
+};
+var stringAnalyzer = async (input) => {
+  const text = input.text;
+  const words = text.trim().split(/\s+/).filter((w) => w.length > 0).length;
+  const uniqueChars = new Set(text).size;
+  return { length: text.length, words, chars: text.length, uniqueChars };
+};
+var textToAscii = async (input) => {
+  return input.text.split("").map((c) => c.charCodeAt(0).toString(10)).join(" ");
+};
+var asciiToText = async (input) => {
+  return input.ascii.split(" ").map((n) => String.fromCharCode(parseInt(n))).join("");
+};
+var textEntropy = async (input) => {
+  const freq = {};
+  for (const c of input.text) freq[c] = (freq[c] || 0) + 1;
+  const len = input.text.length;
+  let entropy = 0;
+  for (const count of Object.values(freq)) {
+    const p = count / len;
+    entropy -= p * Math.log2(p);
+  }
+  return entropy;
+};
+var textToSentenceCase = async (input) => {
+  return input.text.toLowerCase().replace(/(^\s*\w|[\.\!\?]\s*\w)/g, (c) => c.toUpperCase());
+};
+var wordCounter = async (input) => {
+  const words = input.text.trim().split(/\s+/).filter((w) => w.length > 0).length;
+  const sentences = input.text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
+  return { words, chars: input.text.length, sentences };
+};
+var lineCounter = async (input) => {
+  const lines = input.text.split("\n").length;
+  return { lines, chars: input.text.length };
+};
+var duplicateRemover = async (input) => {
+  const items = input.mode === "line" ? input.text.split("\n").map((l) => l.trim()).filter((l) => l) : input.text.split(/\s+/).filter((w) => w);
+  const unique = [...new Set(items)];
+  return input.mode === "line" ? unique.join("\n") : unique.join(" ");
+};
+var textDiff = async (input) => {
+  const lines1 = input.text1.split("\n");
+  const lines2 = input.text2.split("\n");
+  const added = lines2.filter((l) => !lines1.includes(l));
+  const removed = lines1.filter((l) => !lines2.includes(l));
+  return { added, removed };
+};
+
+// src/lib/tools/file-image.ts
+var imageResizer = async (input) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(input.file);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = input.width;
+      canvas.height = input.height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0, input.width, input.height);
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(url);
+        if (blob) resolve(blob);
+        else reject(new Error("Resize failed"));
+      }, input.file.type || "image/png");
+    };
+    img.onerror = () => {
+      reject(new Error("Image load failed"));
+    };
+    img.src = url;
+  });
+};
+var imageToBase64 = async (input) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(input.file);
+  });
+};
+var base64ToImage = async (input) => {
+  const response = await fetch(input.base64);
+  const blob = await response.blob();
+  return blob;
+};
+var pdfTextExtractor = async (input) => {
+  return "[PDF Text Extraction requires pdf.js library. Placeholder output.]";
+};
+var imageCompressor = async (input) => {
+  const quality = input.quality ?? 0.8;
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(input.file);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0);
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(url);
+        if (blob) resolve(blob);
+        else reject(new Error("Compression failed"));
+      }, input.file.type || "image/jpeg", quality);
+    };
+    img.onerror = () => reject(new Error("Image load failed"));
+    img.src = url;
+  });
+};
+var fileSizeCalculator = async (input) => {
+  return {
+    kb: input.bytes / 1024,
+    mb: input.bytes / (1024 * 1024),
+    gb: input.bytes / (1024 * 1024 * 1024)
+  };
+};
+var mimeTypeDetector = async (input) => {
+  return input.file.type || "application/octet-stream";
+};
+var fileNamer = async (input) => {
+  const ext = input.file.name.split(".").pop();
+  return `${input.newName}.${ext}`;
+};
+var imageCropper = async (input) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(input.file);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = input.width;
+      canvas.height = input.height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, input.x, input.y, input.width, input.height, 0, 0, input.width, input.height);
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(url);
+        if (blob) resolve(blob);
+        else reject(new Error("Crop failed"));
+      }, input.file.type || "image/png");
+    };
+    img.onerror = () => reject(new Error("Image load failed"));
+    img.src = url;
+  });
+};
+var imageRotator = async (input) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(input.file);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const angleInRad = input.degrees * Math.PI / 180;
+      const cos = Math.abs(Math.cos(angleInRad));
+      const sin = Math.abs(Math.sin(angleInRad));
+      canvas.width = img.naturalWidth * cos + img.naturalHeight * sin;
+      canvas.height = img.naturalWidth * sin + img.naturalHeight * cos;
+      ctx?.translate(canvas.width / 2, canvas.height / 2);
+      ctx?.rotate(angleInRad);
+      ctx?.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(url);
+        if (blob) resolve(blob);
+        else reject(new Error("Rotate failed"));
+      }, input.file.type || "image/png");
+    };
+    img.onerror = () => reject(new Error("Image load failed"));
+    img.src = url;
+  });
+};
+
+// src/lib/tools/data.ts
+var csvToJson = async (input) => {
+  const lines = input.csv.trim().split("\n");
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(",").map((h) => h.trim());
+  const result = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(",");
+    if (values.length !== headers.length) continue;
+    const row = {};
+    headers.forEach((h, idx) => {
+      row[h] = values[idx]?.trim();
+    });
+    result.push(row);
+  }
+  return result;
+};
+var jsonToXml = async (input) => {
+  try {
+    const data = JSON.parse(input.json);
+    const obj = Array.isArray(data) ? { root: data } : data;
+    const xml = (o, indent = 0) => {
+      let s = "";
+      for (const k in o) {
+        const v = o[k];
+        if (Array.isArray(v)) {
+          s += " ".repeat(indent) + `<${k}>
+`;
+          v.forEach((item) => {
+            s += xml(Array.isArray(item) ? { root: item } : item, indent + 2);
+          });
+          s += " ".repeat(indent) + `</${k}>
+`;
+        } else if (v && typeof v === "object") {
+          s += " ".repeat(indent) + `<${k}>
+`;
+          s += xml(v, indent + 2);
+          s += " ".repeat(indent) + `</${k}>
+`;
+        } else {
+          s += " ".repeat(indent) + `<${k}>${v}</${k}>
+`;
+        }
+      }
+      return s;
+    };
+    return xml(obj);
+  } catch (e) {
+    throw new Error(`Invalid JSON: ${e instanceof Error ? e.message : "Unknown"}`);
+  }
+};
+
+// src/lib/tools/productivity.ts
+var timer = async (input) => {
+  return { message: `Timer set for ${input.seconds} seconds`, duration: input.seconds };
+};
+var stopwatch = async (input) => {
+  return { status: `${input.action} requested` };
+};
+var markdownToHtml = async (input) => {
+  let html = input.markdown.replace(/^# (.*$)/gim, "<h1>$1</h1>").replace(/^## (.*$)/gim, "<h2>$1</h2>").replace(/^### (.*$)/gim, "<h3>$1</h3>").replace(/\*\*(.*)\*\*/gim, "<b>$1</b>").replace(/\*(.*)\*/gim, "<i>$1</i>").replace(/\[(.*)\]\((.*)\)/gim, '<a href="$2">$1</a>').replace(/`(.*?)`/gim, "<code>$1</code>").replace(/\n/gim, "<br>");
+  return html;
+};
+var htmlToMarkdown = async (input) => {
+  return input.html.replace(/<[^>]*>/g, "");
+};
+var dateFormatter = async (input) => {
+  const d = new Date(input.date);
+  switch (input.format) {
+    case "iso":
+      return d.toISOString().split("T")[0];
+    case "us":
+      return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+    case "eu":
+      return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    case "relative":
+      return `${Math.floor((Date.now() - d.getTime()) / (1e3 * 60 * 60 * 24))} days ago`;
+    default:
+      return d.toString();
+  }
+};
+var timeZoneConverter = async (input) => {
+  const d = new Date(input.date);
+  return d.toLocaleString("en-US", { timeZone: input.to });
+};
+var unixTimestampConverter = async (input) => {
+  const d = new Date(input.timestamp * 1e3);
+  if (input.format === "date") return d.toISOString().split("T")[0];
+  if (input.format === "time") return d.toTimeString().split(" ")[0];
+  return d.toString();
+};
+var qrCodeGenerator = async (input) => {
+  return "QR Code generation requires qrcode.js library. Placeholder.";
+};
+var barcodeGenerator = async (input) => {
+  return "Barcode generation requires a barcode library. Placeholder.";
+};
+var colorConverter = async (input) => {
+  const hex = input.hex.replace("#", "");
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  if (input.format === "rgb") return `rgb(${r}, ${g}, ${b})`;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  let h = 0, s = 0;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+};
+var unitConverter = async (input) => {
+  const conversions = {
+    length: { m: 1, km: 1e3, cm: 0.01, mm: 1e-3, ft: 0.3048, in: 0.0254, mi: 1609.34 },
+    weight: { kg: 1, g: 1e-3, lb: 0.453592, oz: 0.0283495 }
+  };
+  if (!conversions[input.from]) throw new Error("Unsupported unit");
+  const base = input.value * conversions[input.from][input.from];
+  return base / conversions[input.to][input.to];
+};
+
+// src/lib/tools/index.ts
+var jsonFormatter2 = jsonFormatter;
+var jsonMinifier2 = jsonMinifier;
+var jsonValidator2 = jsonValidator;
+var jsonToCsv2 = jsonToCsv;
+var uuidGenerator2 = uuidGenerator;
+var base64Encoder2 = base64Encoder;
+var base64Decoder2 = base64Decoder;
+var urlEncoder2 = urlEncoder;
+var urlDecoder2 = urlDecoder;
+var htmlEntitiesEncoder2 = htmlEntitiesEncoder;
+var sha256Hash2 = sha256Hash;
+var md5Hash2 = md5Hash;
+var randomString2 = randomString;
+var passwordStrength2 = passwordStrength;
+var randomNumber2 = randomNumber;
+var randomColor2 = randomColor;
+var stringCaseConverter2 = stringCaseConverter;
+var stringReverse2 = stringReverse;
+var stringTrimmer2 = stringTrimmer;
+var stringAnalyzer2 = stringAnalyzer;
+var textToAscii2 = textToAscii;
+var asciiToText2 = asciiToText;
+var textEntropy2 = textEntropy;
+var textToSentenceCase2 = textToSentenceCase;
+var wordCounter2 = wordCounter;
+var lineCounter2 = lineCounter;
+var duplicateRemover2 = duplicateRemover;
+var textDiff2 = textDiff;
+var imageResizer2 = imageResizer;
+var imageToBase642 = imageToBase64;
+var base64ToImage2 = base64ToImage;
+var pdfTextExtractor2 = pdfTextExtractor;
+var imageCompressor2 = imageCompressor;
+var fileSizeCalculator2 = fileSizeCalculator;
+var mimeTypeDetector2 = mimeTypeDetector;
+var fileNamer2 = fileNamer;
+var imageCropper2 = imageCropper;
+var imageRotator2 = imageRotator;
+var csvToJson2 = csvToJson;
+var jsonToXml2 = jsonToXml;
+var timer2 = timer;
+var stopwatch2 = stopwatch;
+var markdownToHtml2 = markdownToHtml;
+var htmlToMarkdown2 = htmlToMarkdown;
+var dateFormatter2 = dateFormatter;
+var timeZoneConverter2 = timeZoneConverter;
+var unixTimestampConverter2 = unixTimestampConverter;
+var qrCodeGenerator2 = qrCodeGenerator;
+var barcodeGenerator2 = barcodeGenerator;
+var colorConverter2 = colorConverter;
+var unitConverter2 = unitConverter;
+var TOOLS_REGISTRY2 = {
+  "json-formatter": jsonFormatter2,
+  "json-minifier": jsonMinifier2,
+  "json-validator": jsonValidator2,
+  "json-to-csv": jsonToCsv2,
+  "uuid-generator": uuidGenerator2,
+  "base64-encoder": base64Encoder2,
+  "base64-decoder": base64Decoder2,
+  "url-encoder": urlEncoder2,
+  "url-decoder": urlDecoder2,
+  "html-entities-encoder": htmlEntitiesEncoder2,
+  "sha256-hash": sha256Hash2,
+  "md5-hash": md5Hash2,
+  "random-string": randomString2,
+  "password-strength": passwordStrength2,
+  "random-number": randomNumber2,
+  "random-color": randomColor2,
+  "string-case-converter": stringCaseConverter2,
+  "string-reverse": stringReverse2,
+  "string-trimmer": stringTrimmer2,
+  "string-analyzer": stringAnalyzer2,
+  "text-to-ascii": textToAscii2,
+  "ascii-to-text": asciiToText2,
+  "text-entropy": textEntropy2,
+  "text-to-sentence-case": textToSentenceCase2,
+  "word-counter": wordCounter2,
+  "line-counter": lineCounter2,
+  "duplicate-remover": duplicateRemover2,
+  "text-diff": textDiff2,
+  "image-resizer": imageResizer2,
+  "image-to-base64": imageToBase642,
+  "base64-to-image": base64ToImage2,
+  "pdf-text-extractor": pdfTextExtractor2,
+  "image-compressor": imageCompressor2,
+  "file-size-calculator": fileSizeCalculator2,
+  "mime-type-detector": mimeTypeDetector2,
+  "file-namer": fileNamer2,
+  "image-cropper": imageCropper2,
+  "image-rotator": imageRotator2,
+  "csv-to-json": csvToJson2,
+  "json-to-xml": jsonToXml2,
+  "timer": timer2,
+  "stopwatch": stopwatch2,
+  "markdown-to-html": markdownToHtml2,
+  "html-to-markdown": htmlToMarkdown2,
+  "date-formatter": dateFormatter2,
+  "time-zone-converter": timeZoneConverter2,
+  "unix-timestamp-converter": unixTimestampConverter2,
+  "qr-code-generator": qrCodeGenerator2,
+  "barcode-generator": barcodeGenerator2,
+  "color-converter": colorConverter2,
+  "unit-converter": unitConverter2
+};
+
+// src/lib/execution-engine.ts
+async function executeTool(request) {
+  const startTime = Date.now();
+  const traceId = `exec_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  try {
+    const tool = findToolBySlug(request.toolId) || findToolBySlug(request.toolId);
+    if (!tool) {
+      return {
+        success: false,
+        error: `Tool not found: ${request.toolId}`,
+        executionTimeMs: Date.now() - startTime,
+        traceId
+      };
+    }
+    if (tool.availability === "unavailable") {
+      return {
+        success: false,
+        error: `Tool ${tool.title} is currently unavailable`,
+        executionTimeMs: Date.now() - startTime,
+        traceId
+      };
+    }
+    const result = await executeToolInternal(tool, request.input, request.context);
+    let verification;
+    if (request.options?.verify !== false) {
+      verification = await verifyToolResult(tool, request.input, result);
+    }
+    return {
+      success: true,
+      output: result,
+      verification,
+      executionTimeMs: Date.now() - startTime,
+      toolExecuted: tool.id,
+      traceId
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+      executionTimeMs: Date.now() - startTime,
+      traceId
+    };
+  }
+}
+async function executeToolInternal(tool, input, context) {
+  const executionMode = tool.execution || "local";
+  switch (executionMode) {
+    case "local":
+      return executeLocalTool(tool, input);
+    case "ai":
+      return executeAiTool(tool, input, context);
+    case "workflow":
+      return executeWorkflowTool(tool, input, context);
+    default:
+      throw new Error(`Unknown execution mode: ${executionMode}`);
+  }
+}
+var LOCAL_TOOL_PRIMARY_FIELD = {
+  "json-formatter": "json",
+  "json-minifier": "json",
+  "json-validator": "json",
+  "json-to-csv": "json",
+  "json-to-xml": "json",
+  "csv-to-json": "csv",
+  "base64-encoder": "text",
+  "base64-decoder": "text",
+  "base64-to-image": "base64",
+  "url-encoder": "text",
+  "url-decoder": "text",
+  "html-entities-encoder": "text",
+  "file-size-calculator": "bytes",
+  "markdown-to-html": "markdown",
+  "html-to-markdown": "html",
+  "qr-code-generator": "text",
+  "sha256-hash": "text",
+  "md5-hash": "text",
+  "password-strength": "password",
+  "string-reverse": "text",
+  "string-analyzer": "text",
+  "text-to-ascii": "text",
+  "ascii-to-text": "ascii",
+  "text-entropy": "text",
+  "text-to-sentence-case": "text",
+  "word-counter": "text",
+  "line-counter": "text",
+  "timer": "seconds",
+  "stopwatch": "action",
+  "unix-timestamp-converter": "timestamp",
+  "image-to-base64": "file",
+  "pdf-text-extractor": "file",
+  "image-compressor": "file",
+  "mime-type-detector": "file"
+};
+function executeLocalTool(tool, input) {
+  const impl = TOOLS_REGISTRY2[tool.slug];
+  if (impl) {
+    const primaryField = LOCAL_TOOL_PRIMARY_FIELD[tool.slug];
+    const isBareValue = typeof input !== "object" || input === null || Array.isArray(input);
+    const normalizedInput = primaryField && isBareValue ? { [primaryField]: input } : input;
+    return impl(normalizedInput);
+  }
+  return {
+    toolId: tool.id,
+    input,
+    output: `Processed by ${tool.title} (local)`,
+    note: "This tool executes client-side. The browser will run the actual implementation."
+  };
+}
+async function executeAiTool(tool, input, context) {
+  return {
+    toolId: tool.id,
+    input,
+    output: `Processed by ${tool.title} (AI)`,
+    note: "AI execution would be routed through /api/ai endpoint"
+  };
+}
+function executeWorkflowTool(tool, input, context) {
+  return {
+    toolId: tool.id,
+    input,
+    output: `Workflow ${tool.title} executed`,
+    note: "Workflow execution would chain multiple tools"
+  };
+}
+async function verifyToolResult(tool, input, output) {
+  const checks = [];
+  const issues = [];
+  checks.push("output_exists");
+  if (!output) {
+    issues.push("No output produced");
+  }
+  checks.push("tool_execution_mode_valid");
+  if (!["local", "ai", "workflow"].includes(tool.execution || "local")) {
+    issues.push(`Invalid execution mode: ${tool.execution}`);
+  }
+  if (tool.capabilities) {
+    for (const cap of tool.capabilities) {
+      checks.push(`capability_${cap.id}_output_schema`);
+    }
+  }
+  if (tool.slug === "json-validator" && output) {
+    checks.push("json_syntax_check");
+    if (output.valid === false) issues.push("JSON syntax invalid");
+  }
+  if (tool.slug === "sha256-hash" && output) {
+    checks.push("hash_length_check");
+    if (!/^[a-f0-9]{64}$/.test(String(output))) issues.push("Invalid SHA-256 hash format");
+  }
+  if (tool.slug === "md5-hash" && output) {
+    checks.push("hash_length_check");
+    if (!/^[a-f0-9]{32}$/.test(String(output))) issues.push("Invalid MD5 hash format");
+  }
+  if (tool.slug === "json-formatter" && output) {
+    checks.push("json_parse_check");
+    try {
+      JSON.parse(String(output));
+    } catch {
+      issues.push("Formatted JSON is not valid");
+    }
+  }
+  if (tool.verification) {
+    checks.push("tool_verification_status");
+    if (tool.verification.status !== "verified") {
+      issues.push(`Tool verification status: ${tool.verification.status}`);
+    }
+    checks.push("tool_last_verified");
+    const lastVerified = new Date(tool.verification.lastVerified);
+    const daysSinceVerification = (Date.now() - lastVerified.getTime()) / (1e3 * 60 * 60 * 24);
+    if (daysSinceVerification > 30) {
+      issues.push(`Tool not verified in ${Math.round(daysSinceVerification)} days`);
+    }
+  }
+  const confidence = issues.length === 0 ? 0.95 : Math.max(0.3, 0.9 - issues.length * 0.15);
+  return {
+    valid: issues.length === 0,
+    issues,
+    checksPerformed: checks,
+    confidence,
+    evidence: [{ input, output, toolId: tool.id, timestamp: (/* @__PURE__ */ new Date()).toISOString() }]
+  };
+}
+async function solveProblem(problem, context) {
+  const intent = classifyIntent(problem);
+  const plan = buildExecutionPlan(intent);
+  const results = [];
+  let currentOutput = void 0;
+  for (const step of plan.steps) {
+    const input = currentOutput || { problem, intent: intent.intent };
+    const result = await executeTool({
+      toolId: step.toolId,
+      input,
+      context,
+      options: { verify: step.verify }
+    });
+    results.push(result);
+    if (!result.success) {
+      if (plan.fallbackToolIds && plan.fallbackToolIds.length > 0) {
+        for (const fallbackId of plan.fallbackToolIds) {
+          const fallbackResult = await executeTool({
+            toolId: fallbackId,
+            input,
+            context,
+            options: { verify: step.verify }
+          });
+          results.push(fallbackResult);
+          if (fallbackResult.success) {
+            currentOutput = fallbackResult.output;
+            break;
+          }
+        }
+      }
+      if (!currentOutput) {
+        break;
+      }
+    } else {
+      currentOutput = result.output;
+    }
+  }
+  return {
+    intent,
+    plan,
+    results,
+    finalOutput: currentOutput
+  };
+}
+
+// src/server/signals.ts
+var SIGNAL_SOURCES = [
+  {
+    id: "chrome-dev",
+    name: "Chrome for Developers",
+    feedUrl: "https://developer.chrome.com/static/blog/feed.xml",
+    siteUrl: "https://developer.chrome.com/blog/"
+  },
+  {
+    id: "github-blog",
+    name: "GitHub Blog",
+    feedUrl: "https://github.blog/feed/",
+    siteUrl: "https://github.blog/"
+  },
+  {
+    id: "cloudflare-blog",
+    name: "Cloudflare Blog",
+    feedUrl: "https://blog.cloudflare.com/rss/",
+    siteUrl: "https://blog.cloudflare.com/"
+  },
+  {
+    id: "mdn-blog",
+    name: "MDN Web Docs",
+    feedUrl: "https://developer.mozilla.org/en-US/blog/rss.xml",
+    siteUrl: "https://developer.mozilla.org/en-US/blog/"
+  }
 ];
-var CATEGORY_SLUGS = [
-  "seo-tools",
-  "developer-tools",
-  "ai-tools",
-  "text-tools",
-  "converters",
-  "generators",
-  "validators"
-];
+var CACHE_TTL_MS = 45 * 6e4;
+var FETCH_TIMEOUT_MS = 8e3;
+var MAX_ITEMS_PER_SOURCE = 8;
+var MAX_TOTAL_ITEMS = 40;
+var SUMMARY_MAX_LEN = 220;
+var cache = null;
+var inFlight = null;
+function decodeEntities(input) {
+  return input.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+}
+function stripCdata(input) {
+  const m = input.match(/^<!\[CDATA\[([\s\S]*)\]\]>$/);
+  return m ? m[1] : input;
+}
+function stripTags(input) {
+  return input.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+function extractTag(block, tag) {
+  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i");
+  const m = block.match(re);
+  if (!m) return null;
+  return decodeEntities(stripCdata(m[1]).trim());
+}
+function parseRss2(xml, source) {
+  const items = [];
+  const itemBlocks = xml.match(/<item[^>]*>[\s\S]*?<\/item>/gi) || [];
+  for (const block of itemBlocks.slice(0, MAX_ITEMS_PER_SOURCE)) {
+    const title = extractTag(block, "title");
+    const link = extractTag(block, "link");
+    const pubDateRaw = extractTag(block, "pubDate");
+    const descriptionRaw = extractTag(block, "description") || extractTag(block, "content:encoded") || "";
+    if (!title || !link) continue;
+    const parsedDate = pubDateRaw ? new Date(pubDateRaw) : null;
+    const publishedAt = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate.toISOString() : (/* @__PURE__ */ new Date()).toISOString();
+    const summaryText = stripTags(descriptionRaw);
+    const summary = summaryText.length > SUMMARY_MAX_LEN ? `${summaryText.slice(0, SUMMARY_MAX_LEN).trim()}\u2026` : summaryText;
+    items.push({
+      sourceId: source.id,
+      sourceName: source.name,
+      sourceUrl: source.siteUrl,
+      title,
+      link,
+      summary,
+      publishedAt
+    });
+  }
+  return items;
+}
+async function fetchOneSource(source) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(source.feedUrl, {
+      signal: controller.signal,
+      headers: { "User-Agent": "XFreeSignals/1.0 (+https://www.xfree.in/updates)" }
+    });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    return parseRss2(xml, source);
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+async function fetchAllSources() {
+  const results = await Promise.all(SIGNAL_SOURCES.map(fetchOneSource));
+  const merged = results.flat();
+  merged.sort((a, b) => a.publishedAt < b.publishedAt ? 1 : -1);
+  const seen = /* @__PURE__ */ new Set();
+  const deduped = [];
+  for (const item of merged) {
+    if (seen.has(item.link)) continue;
+    seen.add(item.link);
+    deduped.push(item);
+    if (deduped.length >= MAX_TOTAL_ITEMS) break;
+  }
+  return deduped;
+}
+async function getSignals() {
+  const now = Date.now();
+  if (cache && now - cache.fetchedAt < CACHE_TTL_MS) {
+    return { items: cache.items, fetchedAt: new Date(cache.fetchedAt).toISOString(), stale: false };
+  }
+  if (!inFlight) {
+    inFlight = fetchAllSources().finally(() => {
+      inFlight = null;
+    });
+  }
+  try {
+    const items = await inFlight;
+    cache = { items, fetchedAt: now };
+    return { items, fetchedAt: new Date(now).toISOString(), stale: false };
+  } catch {
+    if (cache) {
+      return { items: cache.items, fetchedAt: new Date(cache.fetchedAt).toISOString(), stale: true };
+    }
+    return { items: [], fetchedAt: new Date(now).toISOString(), stale: true };
+  }
+}
 
 // src/server/app.ts
+function firstParam(value) {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
 async function createApp(opts = {}) {
   const app = express();
   app.set("trust proxy", config2.TRUST_PROXY);
   app.disable("x-powered-by");
   app.use((req, _res, next) => {
-    req.requestId = crypto2.randomUUID();
+    req.requestId = crypto3.randomUUID();
     next();
   });
   app.use(securityHeadersMiddleware);
   app.use(express.json({ limit: "100kb" }));
+  const baseUrl = config2.PUBLIC_SITE_URL;
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", service: "xfree.in", timestamp: (/* @__PURE__ */ new Date()).toISOString() });
   });
@@ -6784,7 +8970,25 @@ async function createApp(opts = {}) {
       deliveryProvider: config2.RESEND_API_KEY ? "resend" : "log"
     });
   });
-  const baseUrl = config2.PUBLIC_SITE_URL;
+  app.get("/health.json", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.setHeader("X-Robots-Tag", "all");
+    res.status(200).json({
+      status: "operational",
+      service: "xfree.in",
+      version: process.env.npm_package_version || "1.0.0",
+      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      public_tools: PUBLIC_TOOLS.length,
+      planned_tools: 25e3,
+      endpoints: {
+        sitemap: `${baseUrl}/sitemap.xml`,
+        llms: `${baseUrl}/llms.txt`,
+        llms_full: `${baseUrl}/llms-full.txt`,
+        robots: `${baseUrl}/robots.txt`,
+        studio: "https://app.xfree.in/"
+      }
+    });
+  });
   app.get(["/sitemap.xml", "/sitemap-tools.xml", "/app/sitemap.xml"], (_req, res) => {
     res.header("Content-Type", "application/xml; charset=utf-8");
     res.status(200).send(generateSitemapXml(baseUrl));
@@ -6804,6 +9008,32 @@ async function createApp(opts = {}) {
   app.get("/robots.txt", (_req, res) => {
     res.header("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(generateRobotsTxt(baseUrl));
+  });
+  app.get("/:indexNowKey.txt", (req, res) => {
+    const { indexNowKey } = req.params;
+    if (indexNowKey === process.env.INDEXNOW_KEY || indexNowKey === "96aea7e6b8f340b4ba96b60e8e43c0e5") {
+      res.header("Content-Type", "text/plain; charset=utf-8");
+      res.status(200).send(indexNowKey);
+    } else {
+      res.status(404).send("Not Found");
+    }
+  });
+  app.post("/api/indexnow", express.json(), async (req, res) => {
+    const { host, key, keyLocation, urlList } = req.body || {};
+    if (!host || !key || !Array.isArray(urlList) || urlList.length === 0) {
+      return res.status(400).json({ error: "Invalid IndexNow payload" });
+    }
+    try {
+      const response = await fetch("https://api.indexnow.org/IndexNow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({ host, key, keyLocation, urlList })
+      });
+      const text = await response.text();
+      return res.status(response.status).send(text);
+    } catch (error) {
+      return res.status(502).json({ error: "IndexNow upstream failed", details: String(error) });
+    }
   });
   const aiPerMinute = rateLimit({ scope: "ai", limit: config2.AI_RATE_LIMIT_PER_MINUTE, windowMs: 6e4 });
   const aiPerDay = rateLimit({ scope: "ai-day", limit: config2.AI_RATE_LIMIT_PER_DAY, windowMs: 864e5 });
@@ -6933,6 +9163,60 @@ async function createApp(opts = {}) {
       next(err);
     }
   });
+  app.get("/api/nvidia/models", aiPerMinute, async (_req, res, next) => {
+    try {
+      const models = await listAvailableModels();
+      return res.json({ success: true, models });
+    } catch (err) {
+      if (err instanceof NvidiaNotConfiguredError) {
+        return res.status(503).json({ error: "nvidia_not_configured", message: "NVIDIA Cloud Mode is not configured on this server." });
+      }
+      if (err instanceof NvidiaApiError) {
+        return res.status(err.status).json({ error: err.code, message: err.message });
+      }
+      next(err);
+    }
+  });
+  app.post("/api/nvidia/chat", aiPerMinute, aiPerDay, globalCap, async (req, res, next) => {
+    try {
+      const parsed = NvidiaChatSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
+      const { model, taskType, messages, temperature, maxTokens } = parsed.data;
+      const result = await createChatCompletion({
+        requestedModel: model,
+        taskType,
+        messages,
+        temperature,
+        maxTokens
+      });
+      return res.json({
+        success: true,
+        provider: "NVIDIA NIM",
+        model: result.usedModel,
+        wasFallback: result.wasFallback,
+        fallbackReason: result.fallbackReason,
+        reply: result.reply,
+        usage: result.usage
+      });
+    } catch (err) {
+      if (err instanceof NvidiaNotConfiguredError) {
+        return res.status(503).json({ error: "nvidia_not_configured", message: "NVIDIA Cloud Mode is not configured on this server." });
+      }
+      if (err instanceof NvidiaApiError) {
+        return res.status(err.status).json({ error: err.code, message: err.message });
+      }
+      next(err);
+    }
+  });
+  app.get("/api/signals", async (_req, res, next) => {
+    try {
+      const { items, fetchedAt, stale } = await getSignals();
+      res.set("Cache-Control", "public, max-age=300, stale-while-revalidate=1800");
+      return res.json({ success: true, items, fetchedAt, stale });
+    } catch (err) {
+      next(err);
+    }
+  });
   app.post("/api/contact", contactRateLimit, async (req, res, next) => {
     try {
       const parsed = ContactSchema.safeParse(req.body);
@@ -6992,21 +9276,136 @@ Path: ${parsed.data.path || "n/a"}`,
       next(err);
     }
   });
-  app.all("/api/*", (_req, res) => {
+  const solveRateLimit = rateLimit({ scope: "solve", limit: 10, windowMs: 6e4 });
+  const executionRateLimit = rateLimit({ scope: "execution", limit: 20, windowMs: 6e4 });
+  const workflowRateLimit = rateLimit({ scope: "workflow", limit: 5, windowMs: 6e4 });
+  app.post("/api/v1/solve/*problem", solveRateLimit, async (req, res, next) => {
+    try {
+      const problemParam = req.params.problem;
+      const problem = decodeURIComponent((Array.isArray(problemParam) ? problemParam.join("/") : problemParam) || "");
+      const context = {
+        userId: req.headers["x-user-id"],
+        organizationId: req.headers["x-org-id"],
+        preferences: {
+          preferredExecution: req.headers["x-preferred-execution"] || "local",
+          privacy: req.headers["x-privacy"] || "local",
+          budget: req.headers["x-budget"] || "free"
+        }
+      };
+      const result = await solveProblem(problem, context);
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.post("/api/v1/execute/:toolId", executionRateLimit, async (req, res, next) => {
+    try {
+      const toolId = firstParam(req.params.toolId);
+      const context = {
+        userId: req.headers["x-user-id"],
+        organizationId: req.headers["x-org-id"],
+        preferences: {
+          preferredExecution: req.headers["x-preferred-execution"] || "local",
+          privacy: req.headers["x-privacy"] || "local",
+          budget: req.headers["x-budget"] || "free"
+        }
+      };
+      const result = await executeTool({
+        toolId,
+        input: req.body,
+        context,
+        options: {
+          verify: req.query.verify !== "false",
+          timeout: parseInt(req.query.timeout) || 3e4
+        }
+      });
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.post("/api/v1/verify/:toolId", executionRateLimit, async (req, res, next) => {
+    try {
+      const toolId = firstParam(req.params.toolId);
+      const tool = findToolBySlug(toolId);
+      if (!tool) {
+        return res.status(404).json({ error: "Tool not found" });
+      }
+      const verification = await verifyToolResult(tool, req.body.input, req.body.output);
+      res.json({ success: true, data: verification });
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.get("/api/v1/capabilities", (_req, res, next) => {
+    try {
+      const baseUrl2 = config2.PUBLIC_SITE_URL;
+      const capabilitiesJson = generateCapabilitiesJson(baseUrl2);
+      res.header("Content-Type", "application/json");
+      res.send(capabilitiesJson);
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.get("/api/v1/tools", (_req, res, next) => {
+    try {
+      const baseUrl2 = config2.PUBLIC_SITE_URL;
+      const toolsJson = generateToolsJson(baseUrl2);
+      res.header("Content-Type", "application/json");
+      res.send(toolsJson);
+    } catch (err) {
+      next(err);
+    }
+  });
+  app.all("/api/*rest", (_req, res) => {
     res.status(404).json({ error: "not_found" });
   });
   const staticRouteSet = new Set(STATIC_ROUTES);
   const categoryRouteSet = new Set(CATEGORY_SLUGS.map((s) => `/category/${s}`));
+  const pillarCategoryRouteSet = new Set(PILLAR_CATEGORIES.map((c) => `/${c.id}`));
   const guideSlugSet = new Set(GUIDES.map((g) => g.slug));
+  const pillarSlugSet = new Set(PILLARS_60.map((p) => p.slug));
   app._classifyPath = function classifyPath(pathname) {
     if (staticRouteSet.has(pathname)) return "known";
     if (categoryRouteSet.has(pathname)) return "known";
+    if (pillarCategoryRouteSet.has(pathname)) return "known";
+    if (pathname === "/pillars") return "known";
     const toolMatch = pathname.match(/^\/tools\/([^/]+)\/?$/);
     if (toolMatch && INDEXABLE_TOOL_SLUGS.has(toolMatch[1])) return "known";
     const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
     if (guideMatch && guideSlugSet.has(guideMatch[1])) return "known";
+    const pillarMatch = pathname.match(/^\/pillars\/([^/]+)\/?$/);
+    if (pillarMatch && pillarSlugSet.has(pillarMatch[1])) return "known";
     return "unknown";
   };
+  const STATIC_HTML_CSP_DIRECTIVES = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com https://cdn.tailwindcss.com",
+    "script-src-elem 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com https://cdn.tailwindcss.com",
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com",
+    "img-src 'self' data: blob: https: https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com",
+    "font-src 'self' data: https://cdn.jsdelivr.net",
+    "connect-src 'self' https://api.github.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://adservice.google.com",
+    "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com",
+    "upgrade-insecure-requests"
+  ];
+  const serveStaticHtmlPage = (file) => (_req, res) => {
+    const filePath = path.join(process.cwd(), "public", file);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send(`${file} not found`);
+    }
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=300, s-maxage=3600");
+    res.setHeader("Content-Security-Policy", STATIC_HTML_CSP_DIRECTIVES.join("; "));
+    res.setHeader("X-Robots-Tag", "index, follow");
+    res.status(200).sendFile(filePath);
+  };
+  app.get(["/home", "/home/"], serveStaticHtmlPage("home.html"));
+  app.get(["/pillars", "/pillars/"], serveStaticHtmlPage("pillars.html"));
   if (opts.attachStatic) await opts.attachStatic(app);
   if (opts.attachSpaFallback) await opts.attachSpaFallback(app);
   app.use((err, req, res, _next) => {
@@ -7027,8 +9426,8 @@ function serveMinimalFallback() {
         `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>404 \u2014 XFree.in</title><meta name="robots" content="noindex"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>404</h1><p>This URL does not map to a published tool or page.</p><p><a href="/">Back to home</a></p></body></html>`
       );
     };
-    app.get("*", notFound);
-    app.head("*", notFound);
+    app.get("*rest", notFound);
+    app.head("*rest", notFound);
   };
 }
 

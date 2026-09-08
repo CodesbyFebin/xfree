@@ -356,79 +356,132 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 .nim-model-tag{font-size:10px;color:var(--text-muted);background:var(--bg-elevated);padding:2px 6px;border-radius:4px}
 
 /* ═══════════════════════════════════════════════════════
-   AI ASSISTANT VIEW
+   AI ASSISTANT VIEW — self-contained black/neon-green "X" HUD
+   aesthetic (own tokens below), deliberately distinct from the
+   rest of the app's indigo theme per the user's reference design.
+   All interactivity underneath is wired to the SAME real pipeline
+   as the main command bar (see the JS section) — only the visual
+   layer and state-machine styling come from the reference.
    ═══════════════════════════════════════════════════════ */
-.assistant-view{position:fixed;inset:0;z-index:40;background:var(--bg-deep);display:none;flex-direction:column;overflow:hidden}
+.assistant-view{
+  --ag:#00ff41;--ag2:#66ff88;--ag-dim:rgba(0,255,65,.14);--ag-mid:rgba(0,255,65,.32);
+  --a-bg:#000;--a-surface:rgba(4,16,7,.88);--a-line:rgba(0,255,65,.24);--a-line2:rgba(0,255,65,.42);
+  --a-text:#eef8ef;--a-muted:#82947f;
+  position:fixed;inset:0;z-index:40;background:var(--a-bg);display:none;flex-direction:column;overflow:hidden;
+  font-family:'Rajdhani',Inter,system-ui,sans-serif;color:var(--a-text);
+}
 .assistant-view.open{display:flex}
-.assistant-header{flex-shrink:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--glass-border);background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.assistant-header-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
-.assistant-header-title .dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+.assistant-view:before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 20%,rgba(0,255,65,.07),transparent 32%),
+    linear-gradient(rgba(0,255,65,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,65,.02) 1px,transparent 1px);
+  background-size:auto,42px 42px,42px 42px}
+.assistant-header{position:relative;z-index:2;flex-shrink:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--a-line)}
+.assistant-header-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--ag)}
+.assistant-header-title .dot{width:6px;height:6px;border-radius:50%;background:var(--ag);box-shadow:0 0 8px var(--ag);animation:pulse 2s infinite}
 
-.jarvis-panel{position:absolute;top:64px;right:14px;z-index:2;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:10px;font-family:'SF Mono',monospace;min-width:150px;box-shadow:var(--shadow)}
-.jarvis-panel-title{color:var(--accent);font-weight:700;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
-.jarvis-panel-title .dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
-.jarvis-stage{display:flex;align-items:center;gap:6px;padding:2px 0;color:var(--text-muted)}
-.jarvis-stage .ring{width:6px;height:6px;border-radius:50%;border:1.5px solid var(--text-muted);flex-shrink:0}
-.jarvis-stage.done{color:var(--text-secondary)}
-.jarvis-stage.done .ring{background:var(--success);border-color:var(--success)}
-.jarvis-stage.active{color:var(--accent);font-weight:600}
-.jarvis-stage.active .ring{background:var(--accent);border-color:var(--accent);animation:pulse 1s infinite}
+.jarvis-panel{position:absolute;top:64px;right:14px;z-index:2;background:var(--a-surface);border:1px solid var(--a-line);border-radius:14px;padding:10px 14px;font-size:10px;font-family:'Orbitron',monospace;min-width:150px;box-shadow:0 0 20px rgba(0,255,65,.08)}
+.jarvis-panel-title{color:var(--ag);font-weight:700;letter-spacing:.1em;margin-bottom:8px;display:flex;align-items:center;gap:5px;font-size:10px}
+.jarvis-panel-title .dot{width:6px;height:6px;border-radius:50%;background:var(--ag)}
+.jarvis-stage{display:flex;align-items:center;gap:6px;padding:2.5px 0;color:var(--a-muted);font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:.03em}
+.jarvis-stage .ring{width:6px;height:6px;border-radius:50%;border:1.5px solid var(--a-muted);flex-shrink:0}
+.jarvis-stage.done{color:var(--a-text)}
+.jarvis-stage.done .ring{background:var(--ag);border-color:var(--ag)}
+.jarvis-stage.active{color:var(--ag);font-weight:700}
+.jarvis-stage.active .ring{background:var(--ag);border-color:var(--ag);box-shadow:0 0 8px var(--ag);animation:pulse 1s infinite}
 
-.assistant-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:20px 16px 8px;position:relative}
-.assistant-orb-wrap{position:relative;width:220px;height:220px;margin:8px auto 6px;flex-shrink:0}
-.assistant-orb-ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--border);opacity:.5}
-.assistant-orb-ring.r2{inset:14px;border-color:rgba(99,102,241,.2);animation:orbSpin 12s linear infinite}
-.assistant-orb-ring.r3{inset:28px;border-color:rgba(16,185,129,.15);animation:orbSpin 18s linear infinite reverse}
+.assistant-body{position:relative;z-index:1;flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:16px 16px 8px;text-align:center}
+
+/* HUD */
+.assistant-hud{position:relative;width:270px;height:270px;margin:4px auto 2px;flex-shrink:0}
+.a-ring{position:absolute;border-radius:50%;pointer-events:none}
+.a-ring.r1{inset:5px;border:1px solid rgba(0,255,65,.14)}
+.a-ring.r2{inset:24px;border:1px dashed rgba(0,255,65,.25);animation:orbSpin 20s linear infinite}
+.a-ring.r3{inset:46px;border:1px solid rgba(0,255,65,.35);animation:orbSpin 13s linear infinite reverse}
 @keyframes orbSpin{to{transform:rotate(360deg)}}
-.assistant-orb{position:absolute;inset:60px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 20px rgba(16,185,129,.35))}
-.assistant-orb svg{width:100%;height:100%;transition:transform .3s ease}
-.assistant-view.listening .assistant-orb svg{transform:scale(1.08)}
-.assistant-view.listening .assistant-orb-ring.r2{animation-duration:4s}
+.a-arc{position:absolute;border-radius:50%;border:3px solid transparent}
+.a-arc.a1{inset:62px;border-top-color:var(--ag);border-right-color:var(--ag);filter:drop-shadow(0 0 8px var(--ag));animation:orbSpin 4s linear infinite}
+.a-arc.a2{inset:76px;border:2px solid transparent;border-bottom-color:var(--ag2);border-left-color:var(--ag2);animation:orbSpin 5.5s linear infinite reverse}
+.a-energy{position:absolute;inset:90px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,65,.13),transparent 66%);pointer-events:none}
+.a-x-core{position:relative;z-index:5;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;padding:0;cursor:pointer}
+.a-x-mark{font-family:'Orbitron',sans-serif;font-weight:900;font-size:112px;line-height:.8;color:var(--ag);letter-spacing:-.06em;
+  text-shadow:0 0 18px rgba(0,255,65,.65),0 0 48px rgba(0,255,65,.24);transition:transform .25s ease,filter .25s ease}
+.a-core-eye{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--ag);box-shadow:0 0 14px var(--ag),0 0 36px rgba(0,255,65,.7);border:5px solid #001905}
+.a-hud-label{position:absolute;left:50%;transform:translateX(-50%);font:600 9px 'Orbitron',sans-serif;letter-spacing:.24em;color:var(--ag);white-space:nowrap;text-shadow:0 0 8px rgba(0,255,65,.4)}
+.a-hud-label.top{top:2px}.a-hud-label.bottom{bottom:2px;opacity:.85}
 
-.assistant-status-line{font-size:11px;font-family:'SF Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);text-align:center;margin-bottom:14px}
-.assistant-status-line .accent{color:var(--accent)}
+.assistant-hud[data-jstate="idle"] .a-x-mark{animation:xBreathe 2.7s ease-in-out infinite}
+.assistant-hud[data-jstate="listening"] .a-x-mark{transform:scale(1.08);filter:brightness(1.35)}
+.assistant-hud[data-jstate="listening"] .a-core-eye{animation:eyePulse .85s ease-in-out infinite}
+.assistant-hud[data-jstate="thinking"] .a-ring.r2{animation-duration:3s}
+.assistant-hud[data-jstate="thinking"] .a-ring.r3{animation-duration:2.1s}
+.assistant-hud[data-jstate="thinking"] .a-x-mark{filter:brightness(1.4)}
+.assistant-hud[data-jstate="working"] .a-x-mark{animation:xWork .7s ease-in-out infinite}
+.assistant-hud[data-jstate="complete"] .a-x-mark{animation:xComplete .7s ease-out 1}
+@keyframes xBreathe{50%{transform:scale(1.025);filter:brightness(1.08)}}
+@keyframes eyePulse{50%{transform:scale(1.35);box-shadow:0 0 22px var(--ag),0 0 48px var(--ag)}}
+@keyframes xWork{50%{transform:scale(1.04);filter:brightness(1.4)}}
+@keyframes xComplete{35%{transform:scale(1.12);filter:brightness(1.8)}}
 
-.assistant-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin:6px 0 16px;font-size:10px;color:var(--text-muted);font-weight:500}
+.a-bubble{position:absolute;z-index:8;max-width:132px;padding:8px 11px;border-radius:14px;background:var(--a-surface);border:1px solid var(--a-line2);
+  box-shadow:0 0 20px rgba(0,255,65,.1);font-size:11px;text-align:left;opacity:.24;transform:scale(.96);transition:.25s;pointer-events:none}
+.a-bubble.active{opacity:1;transform:scale(1)}
+.a-bubble strong{display:block;color:var(--ag);font-size:9px;letter-spacing:.08em;margin-bottom:2px;font-family:'Orbitron',sans-serif}
+.a-b-listen{left:-14px;top:82px}.a-b-think{right:-14px;top:42px}
+.a-b-work{right:-20px;bottom:82px}.a-b-done{right:8px;bottom:24px}
+
+.assistant-greeting{margin-top:-2px}
+.assistant-greeting h2{margin:0;font-size:24px;line-height:1.1;font-weight:700}
+.assistant-greeting h2 span{color:var(--ag);text-shadow:0 0 12px rgba(0,255,65,.4)}
+.assistant-greeting-sub{margin:4px 0 0;color:var(--a-muted);font-size:15px}
+.assistant-status-line{margin-top:8px;font:600 10px 'Orbitron',sans-serif;letter-spacing:.16em;color:var(--ag)}
+
+.assistant-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 13px;margin:8px 0 4px;font-size:10px;color:var(--a-muted);font-weight:600}
 .assistant-badges span{display:flex;align-items:center;gap:4px}
-.assistant-badges svg{color:var(--success)}
+.assistant-badges svg{color:var(--ag)}
 
-.assistant-greeting{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;text-align:center;max-width:340px;margin:0 auto 16px;box-shadow:var(--shadow)}
-.assistant-greeting-title{font-size:16px;font-weight:700;margin-bottom:2px}
-.assistant-greeting-sub{font-size:12px;color:var(--text-secondary)}
-
-.assistant-log{width:100%;max-width:480px;margin:0 auto;flex:1}
+.assistant-log{width:100%;max-width:480px;margin:8px auto 0;flex:0 1 auto;max-height:220px;overflow-y:auto}
 .assistant-log:empty{display:none}
+.assistant-log .msg{max-width:88%;padding:9px 12px;border:1px solid var(--a-line);border-radius:14px;margin:6px 0;line-height:1.4;font-size:13px;text-align:left;background:var(--a-surface)}
+.assistant-log .msg.msg-user{margin-left:auto;background:rgba(0,255,65,.06);border-color:var(--a-line2)}
+.assistant-log .msg .who{font:600 9px 'Orbitron',sans-serif;letter-spacing:.12em;color:var(--ag);margin-bottom:3px}
 
-.assistant-wave{display:flex;align-items:center;justify-content:center;gap:2px;height:28px;margin:6px 0}
-.assistant-wave .bar{width:2.5px;border-radius:2px;background:var(--accent);height:4px;opacity:.35;transition:height .08s ease,opacity .08s ease}
-.assistant-view.listening .assistant-wave .bar{opacity:.9}
+.assistant-wave{display:flex;align-items:center;justify-content:center;gap:2px;height:44px;margin:8px 0;width:100%;max-width:480px}
+.assistant-wave .bar{width:2.5px;min-height:3px;border-radius:3px;background:var(--ag);box-shadow:0 0 4px rgba(0,255,65,.4);height:4px;opacity:.4;transition:height .08s ease,opacity .08s ease}
 
-.assistant-controls{flex-shrink:0;padding:10px 20px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:10px}
-.assistant-mic-row{display:flex;align-items:center;justify-content:center;gap:22px}
-.assistant-side-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
-.assistant-side-btn:hover{border-color:var(--border-hover);color:var(--text-primary)}
-.assistant-side-btn.muted{color:var(--danger);border-color:rgba(239,68,68,.3)}
-.assistant-mic-btn{width:72px;height:72px;border-radius:50%;border:2px solid var(--accent);background:var(--accent-glow);color:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative}
-.assistant-mic-btn:hover{background:rgba(99,102,241,.22)}
-.assistant-mic-btn.live{background:var(--accent);color:#fff;animation:glow 1.4s ease-in-out infinite}
+.assistant-controls{position:relative;z-index:2;flex-shrink:0;padding:8px 20px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:10px}
+.assistant-mic-row{display:flex;align-items:center;justify-content:center;gap:20px}
+.assistant-side-btn{width:48px;height:48px;border-radius:50%;border:1px solid var(--a-line2);background:var(--a-surface);color:var(--ag);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.assistant-side-btn:hover{border-color:var(--ag);box-shadow:0 0 12px var(--ag-dim)}
+.assistant-side-btn.muted{color:#ff5555;border-color:rgba(255,85,85,.35)}
+.assistant-mic-btn{width:74px;height:74px;border-radius:50%;border:1.5px solid var(--a-line2);background:radial-gradient(circle,var(--ag-dim) 0%,var(--a-surface) 70%);color:var(--ag);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;box-shadow:0 0 20px rgba(0,255,65,.15)}
+.assistant-mic-btn:before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(0,255,65,.28);opacity:.4}
+.assistant-mic-btn.live{background:radial-gradient(circle,var(--ag-mid) 0%,var(--a-surface) 70%);box-shadow:0 0 30px rgba(0,255,65,.45)}
+.assistant-mic-btn.live:before{animation:micWave 1.2s ease-out infinite}
+@keyframes micWave{to{transform:scale(1.25);opacity:0}}
 .assistant-mic-btn:disabled{opacity:.35;cursor:not-allowed}
-.assistant-hint{font-size:11px;color:var(--text-muted);text-align:center}
-.assistant-hint .accent{color:var(--success);font-weight:600}
+.assistant-hint{font-size:12px;color:var(--a-muted);text-align:center}
+.assistant-hint .accent{color:var(--ag);font-weight:700}
 
-.assistant-suggestions{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:520px;margin:0 auto 8px}
+.assistant-suggestions{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:520px;margin:2px auto 8px}
+.assistant-suggestions .suggestion-chip{background:var(--a-surface);border:1px solid var(--a-line);color:var(--a-text)}
+.assistant-suggestions .suggestion-chip:hover{border-color:var(--ag);color:var(--ag);background:var(--ag-dim);box-shadow:0 0 14px rgba(0,255,65,.12)}
 
-.assistant-inputbar{width:100%;max-width:520px;margin:6px auto 0;display:flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:6px 6px 6px 14px}
-.assistant-inputbar input{flex:1;background:transparent;border:none;outline:none;color:var(--text-primary);font-size:13px;font-family:inherit}
-.assistant-inputbar input::placeholder{color:var(--text-muted)}
-.assistant-inputbar button{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.assistant-inputbar button:hover{background:var(--accent-hover)}
+.assistant-inputbar{width:100%;max-width:520px;margin:4px auto 0;display:flex;align-items:center;gap:8px;background:var(--a-surface);border:1px solid var(--a-line2);border-radius:16px;padding:7px 7px 7px 14px;box-shadow:0 0 20px rgba(0,255,65,.08)}
+.assistant-inputbar input{flex:1;background:transparent;border:none;outline:none;color:var(--a-text);font-size:15px;font-family:'Rajdhani',sans-serif}
+.assistant-inputbar input::placeholder{color:var(--a-muted)}
+.assistant-inputbar button{width:38px;height:38px;border-radius:11px;background:var(--ag);color:#001906;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800}
+.assistant-inputbar button:hover{background:var(--ag2)}
 
-.assistant-voice-unsupported{font-size:10px;color:var(--warning);text-align:center;margin-top:2px}
+.assistant-voice-unsupported{font-size:10px;color:#ffcc44;text-align:center;margin-top:2px}
 
 @media(max-width:520px){
   .jarvis-panel{display:none}
-  .assistant-orb-wrap{width:180px;height:180px}
+  .assistant-hud{width:230px;height:230px}
+  .a-x-mark{font-size:96px}
+  .a-arc.a1{inset:52px}.a-arc.a2{inset:64px}
+  .a-b-listen{left:-6px}.a-b-think{right:-6px}.a-b-work{right:-10px}
 }
+@media(prefers-reduced-motion:reduce){.assistant-view *,.assistant-view *:before,.assistant-view *:after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -723,16 +776,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
   </div>
 
   <div class="assistant-body" id="assistantBody">
-    <div class="assistant-orb-wrap">
-      <div class="assistant-orb-ring"></div>
-      <div class="assistant-orb-ring r2"></div>
-      <div class="assistant-orb-ring r3"></div>
-      <div class="assistant-orb">
-        <svg viewBox="0 0 100 100" fill="none">
-          <path d="M50 8 L58 42 L92 50 L58 58 L50 92 L42 58 L8 50 L42 42 Z" fill="url(#xg1)" stroke="var(--accent)" stroke-width="1" stroke-opacity=".5"/>
-          <defs><linearGradient id="xg1" x1="0" y1="0" x2="100" y2="100"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs>
-        </svg>
-      </div>
+    <div class="assistant-hud" id="assistantHud" data-jstate="idle">
+      <div class="a-hud-label top">X · YOUR AI ASSISTANT</div>
+      <div class="a-ring r1"></div><div class="a-ring r2"></div><div class="a-ring r3"></div>
+      <div class="a-arc a1"></div><div class="a-arc a2"></div><div class="a-energy"></div>
+      <button class="a-x-core" onclick="toggleAssistantMic()" title="Tap to speak" aria-label="Talk to X">
+        <span class="a-x-mark">X</span><span class="a-core-eye"></span>
+      </button>
+      <div class="a-bubble a-b-listen" id="aBubbleListen"><strong>LISTENING</strong>I'm listening…</div>
+      <div class="a-bubble a-b-think" id="aBubbleThink"><strong>THINKING</strong>Understanding…</div>
+      <div class="a-bubble a-b-work" id="aBubbleWork"><strong>WORKING</strong>Doing it now…</div>
+      <div class="a-bubble a-b-done" id="aBubbleDone"><strong>DONE</strong>Here you go ✦</div>
+      <div class="a-hud-label bottom">LISTENING · THINKING · DOING</div>
     </div>
 
     <div class="assistant-wave" id="assistantWave"></div>
@@ -1863,6 +1918,7 @@ function openAssistant() {
   buildWaveBars();
   closeModal();
   syncAssistantModeBadge();
+  if (!AS.waveRaf) animateAssistantWave();
   setTimeout(() => $('assistantInput')?.focus(), 250);
   // Voice input needs Chrome/Edge's SpeechRecognition - feature-detect
   // rather than assume, and fall back to text-only everywhere else.
@@ -1878,24 +1934,40 @@ function closeAssistant() {
   AS.open = false;
   $('assistantView').classList.remove('open');
   stopAssistantMic();
+  if (AS.waveRaf) { cancelAnimationFrame(AS.waveRaf); AS.waveRaf = null; }
 }
 
 function focusAssistantInput() {
   $('assistantInput')?.focus();
 }
 
+// Maps the 5 real pipeline stages to the HUD's 4 visual states (idle is
+// the HUD's own resting state, not part of the pipeline) and to which of
+// the 4 corner speech bubbles lights up - both driven by the same real
+// setJarvisStage() calls in runAssistantCommand(), not decoration.
+const JARVIS_STAGES = ['listening', 'understanding', 'planning', 'executing', 'complete'];
+const JARVIS_HUD_STATE = { listening: 'listening', understanding: 'thinking', planning: 'thinking', executing: 'working', complete: 'complete' };
+const JARVIS_BUBBLE = { listening: 'aBubbleListen', understanding: 'aBubbleThink', planning: 'aBubbleThink', executing: 'aBubbleWork', complete: 'aBubbleDone' };
+
 function setJarvisStage(stage) {
-  const stages = ['listening', 'understanding', 'planning', 'executing', 'complete'];
-  const idx = stages.indexOf(stage);
+  const idx = JARVIS_STAGES.indexOf(stage);
   $$('.jarvis-stage').forEach((el) => {
-    const elIdx = stages.indexOf(el.dataset.stage);
+    const elIdx = JARVIS_STAGES.indexOf(el.dataset.stage);
     el.classList.toggle('done', idx >= 0 && elIdx < idx);
     el.classList.toggle('active', elIdx === idx);
   });
+  const hud = $('assistantHud');
+  if (hud) hud.dataset.jstate = JARVIS_HUD_STATE[stage] || 'idle';
+  $$('.a-bubble').forEach((b) => b.classList.remove('active'));
+  const bubbleId = JARVIS_BUBBLE[stage];
+  if (bubbleId) $(bubbleId)?.classList.add('active');
 }
 
 function resetJarvisStages() {
   $$('.jarvis-stage').forEach((el) => el.classList.remove('done', 'active'));
+  const hud = $('assistantHud');
+  if (hud) hud.dataset.jstate = 'idle';
+  $$('.a-bubble').forEach((b) => b.classList.remove('active'));
 }
 
 function addAssistantMsg(role, text) {
@@ -2070,8 +2142,10 @@ function stopAssistantMic() {
   stopWaveMeter();
 }
 
-// Drives the waveform bars from the visitor's real mic input level
-// while listening (getUserMedia + AnalyserNode) - not a canned animation.
+// Acquires the visitor's real mic stream (getUserMedia + AnalyserNode)
+// while listening - the continuous animateAssistantWave() loop below
+// reads AS.analyser directly rather than running its own tick, so real
+// audio levels and the synthetic per-state motion share one rAF loop.
 async function startWaveMeter() {
   try {
     AS.micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -2080,30 +2154,48 @@ async function startWaveMeter() {
     AS.analyser = AS.audioCtx.createAnalyser();
     AS.analyser.fftSize = 64;
     source.connect(AS.analyser);
-    const data = new Uint8Array(AS.analyser.frequencyBinCount);
-    const bars = $$('#assistantWave .bar');
-    const tick = () => {
-      if (!AS.listening) return;
-      AS.analyser.getByteFrequencyData(data);
-      bars.forEach((bar, i) => {
-        const v = data[i % data.length] / 255;
-        bar.style.height = `${4 + v * 24}px`;
-      });
-      AS.waveRaf = requestAnimationFrame(tick);
-    };
-    tick();
   } catch (e) {
     // Mic permission denied or unavailable - recognition can still work
-    // without the live waveform, so this fails silently into a static bar.
+    // without the live waveform, so this fails silently into synthetic motion.
   }
 }
 
 function stopWaveMeter() {
-  if (AS.waveRaf) cancelAnimationFrame(AS.waveRaf);
-  AS.waveRaf = null;
   if (AS.micStream) { AS.micStream.getTracks().forEach((t) => t.stop()); AS.micStream = null; }
   if (AS.audioCtx) { AS.audioCtx.close().catch(() => {}); AS.audioCtx = null; }
-  $$('#assistantWave .bar').forEach((bar) => { bar.style.height = '4px'; });
+  AS.analyser = null;
+}
+
+// One continuous animation loop for the whole time the assistant view is
+// open: real mic-frequency data while actually listening, an organic
+// sine-driven motion (matching each JARVIS stage's pace) otherwise. Only
+// the "listening" bars represent real audio - the rest is honest visual
+// feedback for a state that has no audio signal to draw from.
+function animateAssistantWave() {
+  if (!AS.open) { AS.waveRaf = null; return; }
+  const bars = $$('#assistantWave .bar');
+  const jstate = $('assistantHud')?.dataset.jstate || 'idle';
+  if (AS.listening && AS.analyser) {
+    const data = new Uint8Array(AS.analyser.frequencyBinCount);
+    AS.analyser.getByteFrequencyData(data);
+    bars.forEach((bar, i) => {
+      const v = data[i % data.length] / 255;
+      bar.style.height = `${4 + v * 34}px`;
+      bar.style.opacity = 0.5 + v * 0.5;
+    });
+  } else {
+    const t = Date.now() / 180;
+    bars.forEach((bar, i) => {
+      let h = 3;
+      if (jstate === 'thinking') h = 5 + Math.abs(Math.sin(t + i * 0.27)) * 22;
+      else if (jstate === 'working') h = 6 + Math.abs(Math.sin(t * 1.6 + i * 0.45)) * 28;
+      else if (jstate === 'complete') h = 8 + Math.abs(Math.sin(t + i * 0.25)) * 12;
+      else h = 3 + Math.abs(Math.sin(t * 0.35 + i * 0.18)) * 5;
+      bar.style.height = `${Math.max(3, h)}px`;
+      bar.style.opacity = jstate === 'idle' ? 0.35 : 0.85;
+    });
+  }
+  AS.waveRaf = requestAnimationFrame(animateAssistantWave);
 }
 
 // Keep the assistant's mode badge in sync with the app-wide Local/Cloud

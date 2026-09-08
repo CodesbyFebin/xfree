@@ -392,9 +392,15 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     const executionRateLimit = rateLimit({ scope: "execution", limit: 20, windowMs: 60_000 });
     const workflowRateLimit = rateLimit({ scope: "workflow", limit: 5, windowMs: 60_000 });
 
-    app.post("/api/v1/solve/:problem*", solveRateLimit, async (req, res, next) => {
+    // path-to-regexp v8 (bundled with Express 5) dropped the old Express-4
+    // "*"-suffix wildcard modifier (":problem*") in favor of a standalone
+    // named wildcard ("*problem") that captures zero or more trailing
+    // segments as an array - rejoin with "/" before decoding so a
+    // multi-segment problem string round-trips the same as before.
+    app.post("/api/v1/solve/*problem", solveRateLimit, async (req, res, next) => {
       try {
-        const problem = decodeURIComponent(firstParam(req.params.problem) || "");
+        const problemParam = req.params.problem;
+        const problem = decodeURIComponent((Array.isArray(problemParam) ? problemParam.join("/") : problemParam) || "");
         const context = {
           userId: req.headers["x-user-id"] as string,
           organizationId: req.headers["x-org-id"] as string,
@@ -468,7 +474,7 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
       } catch (err) { next(err); }
     });
 
-    app.all("/api/*", (_req, res) => {
+    app.all("/api/*rest", (_req, res) => {
     res.status(404).json({ error: "not_found" });
   });
 
@@ -561,8 +567,8 @@ export function serveMinimalFallback() {
         `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>404 — XFree.in</title><meta name="robots" content="noindex"></head><body style="font-family:system-ui;padding:2rem;text-align:center"><h1>404</h1><p>This URL does not map to a published tool or page.</p><p><a href="/">Back to home</a></p></body></html>`,
       );
     };
-    app.get("*", notFound);
-    app.head("*", notFound);
+    app.get("*rest", notFound);
+    app.head("*rest", notFound);
   };
 }
 
@@ -601,7 +607,7 @@ export function serveStaticFallback(distPath: string) {
       return res.status(404).sendFile(path.join(distPath, "index.html"));
     };
 
-    app.get("*", spaFallback);
-    app.head("*", spaFallback);
+    app.get("*rest", spaFallback);
+    app.head("*rest", spaFallback);
   };
 }
