@@ -58,10 +58,18 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      # base/head are only meaningful for pull_request events (diff
+      # against the PR's base branch). On push events (including pushes
+      # to main itself) base resolving to the same commit as head - e.g.
+      # the old `base: default_branch` pattern, which is main on a push
+      # to main - makes TruffleHog exit with "BASE and HEAD commits are
+      # the same" and fail the whole job. Omitting base/head on
+      # push/schedule runs a full scan instead, which is the actual
+      # correct behavior for those triggers.
       - name: TruffleHog
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
           extra_args: --only-verified
