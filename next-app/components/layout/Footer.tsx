@@ -125,6 +125,11 @@ export function Footer() {
               </h2>
               <ul className="mt-4 space-y-2.5">
                 <li>
+                  <Link href="/updates" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
+                    {t('signals')}
+                  </Link>
+                </li>
+                <li>
                   <Link href="/pillars" className="text-sm text-cyber-muted transition-colors hover:text-cyber-text">
                     {t('pillarHubs')}
                   </Link>

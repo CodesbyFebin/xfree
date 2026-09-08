@@ -55,6 +55,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/roadmap', changeFrequency: 'weekly', priority: 0.4 },
     { path: '/use-cases', changeFrequency: 'monthly', priority: 0.5 },
     { path: '/xfree-app', changeFrequency: 'monthly', priority: 0.4 },
+    { path: '/updates', changeFrequency: 'hourly', priority: 0.6 },
+    { path: '/updates/ai', changeFrequency: 'hourly', priority: 0.5 },
+    { path: '/updates/web-development', changeFrequency: 'hourly', priority: 0.5 },
+    { path: '/updates/open-source', changeFrequency: 'hourly', priority: 0.5 },
+    { path: '/updates/security', changeFrequency: 'hourly', priority: 0.5 },
+    { path: '/updates/browser', changeFrequency: 'hourly', priority: 0.5 },
   ];
   const staticRoutes = staticPaths.flatMap((p) => localizedEntries(p.path, p));
 
