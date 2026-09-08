@@ -20,3 +20,4 @@ reports/tool-audit.json
 # `npm run build:function` from api/_handler.ts. Vercel's build pipeline
 # proved too opinionated to reliably regenerate it during deploy, so we
 # commit the artifact and regenerate before every push that touches src/.
+.vercel

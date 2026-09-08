@@ -6,7 +6,6 @@ const createNextIntlPlugin = require('next-intl/plugin');
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig = {
-  output: 'standalone',
   // Local-only: next-app lives inside the root xfree-platform repo,
   // which has its own package-lock.json - without this, local Turbopack
   // infers the parent directory as the workspace root (picking up that
