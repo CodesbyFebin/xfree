@@ -1,0 +1,11 @@
+/* TEAM */
+Developer: Febin Francis
+GitHub: https://github.com/CodesbyFebin
+Site: https://www.xfree.in
+
+/* SITE */
+Last update: 2026/09/08
+Language: English, Spanish, French, German, Japanese, Hindi, Arabic, Chinese, Tamil, Malayalam
+Standards: HTML5, CSS3, WCAG
+Components: Next.js, TypeScript, Tailwind CSS
+Software: VS Code, Claude Code
