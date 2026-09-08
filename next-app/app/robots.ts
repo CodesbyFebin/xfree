@@ -23,6 +23,16 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: ['/api/'],
       },
+      {
+        userAgent: 'Google-Extended',
+        allow: '/',
+        disallow: ['/api/'],
+      },
+      {
+        userAgent: 'Applebot-Extended',
+        allow: '/',
+        disallow: ['/api/'],
+      },
     ],
     sitemap: 'https://www.xfree.in/sitemap.xml',
     host: 'https://www.xfree.in',
