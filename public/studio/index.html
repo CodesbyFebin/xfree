@@ -1114,7 +1114,13 @@ async function tryNIMFallback(prompt, taskType) {
 // two LLM calls for "generate a UUID"-style requests would just burn
 // the free tier's rate limit for no benefit.
 // ═══════════════════════════════════════════════════════
-async function callGatewayRaw(messages, taskType) {
+// One retry after a short delay - verified live that identical
+// back-to-back calls to this free-tier account intermittently 502
+// (transient upstream/rate-limit flakiness, not a deterministic
+// failure - the same payload succeeds on a later attempt), so a
+// single retry meaningfully improves real success rate without
+// masking a genuine, repeatable failure.
+async function callGatewayRaw(messages, taskType, _isRetry) {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 20000);
@@ -1126,14 +1132,22 @@ async function callGatewayRaw(messages, taskType) {
         model: S.settings.selectedModel && S.settings.selectedModel !== 'auto' ? S.settings.selectedModel : undefined,
         taskType: taskType || 'general',
         messages,
-        maxTokens: 700,
+        // 512, not a higher value - verified live that this free-tier
+        // account's models 400 (and the whole 12-candidate cascade fails)
+        // above roughly this, matching what the single-call path already
+        // used successfully all session.
+        maxTokens: 512,
       }),
     });
     clearTimeout(timeout);
-    if (!res.ok) return { success: false };
+    if (!res.ok) {
+      if (!_isRetry) { await sleep(1200); return callGatewayRaw(messages, taskType, true); }
+      return { success: false };
+    }
     const data = await res.json();
     return { success: true, content: data.reply, model: data.model };
   } catch (e) {
+    if (!_isRetry) { await sleep(1200); return callGatewayRaw(messages, taskType, true); }
     return { success: false };
   }
 }
@@ -1156,6 +1170,7 @@ async function runMultiAgentPipeline(cmd, taskType) {
   if (!draft.success) return { success: false };
 
   addAssistantMsg('assistant', `👥 **Drafter** (${draft.model}) produced a draft. **Reviewer agent** checking it…`);
+  await sleep(600); // brief gap before the 2nd call - reduces back-to-back rate-limit hits on the free tier
   const review = await callGatewayRaw(
     [
       { role: 'system', content: 'You are the Reviewer agent. You are given a user request and a draft response from another agent. Improve correctness, clarity, and completeness. Output ONLY the final improved version - no meta-commentary about what you changed.' },
