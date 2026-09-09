@@ -512,11 +512,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
     </div>
     <div class="header-right">
       <div class="mode-toggle">
-        <button class="mode-btn active-local" id="localBtn" onclick="setMode('local')">
+        <button class="mode-btn" id="localBtn" onclick="setMode('local')">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
           Local
         </button>
-        <button class="mode-btn" id="cloudBtn" onclick="setMode('cloud')">
+        <button class="mode-btn active-cloud" id="cloudBtn" onclick="setMode('cloud')">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
           Cloud
         </button>
@@ -582,10 +582,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
             </div>
           </div>
           <h2 class="empty-title">Welcome to XFree Studio</h2>
-          <p class="empty-desc">Drop a file and tell me what to do. All processing runs locally in your browser — your data never leaves this device.</p>
+          <p class="empty-desc">Drop a file for instant local tools, or just ask a question — AI answers use Cloud Mode by default. Prefer nothing to leave this device? Flip on Strict Local Mode in Settings.</p>
           <div class="privacy-badge">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            Privacy-first · Local processing
+            Local tools · Cloud AI
           </div>
           <div class="suggestion-grid" id="suggestionGrid"></div>
         </div>
@@ -598,9 +598,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
           </button>
           <textarea id="cmdInput" class="cmd-input" rows="1" placeholder="Tell me what to do… (e.g. Convert JSON to CSV)"></textarea>
-          <div class="cmd-mode local" id="cmdMode">
+          <div class="cmd-mode cloud" id="cmdMode">
             <span class="mode-dot" style="width:5px;height:5px;border-radius:50%;background:currentColor"></span>
-            Local
+            Cloud
           </div>
           <button class="cmd-send" id="sendBtn" onclick="handleCommand()">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -863,7 +863,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
     <div class="assistant-badges">
       <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Fast</span>
       <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>Private</span>
-      <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Local</span>
+      <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Local option</span>
       <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>Unlimited</span>
       <span><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>Yours</span>
     </div>
@@ -968,7 +968,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 // ═══════════════════════════════════════════════════════
 const S = {
   files: [], results: [], messages: [], notifications: [], reminders: [],
-  mode: 'local', isProcessing: false, lastResult: null, mobTab: 'chat',
+  mode: 'cloud', isProcessing: false, lastResult: null, mobTab: 'chat',
   settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'auto', mcpUrl: '', sovereignty: 'relaxed' },
   mcp: { connected: false, tools: [], sessionId: null, requestId: 0 },
   nimModels: [
@@ -2031,6 +2031,23 @@ setInterval(() => { if(S.reminders.some(r=>!r.done)) renderReminders(); }, 1000)
 // ═══════════════════════════════════════════════════════
 // MODE TOGGLE
 // ═══════════════════════════════════════════════════════
+// Just the visual sync (button classes + badge), no messaging - shared by
+// setMode() (explicit user click, which also shows the activation message)
+// and init()'s silent default-mode setup (a fresh visitor starting in
+// Cloud shouldn't see a "Cloud Mode activated" toast for a mode they
+// never touched).
+function syncModeUI(mode) {
+  const lb=$('localBtn'), cb=$('cloudBtn');
+  if (mode==='local') {
+    lb.className='mode-btn active-local'; cb.className='mode-btn';
+    $('cmdMode').className='cmd-mode local'; $('cmdMode').innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> Local';
+  } else {
+    cb.className='mode-btn active-cloud'; lb.className='mode-btn';
+    $('cmdMode').className='cmd-mode cloud'; $('cmdMode').innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> Cloud';
+  }
+  syncAssistantModeBadge();
+}
+
 function setMode(mode) {
   // Defense in depth: the Cloud button is disabled by applySovereigntyUI()
   // under Strict Local Mode, but this guard protects any other caller of
@@ -2040,17 +2057,11 @@ function setMode(mode) {
     return;
   }
   S.mode = mode;
-  const lb=$('localBtn'), cb=$('cloudBtn');
-  if (mode==='local') {
-    lb.className='mode-btn active-local'; cb.className='mode-btn';
-    $('cmdMode').className='cmd-mode local'; $('cmdMode').innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> Local';
-  } else {
-    cb.className='mode-btn active-cloud'; lb.className='mode-btn';
-    $('cmdMode').className='cmd-mode cloud'; $('cmdMode').innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> Cloud';
-    addMsg('assistant', '☁️ **Cloud Mode** activated. Commands will attempt NVIDIA NIM, then OpenRouter free models, with automatic fallback to local processing.\n\nYour data is sent only when you explicitly use Cloud Mode.');
+  syncModeUI(mode);
+  if (mode === 'cloud') {
+    addMsg('assistant', '☁️ **Cloud Mode** activated. Commands will attempt NVIDIA NIM, then OpenRouter free models, with automatic fallback to local processing.\n\nWant nothing to ever leave this device? Turn on **Strict Local Mode** in Settings.');
     addNotification('Cloud Mode Active', 'NVIDIA NIM + OpenRouter fallback loop enabled', 'info');
   }
-  syncAssistantModeBadge();
   playClickSound();
 }
 
@@ -2202,6 +2213,14 @@ function init() {
   updateThemeIcon();
   loadAssistantSettings();
   applySovereigntyUI();
+  // Default to Cloud so a fresh visitor gets a real AI answer immediately
+  // (ChatGPT-style - no toggle to find first), unless a previously saved
+  // Strict Local Mode setting says otherwise. S.mode starts as 'cloud' in
+  // the state literal above; this only overrides it, never fires the
+  // click-only activation message, and still syncs the header buttons -
+  // that static HTML doesn't know about a restored strict setting yet.
+  if (S.settings.sovereignty === 'strict') S.mode = 'local';
+  syncModeUI(S.mode);
   if ('speechSynthesis' in window) {
     populateVoiceSelect();
     speechSynthesis.onvoiceschanged = populateVoiceSelect;
@@ -2257,7 +2276,7 @@ function init() {
   
   // Welcome notification after delay
   setTimeout(()=>{
-    addNotification('Welcome to XFree Studio','Drop a file or type a command to begin','info');
+    addNotification('Welcome to XFree Studio', S.mode === 'cloud' ? 'Drop a file or ask anything — Cloud Mode is on by default for AI answers (Strict Local Mode is in Settings)' : 'Drop a file or type a command to begin', 'info');
   }, 2000);
   
   // Periodic reminder to add files if idle
