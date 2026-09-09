@@ -731,7 +731,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
             <option value="auto">Auto (task-routed - recommended)</option>
           </select>
           <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5">
-            "Auto" only ever uses the free NVIDIA and OpenRouter tiers (real NVIDIA catalog discovery + task scoring) - it never spends money. Picking a free model here requests it specifically, with automatic fallback if it's unavailable. Venice and DeepSeek are paid APIs: picking one calls it directly with no fallback, so you'll see a clear error instead if it's unavailable.
+            X's dedicated model is <strong style="color:var(--text-primary)">Kimi K3</strong> (NVIDIA, free, multimodal reasoning) - picking a free model here (including this one) requests it specifically, with automatic fallback to the task-scored free cascade if it's unavailable on this account. "Auto" skips straight to that cascade. Venice and DeepSeek are paid APIs: picking one calls it directly with no fallback, so you'll see a clear error instead if it's unavailable.
           </p>
         </div>
         <div id="nimModelsList"></div>
@@ -969,7 +969,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 const S = {
   files: [], results: [], messages: [], notifications: [], reminders: [],
   mode: 'cloud', isProcessing: false, lastResult: null, mobTab: 'chat',
-  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'auto', mcpUrl: '', sovereignty: 'relaxed' },
+  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'moonshotai/kimi-k3', mcpUrl: '', sovereignty: 'relaxed' },
   mcp: { connected: false, tools: [], sessionId: null, requestId: 0 },
   nimModels: [
     { id: 'meta/llama-3.1-8b-instruct', name: 'Llama 3.1 8B', status: 'checking', provider: 'NVIDIA' },
@@ -977,6 +977,14 @@ const S = {
     { id: 'mistralai/mistral-7b-instruct-v0.3', name: 'Mistral 7B v0.3', status: 'checking', provider: 'NVIDIA' },
     { id: 'microsoft/phi-3-mini-128k-instruct', name: 'Phi-3 Mini', status: 'checking', provider: 'NVIDIA' },
     { id: 'nvidia/llama3-chatqa-1.5-8b', name: 'ChatQA 1.5 8B', status: 'checking', provider: 'NVIDIA' },
+    // X's dedicated model - a real, current NVIDIA NIM catalog entry
+    // (verified live against build.nvidia.com, not just copied from a
+    // pasted snippet): a native multimodal reasoning MoE, so it's the
+    // default for the assistant persona rather than one more auto-cascade
+    // candidate. Still just an id in this list - resolveNvidiaModel/
+    // createChatCompletion already fall back to the ranked free-tier
+    // cascade below if this account's key doesn't have access to it.
+    { id: 'moonshotai/kimi-k3', name: 'Kimi K3', status: 'idle', provider: 'NVIDIA · free, multimodal reasoning' },
     { id: 'nvidia/nemotron-3-super-120b-a12b:free', name: 'Nemotron 3 Super', status: 'checking', provider: 'OpenRouter' },
     { id: 'nvidia/nemotron-3-ultra-550b-a55b:free', name: 'Nemotron 3 Ultra', status: 'checking', provider: 'OpenRouter' },
     { id: 'google/gemma-4-31b-it:free', name: 'Gemma 4 31B', status: 'checking', provider: 'OpenRouter' },
@@ -1081,6 +1089,27 @@ const CLOUD_ERROR_MESSAGES = {
   INVALID_REQUEST: 'That request wasn’t valid',
 };
 
+// Reasoning models spend completion tokens on hidden reasoning before the
+// visible answer, so the 512-token cap already tuned for this account's
+// lighter free-tier models (see callGatewayRaw's comment) would frequently
+// leave X's dedicated model no room left to actually answer. Only raised
+// for that one model - not a blanket bump, since 512 is a verified-live
+// constraint for the rest of the free cascade.
+function maxTokensForModel(model) {
+  return model === 'moonshotai/kimi-k3' ? 2048 : 512;
+}
+
+// The server's own NVIDIA client budgets 45s per model attempt
+// (NVIDIA_REQUEST_TIMEOUT_MS) - a heavy reasoning MoE genuinely needs
+// that long sometimes, and this client-side abort was cutting requests
+// off at 20s regardless, which is where a live test of X's dedicated
+// model actually failed before this was added. Left at 20s for
+// everything else - that budget matches the lighter free-tier models
+// it was tuned against.
+function timeoutMsForModel(model) {
+  return model === 'moonshotai/kimi-k3' ? 45000 : 20000;
+}
+
 function describeRoute(route) {
   if (!route || !Array.isArray(route.attempted) || !route.attempted.length) return '';
   const winner = route.attempted[route.attempted.length - 1];
@@ -1115,7 +1144,7 @@ async function tryNIMFallback(prompt, taskType) {
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    const timeout = setTimeout(() => controller.abort(), timeoutMsForModel(S.settings.selectedModel));
     const res = await fetch('/api/nvidia/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1124,7 +1153,7 @@ async function tryNIMFallback(prompt, taskType) {
         model: S.settings.selectedModel && S.settings.selectedModel !== 'auto' ? S.settings.selectedModel : undefined,
         taskType: taskType || 'general',
         messages: [{ role: 'user', content: prompt }],
-        maxTokens: 512,
+        maxTokens: maxTokensForModel(S.settings.selectedModel),
       }),
     });
     clearTimeout(timeout);
@@ -1171,7 +1200,7 @@ async function tryNIMFallback(prompt, taskType) {
 async function callGatewayRaw(messages, taskType, _isRetry) {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    const timeout = setTimeout(() => controller.abort(), timeoutMsForModel(S.settings.selectedModel));
     const res = await fetch('/api/nvidia/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1180,11 +1209,11 @@ async function callGatewayRaw(messages, taskType, _isRetry) {
         model: S.settings.selectedModel && S.settings.selectedModel !== 'auto' ? S.settings.selectedModel : undefined,
         taskType: taskType || 'general',
         messages,
-        // 512, not a higher value - verified live that this free-tier
+        // 512 for the free-tier cascade models - verified live that this
         // account's models 400 (and the whole 12-candidate cascade fails)
-        // above roughly this, matching what the single-call path already
-        // used successfully all session.
-        maxTokens: 512,
+        // above roughly this. X's dedicated model gets more room; see
+        // maxTokensForModel's comment for why.
+        maxTokens: maxTokensForModel(S.settings.selectedModel),
       }),
     });
     clearTimeout(timeout);
