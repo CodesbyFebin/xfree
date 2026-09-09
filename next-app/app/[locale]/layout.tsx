@@ -212,12 +212,18 @@ export default async function LocaleLayout({
             __html: `try{var t=localStorage.getItem('xfree-theme');if(t==='light')document.documentElement.dataset.theme='light';}catch(e){}`,
           }}
         />
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
-        <meta httpEquiv="Cross-Origin-Opener-Policy" content="same-origin" />
-        <meta httpEquiv="Cross-Origin-Embedder-Policy" content="require-corp" />
-        <meta httpEquiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+        {/* Security headers (CSP, COOP, COEP, Permissions-Policy, nosniff,
+            Referrer-Policy) are set once, authoritatively, via next.config.js's
+            headers() as real HTTP response headers - this used to duplicate
+            them here as <meta httpEquiv> tags too, with a DIFFERENT, looser
+            CSP (allowlisting googlesyndication/jsdelivr/tailwindcss-cdn/
+            api.github.com hosts that were never actually used, and that the
+            real header CSP doesn't allow). Browsers ignore frame-ancestors
+            and X-Frame-Options from a meta tag entirely, and don't support
+            COEP via meta at all, so those specific duplicates were always
+            inert - the CSP/Permissions-Policy/etc ones weren't inert, they
+            were just a second, conflicting, unmaintained copy of the same
+            policy. Removed rather than kept in sync by hand in two places. */}
         <meta name="theme-color" content="#050508" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
