@@ -731,7 +731,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
             <option value="auto">Auto (task-routed - recommended)</option>
           </select>
           <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5">
-            X's dedicated model is <strong style="color:var(--text-primary)">Kimi K3</strong> (NVIDIA, free, multimodal reasoning) - picking a free model here (including this one) requests it specifically, with automatic fallback to the task-scored free cascade if it's unavailable on this account. "Auto" skips straight to that cascade. Venice and DeepSeek are paid APIs: picking one calls it directly with no fallback, so you'll see a clear error instead if it's unavailable.
+            X's dedicated model is <strong style="color:var(--text-primary)">MiniMax M3</strong> (NVIDIA, free, multimodal reasoning) - picking a free model here (including this one) requests it specifically, with automatic fallback to the task-scored free cascade if it's unavailable on this account. Kimi K3 is also available (a larger, slower reasoning model). "Auto" skips straight to the cascade. Venice and DeepSeek are paid APIs: picking one calls it directly with no fallback, so you'll see a clear error instead if it's unavailable.
           </p>
         </div>
         <div id="nimModelsList"></div>
@@ -969,7 +969,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 const S = {
   files: [], results: [], messages: [], notifications: [], reminders: [],
   mode: 'cloud', isProcessing: false, lastResult: null, mobTab: 'chat',
-  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'moonshotai/kimi-k3', mcpUrl: '', sovereignty: 'relaxed' },
+  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'minimaxai/minimax-m3', mcpUrl: '', sovereignty: 'relaxed' },
   mcp: { connected: false, tools: [], sessionId: null, requestId: 0 },
   nimModels: [
     { id: 'meta/llama-3.1-8b-instruct', name: 'Llama 3.1 8B', status: 'checking', provider: 'NVIDIA' },
@@ -979,12 +979,16 @@ const S = {
     { id: 'nvidia/llama3-chatqa-1.5-8b', name: 'ChatQA 1.5 8B', status: 'checking', provider: 'NVIDIA' },
     // X's dedicated model - a real, current NVIDIA NIM catalog entry
     // (verified live against build.nvidia.com, not just copied from a
-    // pasted snippet): a native multimodal reasoning MoE, so it's the
-    // default for the assistant persona rather than one more auto-cascade
-    // candidate. Still just an id in this list - resolveNvidiaModel/
+    // pasted snippet): a multimodal reasoning MoE with a much smaller
+    // active-parameter count (22B active of 428B total) than Kimi K3
+    // below (104B active of 2.8T total), so it's the default for the
+    // assistant persona - Kimi K3 genuinely didn't finish within a 45s
+    // client timeout in testing, which a lighter active-param count
+    // should avoid. Still just an id in this list - resolveNvidiaModel/
     // createChatCompletion already fall back to the ranked free-tier
     // cascade below if this account's key doesn't have access to it.
-    { id: 'moonshotai/kimi-k3', name: 'Kimi K3', status: 'idle', provider: 'NVIDIA · free, multimodal reasoning' },
+    { id: 'minimaxai/minimax-m3', name: 'MiniMax M3', status: 'idle', provider: 'NVIDIA · free, multimodal reasoning' },
+    { id: 'moonshotai/kimi-k3', name: 'Kimi K3', status: 'idle', provider: 'NVIDIA · free, multimodal reasoning (heavier, slower)' },
     { id: 'nvidia/nemotron-3-super-120b-a12b:free', name: 'Nemotron 3 Super', status: 'checking', provider: 'OpenRouter' },
     { id: 'nvidia/nemotron-3-ultra-550b-a55b:free', name: 'Nemotron 3 Ultra', status: 'checking', provider: 'OpenRouter' },
     { id: 'google/gemma-4-31b-it:free', name: 'Gemma 4 31B', status: 'checking', provider: 'OpenRouter' },
@@ -1092,22 +1096,24 @@ const CLOUD_ERROR_MESSAGES = {
 // Reasoning models spend completion tokens on hidden reasoning before the
 // visible answer, so the 512-token cap already tuned for this account's
 // lighter free-tier models (see callGatewayRaw's comment) would frequently
-// leave X's dedicated model no room left to actually answer. Only raised
-// for that one model - not a blanket bump, since 512 is a verified-live
-// constraint for the rest of the free cascade.
+// leave one of these two no room left to actually answer. Only raised for
+// these - not a blanket bump, since 512 is a verified-live constraint for
+// the rest of the free cascade.
+const REASONING_MODELS = ['minimaxai/minimax-m3', 'moonshotai/kimi-k3'];
 function maxTokensForModel(model) {
-  return model === 'moonshotai/kimi-k3' ? 2048 : 512;
+  return REASONING_MODELS.includes(model) ? 2048 : 512;
 }
 
 // The server's own NVIDIA client budgets 45s per model attempt
-// (NVIDIA_REQUEST_TIMEOUT_MS) - a heavy reasoning MoE genuinely needs
-// that long sometimes, and this client-side abort was cutting requests
-// off at 20s regardless, which is where a live test of X's dedicated
-// model actually failed before this was added. Left at 20s for
-// everything else - that budget matches the lighter free-tier models
-// it was tuned against.
+// (NVIDIA_REQUEST_TIMEOUT_MS) - a reasoning MoE genuinely needs that long
+// sometimes (Kimi K3, the heavier of the two, didn't finish within a 45s
+// client timeout in one live test - see the model list's comment on why
+// MiniMax M3 is the default instead), and this client-side abort was
+// cutting requests off at 20s regardless. Left at 20s for everything
+// else - that budget matches the lighter free-tier models it was tuned
+// against.
 function timeoutMsForModel(model) {
-  return model === 'moonshotai/kimi-k3' ? 45000 : 20000;
+  return REASONING_MODELS.includes(model) ? 45000 : 20000;
 }
 
 function describeRoute(route) {
