@@ -731,7 +731,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
             <option value="auto">Auto (task-routed - recommended)</option>
           </select>
           <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5">
-            X's dedicated model is <strong style="color:var(--text-primary)">MiniMax M3</strong> (NVIDIA, free, multimodal reasoning) - picking a free model here (including this one) requests it specifically, with automatic fallback to the task-scored free cascade if it's unavailable on this account. Kimi K3 is also available (a larger, slower reasoning model). "Auto" skips straight to the cascade. Venice and DeepSeek are paid APIs: picking one calls it directly with no fallback, so you'll see a clear error instead if it's unavailable.
+            X's dedicated model is <strong style="color:var(--text-primary)">MiniMax M3</strong> (NVIDIA, free, multimodal reasoning) - picking a free model here (including this one) requests it specifically, with automatic fallback to the task-scored free cascade if it's unavailable on this account. Kimi K3 (larger, slower reasoning) and Laguna XS 2.1 (small, fast, coding-specialized) are also available. "Auto" skips straight to the cascade. Venice and DeepSeek are paid APIs: picking one calls it directly with no fallback, so you'll see a clear error instead if it's unavailable.
           </p>
         </div>
         <div id="nimModelsList"></div>
@@ -981,14 +981,23 @@ const S = {
     // (verified live against build.nvidia.com, not just copied from a
     // pasted snippet): a multimodal reasoning MoE with a much smaller
     // active-parameter count (22B active of 428B total) than Kimi K3
-    // below (104B active of 2.8T total), so it's the default for the
-    // assistant persona - Kimi K3 genuinely didn't finish within a 45s
-    // client timeout in testing, which a lighter active-param count
-    // should avoid. Still just an id in this list - resolveNvidiaModel/
+    // below (104B active of 2.8T total). In local testing (against this
+    // repo's separate legacy backend, not production - see git log)
+    // BOTH of these large reasoning MoEs failed to finish within a 45s
+    // client timeout, so the smaller active-param count didn't turn out
+    // to be enough on its own; still the default until a real production
+    // test says otherwise. Still just an id in this list - resolveNvidiaModel/
     // createChatCompletion already fall back to the ranked free-tier
     // cascade below if this account's key doesn't have access to it.
     { id: 'minimaxai/minimax-m3', name: 'MiniMax M3', status: 'idle', provider: 'NVIDIA · free, multimodal reasoning' },
     { id: 'moonshotai/kimi-k3', name: 'Kimi K3', status: 'idle', provider: 'NVIDIA · free, multimodal reasoning (heavier, slower)' },
+    // Genuinely light (3B active of 33B total, built to run on one GPU) -
+    // a coding specialist (agentic/long-horizon software engineering,
+    // SWE-bench tuned), not a general assistant model, so it's an
+    // available pick rather than the default. Worth trying if the two
+    // reasoning models above keep timing out, since a much smaller
+    // active-param count should genuinely respond faster.
+    { id: 'poolside/laguna-xs-2.1', name: 'Laguna XS 2.1', status: 'idle', provider: 'NVIDIA · free, fast coding specialist' },
     { id: 'nvidia/nemotron-3-super-120b-a12b:free', name: 'Nemotron 3 Super', status: 'checking', provider: 'OpenRouter' },
     { id: 'nvidia/nemotron-3-ultra-550b-a55b:free', name: 'Nemotron 3 Ultra', status: 'checking', provider: 'OpenRouter' },
     { id: 'google/gemma-4-31b-it:free', name: 'Gemma 4 31B', status: 'checking', provider: 'OpenRouter' },
