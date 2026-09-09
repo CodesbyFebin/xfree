@@ -685,6 +685,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
         <div><div class="settings-label">Auto-chain Suggestions</div><div class="settings-desc">Show follow-up actions after each result</div></div>
         <div class="toggle on" id="toggleChain" onclick="toggleSetting('chain')"></div>
       </div>
+      <div class="settings-row">
+        <div><div class="settings-label">Strict Local Mode</div><div class="settings-desc">Blocks every cloud request before it's sent — only Ollama and local JS tools remain reachable</div></div>
+        <div class="toggle" id="toggleSovereignty" onclick="toggleSovereignty()"></div>
+      </div>
       <div style="margin-top:16px">
         <div class="panel-section-title" style="margin-bottom:10px">Voice &amp; Tone (X Assistant replies)</div>
         <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6">
@@ -965,7 +969,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-deep);color:va
 const S = {
   files: [], results: [], messages: [], notifications: [], reminders: [],
   mode: 'local', isProcessing: false, lastResult: null, mobTab: 'chat',
-  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'auto', mcpUrl: '' },
+  settings: { audio: true, desktop: false, chain: true, ollamaUrl: 'http://localhost:11434', ollamaModel: 'llama3.2:1b', voiceURI: '', voiceTone: 'natural', selectedModel: 'auto', mcpUrl: '', sovereignty: 'relaxed' },
   mcp: { connected: false, tools: [], sessionId: null, requestId: 0 },
   nimModels: [
     { id: 'meta/llama-3.1-8b-instruct', name: 'Llama 3.1 8B', status: 'checking', provider: 'NVIDIA' },
@@ -1031,8 +1035,12 @@ function playClickSound() { playTone(600, 0.05, 'sine', 0.04); }
 // That failure looks identical to "Ollama not running" from here, so
 // no attempt is made to distinguish the two - both just fall through.
 async function tryOllamaFallback(prompt) {
+  // `reason` on failure uses the same small vocabulary as the Cloud
+  // gateway's typed error codes (PROVIDER_NOT_CONFIGURED,
+  // PROVIDER_UNAVAILABLE) - callers don't all surface it today, but it
+  // keeps failure reporting consistent regardless of which path failed.
   const { ollamaUrl, ollamaModel } = S.settings;
-  if (!ollamaUrl || !ollamaModel) return { success: false };
+  if (!ollamaUrl || !ollamaModel) return { success: false, reason: 'PROVIDER_NOT_CONFIGURED' };
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 4000);
@@ -1047,19 +1055,42 @@ async function tryOllamaFallback(prompt) {
       }),
     });
     clearTimeout(timeout);
-    if (!res.ok) return { success: false };
+    if (!res.ok) return { success: false, reason: res.status === 404 ? 'PROVIDER_NOT_CONFIGURED' : 'PROVIDER_REQUEST_FAILED' };
     const data = await res.json();
     const content = data?.message?.content;
-    if (!content) return { success: false };
+    if (!content) return { success: false, reason: 'PROVIDER_REQUEST_FAILED' };
     return { success: true, content, model: ollamaModel };
   } catch {
-    return { success: false };
+    return { success: false, reason: 'PROVIDER_UNAVAILABLE' };
   }
 }
 
 // ═══════════════════════════════════════════════════════
 // NVIDIA NIM FALLBACK LOOP
 // ═══════════════════════════════════════════════════════
+// Maps this gateway's typed error codes (see the `code` field on
+// next-app/app/api/nvidia/chat's error responses) to a status-line
+// message. Falls back to the response's own `error` string for codes
+// this map doesn't recognize yet, so an older/newer backend shape never
+// produces a blank message.
+const CLOUD_ERROR_MESSAGES = {
+  NOT_CONFIGURED: 'Cloud Mode is not configured on this server yet',
+  PROVIDER_NOT_CONFIGURED: 'That model isn’t configured on this server yet',
+  PROVIDER_REQUEST_FAILED: 'That provider rejected the request — falling back to local',
+  ALL_PROVIDERS_FAILED: 'All free cloud providers are unavailable — falling back to local',
+  INVALID_REQUEST: 'That request wasn’t valid',
+};
+
+function describeRoute(route) {
+  if (!route || !Array.isArray(route.attempted) || !route.attempted.length) return '';
+  const winner = route.attempted[route.attempted.length - 1];
+  const skipped = route.attempted.filter((a) => a.outcome !== 'success').length;
+  const tierLabel = route.tier === 'paid' ? 'paid' : 'free';
+  return skipped
+    ? ` — Route: ${winner.provider} (${tierLabel}), ${skipped} skipped first`
+    : ` — Route: ${winner.provider} (${tierLabel})`;
+}
+
 async function tryNIMFallback(prompt, taskType) {
   // Calls this same origin's real backend (POST /api/nvidia/chat), which
   // holds the actual NVIDIA_API_KEY server-side and does its own model
@@ -1068,6 +1099,16 @@ async function tryNIMFallback(prompt, taskType) {
   // hardcoded placeholder key ('Bearer nvip-placeholder'), which could
   // never have worked and would have exposed a real key to every visitor
   // if someone had filled one in.
+
+  // Sovereignty hard guard: checked before constructing any fetch() call,
+  // not just before the UI lets you click Cloud - so a stale S.mode or a
+  // direct call to this function can't slip a request out under Strict
+  // Local Mode.
+  if (S.settings.sovereignty === 'strict') {
+    updateNIMStatus('Cloud access blocked by Strict Local Mode');
+    return { success: false, fallback: 'local', reason: 'sovereignty_blocked' };
+  }
+
   updateNIMStatus('Contacting XFree Cloud Mode…');
   S.nimModels.forEach(m => m.status = 'trying');
   updateNIMModels();
@@ -1088,24 +1129,20 @@ async function tryNIMFallback(prompt, taskType) {
     });
     clearTimeout(timeout);
 
-    if (res.status === 503) {
-      updateNIMStatus('Cloud Mode is not configured on this server yet');
-      S.nimModels.forEach(m => m.status = 'idle');
-      updateNIMModels();
-      return { success: false, fallback: 'local', reason: 'not_configured' };
-    }
+    const data = await res.json().catch(() => null);
 
     if (!res.ok) {
-      updateNIMStatus('Cloud request failed — falling back to local');
-      S.nimModels.forEach(m => m.status = 'error');
+      const code = data?.code;
+      const message = (code && CLOUD_ERROR_MESSAGES[code]) || data?.error || 'Cloud request failed — falling back to local';
+      updateNIMStatus(message);
+      S.nimModels.forEach(m => m.status = code === 'NOT_CONFIGURED' || code === 'PROVIDER_NOT_CONFIGURED' ? 'idle' : 'error');
       updateNIMModels();
-      return { success: false, fallback: 'local' };
+      return { success: false, fallback: 'local', reason: code === 'NOT_CONFIGURED' ? 'not_configured' : undefined };
     }
 
-    const data = await res.json();
     S.nimModels.forEach(m => m.status = m.id === data.model ? 'active' : 'idle');
     S.activeNimModel = { id: data.model, name: data.model };
-    updateNIMStatus(`Connected: ${data.model}${data.wasFallback ? ' (fallback)' : ''}`);
+    updateNIMStatus(`Connected: ${data.model}${data.wasFallback ? ' (fallback)' : ''}${describeRoute(data.route)}`);
     updateNIMModels();
     return { success: true, content: data.reply || 'No response', model: data.model };
   } catch (e) {
@@ -1995,6 +2032,13 @@ setInterval(() => { if(S.reminders.some(r=>!r.done)) renderReminders(); }, 1000)
 // MODE TOGGLE
 // ═══════════════════════════════════════════════════════
 function setMode(mode) {
+  // Defense in depth: the Cloud button is disabled by applySovereigntyUI()
+  // under Strict Local Mode, but this guard protects any other caller of
+  // setMode('cloud') too (deep links, keyboard shortcuts, future code).
+  if (mode === 'cloud' && S.settings.sovereignty === 'strict') {
+    showToast('Cloud is disabled by Strict Local Mode', 'error');
+    return;
+  }
   S.mode = mode;
   const lb=$('localBtn'), cb=$('cloudBtn');
   if (mode==='local') {
@@ -2040,6 +2084,33 @@ function syncSettingsUI() {
   if ($('toneSelect')) $('toneSelect').value = S.settings.voiceTone || 'natural';
   if ($('mcpUrlInput')) $('mcpUrlInput').value = S.settings.mcpUrl || '';
   populateVoiceSelect();
+}
+
+// Syncs the toggle switch and the Cloud button's disabled state to
+// S.settings.sovereignty - called both right after a user flips the
+// toggle and once on load, since a strict setting restored from
+// localStorage must disable the button before any click happens, not
+// just after the toggle is next touched.
+function applySovereigntyUI() {
+  const strict = S.settings.sovereignty === 'strict';
+  $('toggleSovereignty')?.classList.toggle('on', strict);
+  const cb = $('cloudBtn');
+  if (cb) {
+    cb.disabled = strict;
+    cb.title = strict ? 'Disabled by Strict Local Mode' : '';
+    cb.style.opacity = strict ? '0.45' : '';
+    cb.style.cursor = strict ? 'not-allowed' : '';
+  }
+}
+
+function toggleSovereignty() {
+  S.settings.sovereignty = S.settings.sovereignty === 'strict' ? 'relaxed' : 'strict';
+  applySovereigntyUI();
+  saveAssistantSettings();
+  if (S.settings.sovereignty === 'strict' && S.mode === 'cloud') {
+    setMode('local');
+    showToast('Switched to Local — Strict Local Mode blocks Cloud', 'info');
+  }
 }
 
 function toggleSetting(key) {
@@ -2130,6 +2201,7 @@ function runEngineDirect(id) {
 function init() {
   updateThemeIcon();
   loadAssistantSettings();
+  applySovereigntyUI();
   if ('speechSynthesis' in window) {
     populateVoiceSelect();
     speechSynthesis.onvoiceschanged = populateVoiceSelect;
