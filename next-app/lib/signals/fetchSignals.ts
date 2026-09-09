@@ -24,6 +24,15 @@ function parseFeed(xml: string, source: SignalSource): SignalItem[] {
     return [];
   }
 
+  // Capped well short of typical feed sizes - some feeds put full HTML
+  // article bodies in <description>/<content>, and this is only ever
+  // used as short matching text (see matchTools.ts), not displayed.
+  const MAX_SUMMARY_LENGTH = 400;
+  const toSummary = (value: unknown): string | undefined => {
+    const text = stripHtml(value);
+    return text ? text.slice(0, MAX_SUMMARY_LENGTH) : undefined;
+  };
+
   const rssItems = toArray(doc?.rss?.channel?.item);
   if (rssItems.length > 0) {
     return rssItems.map((item: any) => {
@@ -32,6 +41,7 @@ function parseFeed(xml: string, source: SignalSource): SignalItem[] {
         sourceId: source.id,
         sourceName: source.name,
         title,
+        summary: toSummary(item.description),
         url: String(item.link ?? '').trim(),
         publishedAt: new Date(item.pubDate ?? Date.now()).toISOString(),
         categories: classify(title, source),
@@ -49,6 +59,7 @@ function parseFeed(xml: string, source: SignalSource): SignalItem[] {
       sourceId: source.id,
       sourceName: source.name,
       title,
+      summary: toSummary(entry.summary ?? entry.content),
       url: String(url).trim(),
       publishedAt: new Date(entry.updated ?? entry.published ?? Date.now()).toISOString(),
       categories: classify(title, source),
