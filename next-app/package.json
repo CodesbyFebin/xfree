@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "analyze": "ANALYZE=true npm run build",
     "submit-indexnow": "node scripts/submit-indexnow.mjs",
-    "verify:sitemap": "tsx scripts/verify-sitemap.ts"
+    "verify:sitemap": "tsx scripts/verify-sitemap.ts",
+    "verify:tool-matching": "tsx scripts/verify-tool-matching.ts"
   },
   "dependencies": {
     "@types/dompurify": "^3.0.5",
