@@ -1,0 +1,16 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "permission": {
+    "*": "allow",
+    "bash": "allow",
+    "external_directory": "allow"
+  },
+  "agent": {
+    "general": {
+      "permission": {
+        "bash": "allow",
+        "external_directory": "allow"
+      }
+    }
+  }
+}

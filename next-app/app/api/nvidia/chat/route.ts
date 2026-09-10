@@ -182,8 +182,14 @@ export async function POST(req: NextRequest) {
     return errorResponse('Cloud Mode is not configured on this server yet', 'NOT_CONFIGURED', 503);
   }
 
-  // Kill switch checks for paid providers
-  if (model && (model.includes('venice') || model.includes('deepseek'))) {
+  const parsed = RequestSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return errorResponse('Invalid request body', 'INVALID_REQUEST', 400);
+  }
+  const { model, taskType, messages, temperature, maxTokens } = parsed.data;
+
+  // Kill switch checks for paid providers (only for explicit model requests)
+  if (model && (model === 'venice-uncensored' || model === 'deepseek-v4-flash')) {
     const isVenice = model === 'venice-uncensored';
     const isDeepseek = model === 'deepseek-v4-flash';
     
@@ -197,12 +203,6 @@ export async function POST(req: NextRequest) {
       return errorResponse('Authentication required for paid provider', 'AUTH_REQUIRED', 401);
     }
   }
-
-  const parsed = RequestSchema.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) {
-    return errorResponse('Invalid request body', 'INVALID_REQUEST', 400);
-  }
-  const { model, taskType, messages, temperature, maxTokens } = parsed.data;
 
   // Idempotency key support
   const idempotencyKey = req.headers.get('x-idempotency-key');
