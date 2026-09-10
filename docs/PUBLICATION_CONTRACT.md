@@ -51,28 +51,34 @@ defect was blanket "100% client-side" marketing copy on other pages that never
 checked it (fixed - see `docs/SECURITY_MODEL.md` is the wrong doc for this;
 see the `fix(content)` commits on this branch).
 
-## Known gap: two registries
+## Resolved: two registries consolidated (2026-09-10, follow-up session)
 
-`next-app/lib/data/tools.ts` is a second, separately hand-maintained 58-tool
-array (also named `TOOLS`), imported by the homepage, about/use-cases pages,
-`tools.json`, `capabilities.json`, the RSS feeds, `llms-full.txt`, the
-`/api/v1/*` endpoints, and `Footer.tsx` - none of which import from
-`toolsWithSEO.ts`. Diffed programmatically in this pass:
+`next-app/lib/data/tools.ts` used to be a second, separately hand-maintained
+58-tool array (also named `TOOLS`), imported by the homepage, about/use-cases
+pages, `tools.json`, `capabilities.json`, the RSS feeds, `llms-full.txt`, the
+`/api/v1/*` endpoints, and `Footer.tsx`. Diffed programmatically before
+touching anything: same 58 slugs, same `status`/`indexable`/`execution`
+values in both files (no factual/execution divergence), but ~50 different
+`shortDescription` strings and one different `title` (`cron-parser`: "Cron
+Parser" vs. "Cron Expression Parser") - copy drift accumulated across two
+hand-maintained copies.
 
-- Same 58 slugs in both files, same `status`/`indexable`/`execution` values
-  for every tool (no factual/execution divergence today).
-- ~50 different `shortDescription` strings and one different `title`
-  (`cron-parser`: "Cron Parser" vs. "Cron Expression Parser") - copy drift,
-  not a correctness bug, but exactly the kind of thing that silently
-  diverges further over time with two hand-maintained copies.
+`lib/data/tools.ts` is now a thin re-export of `toolsWithSEO.ts`'s `TOOLS`
+and `CATEGORIES` (the same pattern `toolsWithSEO.ts` itself already used
+internally: `export const TOOLS = TOOLS_WITH_SEO`), keeping only the two
+derived exports (`INDEXABLE_TOOL_SLUGS`, `TOOLS_BY_CATEGORY`/
+`getToolsByCategory`) that nothing else provided. `TOOL_MAP`/`findToolById`
+were dropped from this file - confirmed via grep that no importer used them
+from `./tools` specifically (only `TOOLS` and `CATEGORIES` were ever
+imported from here). Verified via `typecheck`, `lint`, a full `next build`,
+and all three `verify:*` scripts passing unchanged after the swap.
 
-**Recommendation** (not done in this pass - 16 importing files, no test
-coverage to safely verify a consolidation without dedicated time): make
-`lib/data/tools.ts` a thin re-export of `toolsWithSEO.ts`'s `TOOLS`, the same
-pattern `toolsWithSEO.ts` itself already uses (`export const TOOLS =
-TOOLS_WITH_SEO`), and delete the duplicate array. Do this as its own
-reviewable change with the full build + every `npm run verify:*` script run
-against it, not bundled into an unrelated pass.
+All 16 previously-importing files now render the same copy the tool detail
+pages already use - the homepage/about/use-cases/categories pages,
+`tools.json`, `capabilities.json`, the RSS feeds, and `llms-full.txt` will
+show slightly different (corrected, deduplicated) `shortDescription` text
+for ~50 tools as a result. This is the intended effect of the consolidation,
+not a regression.
 
 ## Studio's own tool set
 
