@@ -100,8 +100,8 @@ export default function AboutPage() {
                   <span className="text-lg">🔒</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-cyber-text mb-1">Complete Privacy</h3>
-                  <p className="text-sm">Your data never leaves your browser. No logs, no analytics on your input, no data collection.</p>
+                  <h3 className="font-semibold text-cyber-text mb-1">Privacy by Default</h3>
+                  <p className="text-sm">Almost all tools keep your data in your browser - no logs, no analytics on your input, no data collection. A few (DNS/IP/WHOIS lookup, Studio&apos;s Cloud Mode) call a server to work at all, and disclose that on their own page.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">

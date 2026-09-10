@@ -44,8 +44,9 @@ export default function SecurityPage() {
             <div className="cyber-card p-6 space-y-4">
               <h3 className="text-lg font-bold text-cyber-text">Client-Side Processing</h3>
               <p className="text-cyber-muted text-sm">
-                Every published tool processes data entirely in your browser. No server receives your data,
-                reducing exposure to network attacks.
+                Most published tools process data entirely in your browser - no server receives it, reducing
+                exposure to network attacks. A few tools (DNS/IP/WHOIS lookup, and XFree Studio&apos;s optional
+                Cloud Mode) need to reach external infrastructure to do their job and say so on their own page.
               </p>
             </div>
 
