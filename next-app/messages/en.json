@@ -21,8 +21,20 @@
     "launchStudio": "Launch Studio",
     "allTools": "All Tools"
   },
+  "Hero": {
+    "searchPlaceholder": "Search XFree tools — JSON, Regex, Sitemap, JWT, Image, SEO...",
+    "popular": "Popular:",
+    "categories": {
+      "developer": "Developer Tools",
+      "ai": "AI Tools",
+      "data": "Data Tools",
+      "web": "Web Tools",
+      "seo": "SEO Tools",
+      "security": "Security Tools"
+    }
+  },
   "Footer": {
-    "tagline": "XFree provides privacy-first browser tools for developers, technical teams and creators. Local Mode is used by default for supported operations, with no signup required.",
+    "tagline": "XFree provides privacy-first browser tools for developers, technical teams and creators. Local mode is used by default for supported operations, with no signup required.",
     "openStudio": "Open XFree Studio",
     "availableStats": "{tools} published tools and {pillars} approved discovery hubs are currently available.",
     "categoriesHeading": "Categories",
@@ -40,13 +52,13 @@
     "validatorTools": "XFree Validators",
     "allTools": "All Tools",
     "jsonDataTools": "XFree JSON & Data Tools",
-    "regexTools": "XFree Regex Tools",
-    "encodingTools": "XFree Encoding Tools",
-    "hashTools": "XFree Hash Tools",
-    "generatorTools": "XFree Generator Tools",
-    "networkTools": "XFree DNS & Network Tools",
+    "regexTools": "Xfree Regex Tools",
+    "encodingTools": "Xfree Encoding Tools",
+    "hashTools": "Xfree Hash Tools",
+    "generatorTools": "Xfree Generator Tools",
+    "networkTools": "Xfree DNS & Network Tools",
     "signals": "Signals",
-    "pillarHubs": "XFree Pillar Hubs",
+    "pillarHubs": "Xfree Pillar Hubs",
     "xmlSitemap": "XML Sitemap",
     "robotsTxt": "robots.txt",
     "about": "About XFree",
@@ -98,26 +110,18 @@
     "whySubheading": "Your data stays in your browser. XFree believes powerful tools should be private, fast, and hassle-free.",
     "howHeading": "Three steps. Zero sign-up. Your data stays in your browser by default.",
     "pillarsHeading": "The XFree Tool Directory",
-    "pillarsSubheading": "The most comprehensive developer tool taxonomy. Each XFree pillar connects specialized clusters with dedicated micro-tools.",
-    "viewAllPillars": "View All XFree Pillars",
-    "roadmapHeading": "XFree Product Roadmap",
+    "pillarsSubheading": "XFree Tools are organized by technical pillars for discovery and exploration.",
+    "viewAllPillars": "View all pillars",
+    "roadmapHeading": "Roadmap & Timeline",
     "publishedTools": "Published Tools",
     "pillarHubs": "Pillar Hubs",
     "planned": "Planned",
-    "faqHeading": "Common questions about XFree app, tools, privacy, and the platform.",
-    "ctaHeading": "Ready to Explore?",
-    "ctaSubheading": "Join thousands of users already building a smarter, more open web with XFree.",
-    "ctaHandwritten": "Simple Tools\nExtraordinary Freedom.",
-    "ctaLaunch": "Launch XFree Studio App",
-    "ctaBrowse": "Browse XFree Pillars"
-  },
-  "NotFound": {
-    "title": "Page Not Found",
-    "description": "The page you are looking for does not exist or has been moved.",
-    "goHome": "Go to Homepage",
-    "browsePillars": "Browse Pillars"
-  },
-  "Common": {
-    "skipToContent": "Skip to main content"
+    "faqHeading": "Frequently Asked Questions about the XFree App",
+    "ctaHeading": "Ready to Experience the XFree Difference?",
+    "ctaSubheading": "Join developers and technical teams using XFree for privacy-first development workflows.",
+    "ctaLaunch": "Launch XFree Studio",
+    "ctaBrowse": "Browse Tools",
+    "ctaHandwritten": "Tools Without Limits"
   }
+}
 }
