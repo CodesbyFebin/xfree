@@ -6,8 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { TOOLS as ALL_TOOLS, CATEGORIES } from '@/lib/data/tools';
 import { PILLARS as ALL_PILLARS } from '@/lib/data/pillars';
 import { Footer } from '@/components/layout/Footer';
-import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { Header } from '@/components/layout/Header';
 
 interface Tool {
   slug: string;
@@ -66,60 +65,12 @@ const USE_CASES: UseCase[] = [
   { title: 'Security Testing', tools: ['Hash Generator', 'JWT Decoder', 'Password Generator'], description: 'Test authentication and encryption flows' },
 ];
 
-// Verified against lib/data/tools.ts's real CATEGORIES.slug and the
-// shared components/layout/Header.tsx nav — this replaced a 6-group,
-// 70-link NAV_LINKS object where all but a handful of hrefs (e.g.
-// /dev-tools, /seo-tools, /web-tools, /agentic-workflows, /mcp-tools)
-// matched no real route in the app.
-const NAV_ITEMS = [
-  {
-    labelKey: 'toolsMenu',
-    href: '/pillars',
-    children: [
-      { labelKey: 'allPillars', href: '/pillars' },
-      { labelKey: 'developerTools', href: '/categories/developer-tools' },
-      { labelKey: 'seoTools', href: '/categories/seo-url-tools' },
-      { labelKey: 'aiTools', href: '/categories/ai-tools' },
-      { labelKey: 'securityTools', href: '/categories/security-tools' },
-    ],
-  },
-  {
-    labelKey: 'resourcesMenu',
-    href: '/guides',
-    children: [
-      { labelKey: 'allGuides', href: '/guides' },
-      { labelKey: 'faq', href: '/faq' },
-      { labelKey: 'howItWorks', href: '/how-it-works' },
-      { labelKey: 'useCases', href: '/use-cases' },
-    ],
-  },
-  {
-    labelKey: 'aboutMenu',
-    href: '/about',
-    children: [
-      { labelKey: 'aboutXfree', href: '/about' },
-      { labelKey: 'security', href: '/security' },
-      { labelKey: 'roadmap', href: '/roadmap' },
-      { labelKey: 'xfreeApp', href: '/xfree-app' },
-    ],
-  },
-] as const;
-
 export default function HomePage() {
   const t = useTranslations('Home');
-  const tHeader = useTranslations('Header');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [demoOutput, setDemoOutput] = useState('{\n  "name": "xfree",\n  "type": "micro-tool",\n  "fast": true\n}');
   const [demoStatus, setDemoStatus] = useState({ valid: true, time: '0.1' });
   const [demoCopied, setDemoCopied] = useState(false);
   const demoInputRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const runDemo = () => {
     if (!demoInputRef.current) return;
@@ -146,78 +97,15 @@ export default function HomePage() {
     <div className="min-h-screen bg-cyber-bg text-cyber-text antialiased">
       <div className="scanlines" aria-hidden="true" />
       <div className="crt-vignette" aria-hidden="true" />
-      {mobileMenuOpen && <div className="mobile-overlay open" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />}
-
       <a href="#main-content" className="skip-link focus-ring">Skip to main content</a>
 
-      {/* HEADER */}
-      <header id="mainNav" className={`sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3 ${scrolled ? 'scrolled' : ''}`}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group" aria-label="XFree homepage">
-            <picture className="shrink-0">
-              <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
-              <img
-                src="/logo-wordmark-80.png"
-                srcSet="/logo-wordmark-80.png 1x, /logo-wordmark-160.png 2x"
-                alt="XFree"
-                width={160}
-                height={80}
-                decoding="async"
-                style={{ height: '36px', width: '72px' }}
-              />
-            </picture>
-            <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-1">{`// ${tHeader('tagline')}`}</span>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
-            {NAV_ITEMS.map((item) => (
-              <NavDropdown
-                key={item.labelKey}
-                label={tHeader(item.labelKey)}
-                links={item.children.map((c) => ({ href: c.href, label: tHeader(c.labelKey) }))}
-              />
-            ))}
-            <Link href="/contact" className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all">{tHeader('contact')}</Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <LocaleSwitcher />
-            <Link href="https://app.xfree.in/" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded" rel="noopener">
-              <span>{tHeader('launchStudio')} →</span>
-            </Link>
-            <button className="mobile-menu-btn lg:hidden" onClick={() => setMobileMenuOpen(true)} aria-label="Open menu">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Menu */}
-      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`} role="dialog" aria-label="Mobile navigation">
-        <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-        <nav className="mt-12 space-y-6">
-          {NAV_ITEMS.map((item) => (
-            <div key={item.labelKey}>
-              <h3 className="text-xs font-mono text-cyber-glow mb-2">{`// ${tHeader(item.labelKey)}`}</h3>
-              <div className="space-y-2">
-                {item.children.map((child) => (
-                  <Link key={child.href} href={child.href} className="block text-sm text-cyber-muted hover:text-cyber-glow">{tHeader(child.labelKey)}</Link>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="pt-4 border-t border-cyber-border">
-            <Link href="/contact" className="block text-sm text-cyber-glow">{tHeader('contact')} →</Link>
-          </div>
-          <div className="pt-4 border-t border-cyber-border">
-            <LocaleSwitcher className="flex flex-wrap items-center gap-2" />
-          </div>
-        </nav>
-      </div>
+      {/* Was a second, hand-maintained copy of components/layout/Header.tsx's
+          nav/mobile-menu (same NAV_ITEMS, same structure) - the only page of
+          20 that didn't use the shared component. Consolidated so this page
+          gets the same mobile-nav fix (see docs/SECURITY_MODEL.md's sibling
+          audit docs) as the other 19 automatically, instead of needing it
+          hand-applied here too. */}
+      <Header />
 
       <main id="main-content">
         {/* HERO */}
@@ -607,30 +495,6 @@ export default function HomePage() {
 
       {/* FOOTER */}
       <Footer />
-    </div>
-  );
-}
-
-function NavDropdown({ label, links }: { label: string; links: { href: string; label: string }[] }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="nav-dropdown" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all flex items-center gap-1" aria-haspopup="true" aria-expanded={open}>
-        {label} <span aria-hidden="true">▾</span>
-      </button>
-      {/* Always rendered — visibility is CSS-driven (:hover/:focus-within on
-          .nav-dropdown, see globals.css), matching how the mobile menu
-          below shows/hides its always-rendered links via a CSS class.
-          Gating this behind the `open` state made the menu never appear:
-          mouseenter/mouseleave here don't reliably drive React state for a
-          CSS-hover interaction, so the panel was permanently empty. */}
-      <div className="nav-dropdown-menu" role="menu">
-        {links.map((link) => (
-          <Link key={link.href} href={link.href} className="nav-dropdown-item" role="menuitem">
-            {link.label}
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }
