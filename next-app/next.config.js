@@ -39,6 +39,23 @@ const nextConfig = {
   images: {
     remotePatterns: [],
   },
+  // Moved from vercel.json's `redirects` array: Vercel-level redirects
+  // only take effect on an actual Vercel deployment (or `vercel dev`), not
+  // under a plain `next build && next start` - which meant this had no way
+  // to be covered by a Playwright test. Next's own redirects() produces the
+  // identical behavior once deployed (Vercel understands it natively) and
+  // also works locally, so it's both the more testable and more portable
+  // choice for something that lives inside this app rather than at the
+  // platform/infra layer.
+  async redirects() {
+    return [
+      {
+        source: '/studio',
+        destination: 'https://app.xfree.in/',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

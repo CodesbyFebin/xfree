@@ -3,12 +3,5 @@
   "framework": "nextjs",
   "buildCommand": "next build",
   "installCommand": "npm install",
-  "outputDirectory": ".next",
-  "redirects": [
-    {
-      "source": "/studio",
-      "destination": "https://app.xfree.in/",
-      "permanent": true
-    }
-  ]
+  "outputDirectory": ".next"
 }
