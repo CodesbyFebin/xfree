@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createChatCompletion, NvidiaNotConfiguredError, NvidiaApiError } from '@/lib/nvidia/client';
 import { NVIDIA_TASK_TYPES } from '@/lib/nvidia/types';
 import type { NvidiaChatMessage } from '@/lib/nvidia/types';
+import { getRateLimiter, verifyApiKey, getClientId, isProviderEnabled, logAuditEntry } from '@/lib/server/security';
 
 // Backs Studio's (app.xfree.in) Cloud Mode. Studio's own vercel.json
 // rewrites every /api/* request there to www.xfree.in/api/*, so this
@@ -14,7 +15,7 @@ import type { NvidiaChatMessage } from '@/lib/nvidia/types';
 // app's Express server (src/server/nvidia/*, ported here verbatim except
 // for env access) - real /v1/models discovery, 6 task types scored
 // against each model id, and a 12-candidate fallback walk that skips
-// models this account's free tier 404s on. The GATEWAY_PROVIDERS registry
+// models this account's free-tier 404s on. The GATEWAY_PROVIDERS registry
 // below is the second-tier free fallback (OpenRouter) plus the paid,
 // explicit-pick-only tier (Venice, DeepSeek) - see autoEligible on each
 // entry. Venice AI and DeepSeek are real paid APIs (verified against
@@ -138,7 +139,40 @@ function errorResponse(error: string, code: string, status: number) {
   return NextResponse.json({ error, code }, { status });
 }
 
+// Rate limiting configuration
+const RATE_LIMIT_PER_MINUTE = Number(process.env.AI_RATE_LIMIT_PER_MINUTE) || 10;
+const RATE_LIMIT_PER_DAY = Number(process.env.AI_RATE_LIMIT_PER_DAY) || 100;
+const GLOBAL_DAILY_LIMIT = Number(process.env.AI_GLOBAL_DAILY_LIMIT) || 5000;
+
+const limiter = getRateLimiter();
+
 export async function POST(req: NextRequest) {
+  const clientId = getClientId(req);
+
+  // Global daily spending limit (distributed across all instances)
+  const globalResult = await limiter.consume('global:daily', GLOBAL_DAILY_LIMIT, 24 * 60 * 60 * 1000);
+  if (!globalResult.allowed) {
+    return errorResponse('Global daily limit exceeded', 'GLOBAL_LIMIT_EXCEEDED', 429);
+  }
+
+  // Per-client per-minute rate limit
+  const perMinResult = await limiter.consume(`${clientId}:per_minute`, RATE_LIMIT_PER_MINUTE, 60_000);
+  if (!perMinResult.allowed) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded', code: 'RATE_LIMITED' },
+      { status: 429, headers: { 'Retry-After': String(perMinResult.retryAfter || 60) } }
+    );
+  }
+
+  // Per-client per-day rate limit
+  const perDayResult = await limiter.consume(`${clientId}:per_day`, RATE_LIMIT_PER_DAY, 24 * 60 * 60 * 1000);
+  if (!perDayResult.allowed) {
+    return NextResponse.json(
+      { error: 'Daily limit exceeded', code: 'DAILY_LIMIT_EXCEEDED' },
+      { status: 429, headers: { 'Retry-After': String(perDayResult.retryAfter || 3600) } }
+    );
+  }
+
   const nvidiaKey = process.env.NVIDIA_API_KEY;
   const openrouterKey = process.env.OPENROUTER_API_KEY;
   const veniceKey = process.env.VENICE_API_KEY;
@@ -148,11 +182,35 @@ export async function POST(req: NextRequest) {
     return errorResponse('Cloud Mode is not configured on this server yet', 'NOT_CONFIGURED', 503);
   }
 
+  // Kill switch checks for paid providers
+  if (model && (model.includes('venice') || model.includes('deepseek'))) {
+    const isVenice = model === 'venice-uncensored';
+    const isDeepseek = model === 'deepseek-v4-flash';
+    
+    if ((isVenice && !isProviderEnabled('venice')) || (isDeepseek && !isProviderEnabled('deepseek'))) {
+      return errorResponse('This provider is temporarily disabled', 'PROVIDER_DISABLED', 403);
+    }
+    
+    // Require authentication for paid providers
+    const auth = verifyApiKey(req);
+    if (!auth.authenticated) {
+      return errorResponse('Authentication required for paid provider', 'AUTH_REQUIRED', 401);
+    }
+  }
+
   const parsed = RequestSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return errorResponse('Invalid request body', 'INVALID_REQUEST', 400);
   }
   const { model, taskType, messages, temperature, maxTokens } = parsed.data;
+
+  // Idempotency key support
+  const idempotencyKey = req.headers.get('x-idempotency-key');
+  if (idempotencyKey) {
+    // Check for existing result (implementation depends on storage backend)
+    // For now, we log but don't short-circuit as in-memory won't work across instances
+    console.log(`[idempotency] Key: ${idempotencyKey.slice(0, 16)}...`);
+  }
 
   // Explicit-pick-only paid tier: only reached when the caller names the
   // exact model id, and it takes priority over the free auto cascade below
@@ -163,13 +221,40 @@ export async function POST(req: NextRequest) {
 
     const key = providerId === 'venice' ? veniceKey : deepseekKey;
     if (!key) {
+      await logAuditEntry({
+        timestamp: Date.now(),
+        clientId,
+        endpoint: '/api/nvidia/chat',
+        provider: providerId,
+        model,
+        status: 'error',
+        error: 'PROVIDER_NOT_CONFIGURED',
+      });
       return errorResponse(`${provider.name} is not configured on this server`, 'PROVIDER_NOT_CONFIGURED', 503);
     }
     const reply = await tryOpenAICompatibleModel(provider.baseUrl, key, model, messages, maxTokens ?? 512);
     if (reply) {
+      await logAuditEntry({
+        timestamp: Date.now(),
+        clientId,
+        endpoint: '/api/nvidia/chat',
+        provider: providerId,
+        model,
+        tokens: reply.length / 4, // rough token estimate
+        status: 'success',
+      });
       const route = { attempted: [{ provider: provider.id, model, outcome: 'success' as const }], tier: provider.tier, autoEligible: provider.autoEligible };
       return NextResponse.json({ success: true, provider: provider.name, model, reply, wasFallback: false, route });
     }
+    await logAuditEntry({
+      timestamp: Date.now(),
+      clientId,
+      endpoint: '/api/nvidia/chat',
+      provider: providerId,
+      model,
+      status: 'error',
+      error: 'PROVIDER_REQUEST_FAILED',
+    });
     return errorResponse(`${provider.name} request failed`, 'PROVIDER_REQUEST_FAILED', 502);
   }
 
@@ -186,6 +271,17 @@ export async function POST(req: NextRequest) {
       });
       attempted.push({ provider: 'nvidia', model: result.usedModel, outcome: 'success' });
       const route = { attempted, tier: 'free' as const, autoEligible: true };
+      
+      await logAuditEntry({
+        timestamp: Date.now(),
+        clientId,
+        endpoint: '/api/nvidia/chat',
+        provider: 'nvidia',
+        model: result.usedModel,
+        tokens: result.usage?.total_tokens,
+        status: 'success',
+      });
+      
       return NextResponse.json({
         success: true,
         provider: 'NVIDIA NIM',
@@ -215,6 +311,17 @@ export async function POST(req: NextRequest) {
       if (reply) {
         attempted.push({ provider: 'openrouter', model: routed[i], outcome: 'success' });
         const route = { attempted, tier: 'free' as const, autoEligible: true };
+        
+        await logAuditEntry({
+          timestamp: Date.now(),
+          clientId,
+          endpoint: '/api/nvidia/chat',
+          provider: 'openrouter',
+          model: routed[i],
+          tokens: reply.length / 4,
+          status: 'success',
+        });
+        
         return NextResponse.json({ success: true, provider: 'OpenRouter', model: routed[i], reply, wasFallback: true, route });
       }
       attempted.push({ provider: 'openrouter', model: routed[i], outcome: 'failed' });
@@ -222,6 +329,14 @@ export async function POST(req: NextRequest) {
   } else {
     attempted.push({ provider: 'openrouter', model: 'auto', outcome: 'skipped', reason: 'not_configured' });
   }
+
+  await logAuditEntry({
+    timestamp: Date.now(),
+    clientId,
+    endpoint: '/api/nvidia/chat',
+    status: 'error',
+    error: 'ALL_PROVIDERS_FAILED',
+  });
 
   return NextResponse.json({ error: 'All cloud providers failed', code: 'ALL_PROVIDERS_FAILED', route: { attempted } }, { status: 502 });
 }
