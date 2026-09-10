@@ -52,11 +52,11 @@ const STATS: { value: string; labelKey: string }[] = [
 ];
 
 const FAQS: FAQ[] = [
-  { q: 'What is XFree app?', a: 'XFree app is the ultimate free online platform for developers offering privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. All tools run 100% client-side with no signup required.' },
-  { q: 'Is XFree really free with no signup?', a: 'Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and run entirely in your browser.' },
-  { q: 'How does XFree ensure privacy?', a: 'XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed.' },
-  { q: 'What is XFree alternative to CodeBeautify?', a: 'XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs 100% client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit.' },
-  { q: 'Can I use XFree offline?', a: 'Yes. Because XFree tools are static HTML with embedded JavaScript, you can save any tool page and use it completely offline without an internet connection.' },
+  { q: 'What is XFree app?', a: 'XFree app is the ultimate free online platform for developers offering privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. Most tools run 100% client-side with no signup required; a few (DNS/IP/WHOIS lookup) call XFree\'s own server since they need to reach external internet infrastructure.' },
+  { q: 'Is XFree really free with no signup?', a: 'Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and almost all run entirely in your browser.' },
+  { q: 'How does XFree ensure privacy?', a: 'XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed on that tool\'s page.' },
+  { q: 'What is XFree alternative to CodeBeautify?', a: 'XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs almost entirely client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit.' },
+  { q: 'Can I use XFree offline?', a: 'Yes, for previously-visited pages. XFree registers a service worker that caches tool pages for offline use once you\'ve loaded them - features that require a server call (lookups, AI Cloud Mode) still need a connection.' },
   { q: 'Is XFree open source?', a: 'Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our GitHub repository.' },
 ];
 
@@ -414,16 +414,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* AD SLOT 1 */}
-        <section className="ad-safe-zone px-4" aria-label="Advertisement">
-          <div className="max-w-7xl mx-auto">
-            <div className="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
-              <div className="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
-              <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true" />
-            </div>
-          </div>
-        </section>
-
         {/* CATEGORIES */}
         <section className="py-14 px-4" aria-labelledby="categories-heading">
           <div className="max-w-7xl mx-auto">
@@ -490,16 +480,6 @@ export default function HomePage() {
                   <p className="text-sm text-cyber-muted">{item.desc}</p>
                 </article>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* AD SLOT 2 */}
-        <section className="ad-safe-zone px-4" aria-label="Advertisement">
-          <div className="max-w-7xl mx-auto">
-            <div className="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
-              <div className="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
-              <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true" />
             </div>
           </div>
         </section>
@@ -599,16 +579,6 @@ export default function HomePage() {
                   <div className="px-5 pb-4 text-sm text-cyber-muted leading-relaxed border-t border-cyber-border pt-3">{faq.a}</div>
                 </details>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* AD SLOT 3 */}
-        <section className="ad-safe-zone px-4" aria-label="Advertisement">
-          <div className="max-w-7xl mx-auto">
-            <div className="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
-              <div className="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
-              <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true" />
             </div>
           </div>
         </section>

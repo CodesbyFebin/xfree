@@ -229,10 +229,6 @@ export default async function LocaleLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="XFree App" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://api.github.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.tailwindcss.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="alternate" type="text/plain" title="XFree llms.txt" href="/llms.txt" />
         <link rel="alternate" type="application/rss+xml" title="XFree Tools RSS Feed" href="/rss/tools.xml" />
