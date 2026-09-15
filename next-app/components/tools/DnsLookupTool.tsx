@@ -55,8 +55,9 @@ export function DnsLookupTool() {
         ))}
       </div>
       <div>
-        <label className="text-xs uppercase tracking-wider text-cyber-glow font-mono font-semibold mb-2 block">Domain</label>
+        <label htmlFor="dns-lookup-domain" className="text-xs uppercase tracking-wider text-cyber-glow font-mono font-semibold mb-2 block">Domain</label>
         <input
+          id="dns-lookup-domain"
           type="text"
           value={domain}
           onChange={(e) => setDomain(e.target.value)}

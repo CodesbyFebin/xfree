@@ -64,7 +64,7 @@ export default function AboutPage() {
               XFree.in delivers a curated catalog of {indexableCount} single-purpose micro-tools, organized into {PILLARS.length} topic pillars, that execute 100% locally in browser memory wherever the operation allows it. No registration required, no hidden paywalls, and zero latency.
             </p>
             <p>
-              The catalog is intentionally uneven in depth: some tools (JSON formatting, regex testing, hashing, encoding) are mature and heavily used; others are newer and still growing. Where a tool isn&apos;t built yet, it&apos;s tracked honestly on the <Link href="/roadmap" className="text-cyber-glow hover:underline">public roadmap</Link> rather than listed as available.
+              The catalog is intentionally uneven in depth: some tools (JSON formatting, regex testing, hashing, encoding) are mature and heavily used; others are newer and still growing. Where a tool isn&apos;t built yet, it&apos;s tracked honestly on the <Link href="/roadmap" className="text-cyber-glow underline underline-offset-2 hover:no-underline">public roadmap</Link> rather than listed as available.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-cyber-border">
