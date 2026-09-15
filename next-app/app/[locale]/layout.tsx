@@ -158,7 +158,11 @@ function getSchemaData(locale: string) {
         '@type': ['WebSite', 'WebApplication'],
         '@id': `${baseUrl}/#website`,
         name: 'XFree',
-        alternateName: ['XFree.in', 'xfree.in'],
+        // "X Free" is a real spacing/search variant of this same product,
+        // not a separate entity - see the homepage FAQ and the hero copy's
+        // "built for people searching XFree, X Free..." for the same
+        // framing in visible text.
+        alternateName: ['XFree.in', 'xfree.in', 'X Free'],
         url: `${baseUrl}/`,
         description: 'Free browser-based developer, SEO, and single-purpose AI micro-tools.',
         inLanguage: locale,
@@ -166,11 +170,11 @@ function getSchemaData(locale: string) {
         operatingSystem: 'Any',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
         publisher: { '@id': `${baseUrl}/#organization` },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: `${baseUrl}/?q={search_term_string}`,
-          'query-input': 'required name=search_term_string',
-        },
+        // No potentialAction/SearchAction: the hero's search bar matches
+        // client-side against the tool registry and navigates directly to
+        // a tool (or /tools) - there is no server-rendered `/?q=` results
+        // page for a SearchAction to honestly point at. Removed rather
+        // than left pointing at a URL that doesn't actually search.
       },
       {
         '@context': 'https://schema.org',

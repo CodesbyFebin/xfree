@@ -80,50 +80,21 @@ export function InteractiveX() {
       </div>
 
       <div ref={coreRef} className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-        {/* Four faceted blades (kite quadrilaterals, hand-mirrored across
-            both axes so they meet cleanly at the center hub) - one
-            metallic arm and three green arms, matching the approved
-            reference's asymmetric coloring rather than a plain 2-tone
-            pinwheel. Circuit-line and particle details on two of the
-            green arms echo the reference's "half machine, half signal"
-            read without tracing the source image directly. */}
-        <svg viewBox="0 0 200 200" className="h-[70%] w-[70%] xfree-x-mark" role="presentation">
-          <defs>
-            <linearGradient id="xMetal" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#e4e7eb" />
-              <stop offset="55%" stopColor="#9aa3ad" />
-              <stop offset="100%" stopColor="#5b636c" />
-            </linearGradient>
-            <linearGradient id="xGreen" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgb(var(--cyber-text))" />
-              <stop offset="100%" stopColor="rgb(var(--cyber-glow))" />
-            </linearGradient>
-          </defs>
-
-          {/* Upper-left: metallic */}
-          <path d="M12,12 L50,10 L88,88 L10,50 Z" fill="url(#xMetal)" stroke="#3a3f45" strokeWidth="1" strokeLinejoin="round" />
-          {/* Upper-right: green */}
-          <path d="M188,12 L150,10 L112,88 L190,50 Z" fill="url(#xGreen)" className="xfree-x-mark-glow" strokeLinejoin="round" />
-          {/* Lower-left: green, circuit-line texture */}
-          <path d="M12,188 L50,190 L88,112 L10,150 Z" fill="rgb(var(--cyber-glow))" opacity="0.88" strokeLinejoin="round" />
-          <g stroke="rgb(var(--cyber-bg))" strokeWidth="1.2" opacity="0.5" strokeLinecap="round">
-            <path d="M22,168 L48,140" fill="none" />
-            <path d="M30,178 L62,144" fill="none" />
-            <circle cx="48" cy="140" r="1.6" fill="rgb(var(--cyber-bg))" stroke="none" />
-          </g>
-          {/* Lower-right: green, dissolving into particles at the tip */}
-          <path d="M188,188 L150,190 L112,112 L190,150 Z" fill="rgb(var(--cyber-glow))" strokeLinejoin="round" />
-          <g fill="rgb(var(--cyber-glow))" className="xfree-x-mark-glow">
-            <circle cx="176" cy="176" r="2.2" opacity="0.8" />
-            <circle cx="184" cy="164" r="1.6" opacity="0.6" />
-            <circle cx="166" cy="184" r="1.4" opacity="0.6" />
-            <circle cx="188" cy="180" r="1" opacity="0.4" />
-            <circle cx="180" cy="190" r="1" opacity="0.4" />
-          </g>
-
-          <circle cx="100" cy="100" r="19" fill="rgb(var(--cyber-bg))" stroke="rgb(var(--cyber-glow))" strokeWidth="2" />
-          <circle cx="100" cy="100" r="3.5" fill="rgb(var(--cyber-glow))" className="xfree-x-core-pulse" />
-        </svg>
+        {/* The real, already-approved brand mark (this exact file already
+            ships as the site's favicon-512x512.png) - reused directly
+            rather than hand-traced as new SVG geometry, so the hero
+            centerpiece is pixel-true to the reference instead of an
+            approximation. The ambient glow/rotation/parallax around it are
+            still real CSS/JS on this page, not baked into the image. */}
+        <img
+          src="/favicon-512x512.png"
+          alt=""
+          className="h-[75%] w-[75%] object-contain xfree-x-mark xfree-x-mark-glow"
+          width={512}
+          height={512}
+          decoding="async"
+          fetchPriority="high"
+        />
       </div>
 
       {ORBIT_LABELS.map(({ label, href, position }) => (

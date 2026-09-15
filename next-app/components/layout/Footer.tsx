@@ -60,6 +60,13 @@ export function Footer() {
             <p className="mt-4 text-xs leading-5 text-cyber-dim font-mono">
               {t('availableStats', { tools: TOOLS.length, pillars: PILLARS.length })}
             </p>
+
+            <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-mono text-cyber-muted">
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">🔒</span> Privacy First</li>
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">{'</>'}</span> Open Source</li>
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">⚡</span> Browser Based</li>
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">💚</span> Built for Everyone</li>
+            </ul>
           </section>
 
           <nav aria-label="XFree footer navigation" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 xl:grid-cols-6">
@@ -268,6 +275,38 @@ export function Footer() {
             </section>
           </nav>
         </div>
+
+        {/* Real content, real destination: /updates is the existing XFree
+            Signals page (components/signals/SignalCard.tsx et al.), not a
+            new route invented for this panel. */}
+        <section
+          aria-labelledby="footer-whats-new"
+          className="mt-10 flex flex-col items-start gap-4 rounded-xl border border-cyber-glow/30 bg-cyber-glow/5 p-5 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div className="flex items-center gap-4">
+            <img
+              src="/favicon-512x512.png"
+              alt=""
+              className="hidden h-14 w-14 shrink-0 object-contain sm:block"
+              width={512}
+              height={512}
+              decoding="async"
+              loading="lazy"
+            />
+            <div>
+              <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyber-glow mb-1">What&apos;s New in XFree</p>
+              <h2 id="footer-whats-new" className="text-lg font-bold text-cyber-text mb-1">New Tools. More Possibilities.</h2>
+              <p className="text-sm text-cyber-muted">Stay updated with the latest tools, features and improvements in XFree Studio.</p>
+            </div>
+          </div>
+          <Link
+            href="/updates"
+            className="shrink-0 cyber-btn cyber-btn-filled text-xs px-4 py-2.5 rounded inline-flex items-center gap-2 whitespace-nowrap"
+          >
+            <span>Explore What&apos;s New</span>
+            <span aria-hidden="true">→</span>
+          </Link>
+        </section>
 
         <div className="h-px bg-gradient-to-r from-transparent via-cyber-glow/30 to-transparent my-6" />
 
