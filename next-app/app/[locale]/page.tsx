@@ -58,6 +58,7 @@ const FAQS: FAQ[] = [
   { q: 'What is XFree alternative to CodeBeautify?', a: 'XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs almost entirely client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit.' },
   { q: 'Can I use XFree offline?', a: 'Yes, for previously-visited pages. XFree registers a service worker that caches tool pages for offline use once you\'ve loaded them - features that require a server call (lookups, AI Cloud Mode) still need a connection.' },
   { q: 'Is XFree open source?', a: 'Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our GitHub repository.' },
+  { q: 'Is XFree the same as "X Free"?', a: 'Yes. XFree is the official name of the XFree App and XFree Studio platform. Some people search for it as "X Free" (with a space) - both point to the same product.' },
 ];
 
 const USE_CASES: UseCase[] = [
@@ -350,7 +351,7 @@ export default function HomePage() {
         <section className="py-12 px-4" aria-labelledby="roadmap-heading">
           <div className="max-w-4xl mx-auto text-center">
             <h2 id="roadmap-heading" className="text-2xl font-bold text-cyber-text mb-3 font-mono"><span className="text-cyber-glow">&gt;</span> {t('roadmapHeading')}</h2>
-            <p className="text-cyber-muted mb-6 max-w-2xl mx-auto font-mono text-sm">The XFree taxonomy maps a growing catalog of micro-tool concepts. Tools that are not yet built are tracked on our <Link href="/roadmap" className="text-cyber-glow hover:underline focus-ring">public XFree roadmap</Link>.</p>
+            <p className="text-cyber-muted mb-6 max-w-2xl mx-auto font-mono text-sm">The XFree taxonomy maps a growing catalog of micro-tool concepts. Tools that are not yet built are tracked on our <Link href="/roadmap" className="text-cyber-glow underline underline-offset-2 hover:no-underline focus-ring">public XFree roadmap</Link>.</p>
             <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
               <div className="cyber-card p-3 text-center corner-brackets">
                 <div className="text-xl font-bold text-cyber-glow font-cyber neon-green">{ALL_TOOLS.length}</div>
