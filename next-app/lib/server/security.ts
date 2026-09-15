@@ -6,6 +6,7 @@
  */
 
 import crypto from 'crypto';
+import { createClient, RedisClientType } from 'redis';
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -51,12 +52,50 @@ class InMemoryRateLimiter implements RateLimiter {
 
 /**
  * Redis-based rate limiter for production.
+ * Uses atomic Lua script for sliding window rate limiting.
+ * Fails closed when Redis is configured but unavailable.
  */
 class RedisRateLimiter implements RateLimiter {
-  private redisUrl: string;
+  private client: RedisClientType | null = null;
+  private connected = false;
+  private connectionPromise: Promise<void> | null = null;
 
-  constructor(redisUrl: string) {
-    this.redisUrl = redisUrl;
+  constructor(private readonly redisUrl: string) {
+    this.connect();
+  }
+
+  private async connect(): Promise<void> {
+    if (this.connectionPromise) {
+      return this.connectionPromise;
+    }
+
+    this.connectionPromise = (async () => {
+      try {
+        this.client = createClient({ url: this.redisUrl });
+        this.client.on('error', (err) => {
+          console.error('[RateLimiter] Redis client error:', err);
+          this.connected = false;
+        });
+        await this.client.connect();
+        this.connected = true;
+      } catch (error) {
+        console.error('[RateLimiter] Failed to connect to Redis:', error);
+        this.connected = false;
+        this.client = null;
+        throw error;
+      }
+    })();
+
+    return this.connectionPromise;
+  }
+
+  private async ensureConnected(): Promise<void> {
+    if (!this.connected || !this.client) {
+      await this.connect();
+    }
+    if (!this.connected || !this.client) {
+      throw new Error('Redis connection not available');
+    }
   }
 
   async consume(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
@@ -64,42 +103,84 @@ class RedisRateLimiter implements RateLimiter {
     const resetAt = now + windowMs;
     const fullKey = `rate_limit:${key}`;
 
-    // Use Redis atomic operations for distributed rate limiting
-    const command = [
-      'MULTI',
-      'INCR', fullKey,
-      'EXPIRE', fullKey, Math.ceil(windowMs / 1000),
-      'EXEC'
-    ];
+    await this.ensureConnected();
+
+    if (!this.client) {
+      throw new Error('Redis client not available');
+    }
+
+    const windowSec = Math.ceil(windowMs / 1000);
+
+    const luaScript = `
+      local key = KEYS[1]
+      local limit = tonumber(ARGV[1])
+      local window = tonumber(ARGV[2])
+      local now = tonumber(ARGV[3])
+      
+      local current = redis.call('GET', key)
+      if current then
+        local count = tonumber(current)
+        if count >= limit then
+          local ttl = redis.call('TTL', key)
+          return {0, count, ttl}
+        end
+        local newCount = redis.call('INCR', key)
+        local ttl = redis.call('TTL', key)
+        return {1, newCount, ttl}
+      else
+        redis.call('SET', key, 1, 'EX', window)
+        return {1, 1, window}
+      end
+    `;
 
     try {
-      const result = await this.executeRedisCommand(command);
-      const count = result[0][1] as number;
-      
-      if (count > limit) {
-        return { allowed: false, remaining: 0, resetAt, retryAfter: Math.ceil((resetAt - now) / 1000) };
+      const result = await this.client.eval(luaScript, {
+        keys: [fullKey],
+        arguments: [limit.toString(), windowSec.toString(), now.toString()],
+      }) as [number, number, number];
+
+      const [allowed, count, ttl] = result;
+
+      if (allowed === 0) {
+        return {
+          allowed: false,
+          remaining: 0,
+          resetAt: now + ttl * 1000,
+          retryAfter: ttl,
+        };
       }
 
-      return { allowed: true, remaining: limit - count, resetAt };
+      return {
+        allowed: true,
+        remaining: limit - count,
+        resetAt: now + ttl * 1000,
+      };
     } catch (error) {
-      // Fallback to allowed if Redis is unavailable
-      console.error('[RateLimiter] Redis error, allowing request', error);
-      return { allowed: true, remaining: limit - 1, resetAt };
+      console.error('[RateLimiter] Redis error during consume:', error);
+      throw new Error('Rate limiter unavailable');
     }
   }
 
   async reset(key: string): Promise<void> {
+    await this.ensureConnected();
+
+    if (!this.client) {
+      return;
+    }
+
     try {
-      await this.executeRedisCommand(['DEL', `rate_limit:${key}`]);
-    } catch {
-      // Ignore errors on reset
+      await this.client.del(`rate_limit:${key}`);
+    } catch (error) {
+      console.error('[RateLimiter] Redis error during reset:', error);
     }
   }
 
-  private async executeRedisCommand(command: string[]): Promise<any> {
-    // This would normally use the Redis client
-    // For now, throw to indicate Redis is not configured
-    throw new Error('Redis client not initialized');
+  async disconnect(): Promise<void> {
+    if (this.client && this.connected) {
+      await this.client.quit();
+      this.connected = false;
+      this.client = null;
+    }
   }
 }
 
