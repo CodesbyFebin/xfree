@@ -131,10 +131,27 @@ export default function HomePage() {
             {t('heroHandwritten')}
           </p>
 
-          <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-6 neon-box-green anim-slide-up">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse" aria-hidden="true" />
-              <span>$ {t('badge')}</span>
+          {/* w-full + min-w-0: this is a flex item of the hero section's
+              `flex items-center justify-center` row. Flex items default to
+              a content-based (shrink-to-fit) width with an implicit
+              min-width:auto floor - at a 360px viewport that floor was
+              wider than the viewport (one of several children's own
+              min-content width, still true even with each individually
+              hidden - see tests/e2e/mobile.spec.ts), pushing the whole
+              hero, search bar and heading 16px past the edge. w-full makes
+              this item fill the row instead of sizing to its content;
+              min-w-0 removes the shrink floor so its own text-wrapping
+              children can still shrink normally inside that width. */}
+          <div className="relative z-10 max-w-5xl w-full min-w-0 mx-auto px-4 text-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-6 neon-box-green anim-slide-up max-w-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse shrink-0" aria-hidden="true" />
+              {/* Was a single un-wrapping line ("$ XFree App · Privacy-First
+                  Tools · No Signup Required") whose natural width exceeded a
+                  360px viewport with nothing clamping this inline-flex badge
+                  to its container - see tests/e2e/mobile.spec.ts. max-w-full
+                  + a normal-wrapping span lets it break onto a second line
+                  instead of forcing the whole hero wider than the viewport. */}
+              <span className="text-center">$ {t('badge')}</span>
             </div>
 
             <p className="text-xs sm:text-sm font-mono uppercase tracking-[0.3em] text-cyber-muted mb-3 anim-slide-up">
@@ -158,8 +175,11 @@ export default function HomePage() {
                 <div className="cmd-bar relative flex items-center bg-cyber-card rounded-lg p-1.5 border border-cyber-border transition-all duration-300 corner-brackets">
                   <div className="pl-4 pr-2 text-cyber-glow"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
                   <label htmlFor="heroSearch" className="sr-only">{t('searchPlaceholder')}</label>
-                  <input type="text" id="heroSearch" name="q" placeholder={t('searchPlaceholder')} className="flex-1 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono" />
-                  <kbd aria-hidden="true">⌘K</kbd>
+                  <input type="text" id="heroSearch" name="q" placeholder={t('searchPlaceholder')} className="flex-1 min-w-0 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono" />
+                  {/* Meaningless on a touch device (no physical Cmd key), and its
+                      fixed width was the last few px pushing this bar past a
+                      360px viewport - see tests/e2e/mobile.spec.ts. */}
+                  <kbd aria-hidden="true" className="hidden sm:inline">⌘K</kbd>
                   <button type="submit" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded"><span>{t('execute')}</span></button>
                 </div>
               </form>
