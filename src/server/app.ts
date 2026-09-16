@@ -232,6 +232,13 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       const parsed = AiBatchSchema.safeParse(req.body);
       if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
       const { taskId, items } = parsed.data;
+      // taskIdSchema is built from Object.keys(AI_TASKS) via an `as
+      // [string, ...string[]]` cast (see server/schemas.ts), so Zod already
+      // guarantees this at runtime - the cast just erases the literal type
+      // for TS. Re-checking with the same guard the single-task /api/ai
+      // route uses narrows taskId back to AiTaskId instead of relying on
+      // that cast being correct forever.
+      if (!isValidTaskId(taskId)) return res.status(400).json({ error: "unknown_task" });
       const cap = Math.min(items.length, config.AI_BATCH_MAX_ITEMS);
       const trimmed = items.slice(0, cap);
       const task = AI_TASKS[taskId];

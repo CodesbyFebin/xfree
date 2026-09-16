@@ -170,7 +170,11 @@ export const JpgToPdf: React.FC<JpgToPdfProps> = ({ tool, onSaveHistory }) => {
     setBusy(true);
     try {
       const pdfBytes = buildPdf(images);
-      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      // Blob's BlobPart type wants an ArrayBuffer-backed view; buildPdf's
+      // return type is ArrayBufferLike-backed (could be a SharedArrayBuffer
+      // per the newer typed-array lib types), so copy into a fresh
+      // Uint8Array<ArrayBuffer> rather than widening the type unsoundly.
+      const blob = new Blob([new Uint8Array(pdfBytes)], { type: "application/pdf" });
       if (downloadUrl) URL.revokeObjectURL(downloadUrl);
       setDownloadUrl(URL.createObjectURL(blob));
       onSaveHistory(`${images.length} image(s)`, `${(pdfBytes.length / 1024).toFixed(0)} KB PDF`);

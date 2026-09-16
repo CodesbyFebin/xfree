@@ -49,7 +49,7 @@ describe("60-Pillar Registry", () => {
   it("every pillar has a valid headerGroup", () => {
     const validGroups = new Set(HEADER_GROUPS.map((g) => g.id));
     for (const p of PILLARS_60) {
-      expect(validGroups.has(p.headerGroup)).toBe(true);
+      expect(!!p.headerGroup && validGroups.has(p.headerGroup)).toBe(true);
     }
   });
 
