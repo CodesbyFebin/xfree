@@ -64,7 +64,7 @@ export default function AboutPage() {
               XFree.in delivers a curated catalog of {indexableCount} single-purpose micro-tools, organized into {PILLARS.length} topic pillars, that execute 100% locally in browser memory wherever the operation allows it. No registration required, no hidden paywalls, and zero latency.
             </p>
             <p>
-              The catalog is intentionally uneven in depth: some tools (JSON formatting, regex testing, hashing, encoding) are mature and heavily used; others are newer and still growing. Where a tool isn&apos;t built yet, it&apos;s tracked honestly on the <Link href="/roadmap" className="text-cyber-glow hover:underline">public roadmap</Link> rather than listed as available.
+              The catalog is intentionally uneven in depth: some tools (JSON formatting, regex testing, hashing, encoding) are mature and heavily used; others are newer and still growing. Where a tool isn&apos;t built yet, it&apos;s tracked honestly on the <Link href="/roadmap" className="text-cyber-glow underline underline-offset-2 hover:no-underline">public roadmap</Link> rather than listed as available.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-cyber-border">
@@ -100,8 +100,8 @@ export default function AboutPage() {
                   <span className="text-lg">🔒</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-cyber-text mb-1">Complete Privacy</h3>
-                  <p className="text-sm">Your data never leaves your browser. No logs, no analytics on your input, no data collection.</p>
+                  <h3 className="font-semibold text-cyber-text mb-1">Privacy by Default</h3>
+                  <p className="text-sm">Almost all tools keep your data in your browser - no logs, no analytics on your input, no data collection. A few (DNS/IP/WHOIS lookup, Studio&apos;s Cloud Mode) call a server to work at all, and disclose that on their own page.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">

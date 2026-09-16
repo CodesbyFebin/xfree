@@ -10,8 +10,11 @@ Last Updated: ${new Date().toISOString()}
 
 ## About XFree
 XFree is a free, privacy-first web application offering developer and SEO tools.
-All tool execution happens entirely in your browser - no data is transmitted to servers.
-No signup required. No cookies. No tracking.
+Most tool execution happens entirely in your browser, with no data transmitted to
+servers. A small number of tools (DNS/IP/WHOIS lookup, and XFree Studio's optional
+Cloud Mode) call a server or third-party provider to do their job; each such tool
+discloses this on its own page. No signup required. No cookies. No third-party
+analytics tracking.
 
 ## Organization
 - Name: XFree

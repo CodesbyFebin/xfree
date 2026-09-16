@@ -6,8 +6,20 @@ export const stopwatch = async (input: { action: 'start' | 'stop' | 'reset' }): 
   return { status: `${input.action} requested` };
 };
 
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 export const markdownToHtml = async (input: { markdown: string }): Promise<string> => {
-  let html = input.markdown
+  // Escape first, then apply the markdown->tag replacements below - this
+  // codebase's other markdown renderer (MarkdownEditorTool) already learned
+  // this lesson the hard way (see "Fix XSS in Markdown Editor tool" in git
+  // history). Without escaping first, raw HTML/attributes embedded in the
+  // input markdown (e.g. a "link" whose href is `" onerror="...`) would
+  // survive straight into this function's output as live markup -
+  // flagged by CodeQL as incomplete sanitization on the sibling
+  // htmlToMarkdown function, which pointed at the same underlying gap.
+  let html = escapeHtml(input.markdown)
     .replace(/^# (.*$)/gim, '<h1>$1</h1>')
     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
     .replace(/^### (.*$)/gim, '<h3>$1</h3>')

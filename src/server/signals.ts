@@ -61,15 +61,26 @@ const SUMMARY_MAX_LEN = 220;
 let cache: { items: SignalItem[]; fetchedAt: number } | null = null;
 let inFlight: Promise<SignalItem[]> | null = null;
 
+// Single pass, one regex, one replace() call - sequential .replace() calls
+// here previously decoded &amp; back to & FIRST, which could turn an
+// intentionally double-escaped sequence like "&amp;lt;" into "&lt;" and
+// then have the NEXT .replace() decode that too, producing a live "<" the
+// original feed content never actually contained (CodeQL:
+// js/double-escaping-or-unescaping). Matching every entity in one pass
+// means no earlier substitution can ever create a new match for a later one.
 function decodeEntities(input: string): string {
-  return input
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+  return input.replace(/&amp;|&lt;|&gt;|&quot;|&#0?39;|&apos;|&#(\d+);/g, (match, code) => {
+    switch (match) {
+      case "&amp;": return "&";
+      case "&lt;": return "<";
+      case "&gt;": return ">";
+      case "&quot;": return '"';
+      case "&apos;": return "'";
+      default:
+        if (match.startsWith("&#39") || match === "&#039;") return "'";
+        return code ? String.fromCharCode(Number(code)) : match;
+    }
+  });
 }
 
 function stripCdata(input: string): string {

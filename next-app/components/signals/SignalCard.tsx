@@ -1,6 +1,7 @@
 import { Link } from '@/i18n/navigation';
 import type { SignalItem } from '@/lib/signals/types';
 import { SIGNAL_CATEGORIES } from '@/lib/signals/sources';
+import { matchToolsForSignal } from '@/lib/signals/matchTools';
 
 function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
@@ -16,6 +17,10 @@ export function SignalCard({ item }: { item: SignalItem }) {
   const tags = item.categories
     .map((id) => ({ id, label: SIGNAL_CATEGORIES.find((c) => c.id === id)?.label }))
     .filter((t): t is { id: typeof t.id; label: string } => Boolean(t.label));
+  // Deterministic per-item match (title + feed summary against tool
+  // tags/seoKeywords), falling back to the coarser category-level list
+  // when nothing scores confidently enough - see matchTools.ts.
+  const relatedTools = matchToolsForSignal(item);
 
   return (
     <article className="cyber-card p-4">
@@ -46,6 +51,19 @@ export function SignalCard({ item }: { item: SignalItem }) {
         </div>
         <span>{timeAgo(item.publishedAt)}</span>
       </div>
+      {relatedTools.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2.5 border-t border-cyber-border/60">
+          {relatedTools.map((tool) => (
+            <Link
+              key={tool.slug}
+              href={`/tools/${tool.slug}`}
+              className="text-[10px] font-mono px-2 py-1 rounded border border-cyber-border text-cyber-cyan hover:text-cyber-glow hover:border-cyber-glow/50"
+            >
+              {tool.title} →
+            </Link>
+          ))}
+        </div>
+      )}
     </article>
   );
 }

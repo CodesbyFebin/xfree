@@ -385,7 +385,7 @@ var CATALOG_GROUPS = {
   "image-generation": ["meta/muse-glimmer-30b"]
 };
 function normalizeId(id) {
-  return id.toLowerCase().replace(/_/g, ".").replace(/-v1\.5$/, "-v1.5");
+  return id.toLowerCase().replace(/_/g, ".");
 }
 var KNOWN_KIND = /* @__PURE__ */ new Map();
 Object.entries(CATALOG_GROUPS).forEach(([kind, ids]) => ids.forEach((id) => KNOWN_KIND.set(normalizeId(id), kind)));
@@ -623,7 +623,20 @@ var CSP_DIRECTIVES = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https: https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ad.doubleclick.net https://adservice.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com",
+  // localhost/127.0.0.1 (any port) is allowlisted for XFree Studio's
+  // optional Ollama fallback (public/studio/index.html's
+  // tryOllamaFallback()), which fetches a model the *visitor* runs on
+  // their own machine - never XFree's server, so this can only ever be
+  // called client-side. Without this, every such request was silently
+  // CSP-blocked (browser console: "Refused to connect... violates the
+  // document's Content-Security-Policy"), so the feature never worked
+  // regardless of whether the visitor actually had Ollama running. This
+  // only ever grants the page a path back to a port on the visitor's own
+  // loopback interface, not a new third-party origin - it doesn't cover a
+  // custom LAN/remote Ollama host, which remains blocked (the Ollama URL
+  // setting is a plain text field with no way to reflect an arbitrary
+  // visitor-chosen host into a static response header).
+  "connect-src 'self' http://localhost:* http://127.0.0.1:* https://localhost:* https://127.0.0.1:* https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ad.doubleclick.net https://adservice.google.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com",
   "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com https://fundingchoicesmessages.google.com",
   "upgrade-insecure-requests"
 ];
@@ -6392,7 +6405,10 @@ The detector supports multiple analysis modes including overall AI probability s
     iconName: "FileText",
     execution: "local",
     status: "published",
-    indexable: true,
+    // Not indexable yet: no real interactive widget exists (see
+    // renderInteractiveTool in App.tsx) — don't publicly index/promote a
+    // page that claims annotation functionality it doesn't have.
+    indexable: false,
     lastModified: "2026-09-06",
     tags: ["pdf editor", "edit pdf", "pdf annotations", "pdf comments", "pdf markup", "free pdf", "online pdf editor"],
     exampleInput: "Sample PDF content for editing demonstration. Replace this text with your own PDF content to edit.",
@@ -6433,7 +6449,10 @@ Privacy is paramount when handling documents. Our PDF editor processes everythin
     iconName: "Video",
     execution: "local",
     status: "published",
-    indexable: true,
+    // Not indexable yet: no real interactive widget exists (see
+    // renderInteractiveTool in App.tsx) — don't publicly index/promote a
+    // page that claims download functionality it doesn't have.
+    indexable: false,
     lastModified: "2026-09-06",
     tags: ["video downloader", "download video", "video saver", "free video download", "online video downloader"],
     exampleInput: "https://example.com/sample-video",
@@ -6603,7 +6622,10 @@ The tool also provides practical advice for password management including recomm
     iconName: "Code2",
     execution: "local",
     status: "published",
-    indexable: true,
+    // Not indexable yet: no real interactive widget exists (see
+    // renderInteractiveTool in App.tsx) — don't publicly index/promote a
+    // page that claims an interactive exercise environment it doesn't have.
+    indexable: false,
     lastModified: "2026-09-06",
     tags: ["coding practice", "learn to code", "programming exercises", "code challenges", "javascript practice", "python practice", "free coding"],
     exampleInput: "function helloWorld() {\n  return 'Hello, World!';\n}",
@@ -7630,6 +7652,37 @@ function generateLlmsFullTxt(baseUrl = DEFAULT_BASE_URL) {
 }
 function generateRobotsTxt(baseUrl = DEFAULT_BASE_URL) {
   const cleanBase = cleanOrigin(baseUrl);
+  const openBlock = (agent, crawlDelay = 0) => `User-agent: ${agent}
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: ${crawlDelay}`;
+  const searchAgents = [
+    "Googlebot",
+    "Bingbot",
+    "DuckDuckBot",
+    "YandexBot",
+    "Baiduspider"
+  ];
+  const aiAnswerAgents = [
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "PerplexityBot",
+    "Perplexity-User",
+    "Claude-User",
+    "Claude-SearchBot"
+  ];
+  const aiTrainingAgents = [
+    "GPTBot",
+    "ClaudeBot",
+    "Google-Extended",
+    "Applebot-Extended",
+    "CCBot",
+    "Bytespider",
+    "Amazonbot"
+  ];
   return `# XFree.in crawl policy
 # 10/10 standard for Search, Answer, and Generative Engine Optimization
 
@@ -7641,46 +7694,14 @@ Disallow: /api/
 Disallow: /_app-shell
 Crawl-delay: 1
 
-# Search and answer-engine crawlers
-User-agent: Googlebot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
+# Search engine crawlers
+${searchAgents.map((a) => openBlock(a)).join("\n\n")}
 
-User-agent: Bingbot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
+# AI answer-engine / live-fetch crawlers (search + user-triggered fetches)
+${aiAnswerAgents.map((a) => openBlock(a)).join("\n\n")}
 
-User-agent: OAI-SearchBot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
-
-User-agent: ChatGPT-User
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
-
-User-agent: PerplexityBot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
+# AI training-data crawlers
+${aiTrainingAgents.map((a) => openBlock(a)).join("\n\n")}
 
 # Canonical discovery entry point
 Sitemap: ${cleanBase}/sitemap-index.xml
@@ -8104,8 +8125,9 @@ var md5Hash = async (input) => {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 };
+var MAX_RANDOM_STRING_LENGTH = 1e4;
 var randomString = async (input) => {
-  const length = input.length || 16;
+  const length = Math.min(Math.max(1, input.length || 16), MAX_RANDOM_STRING_LENGTH);
   const charset = input.charset || "alphanumeric";
   const chars = {
     alphanumeric: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
@@ -8175,9 +8197,9 @@ var stringReverse = async (input) => {
 var stringTrimmer = async (input) => {
   switch (input.type) {
     case "left":
-      return input.text.replace(/^\s+/, "");
+      return input.text.trimStart();
     case "right":
-      return input.text.replace(/\s+$/, "");
+      return input.text.trimEnd();
     default:
       return input.text.trim();
   }
@@ -8195,7 +8217,7 @@ var asciiToText = async (input) => {
   return input.ascii.split(" ").map((n) => String.fromCharCode(parseInt(n))).join("");
 };
 var textEntropy = async (input) => {
-  const freq = {};
+  const freq = /* @__PURE__ */ Object.create(null);
   for (const c of input.text) freq[c] = (freq[c] || 0) + 1;
   const len = input.text.length;
   let entropy = 0;
@@ -8262,6 +8284,9 @@ var imageToBase64 = async (input) => {
   });
 };
 var base64ToImage = async (input) => {
+  if (!/^data:/i.test(input.base64)) {
+    throw new Error("base64ToImage expects a data: URI, not an arbitrary URL");
+  }
   const response = await fetch(input.base64);
   const blob = await response.blob();
   return blob;
@@ -8359,7 +8384,7 @@ var csvToJson = async (input) => {
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(",");
     if (values.length !== headers.length) continue;
-    const row = {};
+    const row = /* @__PURE__ */ Object.create(null);
     headers.forEach((h, idx) => {
       row[h] = values[idx]?.trim();
     });
@@ -8409,8 +8434,11 @@ var timer = async (input) => {
 var stopwatch = async (input) => {
   return { status: `${input.action} requested` };
 };
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
 var markdownToHtml = async (input) => {
-  let html = input.markdown.replace(/^# (.*$)/gim, "<h1>$1</h1>").replace(/^## (.*$)/gim, "<h2>$1</h2>").replace(/^### (.*$)/gim, "<h3>$1</h3>").replace(/\*\*(.*)\*\*/gim, "<b>$1</b>").replace(/\*(.*)\*/gim, "<i>$1</i>").replace(/\[(.*)\]\((.*)\)/gim, '<a href="$2">$1</a>').replace(/`(.*?)`/gim, "<code>$1</code>").replace(/\n/gim, "<br>");
+  let html = escapeHtml(input.markdown).replace(/^# (.*$)/gim, "<h1>$1</h1>").replace(/^## (.*$)/gim, "<h2>$1</h2>").replace(/^### (.*$)/gim, "<h3>$1</h3>").replace(/\*\*(.*)\*\*/gim, "<b>$1</b>").replace(/\*(.*)\*/gim, "<i>$1</i>").replace(/\[(.*)\]\((.*)\)/gim, '<a href="$2">$1</a>').replace(/`(.*?)`/gim, "<code>$1</code>").replace(/\n/gim, "<br>");
   return html;
 };
 var htmlToMarkdown = async (input) => {
@@ -8595,7 +8623,7 @@ async function executeTool(request) {
   const startTime = Date.now();
   const traceId = `exec_${Date.now()}_${Math.random().toString(36).slice(2)}`;
   try {
-    const tool = findToolBySlug(request.toolId) || findToolBySlug(request.toolId);
+    const tool = findToolBySlug(request.toolId);
     if (!tool) {
       return {
         success: false,
@@ -8851,7 +8879,23 @@ var SUMMARY_MAX_LEN = 220;
 var cache = null;
 var inFlight = null;
 function decodeEntities(input) {
-  return input.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+  return input.replace(/&amp;|&lt;|&gt;|&quot;|&#0?39;|&apos;|&#(\d+);/g, (match, code) => {
+    switch (match) {
+      case "&amp;":
+        return "&";
+      case "&lt;":
+        return "<";
+      case "&gt;":
+        return ">";
+      case "&quot;":
+        return '"';
+      case "&apos;":
+        return "'";
+      default:
+        if (match.startsWith("&#39") || match === "&#039;") return "'";
+        return code ? String.fromCharCode(Number(code)) : match;
+    }
+  });
 }
 function stripCdata(input) {
   const m = input.match(/^<!\[CDATA\[([\s\S]*)\]\]>$/);
@@ -9018,10 +9062,33 @@ async function createApp(opts = {}) {
       res.status(404).send("Not Found");
     }
   });
-  app.post("/api/indexnow", express.json(), async (req, res) => {
+  const staticPageRateLimit = rateLimit({ scope: "static-page", limit: 120, windowMs: 6e4 });
+  const indexNowRateLimit = rateLimit({ scope: "indexnow", limit: 10, windowMs: 36e5 });
+  app.post("/api/indexnow", indexNowRateLimit, express.json(), async (req, res) => {
     const { host, key, keyLocation, urlList } = req.body || {};
     if (!host || !key || !Array.isArray(urlList) || urlList.length === 0) {
       return res.status(400).json({ error: "Invalid IndexNow payload" });
+    }
+    const allowedHost = new URL(config2.PUBLIC_SITE_URL).host;
+    if (host !== allowedHost) {
+      return res.status(403).json({ error: "host must match this site's own domain" });
+    }
+    const serverIndexNowKey = process.env.INDEXNOW_KEY || "96aea7e6b8f340b4ba96b60e8e43c0e5";
+    if (key !== serverIndexNowKey) {
+      return res.status(403).json({ error: "invalid key" });
+    }
+    if (keyLocation && new URL(String(keyLocation)).host !== allowedHost) {
+      return res.status(403).json({ error: "keyLocation must be on this site's own domain" });
+    }
+    const invalidUrl = urlList.find((u) => {
+      try {
+        return new URL(String(u)).host !== allowedHost;
+      } catch {
+        return true;
+      }
+    });
+    if (invalidUrl !== void 0) {
+      return res.status(400).json({ error: "every submitted URL must be on this site's own domain", invalidUrl });
     }
     try {
       const response = await fetch("https://api.indexnow.org/IndexNow", {
@@ -9081,6 +9148,7 @@ async function createApp(opts = {}) {
       const parsed = AiBatchSchema.safeParse(req.body);
       if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
       const { taskId, items } = parsed.data;
+      if (!isValidTaskId(taskId)) return res.status(400).json({ error: "unknown_task" });
       const cap = Math.min(items.length, config2.AI_BATCH_MAX_ITEMS);
       const trimmed = items.slice(0, cap);
       const task = AI_TASKS[taskId];
@@ -9404,8 +9472,8 @@ Path: ${parsed.data.path || "n/a"}`,
     res.setHeader("X-Robots-Tag", "index, follow");
     res.status(200).sendFile(filePath);
   };
-  app.get(["/home", "/home/"], serveStaticHtmlPage("home.html"));
-  app.get(["/pillars", "/pillars/"], serveStaticHtmlPage("pillars.html"));
+  app.get(["/home", "/home/"], staticPageRateLimit, serveStaticHtmlPage("home.html"));
+  app.get(["/pillars", "/pillars/"], staticPageRateLimit, serveStaticHtmlPage("pillars.html"));
   if (opts.attachStatic) await opts.attachStatic(app);
   if (opts.attachSpaFallback) await opts.attachSpaFallback(app);
   app.use((err, req, res, _next) => {

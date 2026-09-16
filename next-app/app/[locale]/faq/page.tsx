@@ -21,11 +21,11 @@ const faqs = [
   },
   {
     question: 'How do the tools work?',
-    answer: 'All tools execute entirely in your browser using JavaScript. No data is sent to external servers.',
+    answer: 'Most tools execute entirely in your browser using JavaScript, with no data sent anywhere. A few - DNS, IP, and WHOIS lookup (which need to query external internet infrastructure), and XFree Studio\'s optional Cloud Mode - call a server to do their job; those pages say so directly.',
   },
   {
     question: 'Is my data safe?',
-    answer: 'Absolutely. Your data never leaves your browser. Close the tab and all data is gone from memory.',
+    answer: 'For browser-based tools, yes - your input never leaves your device, and closing the tab clears it from memory. The DNS/IP/WHOIS lookup tools and Studio\'s optional Cloud Mode send your input to XFree\'s server or a third-party provider to perform the lookup or AI request; nothing you submit there is stored.',
   },
   {
     question: 'Do I need to install anything?',

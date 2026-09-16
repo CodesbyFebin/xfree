@@ -4,7 +4,13 @@ import { useMemo, useState } from 'react';
 
 const TEMPLATES: { label: string; pattern: string }[] = [
   { label: 'Email', pattern: '^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$' },
-  { label: 'URL', pattern: '^https?:\\/\\/[\\w.-]+\\.[a-zA-Z]{2,}([\\/\\w.-]*)*\\/?$' },
+  // Was `([\/\w.-]*)*` - a group already containing `*` repeated by an
+  // outer `*` again, the classic nested-quantifier ReDoS shape (flagged by
+  // CodeQL: js/redos - a long run of "/"/"." characters followed by a
+  // non-matching character causes catastrophic backtracking). The outer
+  // repetition was redundant anyway; a single `*` class matches the same
+  // realistic URL paths without the exponential blowup.
+  { label: 'URL', pattern: '^https?:\\/\\/[\\w.-]+\\.[a-zA-Z]{2,}[\\/\\w.-]*\\/?$' },
   { label: 'IPv4 address', pattern: '^(\\d{1,3}\\.){3}\\d{1,3}$' },
   { label: 'Digits only', pattern: '^\\d+$' },
   { label: 'Letters only', pattern: '^[a-zA-Z]+$' },

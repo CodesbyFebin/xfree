@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
+import { usePathname } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
+import { Menu, X } from 'lucide-react';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -45,6 +47,10 @@ const NAV_ITEMS = [
 export function Header() {
   const t = useTranslations('Header');
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,6 +59,28 @@ export function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close on navigation - without this, a link tap inside the mobile menu
+  // would leave it open over the new page.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    // Move focus into the open menu so keyboard users land somewhere
+    // useful, rather than leaving focus on a now-hidden-behind-overlay button.
+    const firstLink = mobileMenuRef.current?.querySelector<HTMLElement>('a, button');
+    firstLink?.focus();
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [mobileOpen]);
 
   return (
     <header
@@ -94,16 +122,67 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <LocaleSwitcher />
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
+          <div className="hidden sm:block">
+            <LocaleSwitcher />
+          </div>
           <Link
             href="/pillars"
-            className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded"
+            className="hidden lg:inline-flex cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded"
           >
             <span>{t('allTools')}</span>
           </Link>
+          <button
+            ref={menuButtonRef}
+            type="button"
+            className="lg:hidden p-2 text-cyber-text hover:text-cyber-glow"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-menu"
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {mobileOpen && (
+        <div
+          id="mobile-nav-menu"
+          ref={mobileMenuRef}
+          className="lg:hidden max-w-7xl mx-auto mt-3 pt-3 border-t border-cyber-border max-h-[calc(100vh-4rem)] overflow-y-auto"
+        >
+          <nav aria-label="Main navigation" className="flex flex-col gap-1 pb-2">
+            {NAV_ITEMS.map((item) => (
+              <div key={item.labelKey} className="mb-2">
+                <Link href={item.href} className="block px-2 py-2 text-sm font-semibold text-cyber-text">
+                  {t(item.labelKey)}
+                </Link>
+                <div className="flex flex-col pl-4">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      className="px-2 py-2 text-sm text-cyber-muted hover:text-cyber-glow"
+                    >
+                      {t(child.labelKey)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <Link href="/contact" className="px-2 py-2 text-sm font-semibold text-cyber-text">
+              {t('contact')}
+            </Link>
+            <div className="flex items-center gap-3 px-2 pt-3 sm:hidden">
+              <ThemeToggle />
+              <LocaleSwitcher />
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

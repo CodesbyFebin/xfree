@@ -45,7 +45,12 @@ export async function executeTool(
   const traceId = `exec_${Date.now()}_${Math.random().toString(36).slice(2)}`;
   
   try {
-    const tool = findToolBySlug(request.toolId) || findToolBySlug(request.toolId);
+    // Was `findToolBySlug(request.toolId) || findToolBySlug(request.toolId)`
+    // - the same call ORed with itself (CodeQL: js/comparison-of-identical-
+    // expressions). Only one lookup function exists in this codebase
+    // (findToolBySlug), so there was no second, different lookup this was
+    // ever meant to fall back to.
+    const tool = findToolBySlug(request.toolId);
     if (!tool) {
       return {
         success: false,

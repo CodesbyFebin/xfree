@@ -22,10 +22,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({
     if (tool.isAi) {
       return "bg-purple-500/20 text-purple-300 border-purple-500/40";
     }
-    if (tool.category === "seo-tools" || tool.category === "seo-url") {
+    if (tool.category === "seo-tools") {
       return "bg-blue-500/20 text-blue-300 border-blue-500/40";
     }
-    if (tool.category === "developer-tools" || tool.category === "developer") {
+    if (tool.category === "developer-tools") {
       return "bg-indigo-500/20 text-indigo-300 border-indigo-500/40";
     }
     return "bg-slate-700/50 text-slate-300 border-slate-600/50";

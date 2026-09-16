@@ -58,7 +58,15 @@
     "contribute": "参与贡献",
     "copyright": "© {year} XFree。基于 MIT 许可证发布的开源软件。",
     "marketing": "市场营销",
-    "application": "应用程序"
+    "application": "应用程序",
+    "trustPrivacyFirst": "隐私优先",
+    "trustOpenSource": "开源",
+    "trustBrowserBased": "基于浏览器",
+    "trustBuiltForEveryone": "为所有人打造",
+    "whatsNewEyebrow": "XFree 最新动态",
+    "whatsNewHeading": "全新工具，更多可能。",
+    "whatsNewDescription": "随时了解 XFree Studio 的最新工具、功能与改进。",
+    "whatsNewCta": "查看最新动态"
   },
   "Home": {
     "badge": "XFree 应用 · 隐私优先工具 · 无需注册",
@@ -109,7 +117,55 @@
     "ctaSubheading": "加入数千名正在与 XFree 一起构建更智能、更开放网络的用户。",
     "ctaHandwritten": "简单工具\n非凡自由。",
     "ctaLaunch": "启动 XFree Studio 应用",
-    "ctaBrowse": "浏览 XFree 支柱"
+    "ctaBrowse": "浏览 XFree 支柱",
+    "heroEyebrow": "人人皆有 Root 权限",
+    "heroHeadlineSuffix": "— 免费工具，真正自由。",
+    "heroSubheadingPrefix": "认识 XFree App 与",
+    "heroSubheadingSuffix": "——面向开发者、AI、数据、SEO 与网页工具的全新 XFree 工作空间。",
+    "heroParagraph": "通过 XFree 发现免费的开发者工具、AI 实用工具、数据工具、SEO 工具、转换器与网页工具。使用 XFree Studio,在一个以隐私为先的工作空间中完成搜索、创建、转换、分析与构建。",
+    "exploreNow": "立即探索 →",
+    "categoryConverters": "转换器",
+    "categoryGeneratorsShort": "生成器",
+    "toolCategoriesAriaLabel": "工具分类",
+    "popularSearchesAriaLabel": "热门搜索",
+    "orbitDeveloper": "开发者",
+    "orbitAI": "AI",
+    "orbitData": "数据",
+    "orbitWeb": "网页",
+    "orbitProductivity": "效率工具",
+    "orbitSecurity": "安全",
+    "faqs": [
+      {
+        "q": "什么是 XFree App？",
+        "a": "XFree App 是面向开发者的终极免费在线平台,提供以隐私为先的微型工具,包括 XFree JSON 格式化工具、XFree HTML 压缩工具、XFree SEO 实用工具和 XFree 加密工具。大多数工具无需注册,100% 在客户端运行;只有少数工具(DNS/IP/WHOIS 查询)会调用 XFree 自己的服务器,因为它们需要访问外部互联网基础设施。"
+      },
+      {
+        "q": "XFree 真的免费且无需注册吗？",
+        "a": "是的。使用 XFree 完全免费,无需注册、无需创建账户,也没有使用限制。所有工具均基于 MIT 许可证开源,几乎全部工具都完全在你的浏览器中运行。"
+      },
+      {
+        "q": "XFree 如何保障隐私？",
+        "a": "XFree 的工具默认在本地模式下运行,使用 JavaScript 和 WebAssembly 在你的浏览器会话内处理数据。除非该工具页面上明确说明,否则你的输入内容绝不会被传输到外部服务器。"
+      },
+      {
+        "q": "XFree 是 CodeBeautify 的什么替代方案？",
+        "a": "XFree 是 CodeBeautify 的隐私优先替代方案。与那些平台不同,XFree 几乎完全在客户端运行,零跟踪、工具页面无广告、不收集数据,并且拥有可供审计的开源代码。"
+      },
+      {
+        "q": "我可以离线使用 XFree 吗？",
+        "a": "可以,但仅限于之前访问过的页面。XFree 会注册一个 service worker,在你加载过工具页面后将其缓存以供离线使用;需要调用服务器的功能(查询、AI Cloud Mode)仍需联网。"
+      },
+      {
+        "q": "XFree 是开源的吗？",
+        "a": "是的。XFree 的全部代码库均基于 MIT 许可证开源。你可以在我们的 GitHub 仓库中审计、fork 并参与贡献。"
+      },
+      {
+        "q": "XFree 和 \"X Free\" 是同一个东西吗？",
+        "a": "是的。XFree 是 XFree App 与 XFree Studio 平台的官方名称。有些人会以带空格的 \"X Free\" 来搜索它——两者指向的是同一款产品。"
+      }
+    ],
+    "metaTitle": "XFree App:免费开发者、SEO 与 AI 工具",
+    "metaDescription": "XFree 是一款面向开发者、SEO 与 AI 工具的免费在线应用——无需注册。JSON 格式化工具、HTML 压缩工具与加密实用工具,100% 在你的浏览器中运行。"
   },
   "NotFound": {
     "title": "页面未找到",

@@ -29,6 +29,15 @@ export const imageToBase64 = async (input: { file: File }): Promise<string> => {
 };
 
 export const base64ToImage = async (input: { base64: string; fileName?: string }): Promise<Blob> => {
+  // This function also runs server-side (bundled into api/index.js for the
+  // legacy app's tool-execution endpoint), where fetch() can reach internal
+  // network targets - passing a plain http(s) URL here instead of a real
+  // data: URI would be server-side request forgery (flagged by CodeQL:
+  // js/request-forgery). Restrict to data: URIs, which is the only thing
+  // this function is actually meant to accept ("base64" input, not "any URL").
+  if (!/^data:/i.test(input.base64)) {
+    throw new Error('base64ToImage expects a data: URI, not an arbitrary URL');
+  }
   const response = await fetch(input.base64);
   const blob = await response.blob();
   return blob;

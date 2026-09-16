@@ -14,8 +14,15 @@ export const md5Hash = async (input: { text: string }): Promise<string> => {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 };
 
+// CodeQL (js/loop-bound-injection) flagged the loop below iterating
+// `input.length` times with no upper bound - a caller could request e.g.
+// 500,000,000 to force a large allocation and a long-running loop server-
+// side. No legitimate use of a "random string" tool needs more than a few
+// thousand characters.
+const MAX_RANDOM_STRING_LENGTH = 10_000;
+
 export const randomString = async (input: { length?: number; charset?: 'alphanumeric' | 'hex' | 'base64' }): Promise<string> => {
-  const length = input.length || 16;
+  const length = Math.min(Math.max(1, input.length || 16), MAX_RANDOM_STRING_LENGTH);
   const charset = input.charset || 'alphanumeric';
   const chars = {
     alphanumeric: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',

@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { createChatCompletion, NvidiaNotConfiguredError, NvidiaApiError } from '@/lib/nvidia/client';
 import { NVIDIA_TASK_TYPES } from '@/lib/nvidia/types';
 import type { NvidiaChatMessage } from '@/lib/nvidia/types';
+import { checkPaidGuard } from '@/lib/security/paidGuard';
+import { getIdempotentResult, setIdempotentResult } from '@/lib/security/rateLimiter';
+import { auditPaidRequest } from '@/lib/security/audit';
 
 // Backs Studio's (app.xfree.in) Cloud Mode. Studio's own vercel.json
 // rewrites every /api/* request there to www.xfree.in/api/*, so this
@@ -87,6 +90,13 @@ const GATEWAY_PROVIDERS: GatewayProvider[] = [
 
 const getProvider = (id: string) => GATEWAY_PROVIDERS.find((p) => p.id === id)!;
 
+// Paid-tier requests get a tighter output cap than the free/auto cascade's
+// 4096 zod ceiling - this is real per-token spend, not a free NVIDIA/
+// OpenRouter call, so the default request should not silently ask for the
+// maximum possible completion length.
+const PAID_TIER_MAX_TOKENS = 1024;
+const PAID_TIER_SCOPE = 'nvidia-paid';
+
 function routeOpenRouterModels(taskType: string, requestedModel?: string): string[] {
   const models = getProvider('openrouter').models;
   // An explicit pick that's actually one of OpenRouter's models goes
@@ -157,6 +167,9 @@ export async function POST(req: NextRequest) {
   // Explicit-pick-only paid tier: only reached when the caller names the
   // exact model id, and it takes priority over the free auto cascade below
   // so an explicit request never gets silently redirected to a free model.
+  // provider.models.includes(model) above doubles as the per-model
+  // allowlist - there is no path from here to any model id not in
+  // GATEWAY_PROVIDERS.
   for (const providerId of ['venice', 'deepseek'] as const) {
     const provider = getProvider(providerId);
     if (!model || !provider.models.includes(model)) continue;
@@ -165,11 +178,42 @@ export async function POST(req: NextRequest) {
     if (!key) {
       return errorResponse(`${provider.name} is not configured on this server`, 'PROVIDER_NOT_CONFIGURED', 503);
     }
-    const reply = await tryOpenAICompatibleModel(provider.baseUrl, key, model, messages, maxTokens ?? 512);
-    if (reply) {
-      const route = { attempted: [{ provider: provider.id, model, outcome: 'success' as const }], tier: provider.tier, autoEligible: provider.autoEligible };
-      return NextResponse.json({ success: true, provider: provider.name, model, reply, wasFallback: false, route });
+
+    const idempotencyKey = req.headers.get('idempotency-key')?.trim();
+    if (idempotencyKey) {
+      const cached = await getIdempotentResult<Record<string, unknown>>(`${PAID_TIER_SCOPE}:${idempotencyKey}`);
+      if (cached) return NextResponse.json(cached);
     }
+
+    const guard = await checkPaidGuard({
+      scope: PAID_TIER_SCOPE,
+      req,
+      killSwitchEnv: 'NVIDIA_PAID_TIER_ENABLED',
+      perIpLimit: 5,
+      perIpWindowSeconds: 60,
+      perIpDailyLimit: 30,
+      globalDailyLimit: Number(process.env.NVIDIA_PAID_GLOBAL_DAILY_LIMIT) || 200,
+    });
+    if (!guard.ok) {
+      auditPaidRequest({ scope: PAID_TIER_SCOPE, hashedKey: 'n/a', provider: provider.id, model, outcome: 'blocked', reason: guard.code });
+      return NextResponse.json(
+        { error: guard.error, code: guard.code },
+        { status: guard.status, headers: guard.retryAfterSeconds ? { 'Retry-After': String(guard.retryAfterSeconds) } : undefined }
+      );
+    }
+
+    const start = Date.now();
+    const reply = await tryOpenAICompatibleModel(provider.baseUrl, key, model, messages, Math.min(maxTokens ?? PAID_TIER_MAX_TOKENS, PAID_TIER_MAX_TOKENS));
+    const durationMs = Date.now() - start;
+
+    if (reply) {
+      auditPaidRequest({ scope: PAID_TIER_SCOPE, hashedKey: guard.hashedKey, provider: provider.id, model, outcome: 'success', durationMs });
+      const route = { attempted: [{ provider: provider.id, model, outcome: 'success' as const }], tier: provider.tier, autoEligible: provider.autoEligible };
+      const responseBody = { success: true, provider: provider.name, model, reply, wasFallback: false, route };
+      if (idempotencyKey) await setIdempotentResult(`${PAID_TIER_SCOPE}:${idempotencyKey}`, responseBody, 600);
+      return NextResponse.json(responseBody);
+    }
+    auditPaidRequest({ scope: PAID_TIER_SCOPE, hashedKey: guard.hashedKey, provider: provider.id, model, outcome: 'failed', durationMs });
     return errorResponse(`${provider.name} request failed`, 'PROVIDER_REQUEST_FAILED', 502);
   }
 

@@ -142,10 +142,39 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
     }
   });
 
-  app.post("/api/indexnow", express.json(), async (req, res) => {
+  // Generous - these are cheap static-file serves, not paid/expensive
+  // operations - but CodeQL (js/missing-rate-limiting) correctly flags any
+  // file-system-access route with literally no ceiling at all.
+  const staticPageRateLimit = rateLimit({ scope: "static-page", limit: 120, windowMs: 60_000 });
+  const indexNowRateLimit = rateLimit({ scope: "indexnow", limit: 10, windowMs: 3_600_000 });
+
+  app.post("/api/indexnow", indexNowRateLimit, express.json(), async (req, res) => {
     const { host, key, keyLocation, urlList } = req.body || {};
     if (!host || !key || !Array.isArray(urlList) || urlList.length === 0) {
       return res.status(400).json({ error: "Invalid IndexNow payload" });
+    }
+    // This endpoint had no host/key/URL validation at all - any caller
+    // could relay an arbitrary host + urlList to IndexNow's real API under
+    // this server's identity (spam/abuse of IndexNow's quota against
+    // third-party sites, or against xfree.in's own key if key/keyLocation
+    // weren't checked either). Restrict to XFree's own canonical hosts and
+    // key, and require every submitted URL to actually belong to that host.
+    const allowedHost = new URL(config.PUBLIC_SITE_URL).host;
+    if (host !== allowedHost) {
+      return res.status(403).json({ error: "host must match this site's own domain" });
+    }
+    const serverIndexNowKey = process.env.INDEXNOW_KEY || "96aea7e6b8f340b4ba96b60e8e43c0e5";
+    if (key !== serverIndexNowKey) {
+      return res.status(403).json({ error: "invalid key" });
+    }
+    if (keyLocation && new URL(String(keyLocation)).host !== allowedHost) {
+      return res.status(403).json({ error: "keyLocation must be on this site's own domain" });
+    }
+    const invalidUrl = urlList.find((u: unknown) => {
+      try { return new URL(String(u)).host !== allowedHost; } catch { return true; }
+    });
+    if (invalidUrl !== undefined) {
+      return res.status(400).json({ error: "every submitted URL must be on this site's own domain", invalidUrl });
     }
     try {
       const response = await fetch("https://api.indexnow.org/IndexNow", {
@@ -203,6 +232,13 @@ export async function createApp(opts: AppOptions = {}): Promise<Express> {
       const parsed = AiBatchSchema.safeParse(req.body);
       if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
       const { taskId, items } = parsed.data;
+      // taskIdSchema is built from Object.keys(AI_TASKS) via an `as
+      // [string, ...string[]]` cast (see server/schemas.ts), so Zod already
+      // guarantees this at runtime - the cast just erases the literal type
+      // for TS. Re-checking with the same guard the single-task /api/ai
+      // route uses narrows taskId back to AiTaskId instead of relying on
+      // that cast being correct forever.
+      if (!isValidTaskId(taskId)) return res.status(400).json({ error: "unknown_task" });
       const cap = Math.min(items.length, config.AI_BATCH_MAX_ITEMS);
       const trimmed = items.slice(0, cap);
       const task = AI_TASKS[taskId];
@@ -536,8 +572,8 @@ app.post("/api/lead", leadRateLimit, async (req, res, next) => {
     res.setHeader("X-Robots-Tag", "index, follow");
     res.status(200).sendFile(filePath);
   };
-  app.get(["/home", "/home/"], serveStaticHtmlPage("home.html"));
-  app.get(["/pillars", "/pillars/"], serveStaticHtmlPage("pillars.html"));
+  app.get(["/home", "/home/"], staticPageRateLimit, serveStaticHtmlPage("home.html"));
+  app.get(["/pillars", "/pillars/"], staticPageRateLimit, serveStaticHtmlPage("pillars.html"));
 
   if (opts.attachStatic) await opts.attachStatic(app);
   if (opts.attachSpaFallback) await opts.attachSpaFallback(app);
@@ -595,8 +631,17 @@ export function serveStaticFallback(distPath: string) {
     const spaFallback = (req: Request, res: Response) => {
       const url = req.path;
       const status = classify(url);
-      const prerendered = path.join(distPath, url.replace(/^\//, ""), "index.html");
-      if (status === "known" && fs.existsSync(prerendered)) {
+      // classify() already restricts "known" to real, allowlisted route
+      // shapes (static/category/tool/guide/pillar slugs), but CodeQL
+      // (js/path-injection) correctly flags path.join(distPath, <user
+      // input>) + sendFile as unsafe at the sink regardless of what an
+      // upstream check elsewhere in the file happens to allow - a
+      // resolved-path containment check here is the real fix, not
+      // trusting classify() alone.
+      const resolvedDist = path.resolve(distPath);
+      const prerendered = path.resolve(resolvedDist, url.replace(/^\//, ""), "index.html");
+      const isWithinDist = prerendered === resolvedDist || prerendered.startsWith(resolvedDist + path.sep);
+      if (status === "known" && isWithinDist && fs.existsSync(prerendered)) {
         return res.status(200).sendFile(prerendered);
       }
       if (status === "known") {

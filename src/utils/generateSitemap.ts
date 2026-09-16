@@ -266,8 +266,59 @@ export function generateLlmsFullTxt(baseUrl: string = DEFAULT_BASE_URL): string 
   return text;
 }
 
+// Every named block below is a real, currently-documented user-agent (see
+// the structured-data-seo skill's references/ai-crawlers.md and each
+// vendor's own published crawler docs) - deliberately not padded out with
+// plausible-sounding but undocumented tokens. Two real crawlers were
+// checked and left out on purpose:
+//   - Brave Search publishes no distinct robots.txt user-agent the way
+//     Google/Bing/OpenAI do, so there's nothing more specific to add for
+//     it than the wildcard block below (which already allows everything).
+//   - DuckDuckGo's own instant-answer crawler (DuckDuckBot) is listed,
+//     but DuckDuckGo's main web results come from Bing's index, which
+//     Bingbot below already covers.
+// All AI-crawler entries are wide open (including the training-only ones
+// - GPTBot, ClaudeBot, CCBot, Bytespider) per an explicit instruction to
+// allow everything; a site that wants search/answer indexing but not
+// model-training reuse would instead disallow the training-only bots
+// while keeping their paired live-fetch/search bot allowed (e.g. GPTBot
+// disallowed, ChatGPT-User/OAI-SearchBot allowed) - flagged here for
+// whoever revisits this later.
 export function generateRobotsTxt(baseUrl: string = DEFAULT_BASE_URL): string {
   const cleanBase = cleanOrigin(baseUrl);
+  const openBlock = (agent: string, crawlDelay = 0) => `User-agent: ${agent}
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: ${crawlDelay}`;
+
+  const searchAgents = [
+    "Googlebot",
+    "Bingbot",
+    "DuckDuckBot",
+    "YandexBot",
+    "Baiduspider",
+  ];
+  const aiAnswerAgents = [
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "PerplexityBot",
+    "Perplexity-User",
+    "Claude-User",
+    "Claude-SearchBot",
+  ];
+  const aiTrainingAgents = [
+    "GPTBot",
+    "ClaudeBot",
+    "Google-Extended",
+    "Applebot-Extended",
+    "CCBot",
+    "Bytespider",
+    "Amazonbot",
+  ];
+
   return `# XFree.in crawl policy
 # 10/10 standard for Search, Answer, and Generative Engine Optimization
 
@@ -279,46 +330,14 @@ Disallow: /api/
 Disallow: /_app-shell
 Crawl-delay: 1
 
-# Search and answer-engine crawlers
-User-agent: Googlebot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
+# Search engine crawlers
+${searchAgents.map((a) => openBlock(a)).join("\n\n")}
 
-User-agent: Bingbot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
+# AI answer-engine / live-fetch crawlers (search + user-triggered fetches)
+${aiAnswerAgents.map((a) => openBlock(a)).join("\n\n")}
 
-User-agent: OAI-SearchBot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
-
-User-agent: ChatGPT-User
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
-
-User-agent: PerplexityBot
-Allow: /
-Allow: /blog/
-Allow: /docs/
-Disallow: /api/
-Disallow: /_app-shell
-Crawl-delay: 0
+# AI training-data crawlers
+${aiTrainingAgents.map((a) => openBlock(a)).join("\n\n")}
 
 # Canonical discovery entry point
 Sitemap: ${cleanBase}/sitemap-index.xml
