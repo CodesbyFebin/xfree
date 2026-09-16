@@ -8125,8 +8125,9 @@ var md5Hash = async (input) => {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 };
+var MAX_RANDOM_STRING_LENGTH = 1e4;
 var randomString = async (input) => {
-  const length = input.length || 16;
+  const length = Math.min(Math.max(1, input.length || 16), MAX_RANDOM_STRING_LENGTH);
   const charset = input.charset || "alphanumeric";
   const chars = {
     alphanumeric: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
@@ -8196,9 +8197,9 @@ var stringReverse = async (input) => {
 var stringTrimmer = async (input) => {
   switch (input.type) {
     case "left":
-      return input.text.replace(/^\s+/, "");
+      return input.text.trimStart();
     case "right":
-      return input.text.replace(/\s+$/, "");
+      return input.text.trimEnd();
     default:
       return input.text.trim();
   }
@@ -8216,7 +8217,7 @@ var asciiToText = async (input) => {
   return input.ascii.split(" ").map((n) => String.fromCharCode(parseInt(n))).join("");
 };
 var textEntropy = async (input) => {
-  const freq = {};
+  const freq = /* @__PURE__ */ Object.create(null);
   for (const c of input.text) freq[c] = (freq[c] || 0) + 1;
   const len = input.text.length;
   let entropy = 0;
@@ -8383,7 +8384,7 @@ var csvToJson = async (input) => {
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(",");
     if (values.length !== headers.length) continue;
-    const row = {};
+    const row = /* @__PURE__ */ Object.create(null);
     headers.forEach((h, idx) => {
       row[h] = values[idx]?.trim();
     });
