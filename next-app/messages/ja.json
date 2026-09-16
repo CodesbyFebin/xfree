@@ -175,5 +175,111 @@
   },
   "Common": {
     "skipToContent": "メインコンテンツにスキップ"
+  },
+  "Tools": {
+    "json-formatter": {
+      "title": "JSON フォーマッター",
+      "shortDescription": "シンタックスハイライト付きで JSON データを整形・検証・整形表示します。",
+      "longDescription": "無料のオンライン JSON フォーマッター・バリデーター。シンタックスハイライト付きで JSON を整形し、JSON構文を検証し、圧縮された JSON を整形し、JSON データを即座に解析します。サインアップ不要。",
+      "explanation": "JSON を解析し、適切なインデントと改行で整形します。",
+      "howToUse": [
+        "JSON を入力欄に貼り付け",
+        "「Format」をクリック",
+        "整形された結果をコピー"
+      ],
+      "faqs": [
+        {
+          "question": "データはサーバーに送信されますか?",
+          "answer": "いいえ、すべての処理はブラウザ内で行われます。"
+        },
+        {
+          "question": "JSON フォーマッターは無料ですか?",
+          "answer": "はい、サインアップ不要で100%無料です。"
+        },
+        {
+          "question": "JSON データはどうなりますか?",
+          "answer": "JSON はブラウザ内に留まり、サーバーに送信されることは一切ありません。"
+        }
+      ]
+    },
+    "regex-tester": {
+      "title": "正規表現テスター",
+      "shortDescription": "リアルタイムのマッチングとシンタックスハイライトで正規表現をテスト・デバッグします。",
+      "longDescription": "無料のオンライン正規表現テスター・デバッガー。リアルタイムのマッチハイライトで正規表現をテストし、キャプチャグループを表示し、複数のパターンをテストし、正規表現の構文をデバッグします。JavaScript、Python、PHP などに対応。",
+      "explanation": "サンプルテキストに対して正規表現パターンをテストし、マッチ箇所をハイライトします。",
+      "howToUse": [
+        "正規表現パターンを入力",
+        "テスト文字列を入力",
+        "リアルタイムでマッチを確認"
+      ],
+      "faqs": [
+        {
+          "question": "どの正規表現の方言に対応していますか?",
+          "answer": "ブラウザ内では JavaScript スタイルの正規表現に対応しています。"
+        },
+        {
+          "question": "複数のパターンをテストできますか?",
+          "answer": "はい、複数のパターンをテストし、すべてのマッチをハイライト表示できます。"
+        }
+      ]
+    },
+    "xml-sitemap-generator": {
+      "title": "XML サイトマップジェネレーター",
+      "shortDescription": "Google や Bing の SEO 向けに XML サイトマップを生成します。",
+      "longDescription": "無料の XML サイトマップジェネレーター。優先度、changefreq、lastmod 日付を含む Google 準拠の XML サイトマップを作成します。動画・画像・ニュースサイトマップにも対応。SEO に最適化された出力。",
+      "explanation": "適切な名前空間とオプションの優先度で XML サイトマップを作成します。",
+      "howToUse": [
+        "URL を入力",
+        "優先度と changefreq を設定",
+        "XML サイトマップをダウンロード"
+      ],
+      "faqs": []
+    },
+    "meta-tag-generator": {
+      "title": "メタタグジェネレーター",
+      "shortDescription": "Open Graph、Twitter Card、SEO メタタグを生成します。",
+      "longDescription": "無料のメタタグジェネレーター。Facebook 用の Open Graph タグ、Twitter カード、LinkedIn、Pinterest 用のタグを作成します。タイトル、説明、キーワード、正規URLを含む SEO メタタグを生成します。",
+      "explanation": "ソーシャルシェアと SEO のための包括的なメタタグを作成します。",
+      "howToUse": [
+        "ページの詳細を入力",
+        "メタタグをコピー",
+        "HTML の <head> に追加"
+      ],
+      "faqs": []
+    },
+    "jwt-decoder": {
+      "title": "JWT デコーダー",
+      "shortDescription": "検証なしで JSON Web Token をデコード・検査します。",
+      "longDescription": "無料のオンライン JWT デコーダー。JSON Web Token をデコードし、ヘッダーとペイロードを検査し、クレームを表示し、有効期限を確認します。トークンをどこにも送信せずに JWT 認証をデバッグできます。",
+      "explanation": "検証を行わずに JWT のヘッダー、ペイロード、署名をデコードします。",
+      "howToUse": [
+        "JWT を貼り付け",
+        "デコードされたヘッダーとペイロードを確認",
+        "有効期限を確認"
+      ],
+      "faqs": []
+    }
+  },
+  "Pillars": {
+    "json-data-tools": {
+      "name": "JSON データツールハブ",
+      "description": "包括的な JSON ツールキット:フォーマッター、バリデーター、ミニファイア、フラット化ツール、ソーター、diff、ビューアー、CSV/YAML/XML への変換ツール、クエリビルダー、スキーマジェネレーター。"
+    },
+    "regex-pattern-tools": {
+      "name": "正規表現・パターンツールハブ",
+      "description": "正規表現をマスター:テスター、説明ツール、ビルダー、チートシート、デバッガー、ビジュアライザー、パターンライブラリ、マッチャー、置換ツール、バッチ処理ツール。"
+    },
+    "sitemap-generators": {
+      "name": "サイトマップジェネレーターツールハブ",
+      "description": "サイトマップを生成:XML サイトマップ、HTML サイトマップ、動画サイトマップ、画像サイトマップ、ニュースサイトマップ、モバイルサイトマップ、RSS フィード、XML インデックスファイル。"
+    },
+    "meta-tag-tools": {
+      "name": "メタタグジェネレーターツールハブ",
+      "description": "メタタグを作成:Open Graph、Twitter カード、Facebook、LinkedIn、Pinterest、スキーママークアップ、canonical タグ、robots メタ、viewport。"
+    },
+    "token-decoder-tools": {
+      "name": "トークンデコーダー・エンコーダーツールハブ",
+      "description": "トークンをデコード:JWT デコーダー、SAML デコーダー、OAuth トークンパーサー、OIDC ID トークンパーサー、SASL メカニズムセレクター、トークン有効期限チェッカー。"
+    }
   }
 }

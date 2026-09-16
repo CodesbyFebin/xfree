@@ -11,6 +11,7 @@ import { buildCanonical, buildLanguageAlternates } from '@/lib/canonical';
 import { generatePillarSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { PillarCategory } from '@/lib/data/pillarCategories';
 import type { Locale } from '@/i18n/routing';
+import { loadContentTranslations, localizeTool, localizePillar } from '@/lib/i18n/localizedContent';
 
 interface Props {
   params: Promise<{ slug?: string[]; locale: Locale }>;
@@ -30,8 +31,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   if (slug.length === 1) {
-    const pillar = findPillarBySlug(slug[0]);
-    if (pillar) {
+    const rawPillar = findPillarBySlug(slug[0]);
+    if (rawPillar) {
+      const { pillars } = await loadContentTranslations(locale);
+      const pillar = localizePillar(rawPillar, pillars);
       const path = `/pillars/${slug[0]}`;
       const canonical = buildCanonical(path, locale);
       const allKeywords = [...(pillar.keywords || []), 'XFree', 'pillar', 'tool hub', pillar.category].filter(Boolean);
@@ -48,8 +51,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (slug.length === 2) {
     const [category, pillarSlug] = slug;
-    const pillar = findPillarBySlug(pillarSlug);
-    if (pillar && pillar.category === category) {
+    const rawPillar = findPillarBySlug(pillarSlug);
+    if (rawPillar && rawPillar.category === category) {
+      const { pillars } = await loadContentTranslations(locale);
+      const pillar = localizePillar(rawPillar, pillars);
       const path = `/pillars/${category}/${pillarSlug}`;
       const canonical = buildCanonical(path, locale);
       const allKeywords = [...(pillar.keywords || []), 'XFree', pillar.category].filter(Boolean);
@@ -78,31 +83,34 @@ export async function generateStaticParams() {
 }
 
 export default async function PillarPage({ params }: Props) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
 
   if (!slug || slug.length === 0) {
-    return <PillarsIndex />;
+    return <PillarsIndex locale={locale} />;
   }
 
   if (slug.length === 1) {
-    const pillar = findPillarBySlug(slug[0]);
-    if (pillar) {
-      return <PillarDetail pillar={pillar} />;
+    const rawPillar = findPillarBySlug(slug[0]);
+    if (rawPillar) {
+      const { pillars } = await loadContentTranslations(locale);
+      return <PillarDetail pillar={localizePillar(rawPillar, pillars)} locale={locale} />;
     }
   }
 
   if (slug.length === 2) {
     const [category, pillarSlug] = slug;
-    const pillar = findPillarBySlug(pillarSlug);
-    if (pillar && pillar.category === category) {
-      return <PillarDetail pillar={pillar} />;
+    const rawPillar = findPillarBySlug(pillarSlug);
+    if (rawPillar && rawPillar.category === category) {
+      const { pillars } = await loadContentTranslations(locale);
+      return <PillarDetail pillar={localizePillar(rawPillar, pillars)} locale={locale} />;
     }
   }
 
   notFound();
 }
 
-function PillarsIndex() {
+async function PillarsIndex({ locale }: { locale: Locale }) {
+  const { pillars: pillarTranslations } = await loadContentTranslations(locale);
   // <Breadcrumbs> below renders its own BreadcrumbList schema (including
   // Home) - no need to also generate one here.
   const breadcrumbItems = [{ name: 'Pillars', href: '/pillars' }];
@@ -138,7 +146,7 @@ function PillarsIndex() {
                     <span className="text-xs text-cyber-dim font-normal">({categoryPillars.length} hubs)</span>
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {categoryPillars.map(pillar => (
+                    {categoryPillars.map(rawPillar => localizePillar(rawPillar, pillarTranslations)).map(pillar => (
                       <Link key={pillar.slug} href={`/pillars/${pillar.slug}`} className="cyber-card p-4 group block">
                         <div className="flex items-start gap-3">
                           <span className="text-2xl">{pillar.icon}</span>
@@ -169,15 +177,19 @@ function PillarsIndex() {
   );
 }
 
-function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPillarBySlug>> }) {
+async function PillarDetail({ pillar, locale }: { pillar: NonNullable<ReturnType<typeof findPillarBySlug>>; locale: Locale }) {
+  const { tools: toolTranslations } = await loadContentTranslations(locale);
   const categoryInfo = PILLAR_CATEGORIES.find(c => c.id === pillar.category);
-  const pillarTools = TOOLS.filter(t => t.pillarSlug === pillar.slug && t.indexable);
+  const pillarTools = TOOLS.filter(t => t.pillarSlug === pillar.slug && t.indexable)
+    .map(t => localizeTool(t, toolTranslations));
   // A few tools (DNS/IP/WHOIS lookup) need to reach a server and are
   // marked execution: 'workflow' for exactly that reason - don't claim
   // "100% in your browser" for a pillar that contains one.
   const allToolsAreLocal = pillarTools.every(t => t.execution !== 'workflow' && t.execution !== 'ai');
   const relatedPillars = PILLARS.filter(p => p.category === pillar.category && p.slug !== pillar.slug).slice(0, 6);
-  const categoryPillars = getPillarsByCategory(pillar.category as PillarCategory);
+  const { pillars: pillarTranslations } = await loadContentTranslations(locale);
+  const categoryPillars = getPillarsByCategory(pillar.category as PillarCategory)
+    .map(p => localizePillar(p, pillarTranslations));
 
   // No 'Home' entry here - <Breadcrumbs> already prepends its own Home
   // link and generates+renders its own BreadcrumbList schema (see

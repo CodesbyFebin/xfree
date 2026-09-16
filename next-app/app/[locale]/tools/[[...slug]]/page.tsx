@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
@@ -12,6 +13,7 @@ import { buildCanonical, buildLanguageAlternates } from '@/lib/canonical';
 import { generateToolSchema, generateFAQSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { USE_CASES } from '@/lib/data/content';
 import { truncateForMeta } from '@/lib/seo/metaDescription';
+import { loadContentTranslations, localizeTool, localizePillar } from '@/lib/i18n/localizedContent';
 import type { Locale } from '@/i18n/routing';
 import { JsonFormatterTool } from '@/components/tools/JsonFormatterTool';
 import { RegexTesterTool } from '@/components/tools/RegexTesterTool';
@@ -170,9 +172,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const toolSlug = slug[slug.length - 1];
-  const tool = findToolById(toolSlug);
+  const rawTool = findToolById(toolSlug);
 
-  if (tool) {
+  if (rawTool) {
+    const { tools } = await loadContentTranslations(locale);
+    const tool = localizeTool(rawTool, tools);
     const canonical = buildCanonical(`/tools/${tool.slug}`, locale);
     // longDescription runs well past the ~160-char point search engines
     // truncate a meta description at (measured: 46 of 58 tools were over
@@ -232,23 +236,25 @@ export async function generateStaticParams() {
 }
 
 export default async function ToolPage({ params }: Props) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
 
   if (!slug || slug.length === 0) {
-    return <ToolsIndex />;
+    return <ToolsIndex locale={locale} />;
   }
 
   const toolSlug = slug[slug.length - 1];
-  const tool = findToolById(toolSlug);
+  const rawTool = findToolById(toolSlug);
 
-  if (tool) {
-    return <ToolDetail tool={tool} />;
+  if (rawTool) {
+    const { tools } = await loadContentTranslations(locale);
+    return <ToolDetail tool={localizeTool(rawTool, tools)} locale={locale} />;
   }
 
   notFound();
 }
 
-function ToolsIndex() {
+async function ToolsIndex({ locale }: { locale: Locale }) {
+  const { tools: toolTranslations } = await loadContentTranslations(locale);
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(generateBreadcrumbSchema([{ name: 'Tools', href: '/tools' }])) }} />
@@ -261,7 +267,7 @@ function ToolsIndex() {
             <p className="text-cyber-muted max-w-2xl mx-auto">{TOOLS.filter(t => t.indexable).length} free privacy-first tools for developers and SEO professionals.</p>
           </header>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {TOOLS.filter(t => t.indexable).map(tool => (
+            {TOOLS.filter(t => t.indexable).map(rawTool => localizeTool(rawTool, toolTranslations)).map(tool => (
               <Link key={tool.id} href={`/tools/${tool.slug}`} className="cyber-card p-4 group block">
                 <h3 className="text-sm font-semibold text-cyber-text group-hover:text-cyber-glow transition-colors font-mono mb-1">XFree {tool.title}</h3>
                 <p className="text-xs text-cyber-muted line-clamp-2 mb-3">{tool.shortDescription}</p>
@@ -279,20 +285,42 @@ function ToolsIndex() {
   );
 }
 
-function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById>> }) {
+// Maps a category id to the matching translation key already established
+// in the Header namespace, so the breadcrumb doesn't need its own,
+// separate translated copy of the same four category names.
+const CATEGORY_TRANSLATION_KEYS: Record<string, string> = {
+  'developer-tools': 'developerTools',
+  'seo-tools': 'seoTools',
+  'ai-tools': 'aiTools',
+  'security-tools': 'securityTools',
+};
+
+async function ToolDetail({ tool, locale }: { tool: NonNullable<ReturnType<typeof findToolById>>; locale: Locale }) {
+  const { tools: toolTranslations, pillars: pillarTranslations } = await loadContentTranslations(locale);
   const categoryInfo = CATEGORIES.find(c => c.id === tool.category);
-  const pillar = tool.pillarSlug ? findPillarBySlug(tool.pillarSlug) : null;
-  const relatedTools = tool.relatedToolIds.map(id => findToolById(id)).filter(Boolean).slice(0, 6);
-  const sameCategoryTools = TOOLS.filter(t => t.category === tool.category && t.id !== tool.id && t.indexable).slice(0, 4);
+  const rawPillar = tool.pillarSlug ? findPillarBySlug(tool.pillarSlug) : null;
+  const pillar = rawPillar ? localizePillar(rawPillar, pillarTranslations) : null;
+  const relatedTools = tool.relatedToolIds
+    .map(id => findToolById(id))
+    .filter((t): t is NonNullable<typeof t> => Boolean(t))
+    .map(t => localizeTool(t, toolTranslations))
+    .slice(0, 6);
+  const sameCategoryTools = TOOLS.filter(t => t.category === tool.category && t.id !== tool.id && t.indexable)
+    .map(t => localizeTool(t, toolTranslations))
+    .slice(0, 4);
   const toolUseCases = USE_CASES.filter(uc => uc.tools.includes(tool.id)).slice(0, 2);
+
+  const tHeader = await getTranslations({ locale, namespace: 'Header' });
+  const categoryTranslationKey = CATEGORY_TRANSLATION_KEYS[tool.category];
+  const categoryLabel = categoryTranslationKey ? tHeader(categoryTranslationKey) : categoryInfo?.label || tool.category;
 
   // No 'Home' entry here - <Breadcrumbs> already prepends its own Home
   // link and generates+renders its own BreadcrumbList schema (see
   // components/seo/Breadcrumbs.tsx). Including Home here duplicated both
   // the visible "Home / Home / ..." trail and the JSON-LD block.
   const breadcrumbItems = [
-    { name: 'Tools', href: '/tools' },
-    { name: categoryInfo?.label || tool.category, href: `/categories/${categoryInfo?.slug}` },
+    { name: tHeader('toolsMenu'), href: '/tools' },
+    { name: categoryLabel, href: `/categories/${categoryInfo?.slug}` },
     { name: tool.title, href: `/tools/${tool.slug}` },
   ];
 

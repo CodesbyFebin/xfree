@@ -175,5 +175,111 @@
   },
   "Common": {
     "skipToContent": "Aller au contenu principal"
+  },
+  "Tools": {
+    "json-formatter": {
+      "title": "Formateur JSON",
+      "shortDescription": "Formatez, validez et embellissez des données JSON avec coloration syntaxique.",
+      "longDescription": "Formateur et validateur JSON gratuit en ligne. Formatez du JSON avec coloration syntaxique, validez la syntaxe JSON, embellissez du JSON minifié et analysez des données JSON instantanément. Aucune inscription requise.",
+      "explanation": "Analyse le JSON et le formate avec une indentation et des sauts de ligne appropriés.",
+      "howToUse": [
+        "Collez le JSON dans le champ de saisie",
+        "Cliquez sur Formater",
+        "Copiez le résultat formaté"
+      ],
+      "faqs": [
+        {
+          "question": "Mes données sont-elles envoyées à des serveurs ?",
+          "answer": "Non, tout le traitement se fait côté navigateur."
+        },
+        {
+          "question": "Le formateur JSON est-il gratuit ?",
+          "answer": "Oui, 100 % gratuit et sans inscription."
+        },
+        {
+          "question": "Que deviennent mes données JSON ?",
+          "answer": "Votre JSON reste dans votre navigateur et n'est jamais envoyé à un serveur."
+        }
+      ]
+    },
+    "regex-tester": {
+      "title": "Testeur d'Expressions Régulières",
+      "shortDescription": "Testez et déboguez des expressions régulières avec correspondance en temps réel et coloration syntaxique.",
+      "longDescription": "Testeur et débogueur d'expressions régulières gratuit en ligne. Testez des expressions régulières avec mise en évidence des correspondances en temps réel, visualisez les groupes de capture, testez plusieurs motifs et déboguez la syntaxe regex. Compatible avec JavaScript, Python, PHP et plus.",
+      "explanation": "Teste des motifs regex sur un texte d'exemple avec mise en évidence des correspondances.",
+      "howToUse": [
+        "Saisissez le motif regex",
+        "Saisissez le texte de test",
+        "Visualisez les correspondances en temps réel"
+      ],
+      "faqs": [
+        {
+          "question": "Quelles variantes de regex sont prises en charge ?",
+          "answer": "La syntaxe regex de type JavaScript est prise en charge dans le navigateur."
+        },
+        {
+          "question": "Puis-je tester plusieurs motifs ?",
+          "answer": "Oui, vous pouvez tester plusieurs motifs et voir toutes les correspondances surlignées."
+        }
+      ]
+    },
+    "xml-sitemap-generator": {
+      "title": "Générateur de Sitemap XML",
+      "shortDescription": "Générez des sitemaps XML pour le référencement Google et Bing.",
+      "longDescription": "Générateur de sitemap XML gratuit. Créez des sitemaps XML conformes à Google avec priorités, changefreq et dates lastmod. Prise en charge des sitemaps vidéo, image et actualités. Sortie optimisée pour le SEO.",
+      "explanation": "Crée un sitemap XML avec l'espace de noms approprié et des priorités facultatives.",
+      "howToUse": [
+        "Saisissez les URLs",
+        "Définissez les priorités et changefreq",
+        "Téléchargez le sitemap XML"
+      ],
+      "faqs": []
+    },
+    "meta-tag-generator": {
+      "title": "Générateur de Meta Tags",
+      "shortDescription": "Générez des balises Open Graph, Twitter Card et des meta tags SEO.",
+      "longDescription": "Générateur de meta tags gratuit. Créez des balises Open Graph pour Facebook, des cartes Twitter, LinkedIn et Pinterest. Générez des meta tags SEO incluant titre, description, mots-clés et URLs canoniques.",
+      "explanation": "Crée des meta tags complètes pour le partage sur les réseaux sociaux et le SEO.",
+      "howToUse": [
+        "Saisissez les détails de la page",
+        "Copiez les meta tags",
+        "Ajoutez-les au <head> HTML"
+      ],
+      "faqs": []
+    },
+    "jwt-decoder": {
+      "title": "Décodeur JWT",
+      "shortDescription": "Décodez et inspectez des JSON Web Tokens sans vérification.",
+      "longDescription": "Décodeur JWT gratuit en ligne. Décodez des JSON Web Tokens, inspectez l'en-tête et le payload, visualisez les claims, vérifiez l'expiration. Déboguez l'authentification JWT sans envoyer de tokens où que ce soit.",
+      "explanation": "Décode l'en-tête, le payload et la signature du JWT sans le vérifier.",
+      "howToUse": [
+        "Collez le JWT",
+        "Consultez l'en-tête et le payload décodés",
+        "Vérifiez l'expiration"
+      ],
+      "faqs": []
+    }
+  },
+  "Pillars": {
+    "json-data-tools": {
+      "name": "Hub d'Outils de Données JSON",
+      "description": "Boîte à outils JSON complète : formateur, validateur, minificateur, aplatisseur, trieur, diff, visualiseur, convertisseur vers CSV/YAML/XML, générateur de requêtes, générateur de schémas."
+    },
+    "regex-pattern-tools": {
+      "name": "Hub d'Outils Regex et Motifs",
+      "description": "Maîtrisez les regex : testeur, explicateur, constructeur, aide-mémoire, débogueur, visualiseur, bibliothèque de motifs, comparateur, remplaceur, traitement par lots."
+    },
+    "sitemap-generators": {
+      "name": "Hub de Générateurs de Sitemap",
+      "description": "Générez des sitemaps : sitemap XML, sitemap HTML, sitemap vidéo, sitemap image, sitemap actualités, sitemap mobile, flux RSS, fichiers d'index XML."
+    },
+    "meta-tag-tools": {
+      "name": "Hub d'Outils de Meta Tags",
+      "description": "Créez des meta tags : Open Graph, cartes Twitter, Facebook, LinkedIn, Pinterest, balisage de schéma, balises canoniques, meta robots, viewport."
+    },
+    "token-decoder-tools": {
+      "name": "Hub de Décodeurs et Encodeurs de Tokens",
+      "description": "Décodez des tokens : décodeur JWT, décodeur SAML, analyseur de token OAuth, analyseur d'ID token OIDC, sélecteur de mécanisme SASL, vérificateur d'expiration de token."
+    }
   }
 }
