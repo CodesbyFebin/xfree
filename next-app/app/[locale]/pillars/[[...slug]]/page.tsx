@@ -103,11 +103,12 @@ export default async function PillarPage({ params }: Props) {
 }
 
 function PillarsIndex() {
+  // <Breadcrumbs> below renders its own BreadcrumbList schema (including
+  // Home) - no need to also generate one here.
   const breadcrumbItems = [{ name: 'Pillars', href: '/pillars' }];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(generateBreadcrumbSchema(breadcrumbItems)) }} />
       <div className="scanlines" aria-hidden="true" />
       <Header />
 
@@ -178,20 +179,21 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
   const relatedPillars = PILLARS.filter(p => p.category === pillar.category && p.slug !== pillar.slug).slice(0, 6);
   const categoryPillars = getPillarsByCategory(pillar.category as PillarCategory);
 
+  // No 'Home' entry here - <Breadcrumbs> already prepends its own Home
+  // link and generates+renders its own BreadcrumbList schema (see
+  // components/seo/Breadcrumbs.tsx). Including Home here duplicated both
+  // the visible "Home / Home / ..." trail and the JSON-LD block.
   const breadcrumbItems = [
-    { name: 'Home', href: '/' },
     { name: 'Pillars', href: '/pillars' },
     { name: categoryInfo?.label || pillar.category, href: `/pillars` },
     { name: pillar.name, href: `/pillars/${pillar.slug}` },
   ];
 
   const schema = generatePillarSchema(pillar, pillar.toolCount || pillarTools.length);
-  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <div className="scanlines" aria-hidden="true" />
       <Header />
 

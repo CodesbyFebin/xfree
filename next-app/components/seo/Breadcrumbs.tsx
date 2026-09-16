@@ -12,7 +12,11 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
-  const schema = generateBreadcrumbSchema(items);
+  // items is expected to NOT include Home - this component renders that
+  // link itself below. Prepending it here too, once, keeps the schema's
+  // first position matching what's actually visible instead of starting
+  // mid-trail.
+  const schema = generateBreadcrumbSchema([{ name: 'Home', href: '/' }, ...items]);
 
   return (
     <>

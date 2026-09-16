@@ -277,8 +277,11 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
   const sameCategoryTools = TOOLS.filter(t => t.category === tool.category && t.id !== tool.id && t.indexable).slice(0, 4);
   const toolUseCases = USE_CASES.filter(uc => uc.tools.includes(tool.id)).slice(0, 2);
 
+  // No 'Home' entry here - <Breadcrumbs> already prepends its own Home
+  // link and generates+renders its own BreadcrumbList schema (see
+  // components/seo/Breadcrumbs.tsx). Including Home here duplicated both
+  // the visible "Home / Home / ..." trail and the JSON-LD block.
   const breadcrumbItems = [
-    { name: 'Home', href: '/' },
     { name: 'Tools', href: '/tools' },
     { name: categoryInfo?.label || tool.category, href: `/categories/${categoryInfo?.slug}` },
     { name: tool.title, href: `/tools/${tool.slug}` },
@@ -287,12 +290,10 @@ function ToolDetail({ tool }: { tool: NonNullable<ReturnType<typeof findToolById
   const toolSchema = generateToolSchema(tool);
   const faqSchema = tool.faqs.length > 0 ? generateFAQSchema(tool.faqs) : null;
   const howToSchema = generateHowToSchema(tool.title, tool.howToUse);
-  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(toolSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
       <div className="scanlines" aria-hidden="true" />
