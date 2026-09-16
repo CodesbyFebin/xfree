@@ -158,7 +158,11 @@ function getSchemaData(locale: string) {
         '@type': ['WebSite', 'WebApplication'],
         '@id': `${baseUrl}/#website`,
         name: 'XFree',
-        alternateName: ['XFree.in', 'xfree.in'],
+        // "X Free" is a real spacing/search variant of this same product,
+        // not a separate entity - see the homepage FAQ and the hero copy's
+        // "built for people searching XFree, X Free..." for the same
+        // framing in visible text.
+        alternateName: ['XFree.in', 'xfree.in', 'X Free'],
         url: `${baseUrl}/`,
         description: 'Free browser-based developer, SEO, and single-purpose AI micro-tools.',
         inLanguage: locale,
@@ -166,11 +170,11 @@ function getSchemaData(locale: string) {
         operatingSystem: 'Any',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
         publisher: { '@id': `${baseUrl}/#organization` },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: `${baseUrl}/?q={search_term_string}`,
-          'query-input': 'required name=search_term_string',
-        },
+        // No potentialAction/SearchAction: the hero's search bar matches
+        // client-side against the tool registry and navigates directly to
+        // a tool (or /tools) - there is no server-rendered `/?q=` results
+        // page for a SearchAction to honestly point at. Removed rather
+        // than left pointing at a URL that doesn't actually search.
       },
       {
         '@context': 'https://schema.org',
@@ -212,21 +216,23 @@ export default async function LocaleLayout({
             __html: `try{var t=localStorage.getItem('xfree-theme');if(t==='light')document.documentElement.dataset.theme='light';}catch(e){}`,
           }}
         />
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.tailwindcss.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" />
-        <meta httpEquiv="Cross-Origin-Opener-Policy" content="same-origin" />
-        <meta httpEquiv="Cross-Origin-Embedder-Policy" content="require-corp" />
-        <meta httpEquiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+        {/* Security headers (CSP, COOP, COEP, Permissions-Policy, nosniff,
+            Referrer-Policy) are set once, authoritatively, via next.config.js's
+            headers() as real HTTP response headers - this used to duplicate
+            them here as <meta httpEquiv> tags too, with a DIFFERENT, looser
+            CSP (allowlisting googlesyndication/jsdelivr/tailwindcss-cdn/
+            api.github.com hosts that were never actually used, and that the
+            real header CSP doesn't allow). Browsers ignore frame-ancestors
+            and X-Frame-Options from a meta tag entirely, and don't support
+            COEP via meta at all, so those specific duplicates were always
+            inert - the CSP/Permissions-Policy/etc ones weren't inert, they
+            were just a second, conflicting, unmaintained copy of the same
+            policy. Removed rather than kept in sync by hand in two places. */}
         <meta name="theme-color" content="#050508" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="XFree App" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://api.github.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.tailwindcss.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="alternate" type="text/plain" title="XFree llms.txt" href="/llms.txt" />
         <link rel="alternate" type="application/rss+xml" title="XFree Tools RSS Feed" href="/rss/tools.xml" />

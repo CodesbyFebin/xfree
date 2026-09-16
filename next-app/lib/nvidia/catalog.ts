@@ -17,7 +17,12 @@ const CATALOG_GROUPS: Record<NvidiaModelKind, string[]> = {
   "image-generation": ["meta/muse-glimmer-30b"],
 };
 
-function normalizeId(id: string) { return id.toLowerCase().replace(/_/g, ".").replace(/-v1\.5$/, "-v1.5"); }
+// The trailing .replace(/-v1\.5$/, "-v1.5") this used to have was a no-op
+// (replacing "-v1.5" with the identical "-v1.5") - flagged by CodeQL
+// (js/replace-substring-with-itself) and confirmed dead: the preceding
+// underscore-to-dot replace already normalizes "-v1_5" to "-v1.5" before
+// this would ever run. Removed rather than guessed-and-kept.
+function normalizeId(id: string) { return id.toLowerCase().replace(/_/g, "."); }
 const KNOWN_KIND = new Map<string, NvidiaModelKind>();
 Object.entries(CATALOG_GROUPS).forEach(([kind, ids]) => ids.forEach((id) => KNOWN_KIND.set(normalizeId(id), kind as NvidiaModelKind)));
 

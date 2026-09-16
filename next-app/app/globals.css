@@ -16,7 +16,13 @@
   --cyber-purple: 168 85 247;
   --cyber-amber: 251 191 36;
   --cyber-red: 255 51 51;
-  --cyber-dim: 107 114 128;
+  /* was 107 114 128 - 4.0:1 against --cyber-card, below WCAG AA's 4.5:1
+     for normal text (found by an automated axe-core scan across the
+     text-cyber-dim/.lang-switcher/input::placeholder usages of this
+     token). Raised brightness at the same hue to clear 4.5:1 against both
+     --cyber-bg and --cyber-card while staying visibly dimmer than
+     --cyber-muted. */
+  --cyber-dim: 122 129 143;
   --cyber-text: 200 200 212;
   --cyber-muted: 156 163 175;
 }
@@ -38,7 +44,10 @@
   --cyber-purple: 124 58 179;
   --cyber-amber: 180 116 10;
   --cyber-red: 200 60 60;
-  --cyber-dim: 118 124 134;
+  /* was 118 124 134 - 4.1:1 against --cyber-bg, below WCAG AA's 4.5:1.
+     Darkened at the same hue to clear 4.6:1+ against both --cyber-bg and
+     --cyber-card. */
+  --cyber-dim: 103 109 119;
   --cyber-text: 18 21 26;
   --cyber-muted: 61 67 76;
 }
@@ -82,11 +91,17 @@
     color: rgb(var(--cyber-text)) !important;
   }
 
+  /* Was `outline: none !important; box-shadow: none !important;` with no
+     replacement - every input/select/textarea on the site had zero visible
+     focus indicator (WCAG 2.4.7), found by an automated axe-core keyboard
+     pass. Same treatment as the .focus-ring utility class already used
+     elsewhere in this file, so keyboard focus looks the same whether it
+     lands on a form field or a .focus-ring element. */
   input:focus,
   select:focus,
   textarea:focus {
-    outline: none !important;
-    box-shadow: none !important;
+    outline: 2px solid rgb(var(--cyber-glow)) !important;
+    outline-offset: 2px;
   }
 
   input::placeholder,
@@ -758,6 +773,98 @@
 
   .anim-pulse {
     animation: pulse-neon 2s ease-in-out infinite;
+  }
+
+  @keyframes hud-rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes hud-rotate-reverse {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes x-glow-shift {
+    0%,
+    100% {
+      opacity: 0.85;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes x-core-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.5);
+    }
+  }
+
+  /* Hero "X" mark (components/home/InteractiveX.tsx) - ambient rotation is
+     pure CSS (no JS re-renders); pointer parallax is handled separately in
+     the component itself via direct ref/style writes, gated on
+     prefers-reduced-motion there too. */
+  .hud-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1px solid rgb(var(--cyber-glow) / 0.15);
+  }
+
+  .hud-ring-outer {
+    animation: hud-rotate 60s linear infinite;
+    border-style: dashed;
+  }
+
+  .hud-ring-inner {
+    inset: 12%;
+    animation: hud-rotate-reverse 45s linear infinite;
+    border-color: rgb(var(--cyber-glow) / 0.25);
+  }
+
+  .xfree-x-mark {
+    filter: drop-shadow(0 0 18px rgb(var(--cyber-glow) / 0.35));
+  }
+
+  .xfree-x-mark-glow {
+    animation: x-glow-shift 4s ease-in-out infinite;
+    transform-box: fill-box;
+  }
+
+  .xfree-x-core-pulse {
+    animation: x-core-pulse 2.4s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  /* Every animation/transition on the site, old and new, stops here - the
+     one global reduced-motion guard rather than repeating a media query
+     per animated class. Existing animations (.anim-slide-up, .anim-pulse,
+     .glitch, the metrics ticker) were previously unguarded entirely. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   .glitch {

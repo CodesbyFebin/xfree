@@ -20,10 +20,17 @@ function localizedUrl(path: string, locale: string): string {
 // One sitemap entry per (path, locale) pair, each carrying the full set of
 // hreflang alternates (including itself and x-default) so search engines
 // can discover every real translated page and its siblings in one pass.
-function localizedEntries(
-  path: string,
-  options: { changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number; lastModified?: string }
-): MetadataRoute.Sitemap {
+//
+// lastModified is only ever set from a real, tracked content-review date
+// (currently only guides have one - guide.lastReviewed below) and omitted
+// everywhere else, rather than stamped with the build/deploy date. Google
+// documents that it only trusts <lastmod> when it consistently reflects a
+// page's actual last significant change - a value that really just means
+// "when did we last deploy" teaches it to distrust the field entirely.
+// changeFrequency/priority are gone for the same reason from the other
+// direction: Google has said for years it doesn't use either for ranking
+// or recrawl scheduling, so they were unused weight, not real signal.
+function localizedEntries(path: string, lastModified?: string): MetadataRoute.Sitemap {
   const languages: Record<string, string> = { 'x-default': localizedUrl(path, routing.defaultLocale) };
   for (const locale of routing.locales) {
     languages[locale] = localizedUrl(path, locale);
@@ -31,66 +38,70 @@ function localizedEntries(
 
   return routing.locales.map((locale) => ({
     url: localizedUrl(path, locale),
-    lastModified: options.lastModified ?? new Date().toISOString().split('T')[0],
-    changeFrequency: options.changeFrequency,
-    priority: options.priority,
+    ...(lastModified ? { lastModified } : {}),
     alternates: { languages },
   }));
 }
 
+const STATIC_PATHS = [
+  '/',
+  '/pillars',
+  '/tools',
+  '/guides',
+  '/about',
+  '/blog',
+  '/contact',
+  '/faq',
+  '/how-it-works',
+  '/privacy',
+  '/terms',
+  '/security',
+  '/roadmap',
+  '/use-cases',
+  '/xfree-app',
+  '/updates',
+  '/updates/ai',
+  '/updates/web-development',
+  '/updates/open-source',
+  '/updates/security',
+  '/updates/browser',
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPaths: { path: string; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']; priority: number }[] = [
-    { path: '/', changeFrequency: 'daily', priority: 1 },
-    { path: '/pillars', changeFrequency: 'weekly', priority: 0.9 },
-    { path: '/tools', changeFrequency: 'daily', priority: 0.9 },
-    { path: '/guides', changeFrequency: 'weekly', priority: 0.8 },
-    { path: '/about', changeFrequency: 'monthly', priority: 0.5 },
-    { path: '/blog', changeFrequency: 'weekly', priority: 0.6 },
-    { path: '/contact', changeFrequency: 'monthly', priority: 0.4 },
-    { path: '/faq', changeFrequency: 'monthly', priority: 0.5 },
-    { path: '/how-it-works', changeFrequency: 'monthly', priority: 0.5 },
-    { path: '/privacy', changeFrequency: 'yearly', priority: 0.3 },
-    { path: '/terms', changeFrequency: 'yearly', priority: 0.3 },
-    { path: '/security', changeFrequency: 'monthly', priority: 0.4 },
-    { path: '/roadmap', changeFrequency: 'weekly', priority: 0.4 },
-    { path: '/use-cases', changeFrequency: 'monthly', priority: 0.5 },
-    { path: '/xfree-app', changeFrequency: 'monthly', priority: 0.4 },
-    { path: '/updates', changeFrequency: 'hourly', priority: 0.6 },
-    { path: '/updates/ai', changeFrequency: 'hourly', priority: 0.5 },
-    { path: '/updates/web-development', changeFrequency: 'hourly', priority: 0.5 },
-    { path: '/updates/open-source', changeFrequency: 'hourly', priority: 0.5 },
-    { path: '/updates/security', changeFrequency: 'hourly', priority: 0.5 },
-    { path: '/updates/browser', changeFrequency: 'hourly', priority: 0.5 },
-  ];
-  const staticRoutes = staticPaths.flatMap((p) => localizedEntries(p.path, p));
+  // None of these carry a tracked "last significant change" date - see
+  // localizedEntries' comment on why that means omitting lastModified
+  // rather than stamping today's date.
+  const staticRoutes = STATIC_PATHS.flatMap((path) => localizedEntries(path));
 
-  const toolRoutes = TOOLS.filter((t) => t.indexable).flatMap((tool) =>
-    localizedEntries(`/tools/${tool.slug}`, {
-      changeFrequency: 'weekly',
-      // Rounded to 2dp - the raw computation (0.7 + volume/1000000) hits
-      // binary floating-point imprecision for most inputs (e.g. produces
-      // 0.7739999999999999 instead of 0.774), which XML sitemaps render
-      // as literal 16-digit decimals. Real sitemap validators/crawlers
-      // don't need that precision; a clean 2-decimal value is standard.
-      priority: Math.round(Math.min(0.9, tool.searchVolume ? 0.7 + tool.searchVolume / 1000000 : 0.8) * 100) / 100,
-    })
-  );
+  // All 58 indexable tools stay in deliberately, including the 39 that
+  // aren't yet engineVerified. See scripts/verify-sitemap.ts for the
+  // tracked reconciliation: filtering to engineVerified here would drop
+  // those 39 real, public, working tool pages from the sitemap before
+  // anyone has actually audited which of them deserve that filter, which
+  // would be a bigger regression than the inconsistency it "fixes".
+  const toolRoutes = TOOLS.filter((tool) => tool.indexable).flatMap((tool) => localizedEntries(`/tools/${tool.slug}`));
 
-  const categoryRoutes = CATEGORIES.flatMap((cat) =>
-    localizedEntries(`/categories/${cat.slug}`, { changeFrequency: 'weekly', priority: 0.7 })
-  );
+  const categoryRoutes = CATEGORIES.flatMap((category) => localizedEntries(`/categories/${category.slug}`));
 
-  const pillarRoutes = PILLARS.flatMap((pillar) =>
-    localizedEntries(`/pillars/${pillar.slug}`, { changeFrequency: 'weekly', priority: 0.7 })
-  );
+  const pillarRoutes = PILLARS.flatMap((pillar) => localizedEntries(`/pillars/${pillar.slug}`));
 
-  const guideRoutes = GUIDES.flatMap((guide) =>
-    localizedEntries(`/guides/${guide.slug}`, {
-      changeFrequency: 'monthly',
-      priority: 0.6,
-      lastModified: guide.lastReviewed,
-    })
-  );
+  const guideRoutes = GUIDES.flatMap((guide) => localizedEntries(`/guides/${guide.slug}`, guide.lastReviewed));
 
-  return [...staticRoutes, ...toolRoutes, ...categoryRoutes, ...pillarRoutes, ...guideRoutes];
+  const entries = [...staticRoutes, ...toolRoutes, ...categoryRoutes, ...pillarRoutes, ...guideRoutes];
+
+  // Fails the build rather than silently shipping a sitemap that lists the
+  // same canonical URL twice - Search Console treats a duplicate <loc> as
+  // a sign something upstream (usually a slug collision) is wrong, not a
+  // cosmetic issue to shrug off.
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const entry of entries) {
+    if (seen.has(entry.url)) duplicates.add(entry.url);
+    seen.add(entry.url);
+  }
+  if (duplicates.size > 0) {
+    throw new Error(`Sitemap contains ${duplicates.size} duplicate URL(s): ${[...duplicates].join(', ')}`);
+  }
+
+  return entries;
 }

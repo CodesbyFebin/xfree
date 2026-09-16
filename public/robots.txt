@@ -9,7 +9,7 @@ Disallow: /api/
 Disallow: /_app-shell
 Crawl-delay: 1
 
-# Search and answer-engine crawlers
+# Search engine crawlers
 User-agent: Googlebot
 Allow: /
 Allow: /blog/
@@ -26,6 +26,31 @@ Disallow: /api/
 Disallow: /_app-shell
 Crawl-delay: 0
 
+User-agent: DuckDuckBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: YandexBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Baiduspider
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+# AI answer-engine / live-fetch crawlers (search + user-triggered fetches)
 User-agent: OAI-SearchBot
 Allow: /
 Allow: /blog/
@@ -43,6 +68,87 @@ Disallow: /_app-shell
 Crawl-delay: 0
 
 User-agent: PerplexityBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Perplexity-User
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Claude-User
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Claude-SearchBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+# AI training-data crawlers
+User-agent: GPTBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Google-Extended
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Applebot-Extended
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: CCBot
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Bytespider
+Allow: /
+Allow: /blog/
+Allow: /docs/
+Disallow: /api/
+Disallow: /_app-shell
+Crawl-delay: 0
+
+User-agent: Amazonbot
 Allow: /
 Allow: /blog/
 Allow: /docs/

@@ -171,6 +171,10 @@ function PillarsIndex() {
 function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPillarBySlug>> }) {
   const categoryInfo = PILLAR_CATEGORIES.find(c => c.id === pillar.category);
   const pillarTools = TOOLS.filter(t => t.pillarSlug === pillar.slug && t.indexable);
+  // A few tools (DNS/IP/WHOIS lookup) need to reach a server and are
+  // marked execution: 'workflow' for exactly that reason - don't claim
+  // "100% in your browser" for a pillar that contains one.
+  const allToolsAreLocal = pillarTools.every(t => t.execution !== 'workflow' && t.execution !== 'ai');
   const relatedPillars = PILLARS.filter(p => p.category === pillar.category && p.slug !== pillar.slug).slice(0, 6);
   const categoryPillars = getPillarsByCategory(pillar.category as PillarCategory);
 
@@ -261,7 +265,11 @@ function PillarDetail({ pillar }: { pillar: NonNullable<ReturnType<typeof findPi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="cyber-card p-5">
                 <h3 className="text-sm font-semibold text-cyber-text font-mono mb-2">🔒 Privacy-First</h3>
-                <p className="text-xs text-cyber-muted">All tools in this pillar run 100% in your browser. Your data never leaves your device.</p>
+                <p className="text-xs text-cyber-muted">
+                  {allToolsAreLocal
+                    ? 'All tools in this pillar run 100% in your browser. Your data never leaves your device.'
+                    : 'Most tools in this pillar run 100% in your browser. A few need to reach a server to do their job (see each tool\'s privacy note below) - nothing you submit there is stored.'}
+                </p>
               </div>
               <div className="cyber-card p-5">
                 <h3 className="text-sm font-semibold text-cyber-text font-mono mb-2">⚡ Instant Results</h3>

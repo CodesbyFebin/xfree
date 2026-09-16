@@ -589,6 +589,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['html', 'minifier', 'compressor', 'optimizer', 'page speed'],
     seoKeywords: [
       'html minifier online',
@@ -624,6 +625,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['css', 'minifier', 'compressor', 'optimizer'],
     seoKeywords: [
       'css minifier online',
@@ -658,6 +660,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['word count', 'character count', 'text analysis', 'counter'],
     seoKeywords: [
       'word counter online',
@@ -694,6 +697,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['slug', 'url', 'seo', 'permalink', 'url friendly'],
     seoKeywords: [
       'slug generator online',
@@ -729,6 +733,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['qr code', 'generator', 'barcode', 'qr', 'qrcode'],
     seoKeywords: [
       'qr code generator free',
@@ -764,6 +769,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['email', 'validator', 'email validation', 'syntax checker'],
     seoKeywords: [
       'email validator online',
@@ -833,6 +839,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['csv', 'json', 'converter', 'json converter'],
     seoKeywords: [
       'csv to json converter',
@@ -935,6 +942,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['json', 'yaml', 'converter', 'config'],
     seoKeywords: [
       'json to yaml converter',
@@ -966,6 +974,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['yaml', 'json', 'converter'],
     seoKeywords: [
       'yaml to json converter',
@@ -997,6 +1006,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['regex', 'builder', 'generator', 'pattern'],
     seoKeywords: [
       'regex builder online',
@@ -1029,6 +1039,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['regex', 'explainer', 'documentation', 'learn'],
     seoKeywords: [
       'regex explainer online',
@@ -1061,6 +1072,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['sha256', 'hash', 'cryptography', 'checksum'],
     seoKeywords: [
       'sha256 generator online',
@@ -1093,6 +1105,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['md5', 'hash', 'legacy', 'checksum'],
     seoKeywords: [
       'md5 generator online',
@@ -1124,6 +1137,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['cron', 'parser', 'validator', 'scheduler'],
     seoKeywords: [
       'cron parser online',
@@ -1156,6 +1170,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['jwt', 'token', 'encoder', 'auth'],
     seoKeywords: [
       'jwt encoder online',
@@ -1188,6 +1203,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['utm', 'campaign', 'tracking', 'analytics', 'google analytics'],
     seoKeywords: [
       'utm builder online',
@@ -1251,6 +1267,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['javascript', 'js', 'minifier', 'compressor', 'optimizer'],
     seoKeywords: [
       'javascript minifier online',
@@ -1283,6 +1300,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['yaml', 'validator', 'syntax', 'debugger'],
     seoKeywords: [
       'yaml validator online',
@@ -1315,6 +1333,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['xml', 'validator', 'syntax', 'well-formed'],
     seoKeywords: [
       'xml validator online',
@@ -1348,6 +1367,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['toml', 'validator', 'config', 'debugger'],
     seoKeywords: [
       'toml validator online',
@@ -1379,6 +1399,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['diff', 'compare', 'difference', 'text', 'compare tool'],
     seoKeywords: [
       'text diff tool online',
@@ -1412,6 +1433,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['case', 'converter', 'camelCase', 'snake_case', 'kebab-case'],
     seoKeywords: [
       'case converter online',
@@ -1447,6 +1469,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['markdown', 'editor', 'preview', 'render', 'gfm'],
     seoKeywords: [
       'markdown editor online',
@@ -1479,6 +1502,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['markdown', 'table', 'generator', 'gfm'],
     seoKeywords: [
       'markdown table generator',
@@ -1511,6 +1535,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['color', 'converter', 'hex', 'rgb', 'hsl', 'cmyk'],
     seoKeywords: [
       'color converter online',
@@ -1544,6 +1569,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['color', 'palette', 'generator', 'design', 'harmony'],
     seoKeywords: [
       'color palette generator',
@@ -1577,6 +1603,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['barcode', 'generator', 'product', 'inventory', 'ean', 'upc'],
     seoKeywords: [
       'barcode generator online',
@@ -1610,6 +1637,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['random', 'string', 'generator', 'token', 'key'],
     seoKeywords: [
       'random string generator online',
@@ -1642,6 +1670,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['random', 'number', 'generator', 'lottery', 'sampling'],
     seoKeywords: [
       'random number generator online',
@@ -1674,6 +1703,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['random', 'color', 'generator', 'design'],
     seoKeywords: [
       'random color generator online',
@@ -1706,6 +1736,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['credit card', 'validator', 'luhn', 'visa', 'mastercard'],
     seoKeywords: [
       'credit card validator online',
@@ -1738,6 +1769,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['phone', 'validator', 'e164', 'international', 'telephone'],
     seoKeywords: [
       'phone validator online',
@@ -1770,6 +1802,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['url', 'validator', 'link', 'web address'],
     seoKeywords: [
       'url validator online',
@@ -1802,6 +1835,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'workflow',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['ip', 'lookup', 'geolocation', 'isp', 'network'],
     seoKeywords: [
       'ip lookup online',
@@ -1835,6 +1869,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'workflow',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['dns', 'lookup', 'records', 'mx', 'txt', 'nameserver'],
     seoKeywords: [
       'dns lookup online',
@@ -1868,6 +1903,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'workflow',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['whois', 'domain', 'registration', 'expiry', 'registrar'],
     seoKeywords: [
       'whois lookup online',
@@ -1901,6 +1937,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['hmac', 'auth', 'hash', 'security', 'api', 'webhook'],
     seoKeywords: [
       'hmac generator online',
@@ -1933,6 +1970,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['color', 'hex', 'rgb', 'converter', 'css'],
     seoKeywords: [
       'hex to rgb converter online',
@@ -1965,6 +2003,7 @@ export const TOOLS_WITH_SEO: ToolDefinition[] = [
     execution: 'local',
     status: 'published',
     indexable: true,
+    engineVerified: true,
     tags: ['color', 'rgb', 'hex', 'converter', 'css'],
     seoKeywords: [
       'rgb to hex converter online',

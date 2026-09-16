@@ -6,7 +6,14 @@ export const csvToJson = async (input: { csv: string }): Promise<Record<string, 
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(',');
     if (values.length !== headers.length) continue;
-    const row: Record<string, unknown> = {};
+    // CodeQL (js/prototype-polluting-assignment) flagged writing to a
+    // property name taken directly from user-supplied CSV headers - a
+    // column literally named "__proto__" would reassign this specific
+    // row object's prototype via the bracket-notation setter. Using
+    // Object.create(null) means there's no [[Prototype]] setter to
+    // trigger at all, and a "__proto__" column just becomes an own
+    // data property like any other header name.
+    const row: Record<string, unknown> = Object.create(null);
     headers.forEach((h, idx) => { row[h] = values[idx]?.trim(); });
     result.push(row);
   }

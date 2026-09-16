@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import crypto from 'crypto';
+import { checkRateLimit as checkDistributedRateLimit, rateLimiterConfigured } from '@/lib/security/rateLimiter';
 
 // Mirrors src/server/app.ts's POST /api/contact + src/server/delivery.ts
 // in the Vite app: same validation, same honeypot, same rate limit, same
@@ -18,25 +19,38 @@ interface Bucket {
   resetAt: number;
 }
 
+// In-memory fallback only - used when Upstash isn't configured. This is
+// not durable/distributed (see lib/security/rateLimiter.ts's comment on
+// why that's disqualifying for a *paid* endpoint), but contact-form spam
+// is a nuisance, not a financial exposure, so degrading to a per-instance
+// floor here is an acceptable availability tradeoff rather than failing
+// closed the way the paid provider endpoints do.
 const store = new Map<string, Bucket>();
 const RATE_LIMIT = 5;
-const WINDOW_MS = 3_600_000;
+const WINDOW_SECONDS = 3_600;
 
-function rateLimitKey(req: NextRequest): string {
+function hashedIp(req: NextRequest): string {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  const hashed = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16);
-  return `contact:${hashed}`;
+  return crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16);
 }
 
-function checkRateLimit(key: string): { allowed: boolean; resetAt: number } {
+function checkInMemoryRateLimit(key: string): { allowed: boolean; resetAt: number } {
   const now = Date.now();
   const bucket = store.get(key);
   if (!bucket || bucket.resetAt <= now) {
-    store.set(key, { count: 1, resetAt: now + WINDOW_MS });
-    return { allowed: true, resetAt: now + WINDOW_MS };
+    store.set(key, { count: 1, resetAt: now + WINDOW_SECONDS * 1000 });
+    return { allowed: true, resetAt: now + WINDOW_SECONDS * 1000 };
   }
   bucket.count += 1;
   return { allowed: bucket.count <= RATE_LIMIT, resetAt: bucket.resetAt };
+}
+
+async function checkRateLimit(key: string): Promise<{ allowed: boolean; resetAt: number }> {
+  if (rateLimiterConfigured) {
+    const result = await checkDistributedRateLimit('contact', key, RATE_LIMIT, WINDOW_SECONDS);
+    return { allowed: result.allowed, resetAt: result.resetAt };
+  }
+  return checkInMemoryRateLimit(key);
 }
 
 async function deliverContactMessage(subject: string, text: string, meta: Record<string, unknown>): Promise<{ ok: boolean; provider: string }> {
@@ -71,8 +85,8 @@ async function deliverContactMessage(subject: string, text: string, meta: Record
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const key = rateLimitKey(request);
-  const { allowed, resetAt } = checkRateLimit(key);
+  const key = hashedIp(request);
+  const { allowed, resetAt } = await checkRateLimit(key);
   if (!allowed) {
     const retryAfter = Math.max(1, Math.ceil((resetAt - Date.now()) / 1000));
     return NextResponse.json(

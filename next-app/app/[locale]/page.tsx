@@ -6,8 +6,8 @@ import { Link } from '@/i18n/navigation';
 import { TOOLS as ALL_TOOLS, CATEGORIES } from '@/lib/data/tools';
 import { PILLARS as ALL_PILLARS } from '@/lib/data/pillars';
 import { Footer } from '@/components/layout/Footer';
-import { LocaleSwitcher } from '@/components/layout/LocaleSwitcher';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { Header } from '@/components/layout/Header';
+import { Hero } from '@/components/home/Hero';
 
 interface Tool {
   slug: string;
@@ -52,12 +52,13 @@ const STATS: { value: string; labelKey: string }[] = [
 ];
 
 const FAQS: FAQ[] = [
-  { q: 'What is XFree app?', a: 'XFree app is the ultimate free online platform for developers offering privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. All tools run 100% client-side with no signup required.' },
-  { q: 'Is XFree really free with no signup?', a: 'Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and run entirely in your browser.' },
-  { q: 'How does XFree ensure privacy?', a: 'XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed.' },
-  { q: 'What is XFree alternative to CodeBeautify?', a: 'XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs 100% client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit.' },
-  { q: 'Can I use XFree offline?', a: 'Yes. Because XFree tools are static HTML with embedded JavaScript, you can save any tool page and use it completely offline without an internet connection.' },
+  { q: 'What is XFree app?', a: 'XFree app is the ultimate free online platform for developers offering privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. Most tools run 100% client-side with no signup required; a few (DNS/IP/WHOIS lookup) call XFree\'s own server since they need to reach external internet infrastructure.' },
+  { q: 'Is XFree really free with no signup?', a: 'Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and almost all run entirely in your browser.' },
+  { q: 'How does XFree ensure privacy?', a: 'XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed on that tool\'s page.' },
+  { q: 'What is XFree alternative to CodeBeautify?', a: 'XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs almost entirely client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit.' },
+  { q: 'Can I use XFree offline?', a: 'Yes, for previously-visited pages. XFree registers a service worker that caches tool pages for offline use once you\'ve loaded them - features that require a server call (lookups, AI Cloud Mode) still need a connection.' },
   { q: 'Is XFree open source?', a: 'Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our GitHub repository.' },
+  { q: 'Is XFree the same as "X Free"?', a: 'Yes. XFree is the official name of the XFree App and XFree Studio platform. Some people search for it as "X Free" (with a space) - both point to the same product.' },
 ];
 
 const USE_CASES: UseCase[] = [
@@ -66,60 +67,12 @@ const USE_CASES: UseCase[] = [
   { title: 'Security Testing', tools: ['Hash Generator', 'JWT Decoder', 'Password Generator'], description: 'Test authentication and encryption flows' },
 ];
 
-// Verified against lib/data/tools.ts's real CATEGORIES.slug and the
-// shared components/layout/Header.tsx nav — this replaced a 6-group,
-// 70-link NAV_LINKS object where all but a handful of hrefs (e.g.
-// /dev-tools, /seo-tools, /web-tools, /agentic-workflows, /mcp-tools)
-// matched no real route in the app.
-const NAV_ITEMS = [
-  {
-    labelKey: 'toolsMenu',
-    href: '/pillars',
-    children: [
-      { labelKey: 'allPillars', href: '/pillars' },
-      { labelKey: 'developerTools', href: '/categories/developer-tools' },
-      { labelKey: 'seoTools', href: '/categories/seo-url-tools' },
-      { labelKey: 'aiTools', href: '/categories/ai-tools' },
-      { labelKey: 'securityTools', href: '/categories/security-tools' },
-    ],
-  },
-  {
-    labelKey: 'resourcesMenu',
-    href: '/guides',
-    children: [
-      { labelKey: 'allGuides', href: '/guides' },
-      { labelKey: 'faq', href: '/faq' },
-      { labelKey: 'howItWorks', href: '/how-it-works' },
-      { labelKey: 'useCases', href: '/use-cases' },
-    ],
-  },
-  {
-    labelKey: 'aboutMenu',
-    href: '/about',
-    children: [
-      { labelKey: 'aboutXfree', href: '/about' },
-      { labelKey: 'security', href: '/security' },
-      { labelKey: 'roadmap', href: '/roadmap' },
-      { labelKey: 'xfreeApp', href: '/xfree-app' },
-    ],
-  },
-] as const;
-
 export default function HomePage() {
   const t = useTranslations('Home');
-  const tHeader = useTranslations('Header');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [demoOutput, setDemoOutput] = useState('{\n  "name": "xfree",\n  "type": "micro-tool",\n  "fast": true\n}');
   const [demoStatus, setDemoStatus] = useState({ valid: true, time: '0.1' });
   const [demoCopied, setDemoCopied] = useState(false);
   const demoInputRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const runDemo = () => {
     if (!demoInputRef.current) return;
@@ -146,164 +99,19 @@ export default function HomePage() {
     <div className="min-h-screen bg-cyber-bg text-cyber-text antialiased">
       <div className="scanlines" aria-hidden="true" />
       <div className="crt-vignette" aria-hidden="true" />
-      {mobileMenuOpen && <div className="mobile-overlay open" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />}
-
       <a href="#main-content" className="skip-link focus-ring">Skip to main content</a>
 
-      {/* HEADER */}
-      <header id="mainNav" className={`sticky-nav fixed top-0 left-0 right-0 z-50 px-4 py-3 ${scrolled ? 'scrolled' : ''}`}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group" aria-label="XFree homepage">
-            <picture className="shrink-0">
-              <source srcSet="/logo-wordmark-80.webp 1x, /logo-wordmark-160.webp 2x" type="image/webp" />
-              <img
-                src="/logo-wordmark-80.png"
-                srcSet="/logo-wordmark-80.png 1x, /logo-wordmark-160.png 2x"
-                alt="XFree"
-                width={160}
-                height={80}
-                decoding="async"
-                style={{ height: '36px', width: '72px' }}
-              />
-            </picture>
-            <span className="hidden sm:inline text-[10px] text-cyber-muted font-mono ml-1">{`// ${tHeader('tagline')}`}</span>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
-            {NAV_ITEMS.map((item) => (
-              <NavDropdown
-                key={item.labelKey}
-                label={tHeader(item.labelKey)}
-                links={item.children.map((c) => ({ href: c.href, label: tHeader(c.labelKey) }))}
-              />
-            ))}
-            <Link href="/contact" className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all">{tHeader('contact')}</Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <LocaleSwitcher />
-            <Link href="https://app.xfree.in/" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded" rel="noopener">
-              <span>{tHeader('launchStudio')} →</span>
-            </Link>
-            <button className="mobile-menu-btn lg:hidden" onClick={() => setMobileMenuOpen(true)} aria-label="Open menu">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Menu */}
-      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`} role="dialog" aria-label="Mobile navigation">
-        <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-        <nav className="mt-12 space-y-6">
-          {NAV_ITEMS.map((item) => (
-            <div key={item.labelKey}>
-              <h3 className="text-xs font-mono text-cyber-glow mb-2">{`// ${tHeader(item.labelKey)}`}</h3>
-              <div className="space-y-2">
-                {item.children.map((child) => (
-                  <Link key={child.href} href={child.href} className="block text-sm text-cyber-muted hover:text-cyber-glow">{tHeader(child.labelKey)}</Link>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="pt-4 border-t border-cyber-border">
-            <Link href="/contact" className="block text-sm text-cyber-glow">{tHeader('contact')} →</Link>
-          </div>
-          <div className="pt-4 border-t border-cyber-border">
-            <LocaleSwitcher className="flex flex-wrap items-center gap-2" />
-          </div>
-        </nav>
-      </div>
+      {/* Was a second, hand-maintained copy of components/layout/Header.tsx's
+          nav/mobile-menu (same NAV_ITEMS, same structure) - the only page of
+          20 that didn't use the shared component. Consolidated so this page
+          gets the same mobile-nav fix (see docs/SECURITY_MODEL.md's sibling
+          audit docs) as the other 19 automatically, instead of needing it
+          hand-applied here too. */}
+      <Header />
 
       <main id="main-content">
         {/* HERO */}
-        <section className="relative min-h-[92vh] flex items-center justify-center pt-20 pb-12 overflow-hidden matrix-grid hex-pattern" aria-labelledby="hero-heading">
-          <div className="hero-orb w-[500px] h-[500px] bg-cyber-glow -top-40 -left-40" aria-hidden="true" />
-          <div className="hero-orb w-[400px] h-[400px] bg-cyber-magenta top-1/4 -right-32" aria-hidden="true" />
-          <div className="hero-orb w-[300px] h-[300px] bg-cyber-cyan bottom-20 left-1/3" aria-hidden="true" />
-
-          <picture>
-            <source srcSet="/hero-earth-960.webp 960w, /hero-earth-1920.webp 1920w" type="image/webp" />
-            <img
-              src="/hero-earth-1920.webp"
-              alt=""
-              className="hero-earth-bg"
-              width={1920}
-              height={800}
-              decoding="async"
-              fetchPriority="high"
-            />
-          </picture>
-
-          <p className="font-script text-cyber-glow text-2xl sm:text-3xl absolute top-24 right-6 sm:right-12 -rotate-6 opacity-90 hidden sm:block" aria-hidden="true">
-            {t('heroHandwritten')}
-          </p>
-
-          <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-cyber-glow/30 bg-cyber-glow/5 text-xs font-mono text-cyber-glow mb-6 neon-box-green anim-slide-up">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyber-glow anim-pulse" aria-hidden="true" />
-              <span>$ {t('badge')}</span>
-            </div>
-
-            <p className="text-xs sm:text-sm font-mono uppercase tracking-[0.3em] text-cyber-muted mb-3 anim-slide-up">
-              {t('heroTagline')}
-            </p>
-
-            <h1 id="hero-heading" className="hero-title text-4xl sm:text-5xl lg:text-7xl font-black text-cyber-text leading-[1.05] tracking-tight mb-4 uppercase glitch anim-slide-up" data-text={`${t('titleLine1')}\n${t('titleLine2')}`} style={{ animationDelay: '0.1s' }}>
-              {t('titleLine1')}<br />
-              <span className="text-cyber-glow neon-green">{t('titleLine2')}</span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-cyber-cyan font-mono mb-2 anim-slide-up" style={{ animationDelay: '0.2s' }}>{t('heroVerbs')}</p>
-
-            <p className="text-base text-cyber-muted max-w-2xl mx-auto mb-10 leading-relaxed anim-slide-up" style={{ animationDelay: '0.3s' }}>
-              {t('description')}
-            </p>
-
-            {/* Search */}
-            <div className="max-w-2xl mx-auto mb-6 anim-slide-up" style={{ animationDelay: '0.4s' }}>
-              <form action="/search" method="get" role="search">
-                <div className="cmd-bar relative flex items-center bg-cyber-card rounded-lg p-1.5 border border-cyber-border transition-all duration-300 corner-brackets">
-                  <div className="pl-4 pr-2 text-cyber-glow"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
-                  <label htmlFor="heroSearch" className="sr-only">{t('searchPlaceholder')}</label>
-                  <input type="text" id="heroSearch" name="q" placeholder={t('searchPlaceholder')} className="flex-1 px-3 py-3.5 text-base bg-transparent placeholder-cyber-muted focus:outline-none font-mono" />
-                  <kbd aria-hidden="true">⌘K</kbd>
-                  <button type="submit" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded"><span>{t('execute')}</span></button>
-                </div>
-              </form>
-              <nav className="flex items-center justify-center gap-2 mt-3 flex-wrap" aria-label="Popular searches">
-                <span className="text-[11px] text-cyber-muted font-mono">{t('popular')}</span>
-                <Link href="/tools/json-formatter" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree JSON Formatter</Link>
-                <span className="text-cyber-dim">·</span>
-                <Link href="/tools/regex-tester" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree Regex Tester</Link>
-                <span className="text-cyber-dim">·</span>
-                <Link href="/tools/xml-sitemap-generator" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree Sitemap Generator</Link>
-                <span className="text-cyber-dim">·</span>
-                <Link href="/tools/meta-tag-generator" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree Meta Tags</Link>
-                <span className="text-cyber-dim">·</span>
-                <Link href="/tools/jwt-decoder" className="text-[11px] text-cyber-glow hover:text-cyber-text font-mono">XFree JWT Decoder</Link>
-              </nav>
-              <small className="block mt-3 text-[10px] text-cyber-dim font-mono">Pro-tip: Press <kbd>Ctrl+Enter</kbd> to process, <kbd>Ctrl+Shift+C</kbd> to copy.</small>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-cyber-muted font-mono mt-6 anim-slide-up" style={{ animationDelay: '0.5s' }}>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">⚡</span> {t('heroFeature1')}</span>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🔒</span> {t('heroFeature2')}</span>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🖥️</span> {t('heroFeature3')}</span>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">🌱</span> {t('heroFeature4')}</span>
-              <span className="flex items-center gap-1.5"><span className="text-cyber-glow" aria-hidden="true">💚</span> {t('heroFeature5')}</span>
-            </div>
-
-            <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyber-dim mt-8 anim-slide-up" style={{ animationDelay: '0.6s' }}>
-              {t('heroSideLine1')}<br />
-              <span className="text-cyber-text">{t('heroSideLine2')}</span>
-            </p>
-          </div>
-        </section>
+        <Hero />
 
         {/* METRICS TICKER */}
         <section className="py-5 border-y border-cyber-border bg-cyber-surface" aria-label="Platform metrics">
@@ -414,16 +222,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* AD SLOT 1 */}
-        <section className="ad-safe-zone px-4" aria-label="Advertisement">
-          <div className="max-w-7xl mx-auto">
-            <div className="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
-              <div className="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
-              <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true" />
-            </div>
-          </div>
-        </section>
-
         {/* CATEGORIES */}
         <section className="py-14 px-4" aria-labelledby="categories-heading">
           <div className="max-w-7xl mx-auto">
@@ -494,16 +292,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* AD SLOT 2 */}
-        <section className="ad-safe-zone px-4" aria-label="Advertisement">
-          <div className="max-w-7xl mx-auto">
-            <div className="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
-              <div className="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
-              <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true" />
-            </div>
-          </div>
-        </section>
-
         {/* USE CASES */}
         <section className="py-16 px-4 bg-cyber-surface/50" aria-labelledby="usecases-heading">
           <div className="max-w-7xl mx-auto">
@@ -563,7 +351,7 @@ export default function HomePage() {
         <section className="py-12 px-4" aria-labelledby="roadmap-heading">
           <div className="max-w-4xl mx-auto text-center">
             <h2 id="roadmap-heading" className="text-2xl font-bold text-cyber-text mb-3 font-mono"><span className="text-cyber-glow">&gt;</span> {t('roadmapHeading')}</h2>
-            <p className="text-cyber-muted mb-6 max-w-2xl mx-auto font-mono text-sm">The XFree taxonomy maps a growing catalog of micro-tool concepts. Tools that are not yet built are tracked on our <Link href="/roadmap" className="text-cyber-glow hover:underline focus-ring">public XFree roadmap</Link>.</p>
+            <p className="text-cyber-muted mb-6 max-w-2xl mx-auto font-mono text-sm">The XFree taxonomy maps a growing catalog of micro-tool concepts. Tools that are not yet built are tracked on our <Link href="/roadmap" className="text-cyber-glow underline underline-offset-2 hover:no-underline focus-ring">public XFree roadmap</Link>.</p>
             <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
               <div className="cyber-card p-3 text-center corner-brackets">
                 <div className="text-xl font-bold text-cyber-glow font-cyber neon-green">{ALL_TOOLS.length}</div>
@@ -603,16 +391,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* AD SLOT 3 */}
-        <section className="ad-safe-zone px-4" aria-label="Advertisement">
-          <div className="max-w-7xl mx-auto">
-            <div className="rounded-lg border border-dashed border-cyber-border p-6 text-center bg-cyber-surface/30">
-              <div className="text-[10px] text-cyber-dim uppercase tracking-wider mb-3 font-mono">// Advertisement</div>
-              <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true" />
-            </div>
-          </div>
-        </section>
-
         {/* CTA */}
         <section className="py-16 px-4 relative overflow-hidden" aria-labelledby="cta-heading">
           <div className="absolute inset-0 matrix-grid opacity-50" aria-hidden="true" />
@@ -637,30 +415,6 @@ export default function HomePage() {
 
       {/* FOOTER */}
       <Footer />
-    </div>
-  );
-}
-
-function NavDropdown({ label, links }: { label: string; links: { href: string; label: string }[] }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="nav-dropdown" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button className="px-3 py-1.5 text-sm text-cyber-muted hover:text-cyber-glow rounded font-mono transition-all flex items-center gap-1" aria-haspopup="true" aria-expanded={open}>
-        {label} <span aria-hidden="true">▾</span>
-      </button>
-      {/* Always rendered — visibility is CSS-driven (:hover/:focus-within on
-          .nav-dropdown, see globals.css), matching how the mobile menu
-          below shows/hides its always-rendered links via a CSS class.
-          Gating this behind the `open` state made the menu never appear:
-          mouseenter/mouseleave here don't reliably drive React state for a
-          CSS-hover interaction, so the panel was permanently empty. */}
-      <div className="nav-dropdown-menu" role="menu">
-        {links.map((link) => (
-          <Link key={link.href} href={link.href} className="nav-dropdown-item" role="menuitem">
-            {link.label}
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }
