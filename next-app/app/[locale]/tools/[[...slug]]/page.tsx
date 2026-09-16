@@ -200,9 +200,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         type: 'article',
       },
       twitter: { card: 'summary_large_image', title: `XFree ${tool.title}`, description: fullDescription },
+      // No article:published_time/modified_time - there's no real
+      // per-tool date tracked anywhere (unlike guides' lastReviewed,
+      // used honestly in sitemap.ts). Stamping new Date() here would
+      // mean "now" on every single request, which is exactly the fake-
+      // freshness pattern sitemap.ts's own lastModified logic rejects.
       other: {
-        'article:published_time': new Date().toISOString(),
-        'article:modified_time': new Date().toISOString(),
         'article:author': 'XFree',
         'article:section': tool.categoryLabel,
         'article:tag': tool.tags.join(', '),
