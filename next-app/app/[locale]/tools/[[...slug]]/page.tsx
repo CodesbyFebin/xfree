@@ -11,6 +11,7 @@ import { findPillarBySlug, PILLARS } from '@/lib/data/pillars';
 import { buildCanonical, buildLanguageAlternates } from '@/lib/canonical';
 import { generateToolSchema, generateFAQSchema, generateHowToSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { USE_CASES } from '@/lib/data/content';
+import { truncateForMeta } from '@/lib/seo/metaDescription';
 import type { Locale } from '@/i18n/routing';
 import { JsonFormatterTool } from '@/components/tools/JsonFormatterTool';
 import { RegexTesterTool } from '@/components/tools/RegexTesterTool';
@@ -173,7 +174,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (tool) {
     const canonical = buildCanonical(`/tools/${tool.slug}`, locale);
-    const fullDescription = tool.longDescription || tool.shortDescription;
+    // longDescription runs well past the ~160-char point search engines
+    // truncate a meta description at (measured: 46 of 58 tools were over
+    // 160 chars, up to 210) - truncated here for the meta tags only. The
+    // full, untruncated text still renders on-page for human readers via
+    // ToolDetail's own tool.longDescription usage below.
+    const fullDescription = truncateForMeta(tool.longDescription || tool.shortDescription);
     const allKeywords = [
       ...(tool.seoKeywords || []),
       ...tool.tags,
