@@ -73,10 +73,14 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(baseUrl),
     applicationName: 'XFree App',
-    title: {
-      default: metaTitle,
-      template: 'XFree: %s',
-    },
+    // Plain string, not a {default, template} object - every child
+    // page.tsx already brands its own title string with "XFree" (see
+    // tools/pillars/updates pages), so a 'XFree: %s' template was
+    // doubling it into "XFree: XFree JSON Formatter..." instead of
+    // adding the brand once. Next's Metadata type requires `template`
+    // whenever `default` is used, so a plain string is the correct
+    // no-template form here, not a workaround.
+    title: metaTitle,
     description: metaDescription,
     authors: [{ name: 'XFree Contributors' }],
     creator: 'XFree',
