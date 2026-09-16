@@ -177,6 +177,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (rawTool) {
     const { tools } = await loadContentTranslations(locale);
     const tool = localizeTool(rawTool, tools);
+    const tHeaderMeta = await getTranslations({ locale, namespace: 'Header' });
+    const categoryTranslationKeyMeta = CATEGORY_TRANSLATION_KEYS[tool.category];
+    const categoryLabelMeta = categoryTranslationKeyMeta ? tHeaderMeta(categoryTranslationKeyMeta) : tool.categoryLabel;
     const canonical = buildCanonical(`/tools/${tool.slug}`, locale);
     // longDescription runs well past the ~160-char point search engines
     // truncate a meta description at (measured: 46 of 58 tools were over
@@ -217,7 +220,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       // freshness pattern sitemap.ts's own lastModified logic rejects.
       other: {
         'article:author': 'XFree',
-        'article:section': tool.categoryLabel,
+        'article:section': categoryLabelMeta,
         'article:tag': tool.tags.join(', '),
       },
     };
@@ -350,7 +353,7 @@ async function ToolDetail({ tool, locale }: { tool: NonNullable<ReturnType<typeo
                   <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">
                     XFree {tool.title} <span className="text-cyber-muted font-normal">— Free, No Signup</span>
                   </h1>
-                  <p className="text-cyber-muted mt-1">{categoryInfo?.label}</p>
+                  <p className="text-cyber-muted mt-1">{categoryLabel}</p>
                 </div>
               </div>
               <TrustBadge tool={tool} />
@@ -525,7 +528,7 @@ async function ToolDetail({ tool, locale }: { tool: NonNullable<ReturnType<typeo
               {/* Same Category */}
               {sameCategoryTools.length > 0 && (
                 <div className="cyber-card p-4">
-                  <h3 className="text-xs text-cyber-dim font-mono mb-3">MORE {categoryInfo?.label?.toUpperCase()}</h3>
+                  <h3 className="text-xs text-cyber-dim font-mono mb-3">MORE {categoryLabel.toUpperCase()}</h3>
                   <div className="space-y-2">
                     {sameCategoryTools.map(t => (
                       <Link key={t.id} href={`/tools/${t.slug}`} className="flex items-center gap-2 text-sm text-cyber-muted hover:text-cyber-glow transition-colors py-1">
