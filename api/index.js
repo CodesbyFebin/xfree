@@ -9148,6 +9148,7 @@ async function createApp(opts = {}) {
       const parsed = AiBatchSchema.safeParse(req.body);
       if (!parsed.success) return res.status(400).json({ error: "invalid_request", details: parsed.error.flatten() });
       const { taskId, items } = parsed.data;
+      if (!isValidTaskId(taskId)) return res.status(400).json({ error: "unknown_task" });
       const cap = Math.min(items.length, config2.AI_BATCH_MAX_ITEMS);
       const trimmed = items.slice(0, cap);
       const task = AI_TASKS[taskId];
