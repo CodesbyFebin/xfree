@@ -197,7 +197,9 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
     } else if (configState) {
       downloadAsCsv([configState], `${tool.slug || tool.id}_export.csv`);
     } else {
-      downloadAsTxt(outputContent || inputContent || "", `${tool.slug || tool.id}_export.csv`);
+      // outputContent is already known falsy here (the first `if` above
+      // covers the truthy case) - `outputContent ||` was dead.
+      downloadAsTxt(inputContent || "", `${tool.slug || tool.id}_export.csv`);
     }
   };
 
