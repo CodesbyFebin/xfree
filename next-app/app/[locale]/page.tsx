@@ -51,16 +51,9 @@ const STATS: { value: string; labelKey: string }[] = [
   { value: 'LOCAL', labelKey: 'statLocalMode' },
 ];
 
-const FAQS: FAQ[] = [
-  { q: 'What is XFree app?', a: 'XFree app is the ultimate free online platform for developers offering privacy-first micro-tools including XFree JSON formatters, XFree HTML minifiers, XFree SEO utilities, and XFree crypto tools. Most tools run 100% client-side with no signup required; a few (DNS/IP/WHOIS lookup) call XFree\'s own server since they need to reach external internet infrastructure.' },
-  { q: 'Is XFree really free with no signup?', a: 'Yes. XFree is completely free to use with no sign-up, no account creation, and no usage limits. All tools are open-source under the MIT License and almost all run entirely in your browser.' },
-  { q: 'How does XFree ensure privacy?', a: 'XFree tools run in Local Mode by default, processing your data inside your browser session using JavaScript and WebAssembly. Your input is never transmitted to external servers unless clearly disclosed on that tool\'s page.' },
-  { q: 'What is XFree alternative to CodeBeautify?', a: 'XFree is a privacy-first alternative to CodeBeautify. Unlike those platforms, XFree runs almost entirely client-side with zero tracking, no ads on tool pages, no data collection, and open-source code you can audit.' },
-  { q: 'Can I use XFree offline?', a: 'Yes, for previously-visited pages. XFree registers a service worker that caches tool pages for offline use once you\'ve loaded them - features that require a server call (lookups, AI Cloud Mode) still need a connection.' },
-  { q: 'Is XFree open source?', a: 'Yes. The entire XFree codebase is open-source under the MIT License. You can audit, fork, and contribute on our GitHub repository.' },
-  { q: 'Is XFree the same as "X Free"?', a: 'Yes. XFree is the official name of the XFree App and XFree Studio platform. Some people search for it as "X Free" (with a space) - both point to the same product.' },
-];
-
+// FAQ copy lives in messages/*.json (Home.faqs) so every locale gets real
+// translated content instead of this page rendering English text under a
+// non-English lang attribute - see Home() below for the t.raw('faqs') read.
 const USE_CASES: UseCase[] = [
   { title: 'API Development', tools: ['JSON Formatter', 'JWT Decoder', 'Base64 Encoder'], description: 'Format, decode, and validate API payloads' },
   { title: 'SEO Auditing', tools: ['Sitemap Generator', 'Meta Tag Generator', 'Regex Tester'], description: 'Generate and validate SEO assets' },
@@ -69,6 +62,7 @@ const USE_CASES: UseCase[] = [
 
 export default function HomePage() {
   const t = useTranslations('Home');
+  const faqs = t.raw('faqs') as FAQ[];
   const [demoOutput, setDemoOutput] = useState('{\n  "name": "xfree",\n  "type": "micro-tool",\n  "fast": true\n}');
   const [demoStatus, setDemoStatus] = useState({ valid: true, time: '0.1' });
   const [demoCopied, setDemoCopied] = useState(false);
@@ -379,7 +373,7 @@ export default function HomePage() {
               <p className="text-cyber-muted font-mono text-sm">// {t('faqHeading')}</p>
             </div>
             <div className="space-y-2">
-              {FAQS.map((faq, i) => (
+              {faqs.map((faq, i) => (
                 <details key={i} className="cyber-card overflow-hidden" open={i === 0}>
                   <summary className="px-5 py-4 font-semibold text-cyber-text text-sm flex justify-between items-center cursor-pointer font-mono">
                     {faq.q}

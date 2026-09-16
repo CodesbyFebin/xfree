@@ -1,18 +1,20 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
 // Real routes only (verified against lib/data/toolsWithSEO.ts's CATEGORIES) -
 // "Data" and "Web" aren't real category ids, so the two closest genuine
 // categories stand in for them rather than linking to a route that 404s.
+// labelKey resolves against the Home namespace (orbitDeveloper, orbitAI, ...).
 const ORBIT_LABELS = [
-  { label: 'DEVELOPER', href: '/categories/developer-tools', position: 'left-0 top-[18%]' },
-  { label: 'AI', href: '/categories/ai-tools', position: 'left-0 top-1/2' },
-  { label: 'DATA', href: '/categories/converters', position: 'left-0 bottom-[18%]' },
-  { label: 'WEB', href: '/categories/seo-url-tools', position: 'right-0 top-[18%]' },
-  { label: 'PRODUCTIVITY', href: '/categories/generators', position: 'right-0 top-1/2' },
-  { label: 'SECURITY', href: '/categories/security-tools', position: 'right-0 bottom-[18%]' },
+  { labelKey: 'orbitDeveloper', href: '/categories/developer-tools', position: 'left-0 top-[18%]' },
+  { labelKey: 'orbitAI', href: '/categories/ai-tools', position: 'left-0 top-1/2' },
+  { labelKey: 'orbitData', href: '/categories/converters', position: 'left-0 bottom-[18%]' },
+  { labelKey: 'orbitWeb', href: '/categories/seo-url-tools', position: 'right-0 top-[18%]' },
+  { labelKey: 'orbitProductivity', href: '/categories/generators', position: 'right-0 top-1/2' },
+  { labelKey: 'orbitSecurity', href: '/categories/security-tools', position: 'right-0 bottom-[18%]' },
 ] as const;
 
 /**
@@ -23,6 +25,7 @@ const ORBIT_LABELS = [
  * `aria-hidden` except the six orbit labels, which are real links.
  */
 export function InteractiveX() {
+  const t = useTranslations('Home');
   const coreRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -97,13 +100,13 @@ export function InteractiveX() {
         />
       </div>
 
-      {ORBIT_LABELS.map(({ label, href, position }) => (
+      {ORBIT_LABELS.map(({ labelKey, href, position }) => (
         <Link
-          key={label}
+          key={labelKey}
           href={href}
           className={`absolute ${position} hidden -translate-y-1/2 text-[10px] font-mono uppercase tracking-[0.2em] text-cyber-muted transition-colors hover:text-cyber-glow focus-ring md:block`}
         >
-          {label}
+          {t(labelKey)}
         </Link>
       ))}
     </div>

@@ -17,6 +17,14 @@ const PAGES: { name: string; path: string }[] = [
 
 for (const { name, path } of PAGES) {
   test(`${name} (${path}) has no WCAG 2.1 AA violations`, async ({ page }) => {
+    // The hero's .anim-slide-up elements fade in from opacity:0 over up to
+    // ~1.2s (staggered animation-delay). Scanning immediately after goto()
+    // can catch a mid-fade frame, which axe reports as a real color-contrast
+    // violation even though the settled page is fine (verified directly:
+    // #9CA3AF on #0D0D14, well past 4.5:1). Emulating prefers-reduced-motion
+    // - already honored site-wide via globals.css - skips straight to the
+    // final state instead of guessing a sleep duration.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(path);
     const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
     const summary = results.violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.length} node(s) - ${v.help}`).join('\n');

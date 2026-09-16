@@ -62,10 +62,10 @@ export function Footer() {
             </p>
 
             <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-mono text-cyber-muted">
-              <li className="flex items-center gap-1.5"><span aria-hidden="true">🔒</span> Privacy First</li>
-              <li className="flex items-center gap-1.5"><span aria-hidden="true">{'</>'}</span> Open Source</li>
-              <li className="flex items-center gap-1.5"><span aria-hidden="true">⚡</span> Browser Based</li>
-              <li className="flex items-center gap-1.5"><span aria-hidden="true">💚</span> Built for Everyone</li>
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">🔒</span> {t('trustPrivacyFirst')}</li>
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">{'</>'}</span> {t('trustOpenSource')}</li>
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">⚡</span> {t('trustBrowserBased')}</li>
+              <li className="flex items-center gap-1.5"><span aria-hidden="true">💚</span> {t('trustBuiltForEveryone')}</li>
             </ul>
           </section>
 
@@ -294,16 +294,16 @@ export function Footer() {
               loading="lazy"
             />
             <div>
-              <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyber-glow mb-1">What&apos;s New in XFree</p>
-              <h2 id="footer-whats-new" className="text-lg font-bold text-cyber-text mb-1">New Tools. More Possibilities.</h2>
-              <p className="text-sm text-cyber-muted">Stay updated with the latest tools, features and improvements in XFree Studio.</p>
+              <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-cyber-glow mb-1">{t('whatsNewEyebrow')}</p>
+              <h2 id="footer-whats-new" className="text-lg font-bold text-cyber-text mb-1">{t('whatsNewHeading')}</h2>
+              <p className="text-sm text-cyber-muted">{t('whatsNewDescription')}</p>
             </div>
           </div>
           <Link
             href="/updates"
             className="shrink-0 cyber-btn cyber-btn-filled text-xs px-4 py-2.5 rounded inline-flex items-center gap-2 whitespace-nowrap"
           >
-            <span>Explore What&apos;s New</span>
+            <span>{t('whatsNewCta')}</span>
             <span aria-hidden="true">→</span>
           </Link>
         </section>
