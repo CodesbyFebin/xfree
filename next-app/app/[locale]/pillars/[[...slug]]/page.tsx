@@ -9,7 +9,7 @@ import { PILLARS, findPillarBySlug, getPillarsByCategory } from '@/lib/data/pill
 import { PILLAR_CATEGORIES } from '@/lib/data/pillarCategories';
 import { TOOLS } from '@/lib/data/toolsWithSEO';
 import { buildCanonical, buildLanguageAlternates } from '@/lib/canonical';
-import { generatePillarSchema, generateBreadcrumbSchema } from '@/lib/schema';
+import { generatePillarSchema } from '@/lib/schema';
 import { PillarCategory } from '@/lib/data/pillarCategories';
 import type { Locale } from '@/i18n/routing';
 import { loadContentTranslations, localizeTool, localizePillar } from '@/lib/i18n/localizedContent';
