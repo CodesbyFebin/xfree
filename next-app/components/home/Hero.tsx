@@ -9,14 +9,17 @@ import { InteractiveX } from './InteractiveX';
 
 // Real categories only (lib/data/toolsWithSEO.ts's CATEGORIES) - "Data" and
 // "Web" from the design reference aren't real category ids on this site, so
-// the two closest genuine categories stand in rather than 404ing.
+// the two closest genuine categories stand in rather than 404ing. Labels are
+// translation keys, not literals - developerTools/aiTools/seoTools/
+// securityTools reuse Header's existing translated strings; the last two
+// are Home-namespace keys added alongside this hero.
 const CATEGORY_SHORTCUTS = [
-  { label: 'Developer Tools', href: '/categories/developer-tools' },
-  { label: 'AI Tools', href: '/categories/ai-tools' },
-  { label: 'SEO Tools', href: '/categories/seo-url-tools' },
-  { label: 'Security Tools', href: '/categories/security-tools' },
-  { label: 'Converters', href: '/categories/converters' },
-  { label: 'Generators', href: '/categories/generators' },
+  { labelKey: 'developerTools', ns: 'Header', href: '/categories/developer-tools' },
+  { labelKey: 'aiTools', ns: 'Header', href: '/categories/ai-tools' },
+  { labelKey: 'seoTools', ns: 'Header', href: '/categories/seo-url-tools' },
+  { labelKey: 'securityTools', ns: 'Header', href: '/categories/security-tools' },
+  { labelKey: 'categoryConverters', ns: 'Home', href: '/categories/converters' },
+  { labelKey: 'categoryGeneratorsShort', ns: 'Home', href: '/categories/generators' },
 ] as const;
 
 const POPULAR_SEARCHES = [
@@ -57,6 +60,7 @@ function findBestToolMatch(query: string): string | null {
 
 export function Hero() {
   const t = useTranslations('Home');
+  const tHeader = useTranslations('Header');
   const router = useRouter();
   const [query, setQuery] = useState('');
   const toolCount = useMemo(() => TOOLS.filter((tool) => tool.indexable).length, []);
@@ -92,47 +96,43 @@ export function Hero() {
 
       <div className="relative z-10 max-w-5xl w-full min-w-0 mx-auto px-4 text-center">
         {/* Brand promise - the eyebrow above the X mark, per the approved
-            hero reference. Hardcoded (not run through next-intl) like
-            several other hero strings already are in this file - see
-            FAQS in ../../app/[locale]/page.tsx for the existing precedent
-            of English-only marketing copy on this page; translating this
-            properly across all 10 locales is a separate follow-up. */}
+            hero reference. */}
         <p className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.35em] text-cyber-muted mb-4 anim-slide-up">
-          Root Access For Everyone
+          {t('heroEyebrow')}
         </p>
 
         <InteractiveX />
 
-        {/* Exactly one H1 on this page. */}
+        {/* Exactly one H1 on this page. "XFree" is the brand name and stays
+            untranslated in every locale. */}
         <h1
           id="hero-heading"
           className="text-4xl sm:text-5xl lg:text-7xl font-black text-cyber-text leading-[1.05] tracking-tight mb-4 anim-slide-up"
           style={{ animationDelay: '0.1s' }}
         >
-          XFree <span className="text-cyber-glow neon-green">— Free Tools. Real Freedom.</span>
+          XFree <span className="text-cyber-glow neon-green">{t('heroHeadlineSuffix')}</span>
         </h1>
 
         <h2
           className="text-base sm:text-lg text-cyber-cyan font-mono mb-4 max-w-3xl mx-auto leading-snug anim-slide-up"
           style={{ animationDelay: '0.2s' }}
         >
-          Meet the XFree App and <Link href="https://app.xfree.in/" className="underline underline-offset-2 hover:no-underline" rel="noopener">XFree Studio</Link> — the new XFree workspace for developer, AI, data, SEO and web tools.
+          {t('heroSubheadingPrefix')} <Link href="https://app.xfree.in/" className="underline underline-offset-2 hover:no-underline" rel="noopener">XFree Studio</Link> {t('heroSubheadingSuffix')}
         </h2>
 
         <p className="text-base text-cyber-muted max-w-2xl mx-auto mb-8 leading-relaxed anim-slide-up" style={{ animationDelay: '0.3s' }}>
-          Discover free developer tools, AI utilities, data tools, SEO tools, converters and web utilities through XFree.
-          Use XFree Studio to search, create, convert, analyze and build from one privacy-first workspace.
+          {t('heroParagraph')}
         </p>
 
         {/* Category shortcuts - real anchors to real category routes. */}
-        <nav aria-label="Tool categories" className="flex flex-wrap items-center justify-center gap-2 mb-8 anim-slide-up" style={{ animationDelay: '0.35s' }}>
+        <nav aria-label={t('toolCategoriesAriaLabel')} className="flex flex-wrap items-center justify-center gap-2 mb-8 anim-slide-up" style={{ animationDelay: '0.35s' }}>
           {CATEGORY_SHORTCUTS.map((cat) => (
             <Link
               key={cat.href}
               href={cat.href}
               className="px-3.5 py-2 rounded-lg border border-cyber-border bg-cyber-card text-xs font-mono text-cyber-muted hover:text-cyber-glow hover:border-cyber-glow/40 transition-colors focus-ring"
             >
-              {cat.label}
+              {cat.ns === 'Header' ? tHeader(cat.labelKey) : t(cat.labelKey)}
             </Link>
           ))}
         </nav>
@@ -158,11 +158,11 @@ export function Hero() {
               />
               <kbd aria-hidden="true" className="hidden sm:inline">⏎</kbd>
               <button type="submit" className="cyber-btn cyber-btn-filled text-xs px-4 py-2 rounded">
-                <span>Explore Now →</span>
+                <span>{t('exploreNow')}</span>
               </button>
             </div>
           </form>
-          <nav className="flex items-center justify-center gap-2 mt-3 flex-wrap" aria-label="Popular searches">
+          <nav className="flex items-center justify-center gap-2 mt-3 flex-wrap" aria-label={t('popularSearchesAriaLabel')}>
             <span className="text-[11px] text-cyber-muted font-mono">{t('popular')}</span>
             {POPULAR_SEARCHES.map((item, i) => (
               <span key={item.slug} className="contents">

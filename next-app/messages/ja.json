@@ -58,7 +58,15 @@
     "contribute": "貢献する",
     "copyright": "© {year} XFree. MITライセンスの下で公開されたオープンソースソフトウェアです。",
     "marketing": "マーケティング",
-    "application": "アプリケーション"
+    "application": "アプリケーション",
+    "trustPrivacyFirst": "プライバシー第一",
+    "trustOpenSource": "オープンソース",
+    "trustBrowserBased": "ブラウザベース",
+    "trustBuiltForEveryone": "すべての人のために",
+    "whatsNewEyebrow": "XFree の最新情報",
+    "whatsNewHeading": "新しいツール。広がる可能性。",
+    "whatsNewDescription": "XFree Studio の最新のツール、機能、改善情報をチェックしましょう。",
+    "whatsNewCta": "最新情報を見る"
   },
   "Home": {
     "badge": "XFreeアプリ・プライバシー重視のツール・登録不要",
@@ -109,7 +117,55 @@
     "ctaSubheading": "XFreeとともに、よりスマートでオープンなウェブを構築している何千人ものユーザーに加わりましょう。",
     "ctaHandwritten": "シンプルなツール\n特別な自由。",
     "ctaLaunch": "XFree Studioアプリを開く",
-    "ctaBrowse": "XFreeピラーを閲覧する"
+    "ctaBrowse": "XFreeピラーを閲覧する",
+    "heroEyebrow": "誰にでもルートアクセスを",
+    "heroHeadlineSuffix": "— 無料ツール。本当の自由。",
+    "heroSubheadingPrefix": "XFree App と",
+    "heroSubheadingSuffix": "をご紹介します — 開発・AI・データ・SEO・Web ツールのための新しい XFree ワークスペースです。",
+    "heroParagraph": "XFree で無料の開発者向けツール、AI ユーティリティ、データツール、SEO ツール、コンバーター、Web ユーティリティを見つけましょう。XFree Studio を使えば、プライバシーを重視した一つのワークスペースから検索・作成・変換・分析・構築ができます。",
+    "exploreNow": "今すぐ見る →",
+    "categoryConverters": "コンバーター",
+    "categoryGeneratorsShort": "ジェネレーター",
+    "toolCategoriesAriaLabel": "ツールカテゴリ",
+    "popularSearchesAriaLabel": "人気の検索",
+    "orbitDeveloper": "開発",
+    "orbitAI": "AI",
+    "orbitData": "データ",
+    "orbitWeb": "ウェブ",
+    "orbitProductivity": "生産性",
+    "orbitSecurity": "セキュリティ",
+    "faqs": [
+      {
+        "q": "XFree アプリとは何ですか?",
+        "a": "XFree アプリは、開発者向けの究極の無料オンラインプラットフォームで、XFree JSON フォーマッター、XFree HTML ミニファイア、XFree SEO ユーティリティ、XFree 暗号ツールなど、プライバシーを重視したマイクロツールを提供します。ほとんどのツールはサインアップ不要で100%クライアントサイドで動作します。一部(DNS/IP/WHOIS ルックアップ)は外部のインターネットインフラにアクセスする必要があるため、XFree 自体のサーバーを呼び出します。"
+      },
+      {
+        "q": "XFree は本当にサインアップ不要で無料ですか?",
+        "a": "はい。XFree はサインアップ不要、アカウント作成不要、利用制限なしで完全に無料で使用できます。すべてのツールは MIT ライセンスのもとオープンソースであり、ほぼすべてがブラウザ内で完結して動作します。"
+      },
+      {
+        "q": "XFree はどのようにプライバシーを守っていますか?",
+        "a": "XFree のツールはデフォルトでローカルモードで動作し、JavaScript と WebAssembly を使ってブラウザセッション内でデータを処理します。そのツールのページで明確に開示されていない限り、入力内容が外部サーバーに送信されることはありません。"
+      },
+      {
+        "q": "CodeBeautify の代わりとなる XFree とは?",
+        "a": "XFree は CodeBeautify に代わるプライバシー重視の選択肢です。それらのプラットフォームとは異なり、XFree はほぼ完全にクライアントサイドで動作し、トラッキングなし、ツールページに広告なし、データ収集なし、そして監査可能なオープンソースコードを備えています。"
+      },
+      {
+        "q": "XFree はオフラインで使えますか?",
+        "a": "はい、以前に訪れたページであれば可能です。XFree はサービスワーカーを登録し、一度読み込んだツールページをオフライン利用のためにキャッシュします。サーバー呼び出しが必要な機能(ルックアップ、AI Cloud Mode)には引き続き接続が必要です。"
+      },
+      {
+        "q": "XFree はオープンソースですか?",
+        "a": "はい。XFree のコードベース全体は MIT ライセンスのもとオープンソースです。私たちの GitHub リポジトリで監査、フォーク、コントリビュートが可能です。"
+      },
+      {
+        "q": "XFree は「X Free」と同じですか?",
+        "a": "はい。XFree は XFree App および XFree Studio プラットフォームの正式名称です。一部の人は「X Free」(スペースあり)として検索しますが、どちらも同じ製品を指しています。"
+      }
+    ],
+    "metaTitle": "XFree App:無料の開発者・SEO・AI ツール",
+    "metaDescription": "XFree は開発者・SEO・AI ツールのための無料オンラインアプリです — サインアップ不要。JSON フォーマッター、HTML ミニファイア、暗号ユーティリティがすべてブラウザ内で100%動作します。"
   },
   "NotFound": {
     "title": "ページが見つかりません",

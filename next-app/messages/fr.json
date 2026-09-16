@@ -58,7 +58,15 @@
     "contribute": "Contribuer",
     "copyright": "© {year} XFree. Logiciel open source publié sous licence MIT.",
     "marketing": "Marketing",
-    "application": "Application"
+    "application": "Application",
+    "trustPrivacyFirst": "Confidentialité D'abord",
+    "trustOpenSource": "Open Source",
+    "trustBrowserBased": "Basé Sur Le Navigateur",
+    "trustBuiltForEveryone": "Conçu Pour Tous",
+    "whatsNewEyebrow": "Nouveautés De XFree",
+    "whatsNewHeading": "Nouveaux Outils. Plus De Possibilités.",
+    "whatsNewDescription": "Restez informé des derniers outils, fonctionnalités et améliorations de XFree Studio.",
+    "whatsNewCta": "Découvrir Les Nouveautés"
   },
   "Home": {
     "badge": "App XFree · Outils axés sur la confidentialité · Sans inscription",
@@ -109,7 +117,55 @@
     "ctaSubheading": "Rejoignez des milliers d'utilisateurs qui construisent déjà un web plus intelligent et plus ouvert avec XFree.",
     "ctaHandwritten": "Outils Simples\nLiberté Extraordinaire.",
     "ctaLaunch": "Ouvrir l'app XFree Studio",
-    "ctaBrowse": "Parcourir les piliers XFree"
+    "ctaBrowse": "Parcourir les piliers XFree",
+    "heroEyebrow": "Accès Root Pour Tous",
+    "heroHeadlineSuffix": "— Outils Gratuits. Liberté Réelle.",
+    "heroSubheadingPrefix": "Découvrez l'app XFree et",
+    "heroSubheadingSuffix": "— le nouvel espace de travail XFree pour les outils de développement, d'IA, de données, de SEO et web.",
+    "heroParagraph": "Découvrez des outils gratuits pour développeurs, des utilitaires d'IA, des outils de données, des outils SEO, des convertisseurs et des utilitaires web grâce à XFree. Utilisez XFree Studio pour rechercher, créer, convertir, analyser et construire depuis un espace unique axé sur la confidentialité.",
+    "exploreNow": "Explorer Maintenant →",
+    "categoryConverters": "Convertisseurs",
+    "categoryGeneratorsShort": "Générateurs",
+    "toolCategoriesAriaLabel": "Catégories d'outils",
+    "popularSearchesAriaLabel": "Recherches populaires",
+    "orbitDeveloper": "DÉVELOPPEUR",
+    "orbitAI": "IA",
+    "orbitData": "DONNÉES",
+    "orbitWeb": "WEB",
+    "orbitProductivity": "PRODUCTIVITÉ",
+    "orbitSecurity": "SÉCURITÉ",
+    "faqs": [
+      {
+        "q": "Qu'est-ce que l'app XFree ?",
+        "a": "L'app XFree est la plateforme en ligne gratuite ultime pour les développeurs, proposant des micro-outils axés sur la confidentialité : formateurs JSON, minificateurs HTML, utilitaires SEO et outils cryptographiques XFree. La plupart des outils fonctionnent à 100 % côté client, sans inscription ; quelques-uns (recherche DNS/IP/WHOIS) appellent le propre serveur de XFree car ils doivent atteindre une infrastructure internet externe."
+      },
+      {
+        "q": "XFree est-il vraiment gratuit, sans inscription ?",
+        "a": "Oui. XFree est entièrement gratuit, sans inscription, sans création de compte et sans limite d'utilisation. Tous les outils sont open source sous licence MIT et fonctionnent presque tous entièrement dans votre navigateur."
+      },
+      {
+        "q": "Comment XFree garantit-il la confidentialité ?",
+        "a": "Les outils XFree fonctionnent par défaut en Mode Local, traitant vos données dans votre session de navigateur à l'aide de JavaScript et WebAssembly. Vos données ne sont jamais transmises à des serveurs externes, sauf mention explicite sur la page de l'outil concerné."
+      },
+      {
+        "q": "Quelle est l'alternative de XFree à CodeBeautify ?",
+        "a": "XFree est une alternative à CodeBeautify axée sur la confidentialité. Contrairement à ces plateformes, XFree fonctionne presque entièrement côté client, sans aucun suivi, sans publicité sur les pages d'outils, sans collecte de données, et avec un code open source que vous pouvez auditer."
+      },
+      {
+        "q": "Puis-je utiliser XFree hors ligne ?",
+        "a": "Oui, pour les pages déjà visitées. XFree enregistre un service worker qui met en cache les pages d'outils pour une utilisation hors ligne une fois que vous les avez chargées ; les fonctionnalités nécessitant un appel serveur (recherches, mode AI Cloud) ont toujours besoin d'une connexion."
+      },
+      {
+        "q": "XFree est-il open source ?",
+        "a": "Oui. L'intégralité du code de XFree est open source sous licence MIT. Vous pouvez l'auditer, le forker et contribuer sur notre dépôt GitHub."
+      },
+      {
+        "q": "XFree est-il la même chose que « X Free » ?",
+        "a": "Oui. XFree est le nom officiel de la plateforme XFree App et XFree Studio. Certaines personnes le recherchent sous le nom « X Free » (avec un espace) ; les deux désignent le même produit."
+      }
+    ],
+    "metaTitle": "App XFree : Outils Gratuits de Développement, SEO et IA",
+    "metaDescription": "XFree est une application en ligne gratuite proposant des outils de développement, de SEO et d'IA, sans inscription requise. Formateurs JSON, minificateurs HTML et utilitaires cryptographiques fonctionnant à 100 % dans votre navigateur."
   },
   "NotFound": {
     "title": "Page introuvable",

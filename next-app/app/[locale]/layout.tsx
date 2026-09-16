@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Inter, JetBrains_Mono, Space_Grotesk, Caveat } from 'next/font/google';
 import { AnalyticsWidgets } from '@/components/analytics/Widgets';
 import { PWARegister } from '@/components/PWARegister';
@@ -54,6 +55,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Home' });
+  const metaTitle = t('metaTitle');
+  const metaDescription = t('metaDescription');
   const baseUrl = 'https://www.xfree.in';
   // The real route for a locale's homepage is exactly "/es" (no
   // trailing slash) - appending one here would 308-redirect. Only the
@@ -70,11 +74,10 @@ export async function generateMetadata({
     metadataBase: new URL(baseUrl),
     applicationName: 'XFree App',
     title: {
-      default: 'XFree App: Free Developer, SEO & AI Tools',
+      default: metaTitle,
       template: 'XFree: %s',
     },
-    description:
-      'XFree is a free online app for developer, SEO, and AI tools — no signup required. JSON formatters, HTML minifiers, and crypto utilities that run 100% client-side in your browser.',
+    description: metaDescription,
     authors: [{ name: 'XFree Contributors' }],
     creator: 'XFree',
     publisher: 'XFree',
@@ -95,9 +98,8 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       siteName: 'XFree',
-      title: 'XFree App: Free Developer, SEO & AI Tools',
-      description:
-        'XFree is a free online app for developer, SEO, and AI tools — no signup required. JSON formatters, HTML minifiers, and crypto utilities that run 100% client-side in your browser.',
+      title: metaTitle,
+      description: metaDescription,
       url: canonicalHomeUrl,
       images: [
         {
@@ -114,8 +116,8 @@ export async function generateMetadata({
       card: 'summary_large_image',
       site: '@xfreein',
       creator: '@xfreein',
-      title: 'XFree App: Free Developer, SEO & AI Tools',
-      description: 'A free online app for developer, SEO, and AI tools — no signup required. 100% client-side.',
+      title: metaTitle,
+      description: metaDescription,
       images: ['/twitter-image'],
     },
     icons: {
