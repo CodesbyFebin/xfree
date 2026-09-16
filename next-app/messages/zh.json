@@ -175,5 +175,111 @@
   },
   "Common": {
     "skipToContent": "跳至主要内容"
+  },
+  "Tools": {
+    "json-formatter": {
+      "title": "JSON 格式化工具",
+      "shortDescription": "格式化、验证并美化 JSON 数据,支持语法高亮。",
+      "longDescription": "免费的在线 JSON 格式化与验证工具。使用语法高亮格式化 JSON、验证 JSON 语法、美化压缩后的 JSON,并即时解析 JSON 数据。无需注册。",
+      "explanation": "解析 JSON 并以正确的缩进和换行进行格式化。",
+      "howToUse": [
+        "将 JSON 粘贴到输入框",
+        "点击「格式化」",
+        "复制格式化后的结果"
+      ],
+      "faqs": [
+        {
+          "question": "我的数据会被发送到服务器吗？",
+          "answer": "不会,所有处理都在你的浏览器本地完成。"
+        },
+        {
+          "question": "JSON 格式化工具是免费的吗？",
+          "answer": "是的,100% 免费,无需注册。"
+        },
+        {
+          "question": "我的 JSON 数据会怎样？",
+          "answer": "你的 JSON 只会留在浏览器中,绝不会被发送到任何服务器。"
+        }
+      ]
+    },
+    "regex-tester": {
+      "title": "正则表达式测试工具",
+      "shortDescription": "通过实时匹配与语法高亮测试并调试正则表达式。",
+      "longDescription": "免费的在线正则表达式测试与调试工具。通过实时匹配高亮测试正则表达式、查看捕获组、测试多个模式并调试正则语法。支持 JavaScript、Python、PHP 等语言。",
+      "explanation": "针对示例文本测试正则表达式模式,并高亮显示匹配结果。",
+      "howToUse": [
+        "输入正则表达式模式",
+        "输入测试字符串",
+        "实时查看匹配结果"
+      ],
+      "faqs": [
+        {
+          "question": "支持哪些正则表达式方言？",
+          "answer": "浏览器中支持 JavaScript 风格的正则表达式。"
+        },
+        {
+          "question": "可以测试多个模式吗？",
+          "answer": "可以,你可以测试多个模式并查看所有高亮的匹配结果。"
+        }
+      ]
+    },
+    "xml-sitemap-generator": {
+      "title": "XML 站点地图生成器",
+      "shortDescription": "为 Google 与 Bing SEO 生成 XML 站点地图。",
+      "longDescription": "免费的 XML 站点地图生成工具。创建符合 Google 规范的 XML 站点地图,支持优先级、changefreq 与 lastmod 日期。支持视频、图片与新闻站点地图。输出针对 SEO 优化。",
+      "explanation": "创建带有正确命名空间与可选优先级的 XML 站点地图。",
+      "howToUse": [
+        "输入网址",
+        "设置优先级与 changefreq",
+        "下载 XML 站点地图"
+      ],
+      "faqs": []
+    },
+    "meta-tag-generator": {
+      "title": "元标签生成器",
+      "shortDescription": "生成 Open Graph、Twitter Card 与 SEO 元标签。",
+      "longDescription": "免费的元标签生成工具。创建用于 Facebook 的 Open Graph 标签、Twitter 卡片、LinkedIn 与 Pinterest 标签。生成包含标题、描述、关键词与规范网址的 SEO 元标签。",
+      "explanation": "为社交分享与 SEO 创建全面的元标签。",
+      "howToUse": [
+        "输入页面详情",
+        "复制元标签",
+        "添加到 HTML 的 <head> 中"
+      ],
+      "faqs": []
+    },
+    "jwt-decoder": {
+      "title": "JWT 解码工具",
+      "shortDescription": "无需验证即可解码并检查 JSON Web Token。",
+      "longDescription": "免费的在线 JWT 解码工具。解码 JSON Web Token、检查 header 与 payload、查看 claims、检查过期时间。无需将令牌发送到任何地方即可调试 JWT 身份验证。",
+      "explanation": "在不验证的情况下解码 JWT 的 header、payload 与签名。",
+      "howToUse": [
+        "粘贴 JWT",
+        "查看解码后的 header 与 payload",
+        "检查过期时间"
+      ],
+      "faqs": []
+    }
+  },
+  "Pillars": {
+    "json-data-tools": {
+      "name": "JSON 数据工具中心",
+      "description": "完整的 JSON 工具套件：格式化工具、验证工具、压缩工具、扁平化工具、排序工具、差异对比、查看器、转换为 CSV/YAML/XML、查询构建器、模式生成器。"
+    },
+    "regex-pattern-tools": {
+      "name": "正则表达式与模式工具中心",
+      "description": "掌握正则表达式：测试工具、解释工具、构建工具、速查表、调试工具、可视化工具、模式库、匹配工具、替换工具、批处理工具。"
+    },
+    "sitemap-generators": {
+      "name": "站点地图生成器工具中心",
+      "description": "生成站点地图：XML 站点地图、HTML 站点地图、视频站点地图、图片站点地图、新闻站点地图、移动站点地图、RSS 订阅源、XML 索引文件。"
+    },
+    "meta-tag-tools": {
+      "name": "元标签工具中心",
+      "description": "创建元标签：Open Graph、Twitter 卡片、Facebook、LinkedIn、Pinterest、结构化数据标记、规范标签、robots 元标签、viewport。"
+    },
+    "token-decoder-tools": {
+      "name": "令牌解码与编码工具中心",
+      "description": "解码令牌：JWT 解码工具、SAML 解码工具、OAuth 令牌解析器、OIDC ID 令牌解析器、SASL 机制选择器、令牌过期检查工具。"
+    }
   }
 }
