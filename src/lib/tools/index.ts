@@ -57,7 +57,12 @@ export const barcodeGenerator = productivity.barcodeGenerator;
 export const colorConverter = productivity.colorConverter;
 export const unitConverter = productivity.unitConverter;
 
-export const TOOLS_REGISTRY: Record<string, (...args: unknown[]) => Promise<unknown>> = {
+// Every implementation takes exactly one input object (see
+// execution-engine.ts's `impl(normalizedInput)` - always a single call
+// argument, never variadic). `(input: any)` reflects that actual calling
+// convention; a `(...args: unknown[])` signature is unsound here since
+// TS correctly rejects assigning single-object-param functions to it.
+export const TOOLS_REGISTRY: Record<string, (input: any) => Promise<unknown>> = {
   'json-formatter': jsonFormatter,
   'json-minifier': jsonMinifier,
   'json-validator': jsonValidator,

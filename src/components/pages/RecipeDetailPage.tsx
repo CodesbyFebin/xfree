@@ -50,7 +50,7 @@ export function RecipeDetailPage({ recipe, onBack }: { recipe: RecipeDefinition;
                   <p className="font-bold text-slate-100">{item.label}</p>
                   <code className="mt-1 block break-all text-[11px] text-slate-500">{item.kind === "engine" ? `engine:${item.engineId}` : `transform:${item.transformId}`}</code>
                   {item.config?.mapLines ? <p className="mt-1 text-[11px] text-slate-500">Safe config: run independently for each non-empty line.</p> : null}
-                  {item.config?.prependLine ? <p className="mt-1 text-[11px] text-slate-500">Safe config: fixed repository query “{item.config.prependLine}”.</p> : null}
+                  {item.config?.prependLine ? <p className="mt-1 text-[11px] text-slate-500">Safe config: fixed repository query “{String(item.config.prependLine)}”.</p> : null}
                   {item.passthrough ? <p className="mt-1 text-[11px] text-slate-500">Passthrough metric: result is recorded without replacing the pipeline payload.</p> : null}
                 </div>
               </li>
@@ -70,7 +70,7 @@ export function RecipeDetailPage({ recipe, onBack }: { recipe: RecipeDefinition;
           </section>
           <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
             <h2 className="font-black text-white">Limits and review notes</h2>
-            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-400">{recipe.notes.map((note) => <li key={note}>• {note}</li>)}</ul>
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-400">{(recipe.notes ?? []).map((note) => <li key={note}>• {note}</li>)}</ul>
           </section>
         </div>
       </section>
