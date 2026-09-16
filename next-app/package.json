@@ -13,6 +13,7 @@
     "verify:sitemap": "tsx scripts/verify-sitemap.ts",
     "verify:tool-matching": "tsx scripts/verify-tool-matching.ts",
     "verify:paid-security": "tsx scripts/verify-paid-endpoint-security.ts",
+    "verify:seo-content": "tsx scripts/verify-seo-content.ts",
     "test": "playwright test"
   },
   "dependencies": {
