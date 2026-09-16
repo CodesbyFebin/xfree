@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
@@ -177,9 +178,23 @@ async function PillarsIndex({ locale }: { locale: Locale }) {
   );
 }
 
+// Pillar categories use their own id scheme (dev-tools, web-seo, ...)
+// and slightly fuller label text than Header's four tool-category keys,
+// but the ones covered here mean the same thing - reusing them avoids a
+// whole separate translation namespace for a handful of category names.
+const PILLAR_CATEGORY_TRANSLATION_KEYS: Record<string, string> = {
+  'dev-tools': 'developerTools',
+  'web-seo': 'seoTools',
+  'ai-auto': 'aiTools',
+  security: 'securityTools',
+};
+
 async function PillarDetail({ pillar, locale }: { pillar: NonNullable<ReturnType<typeof findPillarBySlug>>; locale: Locale }) {
   const { tools: toolTranslations } = await loadContentTranslations(locale);
   const categoryInfo = PILLAR_CATEGORIES.find(c => c.id === pillar.category);
+  const tHeader = await getTranslations({ locale, namespace: 'Header' });
+  const pillarCategoryTranslationKey = PILLAR_CATEGORY_TRANSLATION_KEYS[pillar.category];
+  const categoryLabel = pillarCategoryTranslationKey ? tHeader(pillarCategoryTranslationKey) : categoryInfo?.label || pillar.category;
   const pillarTools = TOOLS.filter(t => t.pillarSlug === pillar.slug && t.indexable)
     .map(t => localizeTool(t, toolTranslations));
   // A few tools (DNS/IP/WHOIS lookup) need to reach a server and are
@@ -197,7 +212,7 @@ async function PillarDetail({ pillar, locale }: { pillar: NonNullable<ReturnType
   // the visible "Home / Home / ..." trail and the JSON-LD block.
   const breadcrumbItems = [
     { name: 'Pillars', href: '/pillars' },
-    { name: categoryInfo?.label || pillar.category, href: `/pillars` },
+    { name: categoryLabel, href: `/pillars` },
     { name: pillar.name, href: `/pillars/${pillar.slug}` },
   ];
 
@@ -222,7 +237,7 @@ async function PillarDetail({ pillar, locale }: { pillar: NonNullable<ReturnType
                 <h1 className="text-2xl sm:text-3xl font-bold text-cyber-text font-mono">
                   XFree {pillar.name} <span className="text-cyber-muted font-normal">— Free, No Signup</span>
                 </h1>
-                <p className="text-cyber-muted mt-1">{categoryInfo?.label} • {pillar.toolCount || pillarTools.length} tools</p>
+                <p className="text-cyber-muted mt-1">{categoryLabel} • {pillar.toolCount || pillarTools.length} tools</p>
               </div>
             </div>
             <p className="text-cyber-text text-base leading-relaxed mb-4">{pillar.description}</p>
@@ -257,7 +272,7 @@ async function PillarDetail({ pillar, locale }: { pillar: NonNullable<ReturnType
 
           {categoryPillars.length > 1 && (
             <section className="mb-12">
-              <h2 className="text-xl font-bold text-cyber-text font-mono mb-6"><span className="text-cyber-glow">$</span> Related {categoryInfo?.label} Pillars</h2>
+              <h2 className="text-xl font-bold text-cyber-text font-mono mb-6"><span className="text-cyber-glow">$</span> Related {categoryLabel} Pillars</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {categoryPillars.filter(p => p.slug !== pillar.slug).slice(0, 6).map(related => (
                   <Link key={related.slug} href={`/pillars/${related.slug}`} className="cyber-card p-4 group block">
