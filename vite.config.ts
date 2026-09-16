@@ -34,5 +34,17 @@ export default defineConfig(() => {
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
+    test: {
+      // next-app/ is a separate Next.js project with its own Playwright
+      // suite (next-app/tests/e2e, run via `npm run test` from *inside*
+      // next-app - see next-app/playwright.config.ts). Vitest's default
+      // *.spec.ts discovery doesn't exclude that sibling `tests/`
+      // directory, so without this it tried to import those Playwright
+      // files and run them as Vitest suites, which fails immediately
+      // (test.describe() isn't valid outside Playwright's own runner) -
+      // 9 spurious "failed" files with 0 real assertions, unrelated to
+      // this root app's own 121 real unit tests.
+      exclude: ['**/node_modules/**', 'next-app/**'],
+    },
   };
 });
