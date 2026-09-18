@@ -182,15 +182,10 @@ function getSchemaData(locale: string) {
         // page for a SearchAction to honestly point at. Removed rather
         // than left pointing at a URL that doesn't actually search.
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `${baseUrl}/` },
-          { '@type': 'ListItem', position: 2, name: 'Categories', item: `${baseUrl}/categories` },
-          { '@type': 'ListItem', position: 3, name: 'Pillar Hubs', item: `${baseUrl}/pillars` },
-        ],
-      },
+      // No site-wide BreadcrumbList here: a fixed "Home > Categories >
+      // Pillar Hubs" trail on every page described no page's real position,
+      // and its /categories item is a 404. Pages that have a real trail
+      // (tools, pillars) emit their own via components/seo/Breadcrumbs.tsx.
     ],
   };
 }

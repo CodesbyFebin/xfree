@@ -260,7 +260,7 @@ async function ToolsIndex({ locale }: { locale: Locale }) {
   const { tools: toolTranslations } = await loadContentTranslations(locale);
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(generateBreadcrumbSchema([{ name: 'Tools', href: '/tools' }])) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(generateBreadcrumbSchema([{ name: 'Tools', href: '/tools' }], locale)) }} />
       <div className="scanlines" aria-hidden="true" />
       <Header />
       <main id="main-content" className="pt-20">
