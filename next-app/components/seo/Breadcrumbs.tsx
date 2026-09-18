@@ -1,3 +1,4 @@
+import { getLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 
@@ -11,12 +12,13 @@ interface BreadcrumbsProps {
   className?: string;
 }
 
-export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
+export async function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
+  const locale = await getLocale();
   // items is expected to NOT include Home - this component renders that
   // link itself below. Prepending it here too, once, keeps the schema's
   // first position matching what's actually visible instead of starting
   // mid-trail.
-  const schema = generateBreadcrumbSchema([{ name: 'Home', href: '/' }, ...items]);
+  const schema = generateBreadcrumbSchema([{ name: 'Home', href: '/' }, ...items], locale);
 
   return (
     <>

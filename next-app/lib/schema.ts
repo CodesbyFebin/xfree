@@ -1,4 +1,5 @@
 import { ToolDefinition, PillarDefinition } from '@/types';
+import { buildCanonical } from '@/lib/canonical';
 
 export function generateToolSchema(tool: ToolDefinition) {
   const baseUrl = 'https://www.xfree.in';
@@ -61,8 +62,13 @@ export function generateFAQSchema(faqs: Array<{ question: string; answer: string
   };
 }
 
+// `item` must be an absolute URL - Search Console flags relative paths
+// ("Invalid URL in field id (in itemListElement.item)"). hrefs here are
+// locale-less app paths (/tools, /categories/x), so resolve them the same
+// way canonicals are resolved: absolute, with the right locale prefix.
 export function generateBreadcrumbSchema(
-  items: Array<{ name: string; href: string }>
+  items: Array<{ name: string; href: string }>,
+  locale?: string
 ) {
   return {
     '@context': 'https://schema.org',
@@ -71,7 +77,7 @@ export function generateBreadcrumbSchema(
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.href,
+      item: /^https?:\/\//.test(item.href) ? item.href : buildCanonical(item.href, locale),
     })),
   };
 }
