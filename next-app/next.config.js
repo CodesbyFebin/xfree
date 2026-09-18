@@ -48,12 +48,30 @@ const nextConfig = {
   // choice for something that lives inside this app rather than at the
   // platform/infra layer.
   async redirects() {
+    // Legacy tool URLs Search Console still lists as 404 (from an older,
+    // larger tool catalog, crawled Aug 2026), redirected ONLY where a real
+    // tool today has the same intent. Everything else from that set stays a
+    // genuine 404 - redirecting unrelated pages to a random tool would just
+    // read as a soft 404 to Google.
+    const legacyToolRedirects = {
+      'url-decoder': 'url-decode',
+      'whois-lookup-free': 'whois-lookup',
+      'sha256-generator': 'sha256-hash',
+      'sql-beautifier': 'sql-formatter',
+      'ai-regex-explainer': 'regex-explainer',
+      'regex-generator-ai': 'regex-builder',
+    };
     return [
       {
         source: '/studio',
         destination: 'https://app.xfree.in/',
         permanent: true,
       },
+      ...Object.entries(legacyToolRedirects).map(([from, to]) => ({
+        source: `/tools/${from}`,
+        destination: `/tools/${to}`,
+        permanent: true,
+      })),
     ];
   },
   async headers() {

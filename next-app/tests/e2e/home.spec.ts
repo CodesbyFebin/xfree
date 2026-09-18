@@ -57,6 +57,16 @@ test.describe('Routing', () => {
     expect(res.headers()['location']).toBe('https://app.xfree.in/');
   });
 
+  test('legacy tool URLs with a same-intent real tool 301/308 to it; the rest stay 404', async ({ request }) => {
+    const redirected = await request.get('/tools/url-decoder', { maxRedirects: 0 });
+    expect(redirected.status()).toBe(308);
+    expect(redirected.headers()['location']).toBe('/tools/url-decode');
+
+    // No real equivalent - must not be redirected to an unrelated tool.
+    const gone = await request.get('/tools/ai-cta-generator', { maxRedirects: 0 });
+    expect(gone.status()).toBe(404);
+  });
+
   test('apex-style query params are not silently swallowed on a redirect target', async ({ request }) => {
     // /studio takes no query params today - this documents that if one is
     // ever added, it should be a deliberate decision, not silently dropped.
