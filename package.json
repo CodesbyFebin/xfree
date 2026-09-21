@@ -23,21 +23,21 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@google/genai": "^2.22.0",
+    "@google/genai": "^2.23.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vercel/analytics": "^2.0.1",
     "@vitejs/plugin-react": "^6.1.1",
-    "dotenv": "^17.2.3",
+    "dotenv": "^18.0.0",
     "express": "^5.2.1",
-    "framer-motion": "^13.2.0",
+    "framer-motion": "^13.4.0",
     "fuse.js": "^7.5.0",
-    "lucide-react": "^1.45.0",
-    "motion": "^13.2.0",
+    "lucide-react": "^1.47.0",
+    "motion": "^13.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "ts-node": "^10.9.2",
     "vite": "^8.3.0",
-    "zod": "^4.6.4"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@axe-core/cli": "^4.13.0",
