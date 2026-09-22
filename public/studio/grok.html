@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050807">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>XFree App</title>
+<meta name="description" content="XFree App — talk to X. Local or Cloud. No signup.">
+<link rel="canonical" href="https://app.xfree.in/grok">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root {
+  --bg: #050807;
+  --bg-2: #0a120e;
+  --surface: #0d1612;
+  --surface-2: #121c17;
+  --fg: #e8f5ee;
+  --muted: #7d9a8c;
+  --faint: #4d6559;
+  --primary: #00e68a;
+  --primary-dim: #00b36c;
+  --border: #1c3228;
+  --danger: #ff5c7a;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); }
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button, [role="button"] { cursor: pointer; font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; }
+textarea { font: inherit; color: inherit; }
+.app { display: flex; flex-direction: column; height: 100dvh; position: relative; }
+.app::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 70% at 50% -10%, rgba(0,230,138,.16), transparent 55%),
+    linear-gradient(180deg, transparent 60%, rgba(0,0,0,.35));
+}
+.top {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 10px;
+  padding: calc(10px + var(--safe-t)) 14px 8px;
+}
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center;
+  color: var(--fg); opacity: .9;
+}
+.icon-btn:hover { background: rgba(0,230,138,.08); }
+.model-pill {
+  margin: 0 auto; display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px;
+  background: rgba(13,22,18,.72); border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.model-pill b { font-size: 14px; font-weight: 700; letter-spacing: -.02em; }
+.model-pill span { font-size: 11px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+.stage { position: relative; z-index: 1; flex: 1; min-height: 0; overflow: auto; }
+.hero {
+  min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 12px 20px 28px; text-align: center;
+}
+.x3d { width: 168px; height: 168px; margin-bottom: 18px; filter: drop-shadow(0 18px 36px rgba(0,230,138,.22)); }
+.ask { font-size: 22px; font-weight: 650; letter-spacing: -.03em; margin: 0 0 22px; color: #f3fff8; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 420px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 999px;
+  background: rgba(18,28,23,.85); border: 1px solid var(--border);
+  color: var(--fg); font-size: 13px;
+}
+.chip svg { width: 16px; height: 16px; color: var(--primary); }
+.thread { padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 16px; max-width: 720px; margin: 0 auto; }
+.msg { display: flex; gap: 10px; align-items: flex-start; }
+.msg.user { flex-direction: row-reverse; }
+.bubble {
+  max-width: min(86%, 560px); padding: 12px 14px; border-radius: 18px;
+  font-size: 15.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+}
+.msg.user .bubble { background: #163226; border: 1px solid #1f4636; border-bottom-right-radius: 6px; }
+.msg.assistant .bubble { background: transparent; padding-left: 0; }
+.msg .who { font-size: 11px; color: var(--muted); margin-bottom: 4px; letter-spacing: .12em; text-transform: uppercase; }
+.bubble pre {
+  background: #07110c; border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px; overflow: auto; font-size: 12.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.bubble code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; color: #9dffd0; }
+.typing { display: inline-flex; gap: 5px; padding: 8px 0; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: bounce 1s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; }
+.typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%,80%,100% { transform: translateY(0); opacity:.35 } 40% { transform: translateY(-4px); opacity:1 } }
+.dock {
+  position: relative; z-index: 3;
+  padding: 8px 12px calc(10px + var(--safe-b));
+}
+.composer {
+  display: flex; align-items: flex-end; gap: 8px;
+  background: #101a15; border: 1px solid #234033; border-radius: 28px;
+  padding: 8px 8px 8px 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+.composer textarea {
+  flex: 1; resize: none; border: 0; outline: 0; background: transparent;
+  min-height: 24px; max-height: 140px; padding: 8px 4px; line-height: 1.4;
+}
+.round {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0;
+  background: #18241e; color: var(--fg);
+}
+.round.primary { background: var(--primary); color: #04210f; }
+.round.live { background: #13281e; color: var(--primary); box-shadow: 0 0 0 3px rgba(0,230,138,.18); }
+.round.danger { background: var(--danger); color: #fff; }
+.hint { text-align: center; font-size: 11px; color: var(--faint); margin-top: 8px; }
+.tabs {
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 6px 8px calc(8px + var(--safe-b));
+  border-top: 1px solid rgba(28,50,40,.6);
+  background: rgba(5,8,7,.86); backdrop-filter: blur(16px);
+}
+.tab { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; padding: 6px; color: var(--muted); font-size: 11px; }
+.tab.on { color: var(--fg); }
+.tab svg { width: 22px; height: 22px; }
+.sheet, .drawer, .voice {
+  position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.55);
+  display: none;
+}
+.sheet.on, .drawer.on, .voice.on { display: block; }
+.panel {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: #0b1410; border-top: 1px solid var(--border);
+  border-radius: 22px 22px 0 0; padding: 16px 16px calc(20px + var(--safe-b));
+  max-height: 86dvh; overflow: auto;
+}
+.drawer .side {
+  position: absolute; top: 0; bottom: 0; left: 0; width: min(86vw, 340px);
+  background: #0b1410; border-right: 1px solid var(--border);
+  padding: calc(16px + var(--safe-t)) 14px 16px; overflow: auto;
+}
+h2 { margin: 0 0 12px; font-size: 16px; }
+label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
+select, input[type="text"] {
+  width: 100%; background: #101a15; border: 1px solid var(--border); color: var(--fg);
+  border-radius: 12px; padding: 10px 12px;
+}
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(28,50,40,.5); }
+.toggle { width: 44px; height: 26px; border-radius: 99px; background: #1a2a22; position: relative; }
+.toggle.on { background: var(--primary-dim); }
+.toggle i { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left .18s; }
+.toggle.on i { left: 21px; }
+.mode { display: flex; gap: 6px; background: #101a15; padding: 4px; border-radius: 999px; border: 1px solid var(--border); }
+.mode button { flex: 1; padding: 8px 10px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+.mode button.on { background: var(--primary); color: #04210f; font-weight: 700; }
+.chat-item {
+  width: 100%; text-align: left; padding: 10px 10px; border-radius: 12px; color: var(--fg);
+  display: block; margin-bottom: 6px;
+}
+.chat-item:hover, .chat-item.on { background: #132018; }
+.ghost { color: var(--muted); font-size: 13px; }
+.voice-ui {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 40%, #0c1a14, #050807 70%);
+}
+.hud { width: min(78vw, 320px); height: min(78vw, 320px); position: relative; }
+.hud svg { width: 100%; height: 100%; }
+.voice-label { margin-top: 18px; font-size: 18px; font-weight: 650; }
+.voice-sub { color: var(--muted); font-size: 13px; margin-top: 6px; min-height: 1.3em; }
+.voice-close { position: absolute; top: calc(12px + var(--safe-t)); right: 12px; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(108px + var(--safe-b)); transform: translateX(-50%);
+  background: #163226; border: 1px solid var(--border); color: var(--fg);
+  padding: 8px 14px; border-radius: 999px; font-size: 13px; z-index: 40; display: none;
+}
+.atts { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 16px 6px; }
+.att { font-size: 11px; background: #163226; border-radius: 999px; padding: 4px 8px; color: #b7ffe0; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <button class="icon-btn" id="historyBtn" aria-label="History">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+    </button>
+    <button class="model-pill" id="modelBtn" aria-label="Model and settings">
+      <svg viewBox="0 0 64 64" width="18" height="18"><path d="M11 8 L20 8 L32 24 L44 8 L53 8 L36 32 L53 56 L44 56 L32 40 L20 56 L11 56 L28 32 Z" fill="#00e68a"/></svg>
+      <div><b id="modelName">MiniMax M3</b><br><span id="modeLabel">Cloud</span></div>
+    </button>
+    <button class="icon-btn" id="newChatBtn" aria-label="New chat">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="hero" id="hero">
+      <svg class="x3d" viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <linearGradient id="xg" x1="20" y1="10" x2="180" y2="190">
+            <stop offset="0%" stop-color="#1c3328"/>
+            <stop offset="46%" stop-color="#3d5a4a"/>
+            <stop offset="52%" stop-color="#00e68a"/>
+            <stop offset="100%" stop-color="#b8ffe0"/>
+          </linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <path d="M28 22 L58 22 L100 78 L142 22 L172 22 L118 100 L172 178 L142 178 L100 122 L58 178 L28 178 L82 100 Z" fill="url(#xg)" filter="url(#glow)"/>
+        <path d="M148 30 L168 30 L162 42 L176 54 L164 60 L182 84 L164 90" fill="#00e68a" opacity=".9"/>
+        <polygon points="100,70 122,84 122,116 100,130 78,116 78,84" fill="#050807" stroke="#00e68a" stroke-width="3"/>
+        <circle cx="100" cy="100" r="14" fill="#00e68a"/>
+        <circle cx="100" cy="100" r="6" fill="#050807"/>
+      </svg>
+      <p class="ask">What do you want to know?</p>
+      <div class="chips">
+        <button class="chip" data-prompt="Create a cinematic image prompt of Kochi at night with neon rain and a green X in the sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="10" r="1.5"/><path d="M21 16l-5-5-8 8"/></svg>Create images</button>
+        <button class="chip" data-prompt="Summarize the latest important news in 8 tight bullets. Flag anything uncertain."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12v14H4zM16 9h4v10h-4"/></svg>Latest News</button>
+        <button class="chip" data-prompt="Help me pick a persona for X — witty engineer from Kerala who is blunt, useful, and never hypes."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3"/><path d="M5 19c1.5-3 4-5 7-5s5.5 2 7 5"/></svg>Persona</button>
+        <button class="chip" data-prompt="Write a small, correct TypeScript function and explain it in 4 lines."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg>Code</button>
+      </div>
+    </div>
+    <div class="thread" id="thread" hidden></div>
+  </main>
+
+  <div class="atts" id="atts"></div>
+  <div class="dock">
+    <div class="composer">
+      <button class="round" id="attachBtn" aria-label="Attach">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <textarea id="input" rows="1" placeholder="Ask X" enterkeyhint="send"></textarea>
+      <button class="round" id="micBtn" aria-label="Voice">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
+      </button>
+      <button class="round primary" id="sendBtn" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+      </button>
+    </div>
+    <p class="hint" id="statusHint">Local stays on-device. Cloud uses MiniMax via XFree.</p>
+  </div>
+</div>
+
+<nav class="tabs">
+  <button class="tab on" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16v10H8l-4 4z"/></svg>Chat</button>
+  <button class="tab" data-tab="imagine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.4"/><path d="M21 16l-6-6-9 9"/></svg>Imagine</button>
+  <button class="tab" data-tab="voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>Voice</button>
+</nav>
+
+<div class="drawer" id="drawer">
+  <div class="side">
+    <h2>Chats</h2>
+    <button class="chat-item" id="newFromDrawer">+ New chat</button>
+    <div id="chatList"></div>
+    <p class="ghost" style="margin-top:18px">XFree App · no signup<br>Chats stay in this browser.</p>
+  </div>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="panel">
+    <h2>XFree App</h2>
+    <div class="mode" id="modeSwitch">
+      <button data-mode="local">Local</button>
+      <button data-mode="cloud" class="on">Cloud</button>
+    </div>
+    <label>Cloud model</label>
+    <select id="modelSelect"></select>
+    <label>Ollama endpoint</label>
+    <input id="ollamaEndpoint" type="text" value="http://localhost:11434">
+    <label>Ollama model</label>
+    <input id="ollamaModel" type="text" value="llama3.2:1b">
+    <div class="row"><span>Auto-speak replies</span><button class="toggle" id="speakToggle" aria-pressed="false"><i></i></button></div>
+    <div class="row"><span>Jarvis loop (listen → think → speak)</span><button class="toggle on" id="jarvisToggle" aria-pressed="true"><i></i></button></div>
+    <p class="ghost" style="margin-top:14px">Cloud posts to <code>/api/nvidia/chat</code> on this origin (proxied to xfree.in). Local talks to Ollama on your machine. Paid models only run if you pick them by name.</p>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="chip" id="saveSettings">Save</button>
+      <button class="chip" id="testOllama">Test Ollama</button>
+      <button class="chip" id="closeSheet">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="voice" id="voice">
+  <button class="icon-btn voice-close" id="voiceClose" aria-label="Close voice">✕</button>
+  <div class="voice-ui">
+    <div class="hud" id="hud"></div>
+    <div class="voice-label" id="voiceTitle">Tap to speak</div>
+    <div class="voice-sub" id="voiceSub">or close and type</div>
+    <button class="round primary" id="voiceGo" style="margin-top:22px;width:64px;height:64px" aria-label="Hold to talk">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0"/></svg>
+    </button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<input id="fileInput" type="file" hidden accept=".txt,.md,.json,.csv,.js,.ts,.html,.css,.py,.log,text/plain">
+
+<script>
+const NIM_MODELS = [
+  { id: "auto", name: "Auto (task-routed)" },
+  { id: "minimaxai/minimax-m3", name: "MiniMax M3" },
+  { id: "moonshotai/kimi-k3", name: "Kimi K3" },
+  { id: "poolside/laguna-xs-2.1", name: "Laguna XS 2.1" },
+  { id: "venice-uncensored", name: "Venice Uncensored (paid)" },
+  { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash (paid)" }
+];
+const REASONING = ["minimaxai/minimax-m3", "moonshotai/kimi-k3"];
+const STORAGE = "xfree_app_v1";
+const SYSTEM = "You are X, the unbound assistant inside XFree App. Be direct, useful, and concise. Never pretend to be Grok or another product. If a tool or provider is unavailable, say so.";
+
+const $ = (id) => document.getElementById(id);
+const state = {
+  mode: "cloud",
+  model: "minimaxai/minimax-m3",
+  ollamaEndpoint: "http://localhost:11434",
+  ollamaModel: "llama3.2:1b",
+  speak: false,
+  jarvis: true,
+  chats: [{ id: "c1", title: "New chat", messages: [] }],
+  chatId: "c1",
+  busy: false,
+  files: [],
+  rec: null,
+  listening: false,
+  phase: "idle"
+};
+
+function load() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE) || "null");
+    if (!raw) return;
+    Object.assign(state, raw, { busy: false, rec: null, listening: false, phase: "idle" });
+    if (!state.chats?.length) state.chats = [{ id: "c1", title: "New chat", messages: [] }];
+  } catch {}
+}
+function save() {
+  const { rec, busy, listening, phase, ...rest } = state;
+  localStorage.setItem(STORAGE, JSON.stringify(rest));
+}
+function chat() { return state.chats.find((c) => c.id === state.chatId) || state.chats[0]; }
+function toast(msg) {
+  const el = $("toast");
+  el.textContent = msg; el.style.display = "block";
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.style.display = "none", 2800);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    c === "&" ? "&" + "amp;" :
+    c === "<" ? "&" + "lt;" :
+    c === ">" ? "&" + "gt;" :
+    c === '"' ? "&" + "quot;" : "&#39;");
+}
+function md(text) {
+  const parts = String(text).split(/```([\s\S]*?)```/);
+  return parts.map((p, i) => i % 2 ? `<pre><code>${esc(p.replace(/^\w+\n/, ""))}</code></pre>` : esc(p)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br>")).join("");
+}
+function currentModelLabel() {
+  return (NIM_MODELS.find((m) => m.id === state.model) || NIM_MODELS[1]).name;
+}
+function renderChrome() {
+  $("modelName").textContent = state.mode === "local" ? state.ollamaModel : currentModelLabel();
+  $("modeLabel").textContent = state.mode === "local" ? "Local" : "Cloud";
+  $("statusHint").textContent = state.mode === "local"
+    ? "Local · Ollama on this device"
+    : "Cloud · MiniMax via XFree gateway";
+  $("modelSelect").innerHTML = NIM_MODELS.map((m) => `<option value="${m.id}" ${m.id===state.model?"selected":""}>${m.name}</option>`).join("");
+  $("ollamaEndpoint").value = state.ollamaEndpoint;
+  $("ollamaModel").value = state.ollamaModel;
+  $("speakToggle").classList.toggle("on", state.speak);
+  $("jarvisToggle").classList.toggle("on", state.jarvis);
+  [...$("modeSwitch").children].forEach((b) => b.classList.toggle("on", b.dataset.mode === state.mode));
+}
+function renderThread() {
+  const msgs = chat().messages;
+  $("hero").hidden = msgs.length > 0;
+  $("thread").hidden = msgs.length === 0;
+  $("thread").innerHTML = msgs.map((m) => {
+    if (m.pending) return `<div class="msg assistant"><div class="bubble"><div class="who">X</div><span class="typing"><i></i><i></i><i></i></span></div></div>`;
+    return `<div class="msg ${m.role}"><div class="bubble">${m.role==="assistant"?`<div class="who">X</div>`:""}${md(m.content)}</div></div>`;
+  }).join("");
+  $("stage").scrollTop = $("stage").scrollHeight;
+  $("atts").innerHTML = state.files.map((f) => `<span class="att">${esc(f.name)}</span>`).join("");
+}
+function renderChats() {
+  $("chatList").innerHTML = state.chats.map((c) =>
+    `<button class="chat-item ${c.id===state.chatId?"on":""}" data-id="${c.id}">${esc(c.title)}</button>`
+  ).join("");
+}
+function renderHud(phase) {
+  const listening = phase === "listening";
+  const thinking = phase === "thinking";
+  const speaking = phase === "speaking";
+  const pulse = listening || speaking ? 1.04 : thinking ? 1.02 : 1;
+  $("hud").innerHTML = `<svg viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#1c3228" stroke-width="1"/>
+    <circle cx="50" cy="50" r="40" fill="none" stroke="${listening?"#00e68a":"#234033"}" stroke-width="${listening?2.4:1.2}" stroke-dasharray="${thinking?"4 6":"0"}">
+      ${thinking?`<animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="2.4s" repeatCount="indefinite"/>`:""}
+    </circle>
+    <g transform="translate(50 50) scale(${pulse}) translate(-50 -50)">
+      <path d="M28 22 L40 22 L50 38 L60 22 L72 22 L56 50 L72 78 L60 78 L50 62 L40 78 L28 78 L44 50 Z" fill="#00e68a"/>
+      <circle cx="50" cy="50" r="7" fill="#050807" stroke="#00e68a"/>
+    </g>
+  </svg>`;
+  $("voiceTitle").textContent = listening ? "Listening…" : thinking ? "Thinking…" : speaking ? "Speaking…" : "Tap to speak";
+}
+
+function buildMessages(prompt) {
+  const recent = chat().messages.filter((m) => !m.pending).slice(-8).map((m) => ({
+    role: m.role === "assistant" ? "assistant" : "user",
+    content: m.content
+  }));
+  const extras = state.files.filter((f) => f.text).slice(-3)
+    .map((f) => `\n\nFile: ${f.name}\n${f.text.slice(0, 2500)}`).join("");
+  return [{ role: "system", content: SYSTEM }, ...recent, { role: "user", content: prompt + extras }];
+}
+
+async function callCloud(prompt) {
+  const controller = new AbortController();
+  const ms = REASONING.includes(state.model) ? 45000 : 20000;
+  const t = setTimeout(() => controller.abort(), ms);
+  try {
+    const res = await fetch("/api/nvidia/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: state.model !== "auto" ? state.model : undefined,
+        taskType: /code|function|typescript|python/i.test(prompt) ? "code" : "general",
+        messages: buildMessages(prompt),
+        maxTokens: REASONING.includes(state.model) ? 2048 : 512
+      })
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      const msg = data?.code === "NOT_CONFIGURED"
+        ? "Cloud Mode isn't configured yet (no NVIDIA key on the server)."
+        : (data?.error || "Cloud request failed.");
+      return { ok: false, text: msg };
+    }
+    return { ok: true, text: data.reply || "No response", model: data.model };
+  } catch {
+    return { ok: false, text: "Cloud is unreachable right now." };
+  } finally { clearTimeout(t); }
+}
+
+async function callLocal(prompt) {
+  const ep = state.ollamaEndpoint.replace(/\/$/, "");
+  const res = await fetch(ep + "/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: state.ollamaModel, messages: buildMessages(prompt), stream: false })
+  });
+  if (!res.ok) throw new Error("Ollama " + res.status);
+  const data = await res.json();
+  return data?.message?.content || JSON.stringify(data);
+}
+
+async function send(text, fromVoice) {
+  const prompt = (text || $("input").value).trim();
+  if (!prompt || state.busy) return;
+  $("input").value = "";
+  resizeInput();
+  const c = chat();
+  if (!c.messages.length) c.title = prompt.slice(0, 42);
+  c.messages.push({ role: "user", content: prompt });
+  c.messages.push({ role: "assistant", content: "", pending: true });
+  state.busy = true;
+  save(); renderThread(); renderChats();
+  let reply, err;
+  try {
+    if (state.mode === "local") {
+      try { reply = await callLocal(prompt); }
+      catch (e) { err = "Ollama didn't answer. Open settings and test the endpoint, or switch to Cloud."; }
+    } else {
+      const r = await callCloud(prompt);
+      if (r.ok) reply = r.text; else err = r.text;
+    }
+  } catch (e) { err = "Request failed."; }
+  c.messages = c.messages.filter((m) => !m.pending);
+  c.messages.push({ role: "assistant", content: err || reply || "Empty reply." });
+  state.busy = false; save(); renderThread();
+  if (!err && (state.speak || fromVoice)) speak(c.messages.at(-1).content, fromVoice);
+  else if (fromVoice && state.jarvis) startListen(true);
+}
+
+function speak(text, loop) {
+  if (!window.speechSynthesis) { if (loop && state.jarvis) startListen(true); return; }
+  state.phase = "speaking"; renderHud("speaking");
+  const u = new SpeechSynthesisUtterance(text.replace(/```[\s\S]*?```/g, "code omitted").slice(0, 1400));
+  u.onend = () => { state.phase = "idle"; renderHud("idle"); if (loop && state.jarvis) startListen(true); };
+  u.onerror = u.onend;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+
+function SpeechRec() { return window.SpeechRecognition || window.webkitSpeechRecognition; }
+
+function startListen(loop) {
+  const Rec = SpeechRec();
+  if (!Rec) { toast("Speech recognition isn't available in this browser."); return; }
+  stopListen();
+  const rec = new Rec();
+  rec.lang = "en-IN"; rec.interimResults = true; rec.continuous = false;
+  state.rec = rec; state.listening = true; state.phase = "listening";
+  renderHud("listening"); $("micBtn").classList.add("live"); $("voice").classList.add("on");
+  rec.onresult = (e) => {
+    let final = "", interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) final += t; else interim += t;
+    }
+    $("voiceSub").textContent = final || interim || "…";
+    if (final) {
+      stopListen();
+      state.phase = "thinking"; renderHud("thinking");
+      send(final, true);
+    }
+  };
+  rec.onerror = () => { stopListen(); toast("Mic error — check permission."); };
+  rec.onend = () => { if (state.listening) stopListen(); };
+  try { rec.start(); } catch { toast("Microphone access was not granted."); stopListen(); }
+}
+
+function stopListen() {
+  state.listening = false;
+  $("micBtn").classList.remove("live");
+  try { state.rec && state.rec.stop(); } catch {}
+  state.rec = null;
+  if (state.phase === "listening") { state.phase = "idle"; renderHud("idle"); }
+}
+
+function newChat() {
+  const id = "c" + Date.now();
+  state.chats.unshift({ id, title: "New chat", messages: [] });
+  state.chatId = id; state.files = [];
+  save(); renderThread(); renderChats();
+}
+
+function resizeInput() {
+  const el = $("input");
+  el.style.height = "0px";
+  el.style.height = Math.min(el.scrollHeight, 140) + "px";
+}
+
+$("input").addEventListener("input", resizeInput);
+$("input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+});
+$("sendBtn").onclick = () => send();
+$("micBtn").onclick = () => { $("voice").classList.add("on"); renderHud("idle"); startListen(false); };
+$("voiceGo").onclick = () => state.listening ? stopListen() : startListen(true);
+$("voiceClose").onclick = () => { stopListen(); speechSynthesis.cancel(); $("voice").classList.remove("on"); };
+$("historyBtn").onclick = () => { renderChats(); $("drawer").classList.add("on"); };
+$("drawer").onclick = (e) => { if (e.target === $("drawer")) $("drawer").classList.remove("on"); };
+$("newChatBtn").onclick = newChat;
+$("newFromDrawer").onclick = () => { newChat(); $("drawer").classList.remove("on"); };
+$("chatList").onclick = (e) => {
+  const id = e.target.closest("[data-id]")?.dataset.id;
+  if (!id) return;
+  state.chatId = id; save(); renderThread(); $("drawer").classList.remove("on");
+};
+$("modelBtn").onclick = () => { renderChrome(); $("sheet").classList.add("on"); };
+$("sheet").onclick = (e) => { if (e.target === $("sheet")) $("sheet").classList.remove("on"); };
+$("closeSheet").onclick = () => $("sheet").classList.remove("on");
+$("modeSwitch").onclick = (e) => {
+  const m = e.target.dataset.mode; if (!m) return;
+  state.mode = m; save(); renderChrome();
+};
+$("modelSelect").onchange = () => { state.model = $("modelSelect").value; save(); renderChrome(); };
+$("speakToggle").onclick = () => { state.speak = !state.speak; save(); renderChrome(); };
+$("jarvisToggle").onclick = () => { state.jarvis = !state.jarvis; save(); renderChrome(); };
+$("saveSettings").onclick = () => {
+  state.ollamaEndpoint = $("ollamaEndpoint").value.trim();
+  state.ollamaModel = $("ollamaModel").value.trim();
+  save(); renderChrome(); toast("Saved"); $("sheet").classList.remove("on");
+};
+$("testOllama").onclick = async () => {
+  try {
+    const r = await fetch(state.ollamaEndpoint.replace(/\/$/, "") + "/api/tags");
+    if (!r.ok) throw new Error();
+    toast("Ollama reachable");
+  } catch { toast("Can't reach Ollama"); }
+};
+document.querySelectorAll(".chip[data-prompt]").forEach((b) => b.onclick = () => send(b.dataset.prompt));
+document.querySelectorAll(".tab").forEach((b) => b.onclick = () => {
+  document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x === b));
+  if (b.dataset.tab === "voice") { $("voice").classList.add("on"); renderHud("idle"); startListen(true); }
+  if (b.dataset.tab === "imagine") send("Create a vivid image prompt for: a transparent 3D X hovering over a rain-soaked Kochi street at night, neon green reflections, cinematic.");
+});
+$("attachBtn").onclick = () => $("fileInput").click();
+$("fileInput").onchange = async (e) => {
+  const file = e.target.files?.[0]; if (!file) return;
+  if (file.size > 200 * 1024) { toast("File too large (200KB max)"); return; }
+  state.files.push({ name: file.name, text: await file.text() });
+  renderThread(); e.target.value = "";
+};
+
+load();
+renderChrome();
+renderThread();
+renderHud("idle");
+</script>
+</body>
+</html>
