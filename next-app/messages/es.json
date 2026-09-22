@@ -162,6 +162,10 @@
       {
         "q": "¿Es XFree lo mismo que \"X Free\"?",
         "a": "Sí. XFree es el nombre oficial de la plataforma XFree App y XFree Studio. Algunas personas lo buscan como \"X Free\" (con espacio); ambos hacen referencia al mismo producto."
+      },
+      {
+        "q": "¿Tiene XFree (xfree.in) alguna relación con xfree.com, XFree Coin o el sistema de ventanas XFree86/X.Org?",
+        "a": "No. Este sitio, la XFree App y XFree Studio solo están en xfree.in y app.xfree.in, desarrollados y mantenidos por el proyecto de código abierto enlazado en nuestro pie de página. No tenemos ninguna relación con xfree.com, con ninguna criptomoneda de nombre similar, ni con el software de sistema de ventanas XFree86/X.Org, que también usa el nombre \"XFree\"."
       }
     ],
     "metaTitle": "App XFree: Herramientas Gratis de Desarrollo, SEO e IA",

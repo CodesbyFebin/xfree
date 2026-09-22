@@ -150,7 +150,7 @@ function getSchemaData(locale: string) {
         '@type': 'Organization',
         '@id': `${baseUrl}/#organization`,
         name: 'XFree',
-        alternateName: ['XFree.in', 'xfree.in'],
+        alternateName: ['XFree.in', 'xfree.in', 'XFree App'],
         url: `${baseUrl}/`,
         logo: {
           '@type': 'ImageObject',
@@ -159,6 +159,10 @@ function getSchemaData(locale: string) {
           height: 512,
         },
         description: 'XFree develops free browser-based developer, SEO, and single-purpose AI micro-tools.',
+        // The only real, currently-linked external profile for this
+        // project (see the footer's GitHub links) - not adding social
+        // profiles that don't exist yet just to pad this array.
+        sameAs: ['https://github.com/CodesbyFebin/xfree'],
       },
       {
         '@type': ['WebSite', 'WebApplication'],

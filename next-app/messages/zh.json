@@ -162,6 +162,10 @@
       {
         "q": "XFree 和 \"X Free\" 是同一个东西吗？",
         "a": "是的。XFree 是 XFree App 与 XFree Studio 平台的官方名称。有些人会以带空格的 \"X Free\" 来搜索它——两者指向的是同一款产品。"
+      },
+      {
+        "q": "XFree(xfree.in)与xfree.com、XFree Coin或XFree86/X.Org窗口系统有关系吗？",
+        "a": "没有。本网站、XFree App 和 XFree Studio 仅在 xfree.in 和 app.xfree.in 提供，由页脚中链接的开源项目开发和维护。我们与 xfree.com、任何名称相似的加密货币，或同样使用“XFree”名称但完全无关的窗口系统软件 XFree86/X.Org 均无任何关联。"
       }
     ],
     "metaTitle": "XFree App:免费开发者、SEO 与 AI 工具",

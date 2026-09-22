@@ -162,6 +162,10 @@
       {
         "q": "XFree は「X Free」と同じですか?",
         "a": "はい。XFree は XFree App および XFree Studio プラットフォームの正式名称です。一部の人は「X Free」(スペースあり)として検索しますが、どちらも同じ製品を指しています。"
+      },
+      {
+        "q": "XFree(xfree.in)は、xfree.com、XFree Coin、またはXFree86/X.Orgウィンドウシステムと関係がありますか?",
+        "a": "いいえ。当サイト、XFree App、XFree Studioはxfree.inおよびapp.xfree.inのみで提供されており、フッターにリンクされているオープンソースプロジェクトによって開発・運営されています。xfree.com、同様の名前を持つ暗号資産、または同じく「XFree」という名前を使用する無関係なウィンドウシステムソフトウェアXFree86/X.Orgとは一切関係がありません。"
       }
     ],
     "metaTitle": "XFree App:無料の開発者・SEO・AI ツール",
