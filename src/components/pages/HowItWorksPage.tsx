@@ -19,7 +19,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           How XFree.in Works
         </h1>
         <p className="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          Discover how XFree.in delivers blazing-fast developer and SEO micro-tools without ever compromising your data privacy or requiring registration.
+          See which XFree.in tools process data locally in your browser and when optional AI features send input to a model provider.
         </p>
       </div>
 
@@ -31,7 +31,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           </div>
           <h3 className="text-xl font-bold text-white">Load into Memory</h3>
           <p className="text-slate-400 text-sm leading-relaxed">
-            When you visit any tool page on XFree.in, the lightweight JavaScript execution engine loads directly into your browser's WebAssembly / JS sandbox.
+            Open a published tool in your browser. Local utilities use browser JavaScript; optional AI features make a disclosed request through XFree.in's server.
           </p>
         </div>
 
@@ -41,7 +41,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           </div>
           <h3 className="text-xl font-bold text-white">Local Transformation</h3>
           <p className="text-slate-400 text-sm leading-relaxed">
-            All parsing, formatting, regex matching, and XML sitemap parsing happen locally inside your browser memory. Your sensitive input data never leaves your computer.
+            For local formatters, testers, and generators, the transformation runs in your browser. Check each tool's processing notice before entering sensitive input.
           </p>
         </div>
 
@@ -51,7 +51,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
           </div>
           <h3 className="text-xl font-bold text-white">Instant Output & Export</h3>
           <p className="text-slate-400 text-sm leading-relaxed">
-            Get instant transformed output with 1-click clipboard copying or direct file downloads (JSON, XML, CSV). Zero latency, zero wait queues.
+            Copy or download the result when the tool offers that action. AI features may take longer and have provider or usage limits.
           </p>
         </div>
       </div>
@@ -65,7 +65,7 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
               <CheckCircle2 className="w-4 h-4" /> Complete Data Confidentiality
             </h4>
             <p className="text-slate-400 leading-relaxed">
-              Standard web utilities send your API keys, private JSON payloads, or SQL schemas to remote backend servers. XFree.in guarantees zero backend logging for all local tools.
+              Standard web utilities send your API keys, private JSON payloads, or SQL schemas to remote backend servers. Local tools do not submit their working input to XFree.in for processing. Optional AI and Cloud Mode features send selected input to the named provider; read the privacy notice before using them.
             </p>
           </div>
           <div className="space-y-2">
@@ -73,11 +73,31 @@ export const HowItWorksPage: React.FC<PageProps> = ({ onGoHome, onSelectCategory
               <CheckCircle2 className="w-4 h-4" /> Offline & Offline-First Capability
             </h4>
             <p className="text-slate-400 leading-relaxed">
-              Once loaded in your browser session, XFree.in tools continue functioning even if your internet connection drops or stutters.
+              Some local operations may continue after the page loads. Cloud-backed features need a connection, and offline availability depends on what the browser has cached.
             </p>
           </div>
         </div>
       </div>
+
+      <section aria-labelledby="featured-tools" className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 space-y-4">
+        <h2 id="featured-tools" className="text-2xl font-bold text-white">Try a local tool</h2>
+        <p className="text-slate-300 text-sm">These published tools provide a direct way to try the browser-based workflows described above.</p>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { href: "/tools/json-formatter", label: "JSON formatter and validator" },
+            { href: "/tools/regex-tester", label: "JavaScript regex tester" },
+            { href: "/tools/xml-sitemap-generator", label: "XML sitemap generator" },
+            { href: "/tools/meta-tag-generator", label: "Meta tag and social preview" },
+            { href: "/tools/base64-encoder-decoder", label: "Base64 decoder and JWT inspector" },
+          ].map((tool) => (
+            <li key={tool.href}>
+              <a href={tool.href} className="block rounded-xl border border-slate-700 p-4 text-cyan-300 hover:border-cyan-500 hover:text-cyan-200">
+                {tool.label} <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* CTA */}
       <div className="text-center pt-4">
