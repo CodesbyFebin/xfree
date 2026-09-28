@@ -1,5 +1,4 @@
 import React from "react";
-import { ShieldCheck, Zap, Globe, Heart, Code2 } from "lucide-react";
 
 interface PageProps {
   onGoHome: () => void;
