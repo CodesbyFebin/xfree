@@ -13,31 +13,46 @@ export const AboutPage: React.FC<PageProps> = ({ onGoHome }) => {
           About XFree.in
         </h1>
         <p className="text-slate-300 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-          A small, focused platform of free browser-based developer, SEO, and AI micro-tools.
+          Free browser-based tools for developer, data, and technical SEO tasks.
         </p>
       </div>
 
       <div className="space-y-6 text-slate-300 text-sm sm:text-base leading-relaxed bg-slate-900/80 p-8 rounded-3xl border border-slate-800">
-        <h2 className="text-2xl font-bold text-white">Our Mission</h2>
+        <h2 className="text-2xl font-bold text-white">What XFree does</h2>
         <p>
-          We created XFree.in because existing online converter and formatting sites are slow, cluttered with invasive ads, and upload sensitive user code to unknown backend servers.
+          XFree.in brings focused utilities together so you can format data,
+          inspect code, and work through technical SEO tasks without creating
+          an account. This is the official home of the XFree developer tools
+          project.
         </p>
         <p>
-          XFree.in delivers a small, curated set of single-purpose micro-tools that execute 100% locally in browser memory. No registration required, no hidden paywalls, and zero latency.
+          Local tools process the input in your browser. AI and Cloud Mode
+          features are different: when you choose one, your input is sent
+          through XFree&apos;s server to the indicated model provider. Check
+          each tool&apos;s privacy notice before entering sensitive data.
+          Advertising services may also set cookies. See the{" "}
+          <a href="/privacy" className="text-cyan-400 underline hover:text-cyan-300">
+            Privacy Policy
+          </a>{" "}
+          for details.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800">
           <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-            <h4 className="font-bold text-emerald-400">100% Free</h4>
-            <p className="text-xs text-slate-400">No trial limits or paywalls.</p>
+            <h3 className="font-bold text-emerald-400">Free to access</h3>
+            <p className="text-xs text-slate-400">No account or subscription required for the published tools.</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-            <h4 className="font-bold text-cyan-400">Privacy First</h4>
-            <p className="text-xs text-slate-400">Local browser JS sandbox.</p>
+            <h3 className="font-bold text-cyan-400">Clear data paths</h3>
+            <p className="text-xs text-slate-400">Local and provider-backed features are identified separately.</p>
           </div>
           <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-            <h4 className="font-bold text-purple-400">Instant Speed</h4>
-            <p className="text-xs text-slate-400">Zero network upload wait.</p>
+            <h3 className="font-bold text-purple-400">Open source</h3>
+            <p className="text-xs text-slate-400">
+              <a href="https://github.com/CodesbyFebin/xfree" className="underline hover:text-purple-300">
+                Inspect the code on GitHub
+              </a>.
+            </p>
           </div>
         </div>
       </div>
