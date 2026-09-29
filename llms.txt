@@ -1,0 +1,44 @@
+# XFree
+
+> Browser-based developer, SEO, and AI micro-tools with explicit live/draft capability controls.
+
+Live site: https://www.xfree.in
+Repository: https://github.com/CodesbyFebin/xfree
+
+## Production stack
+- React 19
+- TypeScript
+- Vite 6
+- Express 4
+- Tailwind 4
+- Zod
+- Vercel serverless + prerendered static HTML
+
+## Implemented surfaces
+- Interactive developer/SEO/browser tools
+- Published guides
+- PWA install surface
+- Server-side Gemini AI gateway
+- NVIDIA NIM cloud-mode gateway with task routing and fallback
+- Contact/feedback/lead endpoints with validation and rate limiting
+- Prerendered SEO metadata and structured data
+- Sitemap, robots.txt, llms.txt generation, and IndexNow
+- Security headers and server-side API-key handling
+
+## Important limits
+- Do not claim 400+ working tools.
+- Draft seed-registry entries are not live tools and are excluded from public indexing.
+- next-app/ is an undeployed Next.js rewrite; it is not the production site.
+- Optional AI features require configured provider credentials.
+- In-memory rate limiting should be replaced with a durable store before real traffic.
+
+## Verify
+- README.md
+- docs/production-readiness.md
+- docs/deploy-vercel.md
+- docs/indexing.md
+- docs/content.md
+- src/data/toolsRegistry.ts
+- src/middleware/security-headers.ts
+- npm run audit:tools
+- npm run verify
