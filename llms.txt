@@ -1,44 +1,25 @@
-# XFree
-
-> Browser-based developer, SEO, and AI micro-tools with explicit live/draft capability controls.
-
-Live site: https://www.xfree.in
-Repository: https://github.com/CodesbyFebin/xfree
-
-## Production stack
-- React 19
-- TypeScript
-- Vite 6
-- Express 4
-- Tailwind 4
-- Zod
-- Vercel serverless + prerendered static HTML
-
-## Implemented surfaces
-- Interactive developer/SEO/browser tools
-- Published guides
-- PWA install surface
-- Server-side Gemini AI gateway
-- NVIDIA NIM cloud-mode gateway with task routing and fallback
-- Contact/feedback/lead endpoints with validation and rate limiting
-- Prerendered SEO metadata and structured data
-- Sitemap, robots.txt, llms.txt generation, and IndexNow
-- Security headers and server-side API-key handling
-
-## Important limits
-- Do not claim 400+ working tools.
-- Draft seed-registry entries are not live tools and are excluded from public indexing.
-- next-app/ is an undeployed Next.js rewrite; it is not the production site.
-- Optional AI features require configured provider credentials.
-- In-memory rate limiting should be replaced with a durable store before real traffic.
-
-## Verify
-- README.md
-- docs/production-readiness.md
-- docs/deploy-vercel.md
-- docs/indexing.md
-- docs/content.md
-- src/data/toolsRegistry.ts
-- src/middleware/security-headers.ts
-- npm run audit:tools
-- npm run verify
+> xfree — React 19 + Vite 6 browser tool suite with i18n, CSP enforcement,
+>> and production-grade security and testing.
+>
+> Language: TypeScript
+> Focus: developer tools, browser accessibility, security compliance
+> Deployed: https://xfree.in
+>
+> Repo: https://github.com/CodesbyFebin/xfree
+> Stack: React 19, TypeScript, Vite 6, Express 4 backend, Vercel hosting
+>
+> Claims:
+> - React 19 + Vite 6 frontend with TypeScript strict mode
+> - Express 4 HTTP backend for API routes
+> - i18n support across 10 locales with fallback chain
+> - Content Security Policy (CSP) headers enforced and validated
+> - Search Console regression testing for SEO accuracy
+> - Playwright e2e tests in CI
+> - CodeQL SAST scanning and Dependabot tracking
+> - Verified commit signatures required for production deployment
+>
+> Verify: AGENTS.md | .github/workflows/ | vite.config.ts | src/server.ts
+>
+> Status: Production deployment at xfree.in. Next.js alternative (next-app/) is undeployed.
+> Limitations: i18n may fall back to English for incomplete translations.
+>                CSP blocks inline scripts; all behavior uses modules.

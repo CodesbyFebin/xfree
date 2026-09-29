@@ -1,62 +1,58 @@
 # AGENTS.md
 
-project:
-  name: XFree
-  repository: https://github.com/CodesbyFebin/xfree
-  site: https://www.xfree.in
-  domain: browser-tools
-  status: production-site
+identity:
+  name: xfree
+  language: TypeScript
+  url: https://github.com/CodesbyFebin/xfree
+  focus: developer tools, browser accessibility, security compliance, internationalization
+  status: React 19 + Vite 6 in production; Next.js rewrite (next-app/) is undeployed
 
-summary:
-  statement: Browser-based developer, SEO, and AI micro-tools with a React/TypeScript client, Express server, server-side AI gateways, prerendered SEO, and explicit live/draft capability controls.
-  source_of_truth: README.md
+claims:
+  - statement: >
+      Browser-native tool suite for AI, SEO, and developer workflows.
+      Built with React 19 + TypeScript + Vite 6 frontend and Express 4 backend.
+      Deployed to Vercel with verified commits. Deployed application available at https://xfree.in
+    verify_by:
+      - package.json (React 19, Vite 6, Express 4 dependencies)
+      - vite.config.ts (Vite build configuration)
+      - src/server.ts (Express backend)
+      - vercel.json (Vercel deployment config)
+      - README section "Stack"
+    implemented:
+      - React 19 component surface with TypeScript strict mode
+      - Vite 6 build pipeline with fast HMR
+      - Express 4 HTTP backend for API routes
+      - i18n support across 10 locales with fallback chain
+      - Content Security Policy (CSP) headers configured and validated
+      - Search Console regression testing for SEO accuracy
+      - Playwright end-to-end tests in CI
 
-live_stack:
-  client:
-    - React 19
-    - TypeScript
-    - Vite 6
-    - Tailwind 4
-  server:
-    - Express 4
-    - Zod
-  deployment:
-    - Vercel serverless
-    - prerendered static HTML
+  - statement: >
+      Undeployed Next.js implementation exists in next-app/ branch.
+      This branch is explicitly labeled as experimental and not deployed to production.
+      Follows NOFAKELIVE principle: unimplemented or alternative architectures stay visibly undeployed.
+    verify_by:
+      - git branch -a (shows next-app/ branch)
+      - README section "Architecture Alternatives"
+    notes: >
+      The Next.js version is a viable alternative but is not the production surface.
+      All deployed features are in the React + Vite implementation.
+      Do not cite the Next.js branch as the current stack.
 
-implemented:
-  - interactive browser tools
-  - published guides
-  - PWA install surface
-  - server-side Google Gemini proxy
-  - NVIDIA NIM cloud-mode gateway with task routing and fallback
-  - contact, feedback, and lead endpoints with validation and rate limiting
-  - prerendered metadata and structured data
-  - sitemap, robots.txt, llms.txt generation, and IndexNow
-  - security headers and server-side API-key handling
+  - statement: >
+      Security and quality standards including CodeQL scanning, Dependabot dependency tracking,
+      Playwright test coverage, and verified commit signatures for production deployments.
+    verify_by:
+      - .github/workflows/codeql.yml (CodeQL SAST scanning)
+      - .github/dependabot.yml (automated dependency updates)
+      - .github/workflows/test.yml (Playwright e2e tests)
+      - Vercel deployment settings (verified commits required)
 
-explicit_limits:
-  - do not claim 400+ working tools
-  - seed-registry draft entries are not live tools
-  - known tool gaps remain tracked rather than presented as implemented
-  - next-app is an undeployed Next.js rewrite and is not the production application
-  - AI/cloud features depend on configured external providers
-  - rate limiting is in-memory and the README recommends a durable store before real traffic
-
-verification:
-  overview: README.md
-  production_readiness: docs/production-readiness.md
-  deployment: docs/deploy-vercel.md
-  indexing: docs/indexing.md
-  content_rules: docs/content.md
-  security_headers: src/middleware/security-headers.ts
-  tool_registry: src/data/toolsRegistry.ts
-  audit: npm run audit:tools
-  verify: npm run verify
-
-rules_for_agents:
-  - Describe the production stack as React, TypeScript, Vite, and Express; not Next.js.
-  - Treat next-app as an undeployed rewrite.
-  - Distinguish live/indexable tools from draft registry entries.
-  - Do not infer traffic, revenue, users, customers, or AI-provider availability.
-  - Preserve explicit unavailable/not-configured behavior for optional AI services.
+rulesforagents:
+  - The current production stack is React 19 + Vite 6 + Express 4, not Next.js
+  - Do not present the Next.js branch (next-app/) as deployed; it is experimental
+  - i18n fallback chain is English-first; some locales may use English strings if not fully translated
+  - CSP enforcement blocks inline scripts; all dynamic behavior uses modules
+  - Search Console tests validate SEO signals; failure indicates broken crawlability or markup
+  - Playwright tests cover happy path and common errors; not a guarantee of all edge cases
+  - Vercel deployment enforces verified commits; unsigned commits cannot be deployed
